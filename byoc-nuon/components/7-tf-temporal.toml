@@ -1,0 +1,29 @@
+name              = "temporal"
+type              = "terraform_module"
+terraform_version = "1.11.3"
+
+[public_repo]
+repo      = "nuonco/byoc"
+directory = "byoc-nuon/src/components/temporal"
+branch    = "main"
+
+[vars]
+env                                = "prod"
+region                             = "{{ .nuon.install_stack.outputs.region }}"
+zone                               = "{{ .nuon.install.sandbox.outputs.nuon_dns.internal_domain.name }}"
+cluster_name                       = "{{ .nuon.install.sandbox.outputs.cluster.name }}"
+cluster_endpoint                   = "{{ .nuon.install.sandbox.outputs.cluster.endpoint }}"
+cluster_certificate_authority_data = "{{ .nuon.install.sandbox.outputs.cluster.certificate_authority_data }}"
+
+db_instance_master_user_secret_arn = '{{ .nuon.components.components.rds_cluster_temporal.outputs.db_instance_master_user_secret_arn }}'
+db_instance_address                = '{{ .nuon.components.components.rds_cluster_temporal.outputs.address }}'
+db_instance_port                   = "5432"
+
+temporal_web_image_repository = '{{ .nuon.components.components.img_temporal_ui.outputs.image.repository }}'
+temporal_web_image_tag        = '{{ .nuon.components.components.img_temporal_ui.outputs.image.tag }}'
+
+temporal_server_image_repository = '{{ .nuon.components.components.img_temporal_server.outputs.image.repository }}'
+temporal_server_image_tag        = '{{ .nuon.components.components.img_temporal_server.outputs.image.tag }}'
+
+temporal_admin_tools_image_repository ='{{ .nuon.components.components.img_temporal_admin_tools.outputs.image.repository }}'
+temporal_admin_tools_image_tag        ='{{ .nuon.components.components.img_temporal_admin_tools.outputs.image.tag }}'

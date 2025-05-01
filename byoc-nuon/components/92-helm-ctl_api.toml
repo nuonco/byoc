@@ -1,0 +1,15 @@
+#:schema https://api.nuon.co/v1/general/config-schema?source=helm
+name           = "ctl_api"
+type           = "helm_chart"
+chart_name     = "ctl-api"
+namespace      = "ctl-api"
+
+storage_driver = "configmap"
+
+[public_repo]
+repo      = "nuonco/byoc"
+directory = "byoc-nuon/src/components/ctl_api"
+branch    = "17a52e07441346bb50e3a956f3f8b8218e16e825"
+
+[[values_file]]
+contents = "./values/ctl-api.yaml"

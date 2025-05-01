@@ -1,0 +1,12 @@
+#:schema https://api.nuon.co/v1/general/config-schema?source=inputS
+[[group]]
+name         = "rds-nuon"
+description  = "Configuration for the postgres database Nuon will create for itself."
+display_name = "Nuon database configuration"
+
+[[input]]
+name         = "nuon_db_instance_type"
+description  = "What RDS DB instance type would you like to deploy for nuon?"
+default      = "db.t4g.medium"
+display_name = "RDS Instance Type"
+group        = "rds-nuon"

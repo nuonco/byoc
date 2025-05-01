@@ -1,0 +1,12 @@
+#:schema https://api.nuon.co/v1/general/config-schema?source=inputs
+[[group]]
+name         = "rds-temporal"
+description  = "Configuration for the postgres database Nuon will create for the Temporal deployment."
+display_name = "Temporal database configuration"
+
+[[input]]
+name         = "temporal_db_instance_type"
+description  = "What RDS DB instance type would you like to deploy for temporal?"
+default      = "db.t4g.medium"
+display_name = "RDS Instance Type"
+group        = "rds-temporal"

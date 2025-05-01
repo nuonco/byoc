@@ -1,0 +1,7 @@
+#:schema https://api.nuon.co/v1/general/config-schema?source=runner
+runner_type = "aws"
+helm_driver = "configmap"
+
+[env_vars]
+name  = "runner-env-var"
+value = "runner-env-var"

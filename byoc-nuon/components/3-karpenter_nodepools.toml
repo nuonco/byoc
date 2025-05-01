@@ -1,0 +1,21 @@
+#:schema https://api.nuon.co/v1/general/config-schema?source=helm
+name           = "karpenter_nodepools"
+type           = "helm_chart"
+chart_name     = "karpenter-nodepools"
+storage_driver = "configmap"
+
+[public_repo]
+repo      = "nuonco/byoc"
+directory = "byoc-nuon/src/components/karpenter-nodepools"
+branch    = "main"
+
+[[values_file]]
+contents = "./values/karpenter-nodepools.yaml"
+
+# [[values_file]]
+# # TODO: grab discovery from from the sandbox outputs for use here
+# contents = """# ← look at this comma!
+# instance_profile: "KarpenterNodeInstanceProfile-{{ .nuon.sandbox.outputs.cluster.name }}"
+# karpenter:
+#   discoveryKey: "{{ .nuon.sandbox.outputs.cluster.name}}"
+# """

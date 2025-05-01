@@ -1,0 +1,19 @@
+#:schema https://api.nuon.co/v1/general/config-schema?source=inputs
+[[group]]
+name         = "github"
+description  = "Configure the GitHub Application for this BYOC Nuon install."
+display_name = "Github | Nuon configuration"
+
+[[input]]
+name         = "github_app_id"
+description  = "The github app id."
+default      = "0000000"
+display_name = "GitHub App ID"
+group        = "github"
+
+[[input]]
+name         = "github_app_client_id"
+description  = "The github app client id."
+default      = "xxxxxxxxxxxxxxxxxxxx"
+display_name = "GitHub App Client ID"
+group        = "github"
