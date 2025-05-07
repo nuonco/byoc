@@ -1,0 +1,214 @@
+---
+env:
+  ENV: prod
+  GIT_REF: dne # TODO: update
+  MIDDLEWARES: log,error,public_metrics,public,timeout,size,global,auth,org,offset_pagination,invites,headers,cors,config
+  RUNNER_MIDDLEWARES: log,runner_metrics,error,public,timeout,size,auth,runner_org,offset_pagination,headers,cors,config
+  INTERNAL_MIDDLEWARES: log,headers,internal_metrics,error,public,timeout,size,global,config,admin,offset_pagination
+
+  DB_HOST: "{{ .nuon.components.components.rds_cluster_nuon.outputs.address }}"
+  DB_NAME: "ctl_api" # hardcoded, for now
+  DB_USER: "ctl_api" # hardcoded, for now
+  DB_USE_SSL: "true"
+  DB_SSL_MODE: verify-full
+  DB_USE_ZAP: "true"
+  DB_USE_IAM: "true"
+  DB_MIGRATIONS_PATH: /migrations
+
+  AUTH0_ISSUER_URL: "{{ .nuon.inputs.inputs.auth_issuer }}"
+  AUTH0_AUDIENCE: "{{ .nuon.inputs.inputs.auth_audience }}"
+  TEMPORAL_MAX_CONCURRENT_ACTIVITIES: !!string 100
+  TEMPORAL_STICKY_WORKFLOW_CACHE_SIZE: !!string 10000
+
+  CLICKHOUSE_DB_PORT: !!string 9000
+  CLICKHOUSE_DB_USE_TLS: "false"
+  CLICKHOUSE_DB_HOST: clickhouse.clickhouse.svc.cluster.local
+  CLICKHOUSE_DB_USER: clickhouse
+  # CLICKHOUSE_DB_PASSWORD: teamnuon
+  CLICKHOUSE_DB_NAME: "ctl_api"
+
+  # TFE_ORGS_WORKSPACE_ID: ".nuon.inputs.inputs.tfe_workspace_id"
+  # TFE_TOKEN: ".nuon.inputs.inputs.tfe_token"
+
+  INTERNAL_HTTP_PORT: !!string 8082
+  RUNNER_HTTP_PORT: !!string 8083
+  HTTP_PORT: !!string 8081
+  GRACEFUL_SHUTDOWN_TIMEOUT: 10s
+  RUNNER_CONTAINER_IMAGE_TAG: latest
+
+  GITHUB_APP_ID: !!string {{ .nuon.inputs.inputs.github_app_id }}
+
+  INTEGRATION_GITHUB_INSTALL_ID: !!string 00000000
+
+  AUTH0_CLIENT_ID: !!string "{{ .nuon.inputs.inputs.auth_client_id }}" # TODO: should be .nuon.inputs.inputs.auth0_client_id
+
+  INTERNAL_SLACK_WEBHOOK_URL: |-
+    https://hooks.slack.com/services/xxxxxxxxxxx/xxxxxxxxxxx/xxxxxxxxxxxxxxxxxxxxxxxx
+
+  AWS_CLOUDFORMATION_STACK_TEMPLATE_BUCKET: "{{ .nuon.components.components.s3_buckets.outputs.install_template_bucket.arn}}"
+  AWS_CLOUDFORMATION_STACK_TEMPLATE_BASE_URL: "{{ .nuon.components.components.s3_buckets.outputs.install_template_bucket.arn}}"
+
+  APP_URL: https://app.{{ .nuon.sandbox.outputs.nuon_dns.public_domain.name }}
+  PUBLIC_API_URL: https://api.{{ .nuon.sandbox.outputs.nuon_dns.public_domain.name }}
+  RUNNER_API_URL: https://runner.{{ .nuon.sandbox.outputs.nuon_dns.public_domain.name }}
+  ADMIN_API_URL: https://admin.{{ .nuon.sandbox.outputs.nuon_dns.internal_domain.name }}
+
+  # TODO: sort out tailscale for the ui and admin api
+  TEMPORAL_HOST: temporal-frontend-headless.temporal.svc.cluster.local:7233
+  TEMPORAL_MAX_CONCURRENT_ACTIVITIES: !!string 3500
+  TEMPORAL_STICKY_WORKFLOW_CACHE_SIZE: !!string 10
+  TEMPORAL_UI_URL: http://temporal-ui.nuon.{{ .nuon.install_stack.outputs.region }}.stage.nuon.cloud:8080
+
+  SANDBOX_MODE_SLEEP: 1s
+
+  RUNNER_DEFAULT_SUPPORT_IAM_ROLE_ARN: |-
+    arn:aws:iam::{{ .nuon.install_stack.outputs.account_id }}:role/nuon-internal-support-stage
+
+  # deprecated or not in use in byoc
+  SEGMENT_WRITE_KEY: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+  LOOPS_API_KEY: "this key does not exist"
+
+envSecrets:
+  - name: "GITHUB_APP_KEY"
+    valueFrom:
+      name: ctl-api-github-app-key
+      key: github_app_key
+  - name: "DB_PASSWORD"
+    valueFrom:
+      name: nuon-db
+      key: password
+  - name: "CLICKHOUSE_DB_PASSWORD"
+    valueFrom:
+      name: clickhouse-cluster
+      key: password
+  - name: "TFE_ORGS_WORKSPACE_ID"
+    valueFrom:
+      name:  tfe
+      key: TFE_ORGS_WORKSPACE_ID
+  - name: "TFE_TOKEN"
+    valueFrom:
+      name: tfe
+      key: TFE_TOKEN
+
+
+  # : teamnuon
+  # TODO: remove this
+  # - name: "LOOPS_API_KEY"
+  #   valueFrom:
+  #     name: ctl-api-loops-api-key
+  #     key: loops_api_key
+
+image:
+  repository: "{{ .nuon.components.components.img_nuon_ctl_api.outputs.image.repository }}"
+  tag: "{{ .nuon.components.components.img_nuon_ctl_api.outputs.image.tag }}"
+
+worker:
+  minDomains: 3
+  instances:
+    - namespace: orgs
+      minReplicas: 2
+      maxReplicas: 10
+      command: ["/bin/service", "worker", "--namespace=orgs"]
+    - namespace: actions
+      minReplicas: 2
+      maxReplicas: 10
+      command: ["/bin/service", "worker", "--namespace=actions"]
+    - namespace: apps
+      minReplicas: 2
+      maxReplicas: 5
+      command: ["/bin/service", "worker", "--namespace=apps"]
+    - namespace: components
+      minReplicas: 2
+      maxReplicas: 5
+      command: ["/bin/service", "worker", "--namespace=components"]
+    - namespace: installs
+      minReplicas: 2
+      maxReplicas: 10
+      command: ["/bin/service", "worker", "--namespace=installs"]
+    - namespace: releases
+      minReplicas: 2
+      maxReplicas: 5
+      command: ["/bin/service", "worker", "--namespace=releases"]
+    - namespace: general
+      minReplicas: 2
+      maxReplicas: 5
+      command: ["/bin/service", "worker", "--namespace=general"]
+    - namespace: runners
+      minReplicas: 2
+      maxReplicas: 10
+      command: ["/bin/service", "worker", "--namespace=runners"]
+  autoscaling:
+    targetCPUUtilizationPercentage: 90
+    targetMemoryUtilizationPercentage: 65
+  resources:
+    limits:
+      cpu: 500m
+      memory: 512Mi
+    requests:
+      cpu: 250m
+      memory: 256Mi
+  # topology spread
+  minDomains: 2
+  # default values for a nodepool. used by the api to create a custom nodepool
+  nodepool:
+    capacity_types:
+      - on-demand
+    # docs: https://karpenter.sh/v0.37/reference/instance-types/#t3amedium
+    instance_types:
+      - t3a.xlarge
+  zones:
+    - us-west-2a
+    - us-west-2b
+
+api:
+  liveness_probe: /livez
+  readiness_probe: /readyz
+
+  resources:
+    limits:
+      cpu: 500m
+      memory: 512Mi
+    requests:
+      cpu: 250m
+      memory: 256Mi
+
+  public:
+    port: 8081
+    domain: "api.{{ .nuon.sandbox.outputs.nuon_dns.public_domain.name }}"
+    domain_certificate: "{{ .nuon.components.components.certificate_wildcard_public.outputs.public_domain_certificate_arn }}"
+    autoscaling:
+      minReplicas: 4
+      maxReplicas: 10
+      targetCPUUtilizationPercentage: 50
+      targetMemoryUtilizationPercentage: 50
+  admin:
+    port: 8082
+    domain: "admin.{{ .nuon.sandbox.outputs.nuon_dns.internal_domain.name }}"
+    autoscaling:
+      minReplicas: 2
+      maxReplicas: 10
+      targetCPUUtilizationPercentage: 50
+      targetMemoryUtilizationPercentage: 50
+  runner:
+    port: 8083
+    domain: "runner.{{ .nuon.sandbox.outputs.nuon_dns.public_domain.name }}"
+    domain_certificate: "{{ .nuon.components.components.certificate_wildcard_public.outputs.public_domain_certificate_arn }}"
+    autoscaling:
+      minReplicas: 4
+      maxReplicas: 10
+      targetCPUUtilizationPercentage: 35
+      targetMemoryUtilizationPercentage: 40
+
+  # topology spread
+  minDomains: 2
+
+  # TODO: these should actually match the zones the Nuon RDS Cluster is in to reduce latencey
+  zones:
+    - "{{ .nuon.install_stack.outputs.region }}a"
+    - "{{ .nuon.install_stack.outputs.region }}b"
+    - "{{ .nuon.install_stack.outputs.region }}c"
+
+serviceAccount:
+  name: ctl-api
+  annotations:
+    eks.amazonaws.com/role-arn: "{{ .nuon.components.components.ctl_api_role.outputs.iam_role_arn }}"

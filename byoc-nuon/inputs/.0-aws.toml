@@ -1,0 +1,26 @@
+#:schema https://api.nuon.co/v1/general/config-schema?source=inputs
+[[group]]
+name         = "aws"
+description  = "Configure your AWS deployment of Nuon"
+display_name = "AWS configuration"
+
+[[input]]
+name         = "vpc_id"
+description  = "The VPC you want to deploy Nuon in."
+sensitive    = false
+display_name = "VPC ID"
+group        = "aws"
+
+[[input]]
+name         = "private_subnet_ids"
+description  = "The subnets you want private Nuon resources deployed in."
+sensitive    = false
+display_name = "Private subnet IDs"
+group        = "aws"
+
+[[input]]
+name         = "public_subnet_ids"
+description  = "The subnets you want public Nuon resources deployed in."
+sensitive    = false
+display_name = "Public subnet IDs"
+group        = "aws"

@@ -1,0 +1,26 @@
+#:schema https://api.nuon.co/v1/general/config-schema?source=inputs
+[[group]]
+name         = "auth"
+description  = "Configure authentication for your Nuon install."
+display_name = "Nuon Authentication configuration."
+
+[[input]]
+name         = "auth_issuer"
+description  = "Auth0 Issuer"
+default      = "{{.nuon.install.id}}.us.auth0.com"
+display_name = "Auth0 Issuer"
+group        = "auth"
+
+[[input]]
+name         = "auth_audience"
+description  = "Auth0 Audience"
+default      = "https://{{.nuon.install.id}}.us.auth0.com/api/v2/"
+display_name = "Auth0 Audience"
+group        = "auth"
+
+[[input]]
+name         = "auth_client_id"
+description  = "Auth0 Client ID"
+default      = "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+display_name = "Auth0 Client ID"
+group        = "auth"

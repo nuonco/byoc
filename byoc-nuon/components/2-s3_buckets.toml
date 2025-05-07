@@ -1,0 +1,14 @@
+#:schema https://api.nuon.co/v1/general/config-schema?source=terraform
+name              = "s3_buckets"
+type              = "terraform_module"
+terraform_version = "1.11.3"
+
+[public_repo]
+repo      = "nuonco/byoc"
+directory = "byoc-nuon/src/components/s3_buckets"
+branch    = "main"
+
+[vars]
+install_name    = "{{ .nuon.install.name }}"
+region          = "{{ .nuon.install_stack.outputs.region }}"
+nuon_install_id = "{{ .nuon.install.id }}"

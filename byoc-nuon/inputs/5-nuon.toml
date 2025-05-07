@@ -1,0 +1,12 @@
+#:schema https://api.nuon.co/v1/general/config-schema?source=inputs
+[[group]]
+name         = "nuon"
+description  = "Configure your Nuon install."
+display_name = "Nuon configuration"
+
+[[input]]
+name         = "env"
+description  = "The nuon env. One of: dev, prod. If unsure, it's prod."
+default      = "prod"
+display_name = "Environement"
+group        = "nuon"

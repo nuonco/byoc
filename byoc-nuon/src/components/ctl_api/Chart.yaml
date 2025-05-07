@@ -1,0 +1,9 @@
+---
+apiVersion: v2
+name: ctl-api
+description: A helm chart for deploying the ctl-api (api and workers).
+type: application
+version: v0.0.3
+appVersion: "0.0.1"
+
+dependencies: []
