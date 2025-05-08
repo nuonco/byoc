@@ -17,10 +17,3 @@ description  = "What EC2 instance type should each clickhouse cluster node deplo
 default      = "t3a.medium"
 display_name = "Keeper Instance Type"
 group        = "clickhouse"
-
-[[input]]
-name         = "ch_cluster_name"
-description  = "The name for the cluster."
-default      = "nuon"
-display_name = "Clickhouse Cluster Name"
-group        = "clickhouse"
