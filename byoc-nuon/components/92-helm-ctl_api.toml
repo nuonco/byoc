@@ -5,6 +5,7 @@ chart_name     = "ctl-api"
 namespace      = "ctl-api"
 
 storage_driver = "configmap"
+dependencies   = ["rds_cluster_nuon"]
 
 [public_repo]
 repo      = "nuonco/byoc"
