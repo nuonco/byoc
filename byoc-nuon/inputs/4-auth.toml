@@ -5,22 +5,29 @@ description  = "Configure authentication for your Nuon install."
 display_name = "Nuon Authentication configuration."
 
 [[input]]
-name         = "auth_issuer"
-description  = "Auth0 Issuer"
-default      = "{{.nuon.install.id}}.us.auth0.com"
-display_name = "Auth0 Issuer"
+name         = "auth_issuer_url"
+description  = "Auth0 Issuer URL"
+default      = "https://{{.nuon.install.id}}.us.auth0.com"
+display_name = "Auth0 Issuer "
 group        = "auth"
 
 [[input]]
 name         = "auth_audience"
 description  = "Auth0 Audience"
-default      = "https://{{.nuon.install.id}}.us.auth0.com/api/v2/"
+default      = "api.{{.nuon.install.id}}.nuon.run"
 display_name = "Auth0 Audience"
 group        = "auth"
 
 [[input]]
-name         = "auth_client_id"
-description  = "Auth0 Client ID"
+name         = "auth_client_id_ctl_api"
+description  = "Auth0 Client ID for the CTL API"
 default      = "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
-display_name = "Auth0 Client ID"
+display_name = "Auth0 Client ID - CTL API"
+group        = "auth"
+
+[[input]]
+name         = "auth_client_id_dashboard_ui"
+description  = "Auth0 Client ID for the Dashboard UI"
+default      = "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+display_name = "Auth0 Client ID - Dashboard UI"
 group        = "auth"
