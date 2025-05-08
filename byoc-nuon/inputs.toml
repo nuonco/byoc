@@ -1,4 +1,4 @@
-# generated on: 2025-05-07 06:53:21.491164+00:00
+# generated on: 2025-05-08 20:01:10.127963+00:00
 
 # 1-rds-nuon.toml
 #:schema https://api.nuon.co/v1/general/config-schema?source=inputS
@@ -51,13 +51,6 @@ default      = "t3a.medium"
 display_name = "Keeper Instance Type"
 group        = "clickhouse"
 
-[[input]]
-name         = "ch_cluster_name"
-description  = "The name for the cluster."
-default      = "nuon"
-display_name = "Clickhouse Cluster Name"
-group        = "clickhouse"
-
 
 # 4-auth.toml
 #:schema https://api.nuon.co/v1/general/config-schema?source=inputs
@@ -67,24 +60,31 @@ description  = "Configure authentication for your Nuon install."
 display_name = "Nuon Authentication configuration."
 
 [[input]]
-name         = "auth_issuer"
-description  = "Auth0 Issuer"
-default      = "{{.nuon.install.id}}.us.auth0.com"
-display_name = "Auth0 Issuer"
+name         = "auth_issuer_url"
+description  = "Auth0 Issuer URL"
+default      = "https://{{.nuon.install.id}}.us.auth0.com"
+display_name = "Auth0 Issuer "
 group        = "auth"
 
 [[input]]
 name         = "auth_audience"
 description  = "Auth0 Audience"
-default      = "https://{{.nuon.install.id}}.us.auth0.com/api/v2/"
+default      = "api.{{.nuon.install.id}}.nuon.run"
 display_name = "Auth0 Audience"
 group        = "auth"
 
 [[input]]
-name         = "auth_client_id"
-description  = "Auth0 Client ID"
+name         = "auth_client_id_ctl_api"
+description  = "Auth0 Client ID for the CTL API"
 default      = "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
-display_name = "Auth0 Client ID"
+display_name = "Auth0 Client ID - CTL API"
+group        = "auth"
+
+[[input]]
+name         = "auth_client_id_dashboard_ui"
+description  = "Auth0 Client ID for the Dashboard UI"
+default      = "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+display_name = "Auth0 Client ID - Dashboard UI"
 group        = "auth"
 
 
@@ -109,6 +109,13 @@ group        = "nuon"
 name         = "github"
 description  = "Configure the GitHub Application for this BYOC Nuon install."
 display_name = "Github | Nuon configuration"
+
+[[input]]
+name         = "github_app_name"
+description  = "The name of the GitHub app to use for VCS connections."
+default      = "0000000"
+display_name = "GitHub App Name"
+group        = "github"
 
 [[input]]
 name         = "github_app_id"

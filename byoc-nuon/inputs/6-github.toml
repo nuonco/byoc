@@ -5,6 +5,13 @@ description  = "Configure the GitHub Application for this BYOC Nuon install."
 display_name = "Github | Nuon configuration"
 
 [[input]]
+name         = "github_app_name"
+description  = "The name of the GitHub app to use for VCS connections."
+default      = "byocnuon/my-org-connect"
+display_name = "GitHub App Name"
+group        = "github"
+
+[[input]]
 name         = "github_app_id"
 description  = "The github app id."
 default      = "0000000"

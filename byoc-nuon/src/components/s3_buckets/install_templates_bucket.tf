@@ -75,7 +75,7 @@ data "aws_iam_policy_document" "s3_bucket_policy" {
   }
 }
 
-module "bucket" {
+module "install_template_bucket" {
   providers = {
     aws = aws.current
   }

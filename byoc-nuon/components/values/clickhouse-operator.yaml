@@ -1,7 +1,7 @@
 operator:
   image:
-    repository: "{{ .nuon.components.components.img_altinity_clickhouse_operator.outputs.image.repository }}"
-    tag: "{{ .nuon.components.components.img_altinity_clickhouse_operator.outputs.image.tag }}"
+    repository: "{{ .nuon.components.img_altinity_clickhouse_operator.outputs.image.repository }}"
+    tag: "{{ .nuon.components.img_altinity_clickhouse_operator.outputs.image.tag }}"
     pullPolicy: IfNotPresent
   containerSecurityContext: {}
   resources: {}
@@ -19,8 +19,8 @@ operator:
 metrics:
   enabled: true
   image:
-    repository: "{{ .nuon.components.components.img_clickhouse_metrics_exporter.outputs.image.repository }}"
-    tag: "{{ .nuon.components.components.img_clickhouse_metrics_exporter.outputs.image.tag }}"
+    repository: "{{ .nuon.components.img_clickhouse_metrics_exporter.outputs.image.repository }}"
+    tag: "{{ .nuon.components.img_clickhouse_metrics_exporter.outputs.image.tag }}"
     pullPolicy: IfNotPresent
   containerSecurityContext: {}
   # metrics.resources -- custom resource configuration

@@ -123,7 +123,7 @@ resource "aws_iam_role" "clickhouse_role" {
 # Bucket
 #
 
-module "bucket" {
+module "clickhouse_bucket" {
   source  = "terraform-aws-modules/s3-bucket/aws"
   version = ">= v3.2.4"
 

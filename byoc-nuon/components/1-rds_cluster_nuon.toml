@@ -6,15 +6,15 @@ terraform_version = "1.11.3"
 [public_repo]
 directory = "aws/rds-cluster"
 repo      = "nuonco/components"
-branch    = "69eb6535a5db0b1cfe74fabe204b15ace622fe66"
+branch    = "main"
 
 [vars]
 identifier      = "nuon-{{ .nuon.install.id }}"
 port            = "5432"
-db_name         = "ctl_api"
-db_user         = "ctl_api"
+db_name         = "nuonadmin"
+db_user         = "nuon"
 instance_class  = "{{ .nuon.install.inputs.nuon_db_instance_type }}"
-subnet_group_id = "{{ .nuon.components.components.rds_subnet.outputs.id }}"
+subnet_group_id = "{{ .nuon.components.rds_subnet.outputs.id }}"
 
 region     = "{{ .nuon.install_stack.outputs.region }}"
 vpc_id     = "{{ .nuon.install_stack.outputs.vpc_id }}"

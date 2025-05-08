@@ -3,13 +3,13 @@ name           = "ctl_api"
 type           = "helm_chart"
 chart_name     = "ctl-api"
 namespace      = "ctl-api"
-
 storage_driver = "configmap"
+dependencies   = ["rds_cluster_nuon"]
 
 [public_repo]
 repo      = "nuonco/byoc"
 directory = "byoc-nuon/src/components/ctl_api"
-branch    = "17a52e07441346bb50e3a956f3f8b8218e16e825"
+branch    = "main"
 
 [[values_file]]
 contents = "./values/ctl-api.yaml"

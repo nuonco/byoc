@@ -3,8 +3,8 @@ name    = "temporal_init"
 timeout = "1m30s"
 
 [[triggers]]
-type           = "pre-component-deploy"
-component_name = "temporal"
+type           = "post-component-deploy"
+component_name = "rds_secrets"
 
 [[triggers]]
 type = "manual"
@@ -19,10 +19,10 @@ directory = "byoc-nuon/src/actions"
 branch    = "main"
 
 [steps.env_vars]
-DB_HOST         = "{{ .nuon.components.components.rds_cluster_temporal.outputs.address }}"
+DB_HOST         = "{{ .nuon.components.rds_cluster_temporal.outputs.address }}"
 DB_PORT         = "5432"
-DB_SECRET_ARN   = "{{ .nuon.components.components.rds_cluster_temporal.outputs.db_instance_master_user_secret_arn }}"
+DB_SECRET_ARN   = "{{ .nuon.components.rds_cluster_temporal.outputs.db_instance_master_user_secret_arn }}"
 NUON_INSTALL_ID = "{{ .nuon.install.id }}"
 REGION          = "{{ .nuon.install_stack.outputs.region }}"
 CLUSTER_NAME    = "{{ .nuon.sandbox.outputs.cluster.name }}"
-ROLE            = "{{ .nuon.install_stack.outputs.maintenance_iam_role_arn }}"
+ROLE            = "{{ .nuon.install_stack.outputs.194c19d5d514624e9e2441860ef869c3a5f26b36tenance_iam_role_arn }}"

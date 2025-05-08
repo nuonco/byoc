@@ -1,9 +1,13 @@
 locals {
-  install_templates_bucket_name = "${var.install_name}-byoc-nuon-install-templates"
+  install_templates_bucket_name = "${var.install_id}-byoc-nuon-install-templates"
   tags = {
-    "install.nuon.co/id"     = var.nuon_install_id
-    "component.nuon.co/name" = "s3_buckets"
+    "install.nuon.co/id"     = var.install_id
+    "component.nuon.co/name" = "ctl-api-buckets"
   }
+}
+
+variable "install_id" {
+  type = string
 }
 
 variable "install_name" {
@@ -14,6 +18,6 @@ variable "region" {
   type = string
 }
 
-variable "nuon_install_id" {
+variable "cluster_oidc_provider" {
   type = string
 }

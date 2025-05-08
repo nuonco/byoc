@@ -3,8 +3,8 @@ name    = "ctl_api_init"
 timeout = "1m30s"
 
 [[triggers]]
-type           = "pre-component-deploy"
-component_name = "ctl_api"
+type           = "post-component-deploy"
+component_name = "rds_secrets"
 
 [[triggers]]
 type = "manual"
@@ -19,7 +19,7 @@ directory = "byoc-nuon/src/actions"
 branch    = "main"
 
 [steps.env_vars]
-SECRET_ARN = "{{ .nuon.components.components.rds_cluster_nuon.outputs.db_instance_master_user_secret_arn }}"
-DB_ADDR    = "{{ .nuon.components.components.rds_cluster_nuon.outputs.address }}"
+SECRET_ARN = "{{ .nuon.components.rds_cluster_nuon.outputs.db_instance_master_user_secret_arn }}"
+DB_ADDR    = "{{ .nuon.components.rds_cluster_nuon.outputs.address }}"
 DB_PORT    = "5432"
 REGION     = "{{ .nuon.install_stack.outputs.region }}"
