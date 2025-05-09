@@ -7,15 +7,15 @@ env:
   INTERNAL_MIDDLEWARES: log,headers,internal_metrics,error,public,timeout,size,global,config,admin,offset_pagination
 
   DB_HOST: "{{ .nuon.components.rds_cluster_nuon.outputs.address }}"
-  DB_NAME: "ctl_api" # hardcoded, for now
-  DB_USER: "ctl_api" # hardcoded, for now
+  DB_NAME: "nuonadmin" # hardcoded, for now - also, main db not the desired db we created
+  DB_USER: "nuon"      # hardcoded, for now - also, main user, not the user we create
   DB_USE_SSL: "true"
   DB_SSL_MODE: verify-full
   DB_USE_ZAP: "true"
   DB_USE_IAM: "true"
   DB_MIGRATIONS_PATH: /migrations
 
-  AUTH0_ISSUER_URL: "{{ .nuon.inputs.inputs.auth_issuer }}"
+  AUTH0_ISSUER_URL: "{{ .nuon.inputs.inputs.auth_issuer_url }}"
   AUTH0_AUDIENCE: "{{ .nuon.inputs.inputs.auth_audience }}"
   TEMPORAL_MAX_CONCURRENT_ACTIVITIES: !!string 100
   TEMPORAL_STICKY_WORKFLOW_CACHE_SIZE: !!string 10000
@@ -38,7 +38,7 @@ env:
   INTEGRATION_GITHUB_INSTALL_ID: !!string 00000000
 
   # TODO: may need to be renamed to scope to this component
-  AUTH0_CLIENT_ID: !!string "{{ .nuon.inputs.inputs.auth_client_id }}"
+  AUTH0_CLIENT_ID: !!string "{{ .nuon.inputs.inputs.auth_client_id_ctl_api }}"
 
   INTERNAL_SLACK_WEBHOOK_URL: |-
     https://hooks.slack.com/services/xxxxxxxxxxx/xxxxxxxxxxx/xxxxxxxxxxxxxxxxxxxxxxxx
