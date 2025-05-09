@@ -20,7 +20,7 @@ echo "[ctl_api init] reading db access secrets from AWS"
 secret=`aws --region $region secretsmanager get-secret-value --secret-id=$secret_arn`
 admin_username=`echo $secret | jq -r '.SecretString' | jq -r '.username'`
 admin_password=`echo $secret | jq -r '.SecretString' | jq -r '.password'`
-admin_db="ctl_api"
+admin_db="nuonadmin"
 
 echo "[ctl_api init] preparing to initialize"
 function run_cmd() {
@@ -37,13 +37,21 @@ function run_cmd() {
     --env="PGPASSWORD=$admin_password" \
     --command \
     -- \
-    psql --no-psqlrc -c "$@"
+    psql --no-psqlrc -d "$admin_db" -c "$@"
 }
 
-
-echo "[ctl_api init] ensuring db"
-run_cmd "GRANT rds_iam TO ctl_api;"
-
+function dothis(){
+  echo " > cmd: $@"
+}
 
 echo "[ctl_api init] enable hstore"
 run_cmd "CREATE EXTENSION IF NOT EXISTS hstore;"
+
+echo "[ctl_api init] ensuring user & db"
+
+# this can fail on subsequent runs
+set +e
+run_cmd "CREATE USER ctl_api WITH LOGIN;"
+set -e
+
+run_cmd "GRANT rds_iam TO ctl_api; GRANT CREATE TO ctl_api; CREATE DATABASE ctl_api; GRANT rds_iam TO ctl_api;"

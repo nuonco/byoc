@@ -9,7 +9,7 @@ resource "kubectl_manifest" "clickhouse_serviceaccount_default" {
       "name"      = "default"
       "namespace" = "clickhouse"
       "annotations" = {
-        "eks.amazonaws.com/role-arn" = aws_iam_role.clickhouse_role.arn
+        "eks.amazonaws.com/role-arn" = var.clickhouse_role_arn
       }
     }
   })

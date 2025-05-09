@@ -6,7 +6,7 @@ terraform_version = "1.11.3"
 [public_repo]
 directory = "aws/rds-cluster"
 repo      = "nuonco/components"
-branch    = "e6ba0eb18ee2a4e7b9f3970fefeae336829d4e1a"
+branch    = "294ddb19b3bc0b6bf2a945efe9bafacbdb8e5b7a"
 
 [vars]
 identifier      = "temporal-{{ .nuon.install.id }}"
@@ -14,7 +14,7 @@ port            = "5432"
 db_name         = "temporal"
 db_user         = "temporal"
 instance_class  = "{{ .nuon.install.inputs.temporal_db_instance_type }}"
-subnet_group_id = "{{ .nuon.components.components.rds_subnet.outputs.id }}"
+subnet_group_id = "{{ .nuon.components.rds_subnet.outputs.id }}"
 
 region     = "{{ .nuon.install_stack.outputs.region }}"
 vpc_id     = "{{ .nuon.install_stack.outputs.vpc_id }}"

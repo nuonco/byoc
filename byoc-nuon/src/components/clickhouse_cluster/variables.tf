@@ -43,8 +43,22 @@ variable "cluster_certificate_authority_data" {
   type = string
 }
 
+#
+# bucket
+#
+
+variable "clickhouse_s3_bucket_id" {
+  type = string
+}
+
+variable "clickhouse_role_arn" {
+  type = string
+}
+
+#
 # clickhouse
 #
+
 variable "clickhouse_reader_secret_arn" {
   type = string
 }

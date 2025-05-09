@@ -93,7 +93,7 @@ aws --region {{ .nuon.install_stack.outputs.region }} \
 
 <details>
 <summary>Sandbox State</summary>
-<pre>{{ toPrettyJson .nuon.sandbox.outputs }}</pre>
+<pre class="json">{{ toPrettyJson .nuon.sandbox.outputs }}</pre>
 </details>
 
 {{ else }}
@@ -107,6 +107,15 @@ aws --region {{ .nuon.install_stack.outputs.region }} \
 <details>
   <summary>Install Stack</summary>
   <pre>{{ toPrettyJson .nuon.install_stack }}</pre>
+</details>
+
+## Components
+
+<details id="state">
+<summary>.nuon.components</summary>
+<pre>{{ toPrettyJson .nuon.components }}</pre>
+</details>
+<details>
 
 ## Full State
 
@@ -114,3 +123,9 @@ aws --region {{ .nuon.install_stack.outputs.region }} \
 <summary>Full Install State</summary>
 <pre>{{ toPrettyJson .nuon }}</pre>
 </details>
+<details>
+
+## RDS Clusters
+
+The nuon cluster is created w/ an admin user and a `nuon` db. This admin user is responsible for creating the `ctl_api`
+user and db. This is done in an [action](/actions/).
