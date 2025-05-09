@@ -11,4 +11,4 @@ branch    = "main"
 [vars]
 install_id   = "{{ .nuon.install.id }}"
 region       = "{{ .nuon.install_stack.outputs.region }}"
-Cluster_name = "{{ .nuon.install.sandbox.outputs.cluster.name }}"
+cluster_name = "{{ .nuon.install.sandbox.outputs.cluster.name }}"
