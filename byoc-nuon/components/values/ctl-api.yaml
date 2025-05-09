@@ -7,8 +7,8 @@ env:
   INTERNAL_MIDDLEWARES: log,headers,internal_metrics,error,public,timeout,size,global,config,admin,offset_pagination
 
   DB_HOST: "{{ .nuon.components.rds_cluster_nuon.outputs.address }}"
-  DB_NAME: "ctl_api" # hardcoded, for now
-  DB_USER: "ctl_api" # hardcoded, for now
+  DB_NAME: "nuonadmin" # hardcoded, for now - also, main db not the desired db we created
+  DB_USER: "nuon"      # hardcoded, for now - also, main user, not the user we create
   DB_USE_SSL: "true"
   DB_SSL_MODE: verify-full
   DB_USE_ZAP: "true"
