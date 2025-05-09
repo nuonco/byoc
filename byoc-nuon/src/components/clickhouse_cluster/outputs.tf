@@ -1,5 +1,5 @@
-output "clickhouse_backups_url" {
-  value = "s3://${data.aws_s3_bucket.clickhouse.id}/backups"
+output "clickhouse_backups_bucket_id" {
+  value = data.aws_s3_bucket.clickhouse.id
 }
 
 output "service" {
