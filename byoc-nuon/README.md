@@ -109,13 +109,19 @@ aws --region {{ .nuon.install_stack.outputs.region }} \
   <pre>{{ toPrettyJson .nuon.install_stack }}</pre>
 </details>
 
+## Actions
+
+<details id="state">
+<summary>.nuon.actions</summary>
+<pre>{{ toPrettyJson .nuon.actions }}</pre>
+</details>
+
 ## Components
 
 <details id="state">
 <summary>.nuon.components</summary>
 <pre>{{ toPrettyJson .nuon.components }}</pre>
 </details>
-<details>
 
 ## Full State
 
@@ -123,7 +129,6 @@ aws --region {{ .nuon.install_stack.outputs.region }} \
 <summary>Full Install State</summary>
 <pre>{{ toPrettyJson .nuon }}</pre>
 </details>
-<details>
 
 ## RDS Clusters
 
