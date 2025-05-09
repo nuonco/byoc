@@ -58,18 +58,22 @@ function run_cmd() {
 
 echo "[temporal init] creating the temporal database"
 run_cmd "temporal-sql-tool --db temporal create"
+sleep 3
 
 echo "[temporal init] setting up the temporal schema"
 run_cmd "temporal-sql-tool --db temporal setup-schema -v 0.0"
+sleep 3
 
 echo "[temporal init] updating the temporal schema"
 run_cmd "temporal-sql-tool --db temporal update-schema -d ./schema/postgresql/v12/temporal/versioned/"
 
 echo "[temporal_visibility init] creating the temporal_visibility database"
 run_cmd "temporal-sql-tool --db temporal_visibility create"
+sleep 3
 
 echo "[temporal_visibility init] setting up the temporal_visibility schema"
 run_cmd "temporal-sql-tool --db temporal_visibility setup-schema -v 0.0"
+sleep 3
 
 echo "[temporal_visibility init] updating the temporal_visibility schema"
 run_cmd "temporal-sql-tool --db temporal_visibility update-schema -d ./schema/postgresql/v12/temporal/versioned/"
