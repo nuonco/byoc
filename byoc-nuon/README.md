@@ -123,6 +123,13 @@ aws --region {{ .nuon.install_stack.outputs.region }} \
 <pre>{{ toPrettyJson .nuon.components }}</pre>
 </details>
 
+## Inputs
+
+<details id="state">
+<summary>.nuon.inputs</summary>
+<pre>{{ toPrettyJson .nuon.inputs }}</pre>
+</details>
+
 ## Full State
 
 <details id="state">
