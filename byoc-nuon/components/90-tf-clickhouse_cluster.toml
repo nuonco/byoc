@@ -6,7 +6,7 @@ terraform_version = "1.11.3"
 [public_repo]
 repo      = "nuonco/byoc"
 directory = "byoc-nuon/src/components/clickhouse_cluster"
-branch    = "main"
+branch    = "fd/aws_s3_bucket-fix"
 
 [vars]
 env                                = "prod"
