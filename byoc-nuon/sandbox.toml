@@ -3,11 +3,11 @@ terraform_version = "1.11.3"
 [public_repo]
 directory = "."
 repo      = "nuonco/aws-eks-sandbox"
-branch    = "9d38a9572918b282973d63ebac650a2b6e06ae4b"
+branch    = "d4837ed28d7abe4f76514a521d67610e1b06acc7"
 
 [vars]
-cluster_name       = "n-{{.nuon.install.id}}"
-enable_nuon_dns    = "true"
+cluster_name         = "n-{{.nuon.install.id}}"
+enable_nuon_dns      = "true"
 public_root_domain   = "{{.nuon.install.id}}.stage.nuon.run"
 internal_root_domain = "{{.nuon.install.id}}.internal.stage.nuon.run"
 
