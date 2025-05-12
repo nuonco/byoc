@@ -12,31 +12,3 @@ maintenance_role_eks_access_entry_policy_associations = {
     }
   }
 }
-
-secrets = [
-  {
-    arn = "{{ .nuon.actions.workflows.generate_ch_cluster_reader_secret.outputs.secret.ARN }}"
-    name = "clickhouse-cluster-ro"
-    namespace = "ctl-api"
-  },
-  {
-    arn = "{{ .nuon.actions.workflows.generate_ch_cluster_secret.outputs.secret.ARN }}"
-    name = "clickhouse-cluster"
-    namespace = "ctl-api"
-  },
-  {
-    arn = "{{ .nuon.actions.workflows.generate_ch_cluster_reader_secret.outputs.secret.ARN }}"
-    name = "clickhouse-cluster-ro"
-    namespace = "clickhouse"
-  },
-  {
-    arn = "{{ .nuon.actions.workflows.generate_ch_cluster_secret.outputs.secret.ARN }}"
-    name = "clickhouse-cluster"
-    namespace = "clickhouse"
-  },
-  {
-    arn = "{{ .nuon.actions.workflows.generate_ch_operator_secret.outputs.secret.ARN }}"
-    name = "clickhouse-operator"
-    namespace = "clickhouse"
-  },
-]

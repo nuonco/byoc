@@ -3,7 +3,7 @@ terraform_version = "1.11.3"
 [public_repo]
 directory = "."
 repo      = "nuonco/aws-eks-sandbox"
-branch    = "593606b3891330a18bf4fac64b61149404b01d76"
+branch    = "a34604d234ab455303247ed916360ad778dfeba6"
 
 [vars]
 cluster_name         = "n-{{.nuon.install.id}}"
