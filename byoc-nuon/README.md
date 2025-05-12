@@ -57,20 +57,38 @@ No install stack configured.
 
 ## Auth0 (wip)
 
-Create an app and collect the following
+Collect the following facts.
 
 | input         | example                              | actual                                              |
 | ------------- | ------------------------------------ | --------------------------------------------------- |
 | auth_audience | https://yourapp.us.auth0.com         | `{{ dig "auth_audience" "-" .nuon.inputs.inputs }}` |
 | auth_issuer   | https://yourapp.us.auth0.com/api/v2/ | `{{ dig "auth_issuer" "-" .nuon.inputs.inputs }}`   |
 
-To set up an auth0 app...
+Create an api w/ the following configuration.
 
-| URL                   |                                                               |
-| --------------------- | ------------------------------------------------------------- |
-| Logout URL            | https://app.{{ .nuon.install.id }}.nuon.run/api/auth/logout   |
-| Allowed Web Origins   | https://app.{{ .nuon.install.id }}.nuon.run                   |
-| Allowed Callback URLS | https://app.{{ .nuon.install.id }}.nuon.run/api/auth/callback |
+`Access Token Settings`
+
+| Setting                                    | Value   |
+| ------------------------------------------ | ------- |
+| Maximum Token Lifetime                     | 2592000 |
+| Implicit/Hybrid Flow Access Token Lifetime | 7200    |
+
+### For Dashboard API
+
+Create a `Single Page Application` app. To set up an auth0 app, configure as follows...
+
+1.
+1. Cross-Origin Authentication: enabled
+1. Refresh Token Expiriation:
+
+| Setting                      | Value                                                         |
+| ---------------------------- | ------------------------------------------------------------- |
+| Logout URL                   | <blank/>                                                      |
+| Allowed Callback URLS        | https://app.{{ .nuon.install.id }}.nuon.run/api/auth/callback |
+| Application Logout URL       | https://app.{{ .nuon.install.id }}.nuon.run                   |
+| Allowed Web Origins          | https://app.{{ .nuon.install.id }}.nuon.run                   |
+| Application Login URL        | https://app.{{ .nuon.install.id }}.nuon.run/api/auth/logout   |
+| Cross-Origing Authentication | Alow Cross-Origin Authentication (enabled)                    |
 
 https://app.inlkpgxanxqekogyqf2uz902ez.nuon.run/api/auth/callback
 
