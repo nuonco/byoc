@@ -92,50 +92,6 @@ permissions_boundary = "./permissions/provision_boundary.json"
 [[provision_role.policies]]
 managed_policy_name = "AdministratorAccess"
 
-[[provision_role.policies]]
-name = "limit-secrets-manage"
-contents = """
-{
-    "Version": "2012-10-17",
-    "Statement": [
-        {
-            "Sid": "AllowSecretsManagerRDSScoped",
-            "Effect": "Allow",
-            "Action": [
-                "secretsmanager:CreateSecret",
-                "secretsmanager:PutSecretValue",
-                "secretsmanager:TagResource",
-                "secretsmanager:UpdateSecret",
-                "secretsmanager:GetSecretValue",
-                "secretsmanager:GetResourcePolicy",
-                "secretsmanager:DescribeSecret",
-                "secretsmanager:ListSecretVersionIds"
-            ],
-            "Resource": "arn:aws:secretsmanager:{{.nuon.cloud_account.aws.region}}::secret:rds!*"
-        },
-        {
-            "Sid": "AllowSecretsManagerNuonScoped",
-            "Effect": "Allow",
-            "Action": [
-                "secretsmanager:CreateSecret",
-                "secretsmanager:PutSecretValue",
-                "secretsmanager:TagResource",
-                "secretsmanager:UpdateSecret"
-            ],
-            "Resource": "arn:aws:secretsmanager:{{.nuon.cloud_account.aws.region}}::secret:nuon-gen/*"
-        },
-        {
-            "Sid": "AllowListSecrets",
-            "Effect": "Allow",
-            "Action": [
-                "secretsmanager:ListSecrets"
-            ],
-            "Resource": "*"
-        }
-    ]
-}
-"""
-
 
 [deprovision_role]
 name = "{{.nuon.install.id}}-deprovision"
@@ -145,47 +101,3 @@ permissions_boundary = "{}"
 
 [[deprovision_role.policies]]
 managed_policy_name = "AdministratorAccess"
-
-[[deprovision_role.policies]]
-name = "limit-secrets-manage"
-contents = """
-{
-    "Version": "2012-10-17",
-    "Statement": [
-        {
-            "Sid": "AllowSecretsManagerRDSScoped",
-            "Effect": "Allow",
-            "Action": [
-                "secretsmanager:CreateSecret",
-                "secretsmanager:PutSecretValue",
-                "secretsmanager:TagResource",
-                "secretsmanager:UpdateSecret",
-                "secretsmanager:GetSecretValue",
-                "secretsmanager:GetResourcePolicy",
-                "secretsmanager:DescribeSecret",
-                "secretsmanager:ListSecretVersionIds"
-            ],
-            "Resource": "arn:aws:secretsmanager:{{.nuon.cloud_account.aws.region}}::secret:rds!*"
-        },
-        {
-            "Sid": "AllowSecretsManagerNuonScoped",
-            "Effect": "Allow",
-            "Action": [
-                "secretsmanager:CreateSecret",
-                "secretsmanager:PutSecretValue",
-                "secretsmanager:TagResource",
-                "secretsmanager:UpdateSecret"
-            ],
-            "Resource": "arn:aws:secretsmanager:{{.nuon.cloud_account.aws.region}}::secret:nuon-gen/*"
-        },
-        {
-            "Sid": "AllowListSecrets",
-            "Effect": "Allow",
-            "Action": [
-                "secretsmanager:ListSecrets"
-            ],
-            "Resource": "*"
-        }
-    ]
-}
-"""

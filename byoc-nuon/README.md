@@ -1,3 +1,5 @@
+{{ $region := .nuon.cloud_account.aws.region }}
+
 <center>
   <img src="https://mintlify.s3-us-west-1.amazonaws.com/nuoninc/logo/dark.svg"/>
   <h1>BYOC Nuon</h1>
@@ -12,7 +14,7 @@ AWS | 000000000000 | xx-vvvv-00 | vpc-000000
 
 {{ if and .nuon.install_stack.populated }}
 
-## Try it!
+## Installation
 
 {{ if .nuon.install_stack.quick_link_url }}
 
@@ -24,7 +26,8 @@ AWS | 000000000000 | xx-vvvv-00 | vpc-000000
 {{ if .nuon.install_stack.template_url }}
 
 - [AWS CloudFormation Template URL]({{ .nuon.install_stack.template_url }})
-- [Compose Preview](https://us-east-2.console.aws.amazon.com/composer/canvas?region=us-east-2&templateURL={{ .nuon.install_stack.template_url}}&srcConsole=cloudformation)
+- [Compose
+  Preview](https://{{ $region }}.console.aws.amazon.com/composer/canvas?region={{ $region }}&templateURL={{ .nuon.install_stack.template_url}}&srcConsole=cloudformation)
   {{ else }}
 - Generating CloudFormation Template URL
 
@@ -39,8 +42,17 @@ AWS | 000000000000 | xx-vvvv-00 | vpc-000000
 No install stack configured.
 {{ end }}
 
-- [app.{{ .nuon.install.id }}](https://app.{{ .nuon.install.id }})
-- **DB Host**: {{ .nuon.id }}
+## Application
+
+{{ if .nuon.sandbox.outputs }}
+
+| Service    | URL                                                                                                                                      |
+| ---------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
+| Dashboard  | [app.{{ .nuon.sandbox.outputs.nuon_dns.public_domain.name }}](https://app.{{ .nuon.sandbox.outputs.nuon_dns.public_domain.name }})       |
+| CTL API    | [api.{{ .nuon.sandbox.outputs.nuon_dns.public_domain.name }}](https://api.{{ .nuon.sandbox.outputs.nuon_dns.public_domain.name }})       |
+| Runner API | [runner.{{ .nuon.sandbox.outputs.nuon_dns.public_domain.name }}](https://runner.{{ .nuon.sandbox.outputs.nuon_dns.public_domain.name }}) |
+
+{{ else }} Results will be visible after the sandbox is deployed. {{ end }}
 
 ## Github App (wip)
 
@@ -59,14 +71,21 @@ No install stack configured.
 
 Collect the following facts.
 
-| input         | example                              | actual                                              |
-| ------------- | ------------------------------------ | --------------------------------------------------- |
-| auth_audience | https://yourapp.us.auth0.com         | `{{ dig "auth_audience" "-" .nuon.inputs.inputs }}` |
-| auth_issuer   | https://yourapp.us.auth0.com/api/v2/ | `{{ dig "auth_issuer" "-" .nuon.inputs.inputs }}`   |
+| input           | example                              | actual                                                |
+| --------------- | ------------------------------------ | ----------------------------------------------------- |
+| auth_audience   | https://yourapp.us.auth0.com         | `{{ dig "auth_audience" "-" .nuon.inputs.inputs }}`   |
+| auth_issuer_url | https://yourapp.us.auth0.com/api/v2/ | `{{ dig "auth_issuer_url" "-" .nuon.inputs.inputs }}` |
 
-Create an api w/ the following configuration.
+Navigate to `Applications > APIs` and click `+ Create API`. Create an api w/ the following settings.
 
-`Access Token Settings`
+| Setting    | Value                                 |
+| ---------- | ------------------------------------- |
+| Name       | `API Gateway {{.nuon.install.id}}`    |
+| Identifier | `api.{{ .nuon.install.id }}.nuon.run` |
+
+Update the following API configurations:
+
+Section: `Access Token Settings`
 
 | Setting                                    | Value   |
 | ------------------------------------------ | ------- |
@@ -77,7 +96,6 @@ Create an api w/ the following configuration.
 
 Create a `Single Page Application` app. To set up an auth0 app, configure as follows...
 
-1.
 1. Cross-Origin Authentication: enabled
 1. Refresh Token Expiriation:
 
@@ -105,7 +123,24 @@ aws --region {{ .nuon.install_stack.outputs.region }} \
     --alias {{ dig "outputs" "cluster" "name" "$cluster_name" .nuon.sandbox }}
 </pre>
 
-## Sandbox
+## Secrets
+
+The following secrets are created in the CloudFormation stack and then synced into the cluster.
+
+| Secret       | Key | ns      | name |
+| ------------ | --- | ------- | ---- |
+| gith app key |     | ctl-api |      |
+
+## Components
+
+### RDS Clusters
+
+The nuon cluster is created w/ an admin user and a `nuon` db. This admin user is responsible for creating the `ctl_api`
+user and db. This is done in an [action](/actions/).
+
+## State
+
+### Sandbox
 
 {{ if .nuon.sandbox.outputs }}
 
@@ -120,42 +155,44 @@ aws --region {{ .nuon.install_stack.outputs.region }} \
 
 {{ end }}
 
-## Install Stack
+### Install Stack
 
 <details>
   <summary>Install Stack</summary>
   <pre>{{ toPrettyJson .nuon.install_stack }}</pre>
 </details>
 
-## Actions
+### Actions
 
-<details id="state">
+<details>
 <summary>.nuon.actions</summary>
 <pre>{{ toPrettyJson .nuon.actions }}</pre>
 </details>
 
-## Components
+### Components
 
-<details id="state">
+<details>
 <summary>.nuon.components</summary>
 <pre>{{ toPrettyJson .nuon.components }}</pre>
 </details>
 
-## Inputs
+### Inputs
 
-<details id="state">
+<details>
 <summary>.nuon.inputs</summary>
 <pre>{{ toPrettyJson .nuon.inputs }}</pre>
 </details>
 
-## Full State
+### Secrets
 
-<details id="state">
+<details>
+<summary>.nuon.secrets</summary>
+<pre>{{ toPrettyJson .nuon.secrets }}</pre>
+</details>
+
+### Full State
+
+<details>
 <summary>Full Install State</summary>
 <pre>{{ toPrettyJson .nuon }}</pre>
 </details>
-
-## RDS Clusters
-
-The nuon cluster is created w/ an admin user and a `nuon` db. This admin user is responsible for creating the `ctl_api`
-user and db. This is done in an [action](/actions/).
