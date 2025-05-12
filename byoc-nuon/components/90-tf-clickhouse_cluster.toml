@@ -3,6 +3,8 @@ name              = "clickhouse_cluster"
 type              = "terraform_module"
 terraform_version = "1.11.3"
 
+dependencies = ["crd_clickhouse_operator"]
+
 [public_repo]
 repo      = "nuonco/byoc"
 directory = "byoc-nuon/src/components/clickhouse_cluster"
