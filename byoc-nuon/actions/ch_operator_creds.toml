@@ -1,0 +1,31 @@
+#:schema https://api.nuon.co/v1/general/config-schema?source=action
+name    = "ch_operator_creds"
+timeout = "1m30s"
+
+[[triggers]]
+type           = "pre-component-deploy"
+component_name = "crd_clickhouse_operator"
+
+[[triggers]]
+type = "manual"
+
+[[steps]]
+name    = "Copying CH Secret Credentials"
+inline_contents = """
+#!/usr/bin/env sh
+password=`kubectl get -n clickhouse secret clickhouse-operator-pw -o json | jq -r '.data.value' | base64 -d`
+kubectl create -n clickhouse secret generic clickhouse-operator \
+  --save-config    \
+  --dry-run=client \
+  --from-literal=username="clickhouse_operator" \
+  --from-literal=password="$password" \
+  -o yaml | kubectl apply -f -
+"""
+
+[steps.public_repo]
+repo      = "nuonco/byoc"
+directory = "byoc-nuon/src/actions"
+branch    = "main"
+
+[steps.env_vars]
+FOO = "BAR"
