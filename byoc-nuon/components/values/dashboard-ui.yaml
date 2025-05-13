@@ -23,30 +23,30 @@ env:
 
   GITHUB_APP_NAME: "{{ .nuon.inputs.inputs.github_app_name }}"
 
-  NUON_CANCEL_JOBS: true
-  NUON_DEPLOY_DATA: true
-  NUON_INSTALL_REPROVISION: true
-  NUON_INSTALL_UPDATE: true
-  NUON_ORG_DASHBOARD: false
-  NUON_ORG_RUNNER: true
-  NUON_ORG_SETTINGS: false
-  NUON_ORG_SUPPORT: false
-  NUON_RUNNERS: true
-  NUON_WORKFLOWS: true
+  NUON_CANCEL_JOBS: "true"
+  NUON_DEPLOY_DATA: "true"
+  NUON_INSTALL_REPROVISION: "true"
+  NUON_INSTALL_UPDATE: "true"
+  NUON_ORG_DASHBOARD: "false"
+  NUON_ORG_RUNNER: "true"
+  NUON_ORG_SETTINGS: "false"
+  NUON_ORG_SUPPORT: "false"
+  NUON_RUNNERS: "true"
+  NUON_WORKFLOWS: "true"
 
   SEGMENT_WRITE_KEY: "false"
 
-  HTTP_PORT: !!string 4000
+  HTTP_PORT: "4000"
 
 envSecrets:
   - name: "AUTH0_CLIENT_SECRET"
     valueFrom:
       name: dashboard-ui-auth0-client-secret
-      key: auth0_client_secret
+      key: value
   - name: "AUTH0_SECRET"
     valueFrom:
       name: dashboard-ui-auth0-secret
-      key: auth0_secret
+      key: value
   # - name: "NEXT_PUBLIC_DATADOG_CLIENT_TOKEN"
   #   valueFrom:
   #     name: dashboard-ui-datadog-api-key
@@ -66,7 +66,7 @@ ui:
       memory: 256Mi
 
   alb:
-    public_domain: https://app.{{ .nuon.sandbox.outputs.nuon_dns.public_domain.name }}
+    public_domain: "app.{{ .nuon.sandbox.outputs.nuon_dns.public_domain.name }}"
     public_domain_certificate: "{{ .nuon.components.certificate_wildcard_public.outputs.public_domain_certificate_arn }}"
 
   autoscaling:
