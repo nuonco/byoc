@@ -12,6 +12,28 @@ AWS | 000000000000 | xx-vvvv-00 | vpc-000000
   </small>
 </center>
 
+- [Installation](#installation)
+- [Application](#application)
+- [Github App (wip)](#github-app-wip)
+- [Auth0 (wip)](#auth0-wip)
+  - [Create the API.](#create-the-api)
+  - [Create a `Single Page Application` app. To set up an auth0 app, configure as follows...](#create-a-single-page-application-app-to-set-up-an-auth0-app-configure-as-follows)
+  - [Create a `Native Applicaton`, for use by the API.](#create-a-native-applicaton-for-use-by-the-api)
+    - [Configure Inputs & Secrets](#configure-inputs--secrets)
+- [Instructions to Access the EKS Cluster](#instructions-to-access-the-eks-cluster)
+- [Secrets](#secrets)
+  - [Updating Secrets](#updating-secrets)
+- [Components](#components)
+  - [RDS Clusters](#rds-clusters)
+- [State](#state)
+  - [Sandbox](#sandbox)
+  - [Install Stack](#install-stack)
+  - [Actions](#actions)
+  - [Components](#components-1)
+  - [Inputs](#inputs)
+  - [Secrets](#secrets-1)
+  - [Full State](#full-state)
+
 {{ if and .nuon.install_stack.populated }}
 
 ## Installation
@@ -69,51 +91,70 @@ No install stack configured.
 
 ## Auth0 (wip)
 
-Collect the following facts.
+1. At a high level, deploy the install and wait for the sandbox to provision.
+2. Follow these instructions.
+3. Update the Auth Inputs.
+4. Update the secrets (docs pending).
 
-| input           | example                              | actual                                                |
-| --------------- | ------------------------------------ | ----------------------------------------------------- |
-| auth_audience   | https://yourapp.us.auth0.com         | `{{ dig "auth_audience" "-" .nuon.inputs.inputs }}`   |
-| auth_issuer_url | https://yourapp.us.auth0.com/api/v2/ | `{{ dig "auth_issuer_url" "-" .nuon.inputs.inputs }}` |
+You will be need to create three things in Auth0:
 
-Navigate to `Applications > APIs` and click `+ Create API`. Create an api w/ the following settings.
+1. An API
+1. A Single Page Application
+1. A Native Application
 
-| Setting    | Value                                 |
-| ---------- | ------------------------------------- |
-| Name       | `API Gateway {{.nuon.install.id}}`    |
-| Identifier | `api.{{ .nuon.install.id }}.nuon.run` |
+### Create the API.
 
-Update the following API configurations:
+| Setting                                    | Value                             | Section              |
+| ------------------------------------------ | --------------------------------- | -------------------- |
+| Name                                       | API Gateway {{.nuon.install.id}}  | In creation modal.   |
+| Identifier                                 | api.{{.nuon.install.id}}.nuon.run | In creation modal.   |
+| Maximum Access Token Lifetime              | 2592000                           | Access Token Setting |
+| Implicit/Hybrid Flow Access Token Lifetime | 86400                             | Access Token Setting |
+| Allow Skipping User Consent                | true                              | Access Settings      |
 
-Section: `Access Token Settings`
+### Create a `Single Page Application` app.
 
-| Setting                                    | Value   |
-| ------------------------------------------ | ------- |
-| Maximum Token Lifetime                     | 2592000 |
-| Implicit/Hybrid Flow Access Token Lifetime | 7200    |
+Configure as follows...
 
-### For Dashboard API
+| Setting                          | Value                                                         | Section                      |
+| -------------------------------- | ------------------------------------------------------------- | ---------------------------- |
+| Logout URL                       | <blank/>                                                      | Application URIs             |
+| Application Login URL            | <blank/>                                                      | Application URIs             |
+| Allowed Callback URLS            | https://app.{{ .nuon.install.id }}.nuon.run/api/auth/callback | Application URIs             |
+| Application Logout URL           | https://app.{{ .nuon.install.id }}.nuon.run                   | Application URIs             |
+| Allowed Web Origins              | https://app.{{ .nuon.install.id }}.nuon.run                   | Application URIs             |
+| Alow Cross-Origin Authentication | true                                                          | Cross-Origing Authentication |
+| Maxmium Refresh Token Lifetime   | 31557600                                                      | Refresh Token Expiration     |
+| Allow Refresh Token Rotation     | true                                                          | Refresh Token Rotation       |
+| Rotation Overlap Period          | 0                                                             | Refresh Token Rotation       |
 
-Create a `Single Page Application` app. To set up an auth0 app, configure as follows...
+### Create a `Native Applicaton`
 
-1. Cross-Origin Authentication: enabled
-1. Refresh Token Expiriation:
+Configure as follows...
 
-| Setting                      | Value                                                         |
-| ---------------------------- | ------------------------------------------------------------- |
-| Logout URL                   | <blank/>                                                      |
-| Allowed Callback URLS        | https://app.{{ .nuon.install.id }}.nuon.run/api/auth/callback |
-| Application Logout URL       | https://app.{{ .nuon.install.id }}.nuon.run                   |
-| Allowed Web Origins          | https://app.{{ .nuon.install.id }}.nuon.run                   |
-| Application Login URL        | https://app.{{ .nuon.install.id }}.nuon.run/api/auth/logout   |
-| Cross-Origing Authentication | Alow Cross-Origin Authentication (enabled)                    |
+| Setting                           | Value                         | Section                     |
+| --------------------------------- | ----------------------------- | --------------------------- |
+| Name                              | Nuon CLI {{.nuon.install.id}} | In creation modal.          |
+| Allow Cross-Origin Authentication | true                          | Cross-Origin Authentication |
 
-https://app.inlkpgxanxqekogyqf2uz902ez.nuon.run/api/auth/callback
+#### Configure Inputs & Secrets
 
-## Instructions to Access the EKS Cluster
+| App                                 | Value      | Input                         |
+| ----------------------------------- | ---------- | ----------------------------- |
+| `API Gateway {{.nuon.install.id}}`  | Identifier | `auth_audience`               |
+| `app.{{.nuon.install.id}}.nuon.run` | Domain     | `auth_issuer_url`             |
+| `app.{{.nuon.install.id}}.nuon.run` | Client ID  | `auth_client_id_dashboard_ui` |
+| `Nuon CLI {{ .nuon.install.id }}`   | Client ID  | `auth_client_id_dashboard_ui` |
+
+| App                                | Value           | Secret                | Target K8S Secret                               |
+| ---------------------------------- | --------------- | --------------------- | ----------------------------------------------- |
+| `API Gateway {{.nuon.install.id}}` | Client Secret   | `Auth0 Client Secret` | `dashboard-ui.dashboard-ui-auth0-client-secret` |
+| -                                  | `autogenerated` | `Auth0 Secret`        | `dashboard-ui.dashboard-ui-auth0-secret`        |
+
+## Accessing the EKS Cluster
 
 1. Add an access entry for the relevant role.
-2. Grant the following perms: AWSEKSAdmin, AWSClusterAdmin.
+2. Grant the following perms: AWSEKSAdmin, AWSClusterAdmin.gtg
 3. Add the cluster kubeconfig w/ the following command.
 
 <pre>
@@ -130,6 +171,29 @@ The following secrets are created in the CloudFormation stack and then synced in
 | Secret       | Key | ns      | name |
 | ------------ | --- | ------- | ---- |
 | gith app key |     | ctl-api |      |
+
+### Updating Secrets
+
+Secrets can be updated by re-provisioning the stack and updating the secret values.
+
+1. Re-provision Install
+2. Wait for the Install Stack to be udpated.
+3. Open the CF link and copy the template url.
+4. Navigate to your stack and Click "Update Stack" then click on "Create a changeset".
+5. Select "Replace Existing Template" and paste the newly generated S3 URL.
+6. Optionally, review with "View in Infrastructure Composer" but be sure to not make changes as these would be destroyed
+   on the next provison.
+7. Click Next
+8. Review the changes and update the secrets as necessary. Consider adding a description.
+9. Click Next
+10. Click the toggles and click Next.
+11. Review changes and click Submit.
+12. Wait for changes to be calculated then click "Execute change set" in the top right of the window. You may need to
+    click on the refresh button in the top section.
+13. Accept settings, click "Execute change set."
+14. Return to the "Reprovision Install" workflow window or navigate to it from the "History" tab.
+15. After the sandbox reprovisions, your secrets will sync. At this point, you can accept the full reprovision or simply
+    cancel the rest of the workflow.
 
 ## Components
 
