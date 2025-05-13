@@ -1,4 +1,4 @@
-# generated on: 2025-05-12 16:50:54.248074+00:00
+# generated on: 2025-05-13 22:36:36.705402+00:00
 
 # 1-rds-nuon.toml
 #:schema https://api.nuon.co/v1/general/config-schema?source=inputS
@@ -62,7 +62,7 @@ display_name = "Nuon Authentication configuration."
 [[input]]
 name         = "auth_issuer_url"
 description  = "Auth0 Issuer URL"
-default      = "https://{{.nuon.install.id}}.us.auth0.com"
+default      = "https://your-tenant-name.us.auth0.com"
 display_name = "Auth0 Issuer "
 group        = "auth"
 

@@ -7,7 +7,7 @@ display_name = "Nuon Authentication configuration."
 [[input]]
 name         = "auth_issuer_url"
 description  = "Auth0 Issuer URL"
-default      = "https://{{.nuon.install.id}}.us.auth0.com"
+default      = "https://your-tenant-name.us.auth0.com"
 display_name = "Auth0 Issuer "
 group        = "auth"
 
