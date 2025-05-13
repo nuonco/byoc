@@ -8,6 +8,8 @@ locals {
     "ctl_api.runner_heart_beats",
     "ctl_api.runner_health_checks",
   ]
+  cluster_pw_secret_arn = "clickhouse_cluster_pw_${var.install_id}"
+
 }
 
 variable "env" {
@@ -58,10 +60,6 @@ variable "clickhouse_role_arn" {
 #
 # clickhouse
 #
-
-variable "clickhouse_reader_secret_arn" {
-  type = string
-}
 
 variable "cluster_image_repository" {
   type = string

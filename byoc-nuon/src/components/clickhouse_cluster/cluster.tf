@@ -1,38 +1,16 @@
-
-#
-# clickhouse installation
-#
-
 locals {
-  username = jsondecode(data.aws_secretsmanager_secret_version.db_instance_password.secret_string).username
-  password = jsondecode(data.aws_secretsmanager_secret_version.db_instance_password.secret_string).password
+  username = "clickhouse"
+  # secret is a plaintext password
+  #
+  password = data.aws_secretsmanager_secret_version.db_instance_password.secret_string
 }
 
 data "aws_secretsmanager_secret_version" "db_instance_password" {
-  secret_id = var.clickhouse_reader_secret_arn
+  secret_id = local.cluster_pw_secret_arn
 }
-
-# configmap to bootstrap ctl_api database
-#resource "kubectl_manifest" "clickhouse_installation_configmap_bootstrap" {
-#  yaml_body = yamlencode({
-#    "apiVersion" = "v1"
-#    "kind"       = "ConfigMap"
-#    "metadata" = {
-#      "name"      = "bootstrap-configmap"
-#      "namespace" = "clickhouse"
-#    }
-#    "data" = {
-#      "01_create_databases.sh" = <<-EOT
-#      #!/bin/bash
-#      set -e
-#      clickhouse client -n <<-EOSQL
-#      CREATE DATABASE IF NOT EXISTS ctl_api ON CLUSTER 'simple';
-#      EOSQL
-
-#      EOT
-#    }
-#  })
-#}
+#
+# clickhouse cluster (chi resource)
+#
 
 resource "kubectl_manifest" "clickhouse_installation" {
   # generated with tfk8s and the source below
@@ -50,8 +28,9 @@ resource "kubectl_manifest" "clickhouse_installation" {
     "spec" = {
       "configuration" = {
         "users" = {
-          "${local.username}/password_sha256_hex" = sha256(local.password)
           "${local.username}/networks/ip"         = ["0.0.0.0/0"]
+          "${local.username}/password_sha256_hex" = sha256(local.password)
+
         }
         "clusters" = [
           {
