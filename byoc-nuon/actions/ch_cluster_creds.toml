@@ -2,7 +2,7 @@
 # description: copies the secret from the k8s secret synced from Secret Manager during secrets-sync; it copies it into the k8s cluster in two locations; one for the chi and one for ctl-api.
 # TODO: use an internal-input for the username
 # TODO: replace this with an external-secrets SecretStore
-name    = "ch_operator_creds"
+name    = "ch_cluster_creds"
 timeout = "1m"
 
 [[triggers]]
@@ -13,28 +13,14 @@ component_name = "clickhouse_cluster"
 type = "manual"
 
 [[steps]]
-name    = "[ns:clickhouse] copying secrets for ch cluster"
-inline_contents = """
-#!/usr/bin/env sh
-password=`kubectl get -n clickhouse secret clickhouse-cluster-pw -o json | jq -r '.data.value' | base64 -d`
-kubectl create -n clickhouse secret generic clickhouse-cluster \
-  --save-config    \
-  --dry-run=client \
-  --from-literal=username="clickhouse" \
-  --from-literal=password="$password" \
-  -o yaml | kubectl apply -f -
-"""
-
-[[steps]]
 name    = "[ns:ctl-api] copying secrets for ch cluster"
 inline_contents = """
 #!/usr/bin/env sh
 password=`kubectl get -n clickhouse secret clickhouse-cluster-pw -o json | jq -r '.data.value' | base64 -d`
-kubectl create -n ctl-api secret generic clickhouse \
+kubectl create -n ctl-api secret generic clickhouse-cluster-pw \
   --save-config    \
   --dry-run=client \
-  --from-literal=username="clickhouse" \
-  --from-literal=password="$password" \
+  --from-literal=value="$password" \
   -o yaml | kubectl apply -f -
 """
 
