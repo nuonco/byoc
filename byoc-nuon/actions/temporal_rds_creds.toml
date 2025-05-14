@@ -1,0 +1,27 @@
+#:schema https://api.nuon.co/v1/general/config-schema?source=action
+# description: copies the secret from Secrets Manager into the k8s cluster.
+# TODO: replace this with an external-secrets SecretStore
+name    = "temporal_rds_creds"
+timeout = "1m"
+
+[[triggers]]
+type           = "post-component-deploy"
+component_name = "rds_cluster_temporal"
+
+[[triggers]]
+type = "manual"
+
+[[steps]]
+name    = "Copy RDS Secret for Temporal deployment"
+command = "./rds_secrets/import.sh"
+
+[steps.public_repo]
+repo      = "nuonco/byoc"
+directory = "byoc-nuon/src/actions"
+branch    = "fc264885673dcbd0d25e4fb6252e604c1be64fca"
+
+[steps.env_vars]
+SECRET_ARN       = "{{ .nuon.components.rds_cluster_temporal.outputs.db_instance_master_user_secret_arn }}"
+REGION           = "{{ .nuon.install_stack.outputs.region }}"
+TARGET_NAME      = "temporal-db"
+TARGET_NAMESPACE = "temporal"
