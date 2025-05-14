@@ -1,12 +1,5 @@
 locals {
   username = "clickhouse"
-  # secret is a plaintext password
-  #
-  password = data.aws_secretsmanager_secret_version.db_instance_password.secret_string
-}
-
-data "aws_secretsmanager_secret_version" "db_instance_password" {
-  secret_id = local.cluster_pw_secret_arn
 }
 #
 # clickhouse cluster (chi resource)
@@ -28,8 +21,16 @@ resource "kubectl_manifest" "clickhouse_installation" {
     "spec" = {
       "configuration" = {
         "users" = {
-          "${local.username}/networks/ip"         = ["0.0.0.0/0"]
-          "${local.username}/password_sha256_hex" = sha256(local.password)
+          "${local.username}/networks/ip" = ["0.0.0.0/0"]
+          # "${local.username}/password_sha256_hex" = sha256(local.password)
+          "${local.username}/password" = {
+            "valueFrom" = {
+              "secretKeyRef" = {
+                "name" = "clickhouse-cluster-pw"
+                "key"  = "value"
+              }
+            }
+          }
 
         }
         "clusters" = [

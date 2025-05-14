@@ -25,8 +25,9 @@ env:
   CLICKHOUSE_DB_PORT: !!string 9000
   CLICKHOUSE_DB_USE_TLS: "false"
   CLICKHOUSE_DB_HOST: "{{ .nuon.components.clickhouse_cluster.outputs.service }}"
-  CLICKHOUSE_DB_USER: clickhouse
   CLICKHOUSE_DB_NAME: "ctl_api"
+  CLICKHOUSE_DB_USER: clickhouse
+  # NOTE: we use secrets for this
   # CLICKHOUSE_DB_PASSWORD: from-secret
 
   HTTP_PORT: !!string 8081
@@ -73,10 +74,6 @@ envSecrets:
     valueFrom:
       name: github-app-key
       key: value
-  - name: "CLICKHOUSE_DB_PASSWORD"
-    valueFrom:
-      name: clickhouse-cluster-pw
-      key: value
   - name: "TFE_ORGS_WORKSPACE_ID"
     valueFrom:
       name:  tfe-orgs-workspace-id
@@ -85,7 +82,11 @@ envSecrets:
     valueFrom:
       name: tfe-token
       key: value
-  # NOTE: this is going away
+  - name: "CLICKHOUSE_DB_PASSWORD"
+    valueFrom:
+      name: clickhouse-cluster-pw
+      key: value
+  # NOTE: this should be replaced by a user w/ rds_iam
   - name: DB_PASSWORD
     valueFrom:
       name: nuon-db

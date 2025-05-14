@@ -168,9 +168,18 @@ aws --region {{ .nuon.install_stack.outputs.region }} \
 
 The following secrets are created in the CloudFormation stack and then synced into the cluster.
 
-| Secret       | Key | ns      | name |
-| ------------ | --- | ------- | ---- |
-| gith app key |     | ctl-api |      |
+| Secret                   | Key(s)            | Namespace  | name                     | Source                   | Description                                 |
+| ------------------------ | ----------------- | ---------- | ------------------------ | ------------------------ | ------------------------------------------- |
+| clickhouse-operator-pw   | value             | clickhouse | clickhouse-operator-pw   | secrets-sync             | clickhouse operator password                |
+| clickhouse-cluster-ro-pw | value             | clickhouse | clickhouse-cluster-ro-pw | secrets-sync             | clickhouse cluster readonly user password   |
+| clickhouse-cluster-pw    | value             | clickhouse | clickhouse-cluster-pw    | secrets-sync             | clickhouse cluster read/write user password |
+| clickhouse-operator-pw   | username/password | clickhouse | clickhouse-operator      | action:ch_operator_creds | creds in the format the operator wants      |
+| clickhouse-cluster-pw    | value             | ctl-api    | clickhouse-cluster-pw    | action:ch_cluster_creds  | a copy of the secret in the `ctl-api` ns    |
+| github-app-key           | value             | ctl-api    | github-app-key           | secrets-sync             | github app key                              |
+| rds!rds-cluster-nuon     | username/password | ctl-api    | nuon-db                  | action:rds_creds\*       | nuon-db credentials for ctl-api             |
+| rds!rds-cluster-temporal | username/password | temporal   | temporal-db              | action:rds_creds\*       | temporal-db credentials for ctl-api         |
+| tfe-orgs-workspace-id    | value             | ctl-api    | tfe-orgs-workspace-id    | secrets-sync             | tfe org workspace id                        |
+| tfe-token                | value             | ctl-api    | tfe-token                | secrets-sync             | tfe token                                   |
 
 ### Updating Secrets
 
