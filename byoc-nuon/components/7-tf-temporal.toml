@@ -5,7 +5,7 @@ terraform_version = "1.11.3"
 [public_repo]
 repo      = "nuonco/byoc"
 directory = "byoc-nuon/src/components/temporal"
-branch    = "main"
+branch    = "10b3be61fd92a24dd6988ca4a293de5ce75d3b21"
 
 [vars]
 env                                = "prod"
