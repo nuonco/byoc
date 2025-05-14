@@ -22,7 +22,6 @@ cluster_oidc_provider              = "{{ .nuon.install.sandbox.outputs.cluster.o
 
 clickhouse_role_arn          = "{{ .nuon.components.s3_buckets.outputs.clickhouse_bucket_role.arn }}"
 clickhouse_s3_bucket_id      = "{{ .nuon.components.s3_buckets.outputs.clickhouse_bucket.id }}"
-clickhouse_reader_secret_arn = "{{ .nuon.actions.workflows.generate_ch_cluster_secret.outputs.secret.ARN }}"
 cluster_image_repository     = "{{ .nuon.components.img_clickhouse_server.outputs.image.repository }}"
 cluster_image_tag            = "{{ .nuon.components.img_clickhouse_server.outputs.image.tag }}"
 keeper_image_repository      = "{{ .nuon.components.img_clickhouse_keeper.outputs.image.repository }}"

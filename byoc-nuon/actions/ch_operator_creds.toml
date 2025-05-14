@@ -10,7 +10,7 @@ component_name = "crd_clickhouse_operator"
 type = "manual"
 
 [[steps]]
-name    = "Copying CH Secret Credentials"
+name    = "Copying Secrets for CH Operator"
 inline_contents = """
 #!/usr/bin/env sh
 password=`kubectl get -n clickhouse secret clickhouse-operator-pw -o json | jq -r '.data.value' | base64 -d`
@@ -21,11 +21,3 @@ kubectl create -n clickhouse secret generic clickhouse-operator \
   --from-literal=password="$password" \
   -o yaml | kubectl apply -f -
 """
-
-[steps.public_repo]
-repo      = "nuonco/byoc"
-directory = "byoc-nuon/src/actions"
-branch    = "main"
-
-[steps.env_vars]
-FOO = "BAR"
