@@ -137,6 +137,8 @@ Configure as follows...
 | Name                              | Nuon CLI {{.nuon.install.id}} | In creation modal.          |
 | Allow Cross-Origin Authentication | true                          | Cross-Origin Authentication |
 
+Open the advanced settings section and enable the `device_code` grant type.
+
 #### Configure Inputs & Secrets
 
 | App                                 | Value      | Input                         |
@@ -210,6 +212,28 @@ Secrets can be updated by re-provisioning the stack and updating the secret valu
 
 The nuon cluster is created w/ an admin user and a `nuon` db. This admin user is responsible for creating the `ctl_api`
 user and db. This is done in an [action](/actions/).
+
+## CLI
+
+Install the latest version of the nuon cli ([docs](https://docs.nuon.co/cli#cli)).
+
+```bash
+brew install nuonco/tap/nuon
+```
+
+Update your `~/.nuon` config or create one specifically for this byoc install (e.g. `~/.nuon.byoc`).
+
+Configure as follows:
+
+```yaml
+api_url: https://api.{{ .nuon.install.id }}.nuon.run
+```
+
+Log in:
+
+```yaml
+nuon -f ~/.nuon.byoc login
+```
 
 ## State
 
