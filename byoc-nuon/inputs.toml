@@ -1,4 +1,4 @@
-# generated on: 2025-05-14 18:47:39.975220+00:00
+# generated on: 2025-05-15 02:56:12.498835+00:00
 
 # 1-rds-nuon.toml
 #:schema https://api.nuon.co/v1/general/config-schema?source=inputS
@@ -130,3 +130,18 @@ description  = "The github app client id."
 default      = "xxxxxxxxxxxxxxxxxxxx"
 display_name = "GitHub App Client ID"
 group        = "github"
+
+
+# 7-dns.toml
+#:schema https://api.nuon.co/v1/general/config-schema?source=inputs
+[[group]]
+name         = "dns"
+description  = "DNS Configrations"
+display_name = "Configurations for the root domain for Route53"
+
+[[input]]
+name         = "root_domain"
+description  = "The root domain. Services will be made available at subdomains of this root domain."
+default      = "byoc.for.everyone.example.com"
+display_name = "Root Domain"
+group        = "dns"
