@@ -1,0 +1,24 @@
+#:schema https://api.nuon.co/v1/general/config-schema?source=action
+# description: copies the secret from Secrets Manager into the k8s cluster.
+# TODO: replace this with an external-secrets SecretStore
+name    = "preflight"
+timeout = "1m"
+
+[[triggers]]
+type           = "post-sandbox-run"
+
+[[triggers]]
+type = "manual"
+
+[[steps]]
+name    = "Ensure Secrets Access"
+command = "./preflight/ensure-secrets-access.sh"
+
+[steps.public_repo]
+repo      = "nuonco/byoc"
+directory = "byoc-nuon/src/actions"
+branch    = "fc264885673dcbd0d25e4fb6252e604c1be64fca"
+
+[steps.env_vars]
+AUTH0_CLIENT_SECRET_ARN = "auth0_client_secret_{{ .nuon.install.id }}_arn" # cannot read
+REGION                  = "{{ .nuon.install_stack.outputs.region }}"
