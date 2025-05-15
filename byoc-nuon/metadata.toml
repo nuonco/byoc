@@ -1,5 +1,5 @@
 version = "v2"
 
-description = "Retool seed app"
-display_name = "Retool seed app"
+description  = "Nuon - Bring your own cloud"
+display_name = "BYOC Nuon"
 readme       = "./readme.md"
