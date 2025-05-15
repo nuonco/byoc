@@ -4,7 +4,7 @@ type           = "helm_chart"
 chart_name     = "ctl-api"
 namespace      = "ctl-api"
 storage_driver = "configmap"
-dependencies   = ["rds_cluster_nuon"]
+dependencies   = ["rds_cluster_nuon", "ctl_api_init_db"]
 
 [public_repo]
 repo      = "nuonco/byoc"
