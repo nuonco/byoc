@@ -13,6 +13,3 @@ internal_root_domain = "{{.nuon.install.id}}.internal.nuon.run"
 
 [[var_file]]
 contents = "./sandbox.tfvars"
-
-[[var_file]]
-contents = "./sandbox-rbac.tfvars"
