@@ -1,22 +1,23 @@
 #!/usr/bin/env bash
 
-set -e
 set -u
 
 region="$REGION"
 auth0_client_secret_arn="$AUTH0_CLIENT_SECRET_ARN"
 
 
-# ensure we can read a secret
-echo "[ctl_api init] kubectl auth whoami"
-echo "pwd: "`pwd`
-kubectl auth whoami
+aws --region $region sts get-caller-identity
 
+# ensure we can NOT read this specific secret
 validated=""
-# ensure we cannot read a secret
+echo "attempting to fetch secret: expected to fail"
 aws --region $region secretsmanager get-secret-value --secret-id="$auth0_client_secret_arn"
-if [[ "$?" != "0"]]; then
-  validated="true"
+exitCode=$?
+if [ $exitCode -eq 0 ]; then
+  echo "failed to fetch secret (exit code $exitCode)"
+  exit 0
 else
-  validate="false"
+  echo "failed to fail to fetch secret"
+  echo "review permissions.toml to ensure permissions are set appropriately."
+  exit 1
 fi
