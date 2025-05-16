@@ -2,4 +2,4 @@ version = "v2"
 
 description  = "Nuon - Bring your own cloud"
 display_name = "BYOC Nuon"
-readme       = "./readme.md"
+readme       = "./README.md"
