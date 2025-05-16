@@ -23,5 +23,5 @@ branch    = "main"
 [steps.env_vars]
 SECRET_ARN       = "{{ .nuon.components.rds_cluster_nuon.outputs.db_instance_master_user_secret_arn }}"
 REGION           = "{{ .nuon.install_stack.outputs.region }}"
-TARGET_NAME      = "nuon-dB"
+TARGET_NAME      = "nuon-db"
 TARGET_NAMESPACE = "ctl-api"
