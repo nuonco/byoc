@@ -6,7 +6,7 @@ terraform_version = "1.11.3"
 [public_repo]
 directory = "aws/rds-cluster"
 repo      = "nuonco/components"
-branch    = "294ddb19b3bc0b6bf2a945efe9bafacbdb8e5b7a"
+branch    = "main"
 
 [vars]
 identifier      = "nuon-{{ .nuon.install.id }}"
