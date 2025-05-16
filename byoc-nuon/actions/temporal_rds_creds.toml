@@ -18,7 +18,7 @@ command = "./rds_secrets/import.sh"
 [steps.public_repo]
 repo      = "nuonco/byoc"
 directory = "byoc-nuon/src/actions"
-branch    = "fc264885673dcbd0d25e4fb6252e604c1be64fca"
+branch    = "main"
 
 [steps.env_vars]
 SECRET_ARN       = "{{ .nuon.components.rds_cluster_temporal.outputs.db_instance_master_user_secret_arn }}"
