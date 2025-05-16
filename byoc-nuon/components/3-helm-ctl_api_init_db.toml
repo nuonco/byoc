@@ -4,7 +4,7 @@ chart_name     = "clt-api-init"
 storage_driver = "configmap"
 namespace      = "ctl-api"
 
-dependencies   = ["rds_cluster_nuon"]
+dependencies   = ["rds_cluster_nuon", "karpenter_nodepools"]
 
 [public_repo]
 repo      = "nuonco/byoc"
