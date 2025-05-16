@@ -29,17 +29,6 @@ contents = """
             "Resource": "arn:aws:secretsmanager:{{.nuon.cloud_account.aws.region}}::secret:rds!*"
         },
         {
-            "Sid": "AllowSecretsManagerNuonScoped",
-            "Effect": "Allow",
-            "Action": [
-                "secretsmanager:CreateSecret",
-                "secretsmanager:PutSecretValue",
-                "secretsmanager:TagResource",
-                "secretsmanager:UpdateSecret"
-            ],
-            "Resource": "arn:aws:secretsmanager:{{.nuon.cloud_account.aws.region}}::secret:nuon-gen/*"
-        },
-        {
             "Sid": "AllowListSecrets",
             "Effect": "Allow",
             "Action": [
