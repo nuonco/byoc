@@ -13,4 +13,9 @@ maintenance_role_eks_access_entry_policy_associations = {
   }
 }
 
-additional_namespaces = ["ctl-api", "dashboard-ui"]
+additional_namespaces = [
+  "temporal",
+  "clickhouse",
+  "ctl-api",
+  "dashboard-ui",
+]
