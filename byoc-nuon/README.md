@@ -1,11 +1,13 @@
 {{ $region := .nuon.cloud_account.aws.region }}
+{{ $public_domain  := (dig "outputs" "nuon_dns" "public_domain"  "name" .nuon.inputs.inputs.root_domain .nuon.sandbox) }}
+{{ $private_domain := (dig "outputs" "nuon_dns" "private_domain" "name" .nuon.inputs.inputs.root_domain .nuon.sandbox) }}
 
 <center>
   <img src="https://mintlify.s3-us-west-1.amazonaws.com/nuoninc/logo/dark.svg"/>
   <h1>BYOC Nuon</h1>
   <small>
 {{ if .nuon.install_stack.outputs }}
-AWS | {{ dig "account_id" "000000000000" .nuon.install_stack.outputs }} | {{ dig "region" "xx-vvvv-00" .nuon.install_stack.outputs }} | {{ dig "vpc_id" "vpc-000000" .nuon.install_stack.outputs }}
+AWS | {{ dig "account_id" "000000000000" .nuon.install_stack.outputs }} | {{ $region }} | {{ dig "vpc_id" "vpc-000000" .nuon.install_stack.outputs }}
 {{ else }}
 AWS | 000000000000 | xx-vvvv-00 | vpc-000000
 {{ end }}
@@ -13,18 +15,21 @@ AWS | 000000000000 | xx-vvvv-00 | vpc-000000
 </center>
 
 - [Installation](#installation)
-- [Application](#application)
-- [Github App (wip)](#github-app-wip)
-- [Auth0 (wip)](#auth0-wip)
-  - [Create the API.](#create-the-api)
-  - [Create a `Single Page Application` app.](#create-a-single-page-application-app)
-  - [Create a `Native Applicaton`](#create-a-native-applicaton)
-    - [Configure Inputs & Secrets](#configure-inputs--secrets)
+- [Application Links](#application-links)
+- [Configuration](#configuration)
+  - [DNS (wip)](#dns-wip)
+  - [Github App (wip)](#github-app-wip)
+  - [Auth0 (wip)](#auth0-wip)
+    - [Create the API.](#create-the-api)
+    - [Create a `Single Page Application` app.](#create-a-single-page-application-app)
+    - [Create a `Native Applicaton`](#create-a-native-applicaton)
+  - [Configure Inputs & Secrets](#configure-inputs--secrets)
 - [Accessing the EKS Cluster](#accessing-the-eks-cluster)
 - [Secrets](#secrets)
   - [Updating Secrets](#updating-secrets)
 - [Components](#components)
   - [RDS Clusters](#rds-clusters)
+- [CLI](#cli)
 - [State](#state)
   - [Sandbox](#sandbox)
   - [Install Stack](#install-stack)
@@ -64,19 +69,53 @@ AWS | 000000000000 | xx-vvvv-00 | vpc-000000
 No install stack configured.
 {{ end }}
 
-## Application
+## Application Links
 
 {{ if .nuon.sandbox.outputs }}
 
-| Service    | URL                                                                                                                                      |
-| ---------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
-| Dashboard  | [app.{{ .nuon.sandbox.outputs.nuon_dns.public_domain.name }}](https://app.{{ .nuon.sandbox.outputs.nuon_dns.public_domain.name }})       |
-| CTL API    | [api.{{ .nuon.sandbox.outputs.nuon_dns.public_domain.name }}](https://api.{{ .nuon.sandbox.outputs.nuon_dns.public_domain.name }})       |
-| Runner API | [runner.{{ .nuon.sandbox.outputs.nuon_dns.public_domain.name }}](https://runner.{{ .nuon.sandbox.outputs.nuon_dns.public_domain.name }}) |
+| Service    | URL                                                                |
+| ---------- | ------------------------------------------------------------------ |
+| Dashboard  | [app.{{ $public_domain }}](https://app.{{ $public_domain }})       |
+| CTL API    | [api.{{ $public_domain }}](https://api.{{ $public_domain }})       |
+| Runner API | [runner.{{ $public_domain }}](https://runner.{{ $public_domain }}) |
 
-{{ else }} Results will be visible after the sandbox is deployed. {{ end }}
+{{ else }}
 
-## Github App (wip)
+> [!NOTE] Results will be visible after the sandbox is deployed.
+
+{{ end }}
+
+## Configuration
+
+### DNS (wip)
+
+Configure DNS for your `root_domain` to point to the Route53 Zone created in the sandbox.
+
+{{ if (and .nuon.sandbox.populated .nuon.sandbox.outputs) }}
+
+| Attribute   | Value                                                                                          |
+| ----------- | ---------------------------------------------------------------------------------------------- |
+| Domain Name | {{ $public_domain }}                                                                           |
+| Zone ID     | {{ dig "outputs" "nuon_dns" "public_domain" "zone_id" "Z00XXXXXXXXXXXXXXXXXX" .nuon.sandbox }} |
+
+<!-- prettier-ignore-start -->
+| Value     | Record Type | priority |
+| --------- | ----------- | -------- |
+{{ range $i, $ns := .nuon.sandbox.outputs.nuon_dns.public_domain.nameservers }}| {{ $ns }} | NS          | {{$i}}   |
+{{ end }}
+<!-- prettier-ignore-end -->
+
+{{ else }}
+
+> [!WARNING] Waiting on Sandbox Provision. Once the Sandbox is ready, results will be visible here.
+
+{{ end }}
+
+Additional Documentation
+
+- [Creating a subdomain that uses Amazon Route 53 as the DNS service without migrating the parent domain](https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/CreatingNewSubdomain.html)
+
+### Github App (wip)
 
 1. Create an app.
 2. Configure w/ details below.
@@ -89,7 +128,7 @@ No install stack configured.
 | Homepage URL | https://app.{{ .nuon.install.id }}.nuon.run         |
 | Setup URL    | https://app.{{ .nuon.install.id }}.nuon.run/connect |
 
-## Auth0 (wip)
+### Auth0 (wip)
 
 1. At a high level, deploy the install and wait for the sandbox to provision.
 2. Follow these instructions.
@@ -102,7 +141,7 @@ You will be need to create three things in Auth0:
 1. A Single Page Application
 1. A Native Application
 
-### Create the API.
+#### Create the API.
 
 | Setting                                    | Value                             | Section              |
 | ------------------------------------------ | --------------------------------- | -------------------- |
@@ -112,7 +151,7 @@ You will be need to create three things in Auth0:
 | Implicit/Hybrid Flow Access Token Lifetime | 86400                             | Access Token Setting |
 | Allow Skipping User Consent                | true                              | Access Settings      |
 
-### Create a `Single Page Application` app.
+#### Create a `Single Page Application` app.
 
 Configure as follows...
 
@@ -128,7 +167,7 @@ Configure as follows...
 | Allow Refresh Token Rotation     | true                                                          | Refresh Token Rotation       |
 | Rotation Overlap Period          | 0                                                             | Refresh Token Rotation       |
 
-### Create a `Native Applicaton`
+#### Create a `Native Applicaton`
 
 Configure as follows...
 
@@ -139,7 +178,7 @@ Configure as follows...
 
 Open the advanced settings section and enable the `device_code` grant type.
 
-#### Configure Inputs & Secrets
+### Configure Inputs & Secrets
 
 | App                                 | Value      | Input                         |
 | ----------------------------------- | ---------- | ----------------------------- |
