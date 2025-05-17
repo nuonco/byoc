@@ -87,6 +87,9 @@ No install stack configured.
 
 ## Configuration
 
+{{ $public_domain  := (dig "outputs" "nuon_dns" "public_domain"  "name" .nuon.inputs.inputs.root_domain .nuon.sandbox) }}
+{{ $private_domain := (dig "outputs" "nuon_dns" "private_domain" "name" .nuon.inputs.inputs.root_domain .nuon.sandbox) }}
+
 ### DNS (wip)
 
 Configure DNS for your `root_domain` to point to the Route53 Zone created in the sandbox.
@@ -123,10 +126,10 @@ Additional Documentation
 4. Use the pem key as the value for the github action secret.
 5. Out of band, ask us about a TFE secret (maybe, idk)?
 
-| URL          |                                                     |
-| ------------ | --------------------------------------------------- |
-| Homepage URL | https://app.{{ .nuon.install.id }}.nuon.run         |
-| Setup URL    | https://app.{{ .nuon.install.id }}.nuon.run/connect |
+| URL          |                                          |
+| ------------ | ---------------------------------------- |
+| Homepage URL | https://app.{{ $public_domain }}         |
+| Setup URL    | https://app.{{ $public_domain }}/connect |
 
 ### Auth0 (wip)
 
@@ -143,49 +146,51 @@ You will be need to create three things in Auth0:
 
 #### Create the API.
 
-| Setting                                    | Value                             | Section              |
-| ------------------------------------------ | --------------------------------- | -------------------- |
-| Name                                       | API Gateway {{.nuon.install.id}}  | In creation modal.   |
-| Identifier                                 | api.{{.nuon.install.id}}.nuon.run | In creation modal.   |
-| Maximum Access Token Lifetime              | 2592000                           | Access Token Setting |
-| Implicit/Hybrid Flow Access Token Lifetime | 86400                             | Access Token Setting |
-| Allow Skipping User Consent                | true                              | Access Settings      |
+| Setting                                    | Value                            | Section              |
+| ------------------------------------------ | -------------------------------- | -------------------- |
+| Name                                       | API Gateway {{.nuon.install.id}} | In creation modal.   |
+| Identifier                                 | api.{{ $public_domain }}         | In creation modal.   |
+| Maximum Access Token Lifetime              | 2592000                          | Access Token Setting |
+| Implicit/Hybrid Flow Access Token Lifetime | 86400                            | Access Token Setting |
+| Allow Skipping User Consent                | true                             | Access Settings      |
 
 #### Create a `Single Page Application` app.
 
 Configure as follows...
 
-| Setting                          | Value                                                         | Section                      |
-| -------------------------------- | ------------------------------------------------------------- | ---------------------------- |
-| Logout URL                       | <blank/>                                                      | Application URIs             |
-| Application Login URL            | <blank/>                                                      | Application URIs             |
-| Allowed Callback URLS            | https://app.{{ .nuon.install.id }}.nuon.run/api/auth/callback | Application URIs             |
-| Application Logout URL           | https://app.{{ .nuon.install.id }}.nuon.run                   | Application URIs             |
-| Allowed Web Origins              | https://app.{{ .nuon.install.id }}.nuon.run                   | Application URIs             |
-| Alow Cross-Origin Authentication | true                                                          | Cross-Origing Authentication |
-| Maxmium Refresh Token Lifetime   | 31557600                                                      | Refresh Token Expiration     |
-| Allow Refresh Token Rotation     | true                                                          | Refresh Token Rotation       |
-| Rotation Overlap Period          | 0                                                             | Refresh Token Rotation       |
+| Setting                          | Value                                              | Section                      |
+| -------------------------------- | -------------------------------------------------- | ---------------------------- |
+| Name                             | Nuon App - {{ .nuon.install.name }}                | In creation modal.           |
+| Logout URL                       | <blank/>                                           | Application URIs             |
+| Application Login URL            | <blank/>                                           | Application URIs             |
+| Allowed Callback URLS            | https://app.{{ $public_domain }}/api/auth/callback | Application URIs             |
+| Application Logout URL           | https://app.{{ $public_domain }}                   | Application URIs             |
+| Allowed Web Origins              | https://app.{{ $public_domain }}                   | Application URIs             |
+| Alow Cross-Origin Authentication | true                                               | Cross-Origing Authentication |
+| Maxmium Refresh Token Lifetime   | 31557600                                           | Refresh Token Expiration     |
+| Allow Refresh Token Rotation     | true                                               | Refresh Token Rotation       |
+| Rotation Overlap Period          | 0                                                  | Refresh Token Rotation       |
 
 #### Create a `Native Applicaton`
 
 Configure as follows...
 
-| Setting                           | Value                         | Section                     |
-| --------------------------------- | ----------------------------- | --------------------------- |
-| Name                              | Nuon CLI {{.nuon.install.id}} | In creation modal.          |
-| Allow Cross-Origin Authentication | true                          | Cross-Origin Authentication |
+| Setting                           | Value                                        | Section                     |
+| --------------------------------- | -------------------------------------------- | --------------------------- |
+| Name                              | Nuon CLI - {{ .nuon.install.name }}          | In creation modal.          |
+| Description                       | For BYOC Nuon Install {{ .nuon.install.id }} | In creation modal.          |
+| Allow Cross-Origin Authentication | true                                         | Cross-Origin Authentication |
 
 Open the advanced settings section and enable the `device_code` grant type.
 
 ### Configure Inputs & Secrets
 
-| App                                 | Value      | Input                         |
-| ----------------------------------- | ---------- | ----------------------------- |
-| `API Gateway {{.nuon.install.id}}`  | Identifier | `auth_audience`               |
-| `app.{{.nuon.install.id}}.nuon.run` | Domain     | `auth_issuer_url`             |
-| `app.{{.nuon.install.id}}.nuon.run` | Client ID  | `auth_client_id_dashboard_ui` |
-| `Nuon CLI {{ .nuon.install.id }}`   | Client ID  | `auth_client_id_dashboard_ui` |
+| App                                | Value      | Input                         |
+| ---------------------------------- | ---------- | ----------------------------- |
+| `API Gateway {{.nuon.install.id}}` | Identifier | `auth_audience`               |
+| `app.{{ $public_domain }}`         | Domain     | `auth_issuer_url`             |
+| `app.{{ $public_domain }}`         | Client ID  | `auth_client_id_dashboard_ui` |
+| `Nuon CLI {{ .nuon.install.id }}`  | Client ID  | `auth_client_id_dashboard_ui` |
 
 | App                                | Value           | Secret                | Target K8S Secret                               |
 | ---------------------------------- | --------------- | --------------------- | ----------------------------------------------- |
@@ -209,18 +214,20 @@ aws --region {{ .nuon.install_stack.outputs.region }} \
 
 The following secrets are created in the CloudFormation stack and then synced into the cluster.
 
-| Secret                   | Key(s)            | Namespace  | name                     | Source                    | Description                                 |
-| ------------------------ | ----------------- | ---------- | ------------------------ | ------------------------- | ------------------------------------------- |
-| clickhouse-operator-pw   | value             | clickhouse | clickhouse-operator-pw   | secrets-sync              | clickhouse operator password                |
-| clickhouse-cluster-ro-pw | value             | clickhouse | clickhouse-cluster-ro-pw | secrets-sync              | clickhouse cluster readonly user password   |
-| clickhouse-cluster-pw    | value             | clickhouse | clickhouse-cluster-pw    | secrets-sync              | clickhouse cluster read/write user password |
-| clickhouse-operator-pw   | username/password | clickhouse | clickhouse-operator      | action:ch_operator_creds  | creds in the format the operator wants      |
-| clickhouse-cluster-pw    | value             | ctl-api    | clickhouse-cluster-pw    | action:ch_cluster_creds   | a copy of the secret in the `ctl-api` ns    |
-| github-app-key           | value             | ctl-api    | github-app-key           | secrets-sync              | github app key                              |
-| rds!rds-cluster-nuon     | username/password | ctl-api    | nuon-db                  | action:nuon_rds_creds     | nuon-db credentials for ctl-api             |
-| rds!rds-cluster-temporal | username/password | temporal   | temporal-db              | action:temporal_rds_creds | temporal-db credentials for temporal        |
-| tfe-orgs-workspace-id    | value             | ctl-api    | tfe-orgs-workspace-id    | secrets-sync              | tfe org workspace id                        |
-| tfe-token                | value             | ctl-api    | tfe-token                | secrets-sync              | tfe token                                   |
+| Secret                   | Key(s)            | Namespace    | name                     | Source                    | Description                                 |
+| ------------------------ | ----------------- | ------------ | ------------------------ | ------------------------- | ------------------------------------------- |
+| clickhouse-operator-pw   | value             | clickhouse   | clickhouse-operator-pw   | secrets-sync              | clickhouse operator password                |
+| clickhouse-cluster-ro-pw | value             | clickhouse   | clickhouse-cluster-ro-pw | secrets-sync              | clickhouse cluster readonly user password   |
+| clickhouse-cluster-pw    | value             | clickhouse   | clickhouse-cluster-pw    | secrets-sync              | clickhouse cluster read/write user password |
+| clickhouse-operator-pw   | username/password | clickhouse   | clickhouse-operator      | action:ch_operator_creds  | creds in the format the operator wants      |
+| clickhouse-cluster-pw    | value             | ctl-api      | clickhouse-cluster-pw    | action:ch_cluster_creds   | a copy of the secret in the `ctl-api` ns    |
+| github-app-key           | value             | ctl-api      | github-app-key           | secrets-sync              | github app key                              |
+| auth0_secret             | value             | dashboard-ui | auth0-secret             | secrets-sync              | Auth0 secret for the dashboard-ui           |
+| auth0_client_secret      | value             | dashboard-ui | auth0-client-secret      | secrets-sync              | Auto-generated cookie secret                |
+| rds!rds-cluster-nuon     | username/password | ctl-api      | nuon-db                  | action:nuon_rds_creds     | nuon-db credentials for ctl-api             |
+| rds!rds-cluster-temporal | username/password | temporal     | temporal-db              | action:temporal_rds_creds | temporal-db credentials for temporal        |
+| tfe-orgs-workspace-id    | value             | ctl-api      | tfe-orgs-workspace-id    | secrets-sync              | tfe org workspace id                        |
+| tfe-token                | value             | ctl-api      | tfe-token                | secrets-sync              | tfe token                                   |
 
 ### Updating Secrets
 
@@ -265,7 +272,7 @@ Update your `~/.nuon` config or create one specifically for this byoc install (e
 Configure as follows:
 
 ```yaml
-api_url: https://api.{{ .nuon.install.id }}.nuon.run
+api_url: https://api.{{ $public_domain }}
 ```
 
 Log in:
