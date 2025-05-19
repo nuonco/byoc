@@ -1,0 +1,55 @@
+﻿Name,Vendor Impact,Likely Vendor Remediation/Steps,End Customer Impact,Tier
+Public API Errors,One or more pieces of the Nuon product are probably non-functional. True impact depends on actual cause and area of product.,Escalation with Nuon Support. This is likely due to changes within the Nuon codebase.,"End Customers should generally not have strong impact, unless parts of Vendor functionality relies upon the Nuon public API. However, the cause of the API errors might be failure of core infrastructure, which may negatively impact the end-customer experience.",Tier 1
+Temporal workers are overloaded,"Critical worker state could mean that behavior that the platform does would degrade in performance (as jobs take longer and longer to get picked up by an impacted worker pool) or not get enqueued to be performed at all (as jobs are ""stuck"" and cannot progress).","Page Nuon for assistance.
+
+Short term fixes.
+Highly dependent on the actual issue that creates the condition, but if it is the case that workers are simply taking a prolonged amount of time to perform jobs, then the worker pools can be scaled out to create more parallelism
+
+If it's believed that there are problemmatic jobs in the event loops, Temporal Event loops can be safely restarted without issue. (TKTK add in steps to do this in a BYOC Nuon).","No impact
+",Tier 1
+Runner API Errors,"The runner being unable to communicate with ctl-api can cause varying levels of cascading failure in the runner, depending on which communications are failing.
+
+This could mean that jobs are not correctly picked up by the runners, meaning an end customer could be in a dead stick situation. ","Dependent on the situation. If this is a network partition, then resolve the partition.
+
+If this is an unhealthy runner, instruct end-customer to terminate the offending runner in environment. This is safe- there is an accompanying AutoScalingGroup that will recreate the runner and phone back to the Nuon API.",Dead Stick- An unhealthy runner will not be able to work correctly with the Nuon Control API and this may result in failed upgrades/healthchecks/actions.,Tier 1
+Temporal server is overloaded,"If Temporal comes under too much load, the whole system can slow down.
+
+Temporal is responsible for the majority of business logic in the Nuon Platform. ","Dependent on cause. Temporal can be scaled, but there might be an underlying cause that is creating an error state, which creates the load.",Degraded/No ability to monitor or control the end user installations.,Tier 1
+Expected event loops are not running,"If an event loop for an object isn't running, then all system behaviors related to that object are halted.","Escalate to Nuon Suppport
+
+Event loops are durable and can be restarted, though an analysis of why the event loops stopped should be done. TKTK insert instructions on how to restart, dependent on how we decide to expose the Temporal","Dependent on the event loop that is failing. Any behavior that was reliant on the failing event loop will not function correctly. 
+
+This should not affect the end-customer deployment from a stability standpoint other than failing healthchecks and possible loss of telemetry",Tier 1
+Runners are unhealthy,"An unhealthy runner cannot execute jobs. An unhealthy org runner cannot create apps or installs, and an unhealthy install runner cannot provision installs or run actions, etc.","1. A runner can be restarted from the install's runner panel. https://app.nuon.co/[orgid]/installs/[installid]/runner. Look on the right side of the screen.
+2. A runner can be safely terminated from the AWS console- it's covered by an autoscaling group that will automatically recreate the runner. This will automatically phone home and be associated with the correct install
+
+It is possible that there is some kind of systemic problem will simply lock up the runner again. If so, please escalate with Nuon.",Dead Stick- An unhealthy runner will not be able to work correctly with the Nuon Control API and this may result in failed upgrades/healthchecks/actions.,Tier 1
+Sustained high levels of workflow panics,"Too many panics in workflows means work cannot get done, and affected users will be unable to complete some or all standard actions.
+
+Some workflow panics and spikes are expected, as they will occur when there are non-deterministic changes to workflows (such as after a new installation of a version).
+
+But sustained numbers of panics are a cause for concern. They usually indicate a bug.","Escalate to Nuon.
+","Temporal manages most of the business logic of Nuon's platform, which means you may have degraded ability to control areas where there are workflow panics.
+",Tier 1
+Runner Jobs Not Being Picked Up,A particular install or build might be in an error state and not progress normally. ,"1. A runner can be restarted from the install's runner panel. https://app.nuon.co/[orgid]/installs/[installid]/runner. Look on the right side of the screen.
+2. A runner can be safely terminated from the AWS console- it's covered by an autoscaling group that will automatically recreate the runner. This will automatically phone home and be associated with the correct install
+
+It is possible that there is some kind of systemic problem will simply lock up the runner again. If so, please escalate with Nuon.",Dead Stick- An unhealthy runner will not be able to work correctly with the Nuon Control API and this may result in failed upgrades/healthchecks/actions.,Tier 2
+CTL-API RDS overloaded,"An overloaded primary DB means EVERYTHING nuon does slows down, or starts failing in novel ways.","An overloaded primary DB means EVERYTHING nuon does slows down, or starts failing in novel ways.","An overloaded primary DB means EVERYTHING nuon does slows down, or starts failing in novel ways.",Tier 2
+Spike in Activity Errors,"Some number of activity errors are normal. A sudden spike in error levels usually indicates a buggy activity was introduced. The exact impact will vary on the intensity and the locale of the error, but in general, expect the subject of the error to not be functioning properly.","If there is a sustained period of activity errors, if there was a recent deploy to the Nuon platform, you should escalate to Nuon. Otherwise, if no changes to the platform happened, you might investigate if there is an infrastructure level failure or some kind of specific and localized error with a particular activity.","End users will probably notice nothing, unless there are specific parts of their product experience that are tied to Nuon.",Tier 2
+Runner job queue backed up,Jobs may have an unacceptable amount of latency as jobs get piled up. ,"It's possible that temporal does not have enough workers to process the queue effectively.
+1. Scale up the affected worker namespace
+2. It's possible that there is a short term burst of activity that created resource exhaustion that will be cleared over time.","End users will probably notice nothing, unless there are specific parts of their product experience that are tied to Nuon.",Tier 2
+Runner Health checks are _not_ being recorded for live runners,Not having a health check at all for a runner is primarily an exception state that would cause runner health telemetry to become unreliable.,"1. A runner can be restarted from the install's runner panel. https://app.nuon.co/[orgid]/installs/[installid]/runner. Look on the right side of the screen.
+2. A runner can be safely terminated from the AWS console- it's covered by an autoscaling group that will automatically recreate the runner. This will automatically phone home and be associated with the correct install
+
+It is possible that there is some kind of systemic problem will simply lock up the runner again. If so, please escalate with Nuon.",Dead Stick- An unhealthy runner will not be able to work correctly with the Nuon Control API and this may result in failed upgrades/healthchecks/actions.,Tier 2
+General event loops are not running,"We rely on the general event loops and workflows for periodic system maintenance and monitoring. If these workflows are not active, our system will gradually degrade.",Restart all event loops. Event loops should recover gracefully,"End users will probably notice nothing, unless there are specific parts of their product experience that are tied to Nuon.",Tier 2
+Abnormally high runner job failure rate,Runner jobs failing at an abnormally high rate may indicate a user-impacting bug in the runner itself.,Escalate to Nuon. Mostly likely cause of this is a change to runner logic that is buggy.,"At worst, end customers may need to reprovision a runner to resolve the problem (e.g. terminate from their end).",Tier 2
+Containers are crashlooping,"If any of our production containers are in CrashLoopBackOff, it means some aspect of our service is significantly degraded. 
+
+Underlying cause is usually either OOM/resource usage, or a change introduced a bug.",Escalate to Nuon. Something has happened that was unexpected.,Unlikely to affect end customer.,Tier 2
+Container counts are at maximum,"There is no longer any headroom to scale the system. If the platform is not at resource exhaustion, this is not something to worry about, but this could indicate an unforeseen issue in the system. ","If things are stable and the operating patterns seem normal, there is nothing to worry about. However, if things seem out of band, best to escalate to Nuon for assistance.","Unlikely to have impact.
+",Tier 2
+Zombie event loops are running,"Sometimes, event loops don't get shut down after their underlying object goes away. This may cause additional system load, or create spurious noise in telemetry data.","Kill all event loops. This is a safe operation.
+There may be an underlying problem. Might be best to escalate to Nuon in a non-critical fashion	",Unlikely to cause end user impact,Tier 3 (not actionable / warning)
