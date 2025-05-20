@@ -36,24 +36,24 @@ echo "[ctl_api init] enable hstore"
 run_cmd "$admin_db" "/var/init-config/create_hstore.sql"
 sleep 5
 
-echo "[ctl_api init] ensuring user"
-run_cmd "$admin_db" "/var/init-config/create_user.sql"
-sleep 5
+# echo "[ctl_api init] ensuring user"
+# run_cmd "$admin_db" "/var/init-config/create_user.sql"
+# sleep 5
 
-echo "[ctl_api init] grant iam to user"
-run_cmd "$admin_db" "/var/init-config/grant_user_iam.sql"
-sleep 5
+# echo "[ctl_api init] grant iam to user"
+# run_cmd "$admin_db" "/var/init-config/grant_user_iam.sql"
+# sleep 5
 
-echo "[ctl_api init] alter user to allow create db"
-run_cmd "$admin_db" "/var/init-config/alter_user_createdb.sql"
-sleep 5
+# echo "[ctl_api init] alter user to allow create db"
+# run_cmd "$admin_db" "/var/init-config/alter_user_createdb.sql"
+# sleep 5
 
-echo "[ctl_api init] create db"
-run_cmd "$admin_db" "/var/init-config/create_db.sql"
-sleep 5
+# echo "[ctl_api init] create db"
+# run_cmd "$admin_db" "/var/init-config/create_db.sql"
+# sleep 5
 
-echo "[ctl_api init] grant all on db to ctl_api"
-run_cmd "$admin_db" "/var/init-config/grant_db.sql"
+# echo "[ctl_api init] grant all on db to ctl_api"
+# run_cmd "$admin_db" "/var/init-config/grant_db.sql"
 
-echo "[ctl_api init] grant all on db to ctl_api"
-run_cmd "$admin_db" "/var/init-config/create_hstore.sql"
+# echo "[ctl_api init] grant all on db to ctl_api"
+# run_cmd "$admin_db" "/var/init-config/create_hstore.sql"
