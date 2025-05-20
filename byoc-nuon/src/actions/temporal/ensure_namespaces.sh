@@ -16,7 +16,7 @@ function create_namespace() {
   local description="$3"
 
   echo >&2 " > namespace: $name"
-  kubectl -n temporal  exec -it deployment/temporal-admintools -- \
+  kubectl -n temporal exec -i deployment/temporal-admintools -- \
     temporal operator namespace create \
          --namespace   "$name"         \
          --description "$description"  \
