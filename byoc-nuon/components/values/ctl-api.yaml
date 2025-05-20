@@ -80,7 +80,7 @@ envSecrets:
       key: value
   - name: TFE_TOKEN
     valueFrom:
-      name: tfe-token
+      name: tfe-orgs-token
       key: value
   - name: "CLICKHOUSE_DB_PASSWORD"
     valueFrom:

@@ -3,8 +3,8 @@ name    = "ch_init"
 timeout = "1m30s"
 
 [[triggers]]
-type           = "post-component-deploy"
-component_name = "clickhouse_cluster"
+type           = "pre-component-deploy"
+component_name = "ctl_api"
 
 [[triggers]]
 type = "manual"
