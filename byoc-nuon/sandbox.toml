@@ -1,13 +1,15 @@
+#:schema https://api.nuon.co/v1/general/config-schema?source=sandbox
 terraform_version = "1.11.3"
 
 [public_repo]
 directory = "."
-repo      = "nuonco/aws-eks-sandbox"
-branch    = "6d2534e3198d34e0061955da8e0dd422cdd71e92"
+repo      = "nuonco/aws-eks-karpenter-sandbox"
+branch    = "main"
 
 [vars]
 cluster_name         = "n-{{.nuon.install.id}}"
 enable_nuon_dns      = "true"
+kyverno_policy_dir   = "./policies"
 public_root_domain   = "{{ .nuon.inputs.inputs.root_domain }}"
 internal_root_domain = "internal.{{ .nuon.inputs.inputs.root_domain }}"
 
