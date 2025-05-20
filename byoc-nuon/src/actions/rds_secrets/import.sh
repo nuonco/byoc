@@ -18,13 +18,7 @@ secret=`aws --region $region secretsmanager get-secret-value --secret-id=$secret
 username=`echo $secret | jq -r '.SecretString' | jq -r '.username'`
 password=`echo $secret | jq -r '.SecretString' | jq -r '.password'`
 
-
-kubectl create -n ctl-api secret generic clickhouse-cluster-pw \
-  --save-config    \
-  --dry-run=client \
-  --from-literal=value="$password" \
-  -o yaml | kubectl apply -f -
-
+echo "[rds-secrets import] create RDS access secrets"
 kubectl create -n $namespace secret generic $name \
   --save-config    \
   --dry-run=client \
