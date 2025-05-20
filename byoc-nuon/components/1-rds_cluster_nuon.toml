@@ -21,3 +21,6 @@ vpc_id     = "{{ .nuon.install_stack.outputs.vpc_id }}"
 subnet_ids = "{{ index .nuon.sandbox.outputs.vpc.private_subnet_ids 0}},{{ index .nuon.sandbox.outputs.vpc.private_subnet_ids 1 }},{{ index .nuon.sandbox.outputs.vpc.private_subnet_ids 2 }}"
 
 nuon_id = "{{ .nuon.install.id }}"
+
+iam_database_authentication_enabled = "true"
+deletion_protection                 = "false"  # until we're out of dev
