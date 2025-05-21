@@ -9,7 +9,16 @@ type = "manual"
 name = "kill-pods-in-namespace"
 inline_content = """
 #!/usr/bin/env sh
-kubectl delete pods --all -n $NAMESPACE
+kubectl \
+  --namespace $NAMESPACE \
+  get pods \
+  -o name | \
+  xargs -n 1 \
+  kubectl \
+  delete \
+  -n $NAMESPACE \
+  --grace-period=0 \
+  --force
 """
 
 [steps.env_vars]
