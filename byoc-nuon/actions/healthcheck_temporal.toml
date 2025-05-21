@@ -1,0 +1,19 @@
+#:schema https://api.nuon.co/v1/general/config-schema?source=action
+name    = "healthcheck_temporal"
+timeout = "30s"
+
+[[triggers]]
+type          = "cron"
+cron_schedule = "0 */1 * * *"
+
+[[triggers]]
+type = "manual"
+
+[[steps]]
+name    = "tctl cluster health"
+inline_content = """
+#!/usr/bin/env sh
+kubectl config set-context --current --namespace=temporal
+POD_NAME=$(kubectl get pods -l app.kubernetes.io/component=admintools -o custom-columns=NAME:.metadata.name --no-headers)
+kubectl exec -i $POD_NAME -- tctl cluster health | xargs -I{} sh -c 'echo "{}" | grep -q "SERVING"'
+"""
