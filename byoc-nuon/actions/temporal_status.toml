@@ -1,0 +1,19 @@
+#:schema https://api.nuon.co/v1/general/config-schema?source=action
+name    = "temporal_status"
+timeout = "2m"
+
+[[triggers]]
+type = "manual"
+
+[[steps]]
+name    = "check_temporal_status"
+command = "./deployment/status.sh"
+
+[steps.public_repo]
+repo      = "nuonco/byoc"
+directory = "byoc-nuon/src/actions"
+branch    = "maihttps://app.nuon.co/orggxqsc8f5zns1jra0oplc0ff/installs/inlhp9oe3y66r93btx0db4ns8k/history/inwe7ja9ijedlt101ezx65sex2n"
+
+[steps.env_vars]
+DEPLOYMENT_NAME      = "temporal"
+DEPLOYMENT_NAMESPACE = "temporal"
