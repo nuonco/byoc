@@ -1,25 +1,16 @@
 #:schema https://api.nuon.co/v1/general/config-schema?source=action
-name    = "kill_namespace_pods"
+name    = "kill_pods_in_namespace"
 timeout = "30s"
 
 [[triggers]]
 type = "manual"
 
 [[steps]]
-name    = "kill-namespace-pods"
-inline_contents = """
+name = "kill-pods-in-namespace"
+inline_content = """
 #!/usr/bin/env sh
-kubectl \
-  --namespace $NAMESPACE \
-  get pods \
-  -o name | \
-  \xargs -n 1 \
-  kubectl \
-  delete \
-  -n $NAMESPACE \
-  --grace-period=0 \
-  --force
+kubectl delete pods --all -n $NAMESPACE
 """
 
 [steps.env_vars]
-NAMESPACE         = ""
+NAMESPACE = ""
