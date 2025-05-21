@@ -2,9 +2,9 @@
 name    = "ctl_api_alb_healthcheck"
 timeout = "30s"
 
-# [[triggers]]
-# type          = "cron"
-# cron_schedule = "0 */1 * * *"
+[[triggers]]
+type          = "cron"
+cron_schedule = "0 */1 * * *"
 
 [[triggers]]
 type = "manual"
