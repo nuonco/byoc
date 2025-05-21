@@ -1,0 +1,19 @@
+#:schema https://api.nuon.co/v1/general/config-schema?source=action
+name    = "deployment_restart"
+timeout = "0m30s"
+
+[[triggers]]
+type = "manual"
+
+[[steps]]
+name    = "deployment_restart"
+command = "./deployment-restart"
+
+[steps.public_repo]
+repo      = "nuonco/actions"
+branch    = "main"
+directory = "kube"
+
+[steps.env_vars]
+DEPLOYMENT_NAME      = "ctl-api-admin"
+DEPLOYMENT_NAMESPACE = "ctl-api"
