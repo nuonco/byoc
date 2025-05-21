@@ -6,8 +6,9 @@ timeout = "30s"
 type = "manual"
 
 [[steps]]
-name    = "uninstall-helm-chart"
+name = "uninstall-helm-chart"
 inline_content = """
+#!/usr/bin/env sh
 helm uninstall $CHART_NAME --namespace $NAMESPACE
 """
 
