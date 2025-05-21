@@ -11,7 +11,7 @@ type = "manual"
 
 [[steps]]
 name    = "tctl cluster health"
-inline_content = """
+inline_contents = """
 #!/usr/bin/env sh
 kubectl config set-context --current --namespace=temporal
 POD_NAME=$(kubectl get pods -l app.kubernetes.io/component=admintools -o custom-columns=NAME:.metadata.name --no-headers)
