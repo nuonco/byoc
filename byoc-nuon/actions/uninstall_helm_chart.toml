@@ -9,9 +9,13 @@ type = "manual"
 name = "uninstall-helm-chart"
 inline_contents = """
 #!/usr/bin/env sh
+
+export HELM_DRIVER="${HELM_DRIVER:-configmap}"
+
 helm uninstall $CHART_NAME --namespace $NAMESPACE
 """
 
 [steps.env_vars]
 NAMESPACE = ""
 CHART_NAME = ""
+HELM_DRIVER = "configmap"
