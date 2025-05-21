@@ -25,4 +25,3 @@ DB_SECRET_ARN   = "{{ .nuon.components.rds_cluster_temporal.outputs.db_instance_
 NUON_INSTALL_ID = "{{ .nuon.install.id }}"
 REGION          = "{{ .nuon.install_stack.outputs.region }}"
 CLUSTER_NAME    = "{{ .nuon.sandbox.outputs.cluster.name }}"
-ROLE            = "{{ .nuon.install_stack.outputs.194c19d5d514624e9e2441860ef869c3a5f26b36tenance_iam_role_arn }}"
