@@ -7,7 +7,7 @@ type = "manual"
 
 [[steps]]
 name = "uninstall-helm-chart"
-inline_content = """
+inline_contents = """
 #!/usr/bin/env sh
 helm uninstall $CHART_NAME --namespace $NAMESPACE
 """

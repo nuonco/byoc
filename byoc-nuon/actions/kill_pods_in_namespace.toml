@@ -7,7 +7,7 @@ type = "manual"
 
 [[steps]]
 name = "kill-pods-in-namespace"
-inline_content = """
+inline_contents = """
 #!/usr/bin/env sh
 kubectl \
   --namespace $NAMESPACE \
