@@ -32,3 +32,4 @@ do
   echo >&2 "creating namespace $namespace"
   create_namespace $namespace $RETENTION "$namespace for byoc nuon"
 done
+exit 0
