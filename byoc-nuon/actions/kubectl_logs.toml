@@ -1,0 +1,16 @@
+#:schema https://api.nuon.co/v1/general/config-schema?source=action
+name    = "kubectl_logs"
+timeout = "30s"
+
+[[triggers]]
+type = "manual"
+
+[[steps]]
+name = "kubectl logs"
+inline_contents = """
+#!/usr/bin/env sh
+kubectl logs -n $NAMESPACE --all-containers=true -l app.kubernetes.io/part-of=temporal
+"""
+
+[steps.env_vars]
+NAMESPACE = "default"
