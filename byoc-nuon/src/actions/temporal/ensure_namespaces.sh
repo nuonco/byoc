@@ -26,6 +26,7 @@ function create_namespace() {
 declare -a namespaces=("orgs" "apps" "installs" "components" "releases" "installers" "runners" "general" "actions")
 echo >&2 "using $RETENTION day retention"
 
+set +e
 for namespace in "${namespaces[@]}"
 do
   echo >&2 "creating namespace $namespace"
