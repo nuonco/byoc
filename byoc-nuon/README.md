@@ -202,7 +202,7 @@ Open the advanced settings section and enable the `device_code` grant type.
 The GitHub App Key secret must be updated w/ the following to keep the multiline behavior.
 
 ```bash
-aws --region {{ .nuon.install_stack.outputs_region }} --profile $AWS_PROFILE secretsmanager update-secret \
+aws --region {{ .nuon.install_stack.outputs.region }} --profile $AWS_PROFILE secretsmanager update-secret \
     --secret-id  {{ .nuon.install_stack.outputs.github_app_key_arn}} \
     --secret-string file://path-to-file.pem
 ```
