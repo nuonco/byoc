@@ -45,4 +45,4 @@ kubectl       \
   --env="SQL_PLUGIN=postgres12"  \
   --env="VERSION=$version"       \
   --command \
-  -- bash -c "temporal-sql-tool --db temporal create;  temporal-sql-tool --db temporal setup-schema -v 0.0; temporal-sql-tool --db temporal_visibility create; temporal-sql-tool --db temporal_visibility setup-schema -v 0.0; temporal-sql-tool --db temporal_visibility update-schema -d ./schema/postgresql/v12/temporal/versioned/;"
+  -- bash -c "temporal-sql-tool --db temporal create;  temporal-sql-tool --db temporal setup-schema -v 0.0; temporal-sql-tool --db temporal update-schema -d ./schema/postgresql/v12/temporal/versioned/; temporal-sql-tool --db temporal_visibility create; temporal-sql-tool --db temporal_visibility setup-schema -v 0.0; temporal-sql-tool --db temporal_visibility update-schema -d ./schema/postgresql/v12/temporal/versioned/;"
