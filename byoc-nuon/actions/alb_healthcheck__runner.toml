@@ -1,0 +1,23 @@
+#:schema https://api.nuon.co/v1/general/config-schema?source=action
+name    = "alb_healthcheck_runner"
+timeout = "30s"
+
+# [[triggers]]
+# type          = "cron"
+# cron_schedule = "0 */1 * * *"
+
+[[triggers]]
+type = "manual"
+
+[[steps]]
+name    = "alb-healthcheck-ctl-api-runner"
+command = "./healthcheck.sh"
+
+[steps.public_repo]
+repo      = "nuonco/byoc"
+branch    = "fd/actions/split-up-alb-actions"
+directory = "byoc-nuon/src/actions/alb"
+
+[steps.env_vars]
+INGRESS_NAME      = "ctl-api-runner"
+INGRESS_NAMESPACE = "ctl-api"
