@@ -1,0 +1,19 @@
+#:schema https://api.nuon.co/v1/general/config-schema?source=action
+name    = "helm_list"
+timeout = "30s"
+
+[[triggers]]
+type = "manual"
+
+[[steps]]
+name = "helm"
+inline_contents = """
+#!/usr/bin/env sh
+apk add --no-cache helm
+export HELM_DRIVER=configmap
+helm history $CHART_NAME -n $NAMESPACE
+"""
+
+[steps.env_vars]
+NAMESPACE = ""
+CHART_NAME = ""
