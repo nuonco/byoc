@@ -31,8 +31,6 @@ password=`echo $secret | jq -r '.SecretString' | jq -r '.password'`
 # TODO: re-write this so we can see the logs - maybe use exec
 kubectl       \
   run         \
-  -i          \
-  --rm        \
   --tty=false \
   --restart=Never      \
   --namespace=temporal \
