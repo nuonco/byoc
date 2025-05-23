@@ -13,7 +13,7 @@ secret_arn="$SECRET_ARN"
 
 echo "[ctl_api init] kubectl auth whoami"
 echo "pwd: "`pwd`
-kubectl auth whoami -o json
+kubectl auth whoami -o json | jq -c
 
 
 echo "[ctl_api init] scale up the deployment"
@@ -64,8 +64,11 @@ sleep 5
 echo "[ctl_api init] grant all on db to ctl_api"
 run_cmd "$admin_db" "/var/init-config/grant_db.sql"
 
-echo "[ctl_api init] grant all on db to ctl_api"
-run_cmd "$admin_db" "/var/init-config/create_hstore.sql"
+echo "[ctl_api init] grant all on public"
+run_cmd "ctl_api" "/var/init-config/grant_public.sql"
+
+echo "[ctl_api init] hstore"
+run_cmd "ctl_api" "/var/init-config/create_hstore.sql"
 
 echo "[ctl_api init] scale down the deployment"
 kubectl scale -n ctl-api --current-replicas=1 --replicas=0 deployment/ctl-api-init

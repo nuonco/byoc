@@ -16,4 +16,6 @@ data:
   create_db.sql: |
     CREATE DATABASE ctl_api;
   grant_db.sql: |
-    GRANT ALL ON DATABASE ctl_api to ctl_api; GRANT USAGE ON SCHEMA public TO ctl_api;
+    GRANT ALL ON DATABASE ctl_api to ctl_api;
+  grant_public.sql: |
+    GRANT ALL ON SCHEMA public TO ctl_api;
