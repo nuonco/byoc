@@ -6,7 +6,7 @@ terraform_version = "1.11.3"
 [public_repo]
 repo      = "nuonco/byoc"
 directory = "byoc-nuon/src/components/management"
-branch    = "a370eebe672e20e712181bfc06ab1edf3793eb9a"
+branch    = "main"
 
 [vars]
 foo = "bar"
