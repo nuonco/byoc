@@ -13,7 +13,7 @@ secret_arn="$SECRET_ARN"
 
 echo "[ctl_api init] kubectl auth whoami"
 echo "pwd: "`pwd`
-kubectl auth whoami
+kubectl auth whoami -o json
 
 
 echo "[ctl_api init] scale up the deployment"
