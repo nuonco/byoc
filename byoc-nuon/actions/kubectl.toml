@@ -1,16 +1,20 @@
 #:schema https://api.nuon.co/v1/general/config-schema?source=action
-name    = "kubectl_logs"
+name    = "kubectl"
 timeout = "30s"
 
 [[triggers]]
 type = "manual"
 
 [[steps]]
-name = "kubectl logs"
+name = "kubectl"
 inline_contents = """
 #!/usr/bin/env sh
-kubectl logs -n $NAMESPACE --all-containers=true -l app.kubernetes.io/name=ctl-api-api
+
+apk add --no-cache helm
+export HELM_DRIVER=configmap
+
+$CMD
 """
 
 [steps.env_vars]
-NAMESPACE = "default"
+CMD = "get pods"

@@ -1,15 +1,16 @@
 #:schema https://api.nuon.co/v1/general/config-schema?source=action
-name    = "helm_list"
+name    = "kubectl_get_pods"
 timeout = "30s"
 
 [[triggers]]
 type = "manual"
 
 [[steps]]
-name = "helm"
+name = "kubectl get pods"
 inline_contents = """
 #!/usr/bin/env sh
-apk add --no-cache helm
-export HELM_DRIVER=configmap
-helm list -A
+kubectl get pods -A
 """
+
+[steps.env_vars]
+NAMESPACE = "default"
