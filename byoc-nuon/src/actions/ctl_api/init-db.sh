@@ -33,7 +33,9 @@ echo "[ctl_api init] preparing to initialize"
 function run_cmd() {
   echo " > cmd: $@"
   kubectl \
-    --namespace=ctl-api exec $pod -- \
+    --namespace=ctl-api \
+    exec  -i \
+    $pod -- \
     env "PGHOST=$db_addr" "PGPORT=$db_port" "PGUSER=$admin_username" "PGPASSWORD=$admin_password" \
     psql --no-psqlrc -d "$1" -f "$2"
 }
