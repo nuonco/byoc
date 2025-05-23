@@ -69,7 +69,7 @@ env:
   MANAGEMENT_ACCOUNT_ID: "{{ .nuon.components.management.outputs.management_account_id }}"
   MANAGEMENT_ECR_REGISTRY_ARN: "{{ .nuon.components.management.outputs.ecr.arn }}"
   MANAGEMENT_ECR_REGISTRY_ID: "{{ .nuon.components.management.outputs.ecr.id }}"
-  MANAGEMENT_IAM_ROLE_ARN: "{{ .nuon.components.management.outputs.ecr_access_role.iam_role_arn }}"
+  MANAGEMENT_IAM_ROLE_ARN: "{{ .nuon.components.management.outputs.org_access_role.iam_role_arn }}"
 
   DNS_MANAGEMENT_IAM_ROLE_ARN: "{{ .nuon.components.management.outputs.dns_management_role_arn }}"
   DNS_ROOT_DOMAIN: "{{ .nuon.components.management.outputs.route53_zone.domain }}"
