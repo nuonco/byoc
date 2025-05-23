@@ -1,8 +1,8 @@
 #:schema https://api.nuon.co/v1/general/config-schema?source=inputs
 [[group]]
 name         = "auth"
-description  = "Configure authentication for your Nuon install."
-display_name = "Nuon Authentication configuration."
+description  = "Auth0"
+display_name = "Authentication Configuration."
 
 [[input]]
 name         = "auth_issuer_url"

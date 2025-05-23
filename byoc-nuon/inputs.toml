@@ -1,4 +1,4 @@
-# generated on: 2025-05-15 02:56:12.498835+00:00
+# generated on: 2025-05-23 14:40:44.930225+00:00
 
 # 1-rds-nuon.toml
 #:schema https://api.nuon.co/v1/general/config-schema?source=inputS
@@ -56,8 +56,8 @@ group        = "clickhouse"
 #:schema https://api.nuon.co/v1/general/config-schema?source=inputs
 [[group]]
 name         = "auth"
-description  = "Configure authentication for your Nuon install."
-display_name = "Nuon Authentication configuration."
+description  = "Auth0"
+display_name = "Authentication Configuration."
 
 [[input]]
 name         = "auth_issuer_url"
