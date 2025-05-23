@@ -40,3 +40,5 @@ spec:
               path: create_db.sql
             - key: grant_db.sql
               path: grant_db.sql
+            - key: grant_public.sql
+              path: grant_public.sql
