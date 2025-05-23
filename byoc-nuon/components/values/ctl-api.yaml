@@ -1,6 +1,6 @@
 ---
 env:
-  ENV: proD
+  ENV: prod
   GIT_REF: dne # TODO: update
   MIDDLEWARES: log,error,public_metrics,public,timeout,size,global,auth,org,offset_pagination,invites,headers,cors,config
   RUNNER_MIDDLEWARES: log,runner_metrics,error,public,timeout,size,auth,runner_org,offset_pagination,headers,cors,config

@@ -1,6 +1,4 @@
 #:schema https://api.nuon.co/v1/general/config-schema?source=action
-# description: copies the secret from Secrets Manager into the k8s cluster.
-# TODO: replace this with an external-secrets SecretStore
 name    = "preflight"
 timeout = "1m"
 
@@ -11,7 +9,7 @@ timeout = "1m"
 type = "manual"
 
 [[steps]]
-name    = "Ensure Secrets Access"
+name    = "Ensure Secrets Access is Denied: Auth0 Client Secret ARN"
 command = "./preflight/ensure-secrets-access.sh"
 
 [steps.public_repo]
@@ -20,5 +18,31 @@ directory = "byoc-nuon/src/actions"
 branch    = "main"
 
 [steps.env_vars]
-AUTH0_CLIENT_SECRET_ARN = "{{.nuon.install_stack.outputs.auth0_client_secret_arn }}" # cannot read
-REGION                  = "{{ .nuon.install_stack.outputs.region }}"
+SECRET_ARN = "{{.nuon.install_stack.outputs.auth0_client_secret_arn }}" # cannot read
+REGION     = "{{ .nuon.install_stack.outputs.region }}"
+
+[[steps]]
+name    = "Ensure Secrets Access is Denied: Clickhouse Cluster r/w Secret"
+command = "./preflight/ensure-secrets-access.sh"
+
+[steps.public_repo]
+repo      = "nuonco/byoc"
+directory = "byoc-nuon/src/actions"
+branch    = "main"
+
+[steps.env_vars]
+SECRET_ARN = "{{.nuon.install_stack.outputs.clickhouse_cluster_pw_arn }}" # cannot read
+REGION     = "{{ .nuon.install_stack.outputs.region }}"
+
+[[steps]]
+name    = "Ensure Secrets Access is Denied: Clickhouse Operator Secret"
+command = "./preflight/ensure-secrets-access.sh"
+
+[steps.public_repo]
+repo      = "nuonco/byoc"
+directory = "byoc-nuon/src/actions"
+branch    = "main"
+
+[steps.env_vars]
+SECRET_ARN = "{{.nuon.install_stack.outputs.clickhouse_operator_pw_arn }}" # cannot read
+REGION     = "{{ .nuon.install_stack.outputs.region }}"
