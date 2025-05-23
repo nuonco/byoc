@@ -1,4 +1,4 @@
-# generated on: 2025-05-23 14:44:42.760446+00:00
+# generated on: 2025-05-23 14:45:53.778325+00:00
 
 # 1-rds-nuon.toml
 #:schema https://api.nuon.co/v1/general/config-schema?source=inputS
@@ -113,23 +113,26 @@ display_name = "Github | Nuon configuration"
 [[input]]
 name         = "github_app_name"
 description  = "The name of the GitHub app to use for VCS connections."
-default      = "byocnuon/my-org-connect"
+default      = ""
 display_name = "GitHub App Name"
 group        = "github"
+required     = true
 
 [[input]]
 name         = "github_app_id"
 description  = "The github app id."
-default      = "0000000"
+default      = ""
 display_name = "GitHub App ID"
 group        = "github"
+required     = true
 
 [[input]]
 name         = "github_app_client_id"
 description  = "The github app client id."
-default      = "xxxxxxxxxxxxxxxxxxxx"
+default      = ""
 display_name = "GitHub App Client ID"
 group        = "github"
+required     = true
 
 
 # 7-dns.toml
