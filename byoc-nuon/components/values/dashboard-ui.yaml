@@ -9,8 +9,7 @@ image:
 
 env:
   NEXT_PUBLIC_API_URL: "https://api.{{ .nuon.sandbox.outputs.nuon_dns.public_domain.name }}"
-
-  NEXT_PUBLIC_ADMIN_API_URL: "http://ctl.{{ .nuon.sandbox.outputs.nuon_dns.public_domain.name }}"
+  NEXT_PUBLIC_ADMIN_API_URL: "http://ctl-api-admin.ctl-api.svc.cluster.local:8082"
 
   NEXT_PUBLIC_DATADOG_ENV: "byoc-nuon"
   NEXT_PUBLIC_DATADOG_SITE: "us5.datadoghq.com"
