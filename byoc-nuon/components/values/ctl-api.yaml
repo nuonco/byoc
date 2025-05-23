@@ -28,8 +28,6 @@ env:
   CLICKHOUSE_DB_HOST: "{{ .nuon.components.clickhouse_cluster.outputs.service }}"
   CLICKHOUSE_DB_NAME: "ctl_api"
   CLICKHOUSE_DB_USER: clickhouse
-  # NOTE: we use secrets for this
-  # CLICKHOUSE_DB_PASSWORD: from-secret
 
   HTTP_PORT: !!string 8081
   INTERNAL_HTTP_PORT: !!string 8082
@@ -63,12 +61,31 @@ env:
 
   SANDBOX_MODE_SLEEP: 1s
 
-  RUNNER_DEFAULT_SUPPORT_IAM_ROLE_ARN: |-
-    arn:aws:iam::{{ .nuon.install_stack.outputs.account_id }}:role/nuon-internal-support-stage
-
-  # deprecated or not in use in byoc
+  # NOTE: deprecated or not in use in byoc
   SEGMENT_WRITE_KEY: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
   LOOPS_API_KEY: "this key does not exist"
+
+  # NOTE: from management component (mostly)
+  MANAGEMENT_ACCOUNT_ID: "{{ .nuon.components.management.outputs.management_account_id }}"
+  MANAGEMENT_ECR_REGISTRY_ARN: "{{ .nuon.components.management.outputs.ecr.arn }}"
+  MANAGEMENT_ECR_REGISTRY_ID: "{{ .nuon.components.management.outputs.ecr.id }}"
+  MANAGEMENT_IAM_ROLE_ARN: "{{ .nuon.components.management.outputs.ecr_access_role.iam_role_arn }}"
+
+  DNS_MANAGEMENT_IAM_ROLE_ARN: "{{ .nuon.components.management.outputs.dns_management_role_arn }}"
+  DNS_ROOT_DOMAIN: "{{ .nuon.components.management.outputs.route53_zone.domain }}"
+  DNS_ZONE_ID: "{{ .nuon.components.management.outputs.route53_zone.zone_id }}"
+
+  ORG_RUNNER_K8S_CA_DATA: "{{ .nuon.components.management.outputs.cluster.certificate_authority_data }}"
+  ORG_RUNNER_K8S_CLUSTER_ID: "{{ .nuon.components.management.outputs.cluster.name }}"
+  ORG_RUNNER_K8S_IAM_ROLE_ARN: "{{ .nuon.components.ctl_api_role.outputs.iam_role_arn }}"
+  ORG_RUNNER_K8S_PUBLIC_ENDPOINT: "{{ .nuon.components.management.outputs.cluster.endpoint }}"
+  ORG_RUNNER_OIDC_PROVIDER_ARN: "{{ .nuon.components.management.outputs.cluster.oidc_provider_arn }}"
+  ORG_RUNNER_OIDC_PROVIDER_URL: "{{ .nuon.components.management.outputs.cluster.oidc_issuer_url }}"
+  ORG_RUNNER_REGION: "{{ .nuon.install_stack.outputs.region }}"
+
+  # TODO: determine
+  ORG_RUNNER_SUPPORT_ROLE_ARN: "arn:aws:iam::814326426574:role/nuon-internal-support-prod"
+  RUNNER_DEFAULT_SUPPORT_IAM_ROLE_ARN: "arn:aws:iam::814326426574:role/nuon-internal-support-prod"
 
 envSecrets:
   - name: "GITHUB_APP_KEY"
@@ -87,19 +104,6 @@ envSecrets:
     valueFrom:
       name: clickhouse-cluster-pw
       key: value
-  # NOTE: this should be replaced by a user w/ rds_iam
-  # - name: DB_PASSWORD
-  #   valueFrom:
-  #     name: nuon-db
-  #     key: password
-
-
-  # : teamnuon
-  # TODO: remove this
-  # - name: "LOOPS_API_KEY"
-  #   valueFrom:
-  #     name: ctl-api-loops-api-key
-  #     key: loops_api_key
 
 image:
   repository: "{{ .nuon.components.img_nuon_ctl_api.outputs.image.repository }}"

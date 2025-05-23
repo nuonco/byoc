@@ -7,6 +7,10 @@ timeout = "30s"
 # cron_schedule = "0 */1 * * *"
 
 [[triggers]]
+type           = "post-component-deploy"
+component_name = "ctl_api"
+
+[[triggers]]
 type = "manual"
 
 [[steps]]
@@ -15,8 +19,8 @@ command = "./healthcheck.sh"
 
 [steps.public_repo]
 repo      = "nuonco/byoc"
-branch    = "fd/actions/split-up-alb-actions"
 directory = "byoc-nuon/src/actions/alb"
+branch    = "main"
 
 [steps.env_vars]
 INGRESS_NAME      = "ctl-api-runner"
