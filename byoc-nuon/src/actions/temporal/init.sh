@@ -47,7 +47,7 @@ kubectl       \
   -- bash -c "temporal-sql-tool --db temporal create;  temporal-sql-tool --db temporal setup-schema -v 0.0; temporal-sql-tool --db temporal update-schema -d ./schema/postgresql/v12/temporal/versioned/;"
 
 
-Kubectl       \
+kubectl       \
   run         \
   --tty=false \
   --restart=Never      \
