@@ -18,7 +18,7 @@ kubectl auth whoami -o json | jq -c
 
 echo "[ctl_api init] scale up the deployment"
 kubectl scale -n ctl-api --replicas=1 deployment/ctl-api-init
-kubectl wait deployment -n ctl-api ctl-api-init --for condition=Available=True --timeout=90s
+kubectl wait deployment -n ctl-api ctl-api-init --for condition=Available=True --timeout=300s
 
 echo "[ctl_api init] get a pod from the deployment"
 pod=`kubectl -n ctl-api get pods --selector app=ctl-api-init -o json | jq -r '.items[0].metadata.name'`

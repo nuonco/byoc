@@ -1,6 +1,6 @@
 #:schema https://api.nuon.co/v1/general/config-schema?source=action
 name    = "ctl_api_init_db"
-timeout = "1m30s"
+timeout = "5m"
 
 [[triggers]]
 type           = "post-component-deploy"
