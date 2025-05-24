@@ -92,14 +92,6 @@ envSecrets:
     valueFrom:
       name: github-app-key
       key: value
-  - name: "TFE_ORGS_WORKSPACE_ID"
-    valueFrom:
-      name:  tfe-orgs-workspace-id
-      key: value
-  - name: TFE_TOKEN
-    valueFrom:
-      name: tfe-orgs-token
-      key: value
   - name: "CLICKHOUSE_DB_PASSWORD"
     valueFrom:
       name: clickhouse-cluster-pw
