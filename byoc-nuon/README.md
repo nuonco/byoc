@@ -124,7 +124,6 @@ Additional Documentation
 2. Configure w/ details below.
 3. Scroll to the bottom and generate a key.
 4. Use the pem key as the value for the github action secret.
-5. Out of band, ask us about a TFE secret (maybe, idk)?
 
 | URL          |                                          |
 | ------------ | ---------------------------------------- |
@@ -236,8 +235,6 @@ The following secrets are created in the CloudFormation stack and then synced in
 | auth0_client_secret      | value             | dashboard-ui | auth0-client-secret      | secrets-sync              | Auto-generated cookie secret                |
 | rds!rds-cluster-nuon     | username/password | ctl-api      | nuon-db                  | action:nuon_rds_creds     | nuon-db credentials for ctl-api             |
 | rds!rds-cluster-temporal | username/password | temporal     | temporal-db              | action:temporal_rds_creds | temporal-db credentials for temporal        |
-| tfe-orgs-workspace-id    | value             | ctl-api      | tfe-orgs-workspace-id    | secrets-sync              | tfe org workspace id                        |
-| tfe-token                | value             | ctl-api      | tfe-token                | secrets-sync              | tfe token                                   |
 
 ### Updating Secrets
 
