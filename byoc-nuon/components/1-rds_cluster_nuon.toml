@@ -25,4 +25,5 @@ nuon_id = "{{ .nuon.install.id }}"
 iam_database_authentication_enabled = "true"
 deletion_protection                 = "false"  # until we're out of dev
 
+allocated_storage = "100"
 apply_immediately = "true"
