@@ -82,6 +82,7 @@ env:
   ORG_RUNNER_OIDC_PROVIDER_ARN: "{{ .nuon.components.management.outputs.cluster.oidc_provider_arn }}"
   ORG_RUNNER_OIDC_PROVIDER_URL: "{{ .nuon.components.management.outputs.cluster.oidc_issuer_url }}"
   ORG_RUNNER_REGION: "{{ .nuon.install_stack.outputs.region }}"
+  ORG_RUNNER_K8S_USE_DEFAULT_CREDS: !!string true
 
   # TODO: determine
   ORG_RUNNER_SUPPORT_ROLE_ARN: "arn:aws:iam::814326426574:role/nuon-internal-support-prod"
