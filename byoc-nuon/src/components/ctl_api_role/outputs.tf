@@ -13,3 +13,7 @@ output "iam_role_path" {
 output "iam_role_unique_id" {
   value = module.iam_eks_role.iam_role_unique_id
 }
+
+output "aws_eks_access_entry" {
+  value = resource.aws_eks_access_entry.ctl_api
+}
