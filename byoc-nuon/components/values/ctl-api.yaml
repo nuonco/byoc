@@ -67,7 +67,7 @@ env:
 
   # NOTE: from management component (mostly)
   MANAGEMENT_ACCOUNT_ID: "{{ .nuon.components.management.outputs.management_account_id }}"
-  MANAGEMENT_ECR_REGISTRY_ARN: "{{ .nuon.components.management.outputs.ecr.arn }}"
+  MANAGEMENT_ECR_REGISTRY_ARN: "arn:aws:ecr:{{ .nuon.install_stack.outputs.region }}:{{ .nuon.install_stack.outputs.account_id }}:repository",
   MANAGEMENT_ECR_REGISTRY_ID: "{{ .nuon.components.management.outputs.ecr.id }}"
   MANAGEMENT_IAM_ROLE_ARN: "{{ .nuon.components.management.outputs.org_access_role.iam_role_arn }}"
 
