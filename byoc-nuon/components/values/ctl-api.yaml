@@ -80,7 +80,7 @@ env:
   ORG_RUNNER_K8S_IAM_ROLE_ARN: "{{ .nuon.components.ctl_api_role.outputs.iam_role_arn }}"
   ORG_RUNNER_K8S_PUBLIC_ENDPOINT: "{{ .nuon.components.management.outputs.cluster.endpoint }}"
   ORG_RUNNER_OIDC_PROVIDER_ARN: "{{ .nuon.components.management.outputs.cluster.oidc_provider_arn }}"
-  ORG_RUNNER_OIDC_PROVIDER_URL: "{{ .nuon.components.management.outputs.cluster.oidc_issuer_url }}"
+  ORG_RUNNER_OIDC_PROVIDER_URL: "{{ .nuon.components.management.outputs.cluster.oidc_provider }}" # TODO: rename to drop the URL
   ORG_RUNNER_REGION: "{{ .nuon.install_stack.outputs.region }}"
   ORG_RUNNER_K8S_USE_DEFAULT_CREDS: !!string true
 
