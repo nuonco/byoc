@@ -27,7 +27,7 @@ output "cluster" {
     endpoint                   = var.cluster.endpoint
     name                       = var.cluster.name
     platform_version           = var.cluster.platform_version
-    oidc_issuer                = var.cluster.oidc_issuer
+    oidc_provider              = var.cluster.oidc_provider
     oidc_provider_arn          = var.cluster.oidc_provider_arn
   }
 }

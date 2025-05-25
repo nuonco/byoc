@@ -41,7 +41,7 @@ variable "cluster" {
     endpoint                   = string
     name                       = string
     platform_version           = string
-    oidc_issuer                = string
+    oidc_provider              = string
     oidc_provider_arn          = string
   })
   description = "EKS Cluster access details passed through from the sandbox."
