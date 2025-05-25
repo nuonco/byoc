@@ -13,7 +13,7 @@ cluster = {
   endpoint                   = "{{ .nuon.sandbox.outputs.cluster.endpoint }}"
   name                       = "{{ .nuon.sandbox.outputs.cluster.name }}"
   platform_version           = "{{ .nuon.sandbox.outputs.cluster.platform_version }}"
-  oidc_issuer_url            = "{{ .nuon.sandbox.outputs.cluster.oidc_issuer_url }}"
+  oidc_issuer                = "{{ .nuon.sandbox.outputs.cluster.oidc_issuer }}"
   oidc_provider_arn          = "{{ .nuon.sandbox.outputs.cluster.oidc_provider_arn }}"
 }
 
