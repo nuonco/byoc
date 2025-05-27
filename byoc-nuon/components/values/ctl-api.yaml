@@ -46,7 +46,7 @@ env:
     https://hooks.slack.com/services/xxxxxxxxxxx/xxxxxxxxxxx/xxxxxxxxxxxxxxxxxxxxxxxx
 
   AWS_CLOUDFORMATION_STACK_TEMPLATE_BUCKET: "{{ .nuon.components.s3_buckets.outputs.install_template_bucket.id }}"
-  AWS_CLOUDFORMATION_STACK_TEMPLATE_BASE_URL: "https://{{ .nuon.components.s3_buckets.outputs.install_template_bucket.domain_name }}/"
+  AWS_CLOUDFORMATION_STACK_TEMPLATE_BASE_URL: "{{ .nuon.components.s3_buckets.outputs.install_template_bucket.base_url }}"
 
   APP_URL: https://app.{{ .nuon.sandbox.outputs.nuon_dns.public_domain.name }}
   PUBLIC_API_URL: https://api.{{ .nuon.sandbox.outputs.nuon_dns.public_domain.name }}
