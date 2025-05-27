@@ -1,0 +1,30 @@
+on:
+  push:
+    branches: main
+    paths:
+      - "byoc-nuon/**"
+  workflow_dispatch:
+defaults:
+  run:
+    shell: bash
+env:
+  NUON_ORG_ID: ${{ secrets.NUON_ORG_ID }}
+  NUON_API_TOKEN: ${{ secrets.NUON_API_TOKEN }}
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    name: Push to Nuon
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+      - name: Install CLI
+        id: cli
+        run: ./scripts/install-cli.sh
+      - name: Sync configs
+        id: sync
+        run: |
+          nuon apps sync-dir ./byoc-nuon
+    env:
+      NUON_API_TOKEN: ${{ secrets.NUON_API_TOKEN }}
+      NUON_ORG_ID: ${{ secrets.NUON_ORG_ID }}
