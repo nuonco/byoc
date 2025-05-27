@@ -16,7 +16,7 @@ command = "./ctl_api/promote.sh"
 [steps.public_repo]
 repo      = "nuonco/byoc"
 directory = "byoc-nuon/src/actions"
-branch    = "main"
+branch    = "jm/promote-action"
 
 [steps.env_vars]
 ADMIN_API_URL = "http://ctl-api-admin.ctl-api.svc.cluster.local:8082"
