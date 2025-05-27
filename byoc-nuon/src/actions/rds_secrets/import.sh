@@ -11,7 +11,7 @@ namespace="$TARGET_NAMESPACE"
 
 echo "[rds-secrets import] kubectl auth whoami"
 echo "pwd: "`pwd`
-kubectl auth whoami
+kubectl auth whoami | jq -c
 
 echo "[rds-secrets import] reading db access secrets from AWS"
 secret=`aws --region $region secretsmanager get-secret-value --secret-id=$secret_arn`
