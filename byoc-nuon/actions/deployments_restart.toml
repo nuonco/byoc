@@ -5,6 +5,10 @@ timeout = "0m30s"
 [[triggers]]
 type = "manual"
 
+[[triggers]]
+type           = "post-component-deploy"
+component_name = "ctl_api"
+
 [[steps]]
 name    = "deployments_restart"
 command = "./deployments-restart"
