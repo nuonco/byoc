@@ -16,7 +16,7 @@ cluster_name="$CLUSTER_NAME"
 
 echo "[temporal init] kubectl auth whoami"
 echo "pwd: "`pwd`
-kubectl auth whoami | jq -c
+kubectl auth whoami -o json | jq -c
 
 # set later
 user="nuonadmin i think"
