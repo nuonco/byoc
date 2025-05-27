@@ -91,7 +91,7 @@ module "install_template_bucket" {
   attach_deny_insecure_transport_policy = true
   attach_require_latest_tls_policy      = true
 
-  attach_public_policy = true
+  attach_public_policy = false
   block_public_acls    = false
   block_public_policy  = false
 
