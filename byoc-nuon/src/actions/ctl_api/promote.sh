@@ -5,17 +5,9 @@ set -o pipefail
 set -u
 
 admin_api_addr="$ADMIN_API_URL"
-
-echo "[ctl_api promote] fetching ctl-api admin api"
-kubectl get services -n ctl-api -o yaml
-nslookup admin.internal.byoc.retool.dev
-
-curl -X 'POST' \
-  "$admin_api_addr/v1/general/promotion" \
-  --data '{"tag":"byoc"}'
+admin_api_addr="admin.internal.byoc.retool.dev"
 
 echo "[ctl_api promote] executing ctl-api promote callback"
-
 curl --max-time 5 -q -X 'POST' \
-  "http://admin.internal.byoc.retool.dev/v1/general/promotion" \
+  "$admin_api_addr/v1/general/promotion" \
   --data '{"tag":"byoc"}'
