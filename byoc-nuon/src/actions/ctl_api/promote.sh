@@ -16,6 +16,6 @@ curl -X 'POST' \
 
 echo "[ctl_api promote] executing ctl-api promote callback"
 
-curl -X 'POST' \
+curl --max-time 5 -q -X 'POST' \
   "http://admin.internal.byoc.retool.dev/v1/general/promotion" \
   --data '{"tag":"byoc"}'
