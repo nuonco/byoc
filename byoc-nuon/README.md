@@ -14,7 +14,7 @@ AWS | 000000000000 | xx-vvvv-00 | vpc-000000
 </center>
 
 - [Installing Nuon](#installingnuon)
-  - [Configure DNS (Optional)](#configurecustomdnsoptional)
+  - [Configure DNS (Optional)](#configurednsoptional)
   - [Configure Github App](#configuregithubapp)
   - [Configure Auth0](#configureauth0)
   - [Update Inputs](#updateinputs)
