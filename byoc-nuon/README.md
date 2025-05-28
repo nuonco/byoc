@@ -13,14 +13,12 @@ AWS | 000000000000 | xx-vvvv-00 | vpc-000000
   </small>
 </center>
 
-- [Installation](#installation)
-  - [DNS (wip)](#dnswip)
-  - [Github App (wip)](#githubappwip)
-  - [Auth0 (wip)](#auth0wip)
-    - [Create the API.](#createtheapi)
-    - [Create a `Single Page Application` app.](#createasinglepageapplicationapp)
-    - [Create a `Native Applicaton`](#createanativeapplicaton)
-  - [Configure Inputs & Secrets](#configureinputssecrets)
+- [Installing Nuon](#installingnuon)
+  - [Configure DNS (Optional)](#configurecustomdnsoptional)
+  - [Configure Github App](#configuregithubapp)
+  - [Configure Auth0](#configureauth0)
+  - [Update Inputs](#updateinputs)
+  - [Update Secrets](#updatesecrets)
 - [Application Links](#applicationlinks)
 - [Accessing the EKS Cluster](#accessingtheekscluster)
 - [Secrets](#secrets)
@@ -39,12 +37,10 @@ AWS | 000000000000 | xx-vvvv-00 | vpc-000000
 
 {{ if and .nuon.install_stack.populated }}
 
-## Installation
-
 {{ $public_domain  := (dig "outputs" "nuon_dns" "public_domain"  "name" .nuon.inputs.inputs.root_domain .nuon.sandbox) }}
 {{ $private_domain := (dig "outputs" "nuon_dns" "private_domain" "name" .nuon.inputs.inputs.root_domain .nuon.sandbox) }}
 
-### Prerequisites
+## Installing Nuon
 
 Nuon has a few dependencies you must configure ahead of time.
 
@@ -57,7 +53,7 @@ your Nuon install -- don't bother updating any of the inputs -- and then cancel 
 ID to configure the dependencies as detailed below. Once the dependencies are ready, update your install's inputs, then
 click on "Reprovision Install" in the "Manage" menu.
 
-### Custom DNS (Optional)
+### Configure DNS (Optional)
 
 To host BYOC Nuon under a custom domain, configure DNS for your `root_domain` to point to the Route53 Zone created in
 the sandbox.
@@ -86,7 +82,7 @@ Additional Documentation
 
 - [Creating a subdomain that uses Amazon Route 53 as the DNS service without migrating the parent domain](https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/CreatingNewSubdomain.html)
 
-### Github App
+### Configure Github App
 
 Create a github app so BYOC Nuon can clone code for components from private repos. Configure it thusly:
 
@@ -105,7 +101,7 @@ Create a github app so BYOC Nuon can clone code for components from private repo
 Once the app has been created, scroll to the bottom and generate a PEM key. You will need to provide this as a secret
 later.
 
-### Auth0 API
+### Configure Auth0
 
 Nuon uses Auth0 for authentication. If you do not already have an Auth0 tenant, create one. In this tenant you must
 configure:
@@ -151,7 +147,7 @@ match the API URL. It cannot be changed after creation, so make sure this accura
 | Allow Cross-Origin Authentication | true                                         | Cross-Origin Authentication     |
 | Device Code                       | checked                                      | Advanced Settings > Grant Types |
 
-### Configure Inputs & Secrets
+### Update Inputs
 
 Once the dependencies have been configured, you can update your install inputs. This will trigger a workflow that's
 going to fail because the install hasn't been provisioned yet. This won't cause any problems, and you can ignore it.
@@ -194,7 +190,7 @@ Adjust the instance size if needed.
 If you set up a custom root domain, provide it here. Otherwise leave this empty and a `nuon.run` domain will be
 provisioned using your install ID.
 
-### Secrets
+### Update Secrets
 
 When provisioning the install CloudFormation stack, you will need to provide 2 secrets.
 
