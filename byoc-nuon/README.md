@@ -1,4 +1,3 @@
-{{ $region := .nuon.cloud_account.aws.region }}
 {{ $public_domain  := (dig "outputs" "nuon_dns" "public_domain"  "name" .nuon.inputs.inputs.root_domain .nuon.sandbox) }}
 {{ $private_domain := (dig "outputs" "nuon_dns" "private_domain" "name" .nuon.inputs.inputs.root_domain .nuon.sandbox) }}
 
@@ -15,8 +14,6 @@ AWS | 000000000000 | xx-vvvv-00 | vpc-000000
 </center>
 
 - [Installation](#installation)
-- [Application Links](#applicationlinks)
-- [Configuration](#configuration)
   - [DNS (wip)](#dnswip)
   - [Github App (wip)](#githubappwip)
   - [Auth0 (wip)](#auth0wip)
@@ -24,6 +21,7 @@ AWS | 000000000000 | xx-vvvv-00 | vpc-000000
     - [Create a `Single Page Application` app.](#createasinglepageapplicationapp)
     - [Create a `Native Applicaton`](#createanativeapplicaton)
   - [Configure Inputs & Secrets](#configureinputssecrets)
+- [Application Links](#applicationlinks)
 - [Accessing the EKS Cluster](#accessingtheekscluster)
 - [Secrets](#secrets)
   - [Updating Secrets](#updatingsecrets)
@@ -43,56 +41,26 @@ AWS | 000000000000 | xx-vvvv-00 | vpc-000000
 
 ## Installation
 
-{{ if .nuon.install_stack.quick_link_url }}
-
-- [AWS CloudFormation QuickLink URL]({{ .nuon.install_stack.quick_link_url }}) {{ else }}
-- Generating Quick Link
-
-{{ end }}
-
-{{ if .nuon.install_stack.template_url }}
-
-- [AWS CloudFormation Template URL]({{ .nuon.install_stack.template_url }})
-- [Compose
-  Preview](https://{{ $region }}.console.aws.amazon.com/composer/canvas?region={{ $region }}&templateURL={{ .nuon.install_stack.template_url}}&srcConsole=cloudformation)
-  {{ else }}
-- Generating CloudFormation Template URL
-
-{{ end }}
-
-<details>
-<summary>Full Template</summary>
-{{ $template := .nuon.install_stack.template_json | fromJson }}
-<pre>{{ $template | toPrettyJson }}</pre>
-</details>
-{{ else }}
-No install stack configured.
-{{ end }}
-
-## Application Links
-
-{{ if .nuon.sandbox.outputs }}
-
-| Service    | URL                                                                |
-| ---------- | ------------------------------------------------------------------ |
-| Dashboard  | [app.{{ $public_domain }}](https://app.{{ $public_domain }})       |
-| CTL API    | [api.{{ $public_domain }}](https://api.{{ $public_domain }})       |
-| Runner API | [runner.{{ $public_domain }}](https://runner.{{ $public_domain }}) |
-
-{{ else }}
-
-> [!NOTE] Results will be visible after the sandbox is deployed.
-
-{{ end }}
-
-## Configuration
-
 {{ $public_domain  := (dig "outputs" "nuon_dns" "public_domain"  "name" .nuon.inputs.inputs.root_domain .nuon.sandbox) }}
 {{ $private_domain := (dig "outputs" "nuon_dns" "private_domain" "name" .nuon.inputs.inputs.root_domain .nuon.sandbox) }}
 
-### DNS (wip)
+### Prerequisites
 
-Configure DNS for your `root_domain` to point to the Route53 Zone created in the sandbox.
+Nuon has a few dependencies you must configure ahead of time.
+
+- Custom DNS (Optional)
+- Github App
+- Auth0 API
+
+You will need an install ID to configure these. For this reason, the first step in the installation process is to create
+your Nuon install -- don't bother updating any of the inputs -- and then cancel the provision. You will use the install
+ID to configure the dependencies as detailed below. Once the dependencies are ready, update your install's inputs, then
+click on "Reprovision Install" in the "Manage" menu.
+
+### Custom DNS (Optional)
+
+To host BYOC Nuon under a custom domain, configure DNS for your `root_domain` to point to the Route53 Zone created in
+the sandbox.
 
 {{ if (and .nuon.sandbox.populated .nuon.sandbox.outputs) }}
 
@@ -118,32 +86,38 @@ Additional Documentation
 
 - [Creating a subdomain that uses Amazon Route 53 as the DNS service without migrating the parent domain](https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/CreatingNewSubdomain.html)
 
-### Github App (wip)
+### Github App
 
-1. Create an app.
-2. Configure w/ details below.
-3. Scroll to the bottom and generate a key.
-4. Use the pem key as the value for the github action secret.
+Create a github app so BYOC Nuon can clone code for components from private repos. Configure it thusly:
 
-| URL          |                                          |
-| ------------ | ---------------------------------------- |
-| Homepage URL | https://app.{{ $public_domain }}         |
-| Setup URL    | https://app.{{ $public_domain }}/connect |
+- Github app name: (pick any name)
+- Homepage URL: https://app.{{ $public_domain }}
+- Post Installation:
+  - Setup URL: https://app.{{ $public_domain }}/connect
+  - Redirect on Update: check
+- Webhook:
+  - Webhook: un-check
+- Permissions:
+  - Contents: Read-only
+  - Where can this GitHub app be installed?: Only on this account. (unless you have repos you need to access in other
+    GitHub accounts.)
 
-### Auth0 (wip)
+Once the app has been created, scroll to the bottom and generate a PEM key. You will need to provide this as a secret
+later.
 
-1. At a high level, deploy the install and wait for the sandbox to provision.
-2. Follow these instructions.
-3. Update the Auth Inputs.
-4. Update the secrets (docs pending).
+### Auth0 API
 
-You will be need to create three things in Auth0:
+Nuon uses Auth0 for authentication. If you do not already have an Auth0 tenant, create one. In this tenant you must
+configure:
 
-1. An API
-1. A Single Page Application
-1. A Native Application
+- An API
+- A Single Page Application (for the CTL API to use)
+- A Native Application (for the Dashboard to use)
 
-#### Create the API.
+#### API
+
+The value of "Identifier" must be `https://api.{{ $public_domain }}`. This will be used the audience identifier and must
+match the API URL. It cannot be changed after creation, so make sure this accurate.
 
 | Setting                                    | Value                            | Section              |
 | ------------------------------------------ | -------------------------------- | -------------------- |
@@ -153,58 +127,105 @@ You will be need to create three things in Auth0:
 | Implicit/Hybrid Flow Access Token Lifetime | 86400                            | Access Token Setting |
 | Allow Skipping User Consent                | true                             | Access Settings      |
 
-#### Create a `Single Page Application` app.
-
-Configure as follows...
+#### Single Page Application
 
 | Setting                          | Value                                              | Section                      |
 | -------------------------------- | -------------------------------------------------- | ---------------------------- |
 | Name                             | Nuon App - {{ .nuon.install.name }}                | In creation modal.           |
 | Logout URL                       | <blank/>                                           | Application URIs             |
-| Application Login URL            | <blank/>                                           | Application URIs             |
-| Allowed Callback URLS            | https://app.{{ $public_domain }}/api/auth/callback | Application URIs             |
-| Application Logout URL           | https://app.{{ $public_domain }}                   | Application URIs             |
+| Application Login URI            | <blank/>                                           | Application URIs             |
+| Allowed Callback URLs            | https://app.{{ $public_domain }}/api/auth/callback | Application URIs             |
+| Allowed Logout URLs              | https://app.{{ $public_domain }}                   | Application URIs             |
 | Allowed Web Origins              | https://app.{{ $public_domain }}                   | Application URIs             |
 | Alow Cross-Origin Authentication | true                                               | Cross-Origing Authentication |
 | Maxmium Refresh Token Lifetime   | 31557600                                           | Refresh Token Expiration     |
 | Allow Refresh Token Rotation     | true                                               | Refresh Token Rotation       |
 | Rotation Overlap Period          | 0                                                  | Refresh Token Rotation       |
 
-#### Create a `Native Applicaton`
+#### Native Applicaton
 
-Configure as follows...
-
-| Setting                           | Value                                        | Section                     |
-| --------------------------------- | -------------------------------------------- | --------------------------- |
-| Name                              | Nuon CLI - {{ .nuon.install.name }}          | In creation modal.          |
-| Description                       | For BYOC Nuon Install {{ .nuon.install.id }} | In creation modal.          |
-| Allow Cross-Origin Authentication | true                                         | Cross-Origin Authentication |
-
-Open the advanced settings section and enable the `device_code` grant type.
+| Setting                           | Value                                        | Section                         |
+| --------------------------------- | -------------------------------------------- | ------------------------------- |
+| Name                              | Nuon CTL API - {{ .nuon.install.name }}      | In creation modal.              |
+| Description                       | For BYOC Nuon Install {{ .nuon.install.id }} | In creation modal.              |
+| Allow Cross-Origin Authentication | true                                         | Cross-Origin Authentication     |
+| Device Code                       | checked                                      | Advanced Settings > Grant Types |
 
 ### Configure Inputs & Secrets
 
-| App                                | Value      | Input                         |
-| ---------------------------------- | ---------- | ----------------------------- |
-| `API Gateway {{.nuon.install.id}}` | Identifier | `auth_audience`               |
-| `app.{{ $public_domain }}`         | Domain     | `auth_issuer_url`             |
-| `app.{{ $public_domain }}`         | Client ID  | `auth_client_id_dashboard_ui` |
-| `Nuon CLI {{ .nuon.install.id }}`  | Client ID  | `auth_client_id_dashboard_ui` |
+Once the dependencies have been configured, you can update your install inputs. This will trigger a workflow that's
+going to fail because the install hasn't been provisioned yet. This won't cause any problems, and you can ignore it.
 
-| App                                | Value           | Secret                | Target K8S Secret                               |
-| ---------------------------------- | --------------- | --------------------- | ----------------------------------------------- |
-| `API Gateway {{.nuon.install.id}}` | Client Secret   | `Auth0 Client Secret` | `dashboard-ui.dashboard-ui-auth0-client-secret` |
-| -                                  | `autogenerated` | `Auth0 Secret`        | `dashboard-ui.dashboard-ui-auth0-secret`        |
+#### Nuon configuration (Optional)
 
-#### NB: GitHub App Key
+TBD
 
-The GitHub App Key secret must be updated w/ the following to keep the multiline behavior.
+#### Nuon database configuration (Optional)
 
-```bash
-aws --region {{ .nuon.install_stack.outputs.region }} --profile $AWS_PROFILE secretsmanager update-secret \
-    --secret-id  {{ .nuon.install_stack.outputs.github_app_key_arn}} \
-    --secret-string file://path-to-file.pem
-```
+Adjust the instance size if needed.
+
+#### Temporal database configuration
+
+Adjust the instance size if needed.
+
+#### Clickhouse Cluster
+
+Adjust the instance size if needed.
+
+#### Authentication Configuration
+
+| Input                          | Value                                |
+| ------------------------------ | ------------------------------------ |
+| Auth0 Issuer URL               | your Auth0 tenant URL                |
+| Auth0 Audience                 | your Auth0 API audience              |
+| Auth0 Client ID - CTL API      | your Auth0 native app client ID      |
+| Auth0 Client ID - Dashboard UI | your Auth0 single-page app client ID |
+
+#### Github
+
+| Input                | Value                              |
+| -------------------- | ---------------------------------- |
+| Github App Name      | name of your github app            |
+| Github App ID        | ID of your github app              |
+| Github App client ID | the client ID from your Github app |
+
+#### DNS Configuration
+
+If you set up a custom root domain, provide it here. Otherwise leave this empty and a `nuon.run` domain will be
+provisioned using your install ID.
+
+### Secrets
+
+When provisioning the install CloudFormation stack, you will need to provide 2 secrets.
+
+| Secret             | Value                                            |
+| ------------------ | ------------------------------------------------ |
+| github_app_key     | your base64 encoded PEM key                      |
+| auth_client_secret | the client secret from you Auth0 single-page app |
+
+The github app PEM key must be base64 encoded. AWS CloudFormation does not preserve newlines in text fields. By encoding
+the PEM key before pasting it in, and decoding it later when it's read, we can preserve the newlines in the text.
+
+## Application Links
+
+Once Nuon is successfully provisioned, you can inspect it at the following URLs.
+
+{{ if .nuon.sandbox.outputs }}
+
+| Service                          | URL                                                                                                                                                                                                                                                                                                                            |
+| -------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Dashboard                        | [app.{{ $public_domain }}](https://app.{{ $public_domain }})                                                                                                                                                                                                                                                                   |
+| CTL API                          | [api.{{ $public_domain }}](https://api.{{ $public_domain }})                                                                                                                                                                                                                                                                   |
+| Runner API                       | [runner.{{ $public_domain }}](https://runner.{{ $public_domain }})                                                                                                                                                                                                                                                             |
+| AWS CloudFormation QuickLink URL | [{{ .nuon.install_stack.quick_link_url }}]({{ .nuon.install_stack.quick_link_url }})                                                                                                                                                                                                                                           |
+| AWS CloudFormation Template URL  | [{{ .nuon.install_stack.template_url }}]({{ .nuon.install_stack.template_url }})                                                                                                                                                                                                                                               |
+| Compose Preview                  | [https://{{ $region }}.console.aws.amazon.com/composer/canvas?region={{ $region }}&templateURL={{ .nuon.install_stack.template_url}}&srcConsole=cloudformation](https://{{ $region }}.console.aws.amazon.com/composer/canvas?region={{ $region }}&templateURL={{ .nuon.install_stack.template_url}}&srcConsole=cloudformation) |
+
+{{ else }}
+
+> Install is still provisioning...
+
+{{ end }}
 
 ## Accessing the EKS Cluster
 
