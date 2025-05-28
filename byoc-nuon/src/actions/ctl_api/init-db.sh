@@ -27,7 +27,7 @@ echo "[ctl_api init] reading db access secrets from AWS"
 secret=`aws --region $region secretsmanager get-secret-value --secret-id=$secret_arn`
 admin_username=`echo $secret | jq -r '.SecretString' | jq -r '.username'`
 admin_password=`echo $secret | jq -r '.SecretString' | jq -r '.password'`
-admin_db="nuonadmin"
+admin_db="nuon"
 
 echo "[ctl_api init] preparing to initialize"
 function run_cmd() {

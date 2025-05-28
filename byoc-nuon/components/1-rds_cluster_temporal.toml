@@ -4,8 +4,8 @@ type              = "terraform_module"
 terraform_version = "1.11.3"
 
 [public_repo]
-directory = "aws/rds-cluster"
-repo      = "nuonco/components"
+repo      = "nuonco/byoc"
+directory = "byoc-nuon/src/components/rds_cluster_temporal"
 branch    = "main"
 
 [vars]
