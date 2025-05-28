@@ -10,6 +10,7 @@ description  = "What EC2 instance type should each clickhouse cluster node deplo
 default      = "t3a.large"
 display_name = "Cluster Instance Type"
 group        = "clickhouse"
+internal     = true
 
 [[input]]
 name         = "ch_instance_type_keeper"
@@ -17,3 +18,4 @@ description  = "What EC2 instance type should each clickhouse cluster node deplo
 default      = "t3a.medium"
 display_name = "Keeper Instance Type"
 group        = "clickhouse"
+internal     = true

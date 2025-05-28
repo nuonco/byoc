@@ -2,11 +2,12 @@
 [[group]]
 name         = "rds-nuon"
 description  = "Configuration for the postgres database Nuon will create for itself."
-display_name = "Nuon database configuration"
+display_name = "RDS Cluster: Nuon"
 
 [[input]]
 name         = "nuon_db_instance_type"
 description  = "What RDS DB instance type would you like to deploy for nuon?"
-default      = "db.t4g.medium"
+default      = "db.r6gd.large"
 display_name = "RDS Instance Type"
 group        = "rds-nuon"
+internal     = true

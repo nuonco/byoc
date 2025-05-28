@@ -2,7 +2,7 @@
 [[group]]
 name         = "nuon"
 description  = "Configure your Nuon install."
-display_name = "Nuon configuration"
+display_name = "Nuon Configuration"
 
 [[input]]
 name         = "env"
@@ -10,3 +10,4 @@ description  = "The nuon env. One of: dev, prod. If unsure, it's prod."
 default      = "prod"
 display_name = "Environement"
 group        = "nuon"
+internal     = true

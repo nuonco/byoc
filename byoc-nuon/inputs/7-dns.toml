@@ -1,8 +1,8 @@
 #:schema https://api.nuon.co/v1/general/config-schema?source=inputs
 [[group]]
 name         = "dns"
-description  = "DNS Configrations"
-display_name = "Configurations for the root domain for Route53"
+description  = "Configurations for the root domain for Route53"
+display_name = "Nuon: DNS"
 
 [[input]]
 name         = "root_domain"
