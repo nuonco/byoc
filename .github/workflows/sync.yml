@@ -6,7 +6,7 @@ on:
   workflow_dispatch:
     inputs:
       NUON_DEBUG:
-       description: Log Level
+       description: NUON_DEBUG
        required: true
        default: "false"
        type: choice
@@ -19,6 +19,7 @@ defaults:
 env:
   NUON_ORG_ID: ${{ secrets.NUON_ORG_ID }}
   NUON_API_TOKEN: ${{ secrets.NUON_API_TOKEN }}
+  NUON_DEBUG: "${{ github.event.inputs.NUON_DEBUG }}"
 
 jobs:
   sync:
@@ -30,7 +31,15 @@ jobs:
       - name: Install CLI
         id: cli
         run: ./scripts/install-cli.sh
+      - name: Change Directory
+        id: cd
+        run: |
+          cd byoc-nuon
+          pwd
+          tree
       - name: Sync configs
         id: sync
         run: |
-          nuon apps sync-dir ./byoc-nuon
+          cd byoc-nuon
+          echo "syncing from inside directory: "`pwd`
+          nuon apps sync-dir .
