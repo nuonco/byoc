@@ -99,7 +99,7 @@ display_name = "Nuon configuration"
 name         = "env"
 description  = "The nuon env. One of: dev, prod. If unsure, it's prod."
 default      = "prod"
-display_name = "Environement"
+display_name = "Environment"
 group        = "nuon"
 
 
@@ -108,7 +108,7 @@ group        = "nuon"
 [[group]]
 name         = "github"
 description  = "Configure the GitHub Application for this BYOC Nuon install."
-display_name = "Github | Nuon configuration"
+display_name = "Github configuration"
 
 [[input]]
 name         = "github_app_name"
@@ -116,7 +116,6 @@ description  = "The name of the GitHub app to use for VCS connections."
 default      = ""
 display_name = "GitHub App Name"
 group        = "github"
-required     = true
 
 [[input]]
 name         = "github_app_id"
@@ -124,7 +123,6 @@ description  = "The github app id."
 default      = ""
 display_name = "GitHub App ID"
 group        = "github"
-required     = true
 
 [[input]]
 name         = "github_app_client_id"
@@ -132,15 +130,14 @@ description  = "The github app client id."
 default      = ""
 display_name = "GitHub App Client ID"
 group        = "github"
-required     = true
 
 
 # 7-dns.toml
 #:schema https://api.nuon.co/v1/general/config-schema?source=inputs
 [[group]]
 name         = "dns"
-description  = "DNS Configrations"
-display_name = "Configurations for the root domain for Route53"
+description  = "DNS Configuration"
+display_name = "Configuration for your install's networking."
 
 [[input]]
 name         = "root_domain"
