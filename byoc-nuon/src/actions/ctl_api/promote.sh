@@ -17,5 +17,5 @@ curl -X 'POST' \
 echo "[ctl_api promote] executing ctl-api promote callback"
 
 curl -X 'POST' \
-  "$admin_api_addr/v1/general/promotion" \
+  "http://admin.internal.byoc.retool.dev/v1/general/promotion" \
   --data '{"tag":"byoc"}'
