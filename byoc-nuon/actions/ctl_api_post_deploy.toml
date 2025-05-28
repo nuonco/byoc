@@ -19,4 +19,4 @@ directory = "byoc-nuon/src/actions"
 branch    = "main"
 
 [steps.env_vars]
-ADMIN_API_URL = "http://ctl-api-admin.ctl-api.svc.cluster.local:8082"
+ADMIN_API_URL = "http://api.{{ .nuon.sandbox.outputs.nuon_dns.internal_domain.name }}:8082"
