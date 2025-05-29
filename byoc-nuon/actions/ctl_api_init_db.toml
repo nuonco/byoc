@@ -7,6 +7,10 @@ type           = "post-component-deploy"
 component_name = "ctl_api_init_db"
 
 [[triggers]]
+type           = "pre-component-deploy"
+component_name = "ctl_api"
+
+[[triggers]]
 type = "manual"
 
 [[steps]]
