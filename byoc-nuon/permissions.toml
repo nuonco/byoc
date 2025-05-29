@@ -1,20 +1,21 @@
 [maintenance_role]
-name = "{{.nuon.id}}-maintenance"
-description = "maintenance"
-display_name = "maintenance"
+name                 = "{{ .nuon.install.id }}-maintenance"
+description          = "maintenance"
+display_name         = "byoc-nuon maintenance role"
 permissions_boundary = "./permissions/maintenance_boundary.json"
 
 [[maintenance_role.policies]]
 managed_policy_name = "AdministratorAccess"
 
+# NOTE: the tag in this policy is determined by the rds_cluster_* component config. the format is known ahead of time by convention.
 [[maintenance_role.policies]]
-name = "limited-secrets-manage"
+name = "{{ .nuon.install.id }}-limited-secrets-manage-rds"
 contents = """
 {
     "Version": "2012-10-17",
     "Statement": [
         {
-            "Sid": "AllowSecretsManagerRDSScoped",
+            "Sid": "AllowSecretsManagerReadScoped",
             "Effect": "Allow",
             "Action": [
                 "secretsmanager:CreateSecret",
@@ -26,8 +27,23 @@ contents = """
                 "secretsmanager:DescribeSecret",
                 "secretsmanager:ListSecretVersionIds"
             ],
-            "Resource": "arn:aws:secretsmanager:{{.nuon.cloud_account.aws.region}}::secret:rds!*"
-        },
+            "Resource": "arn:aws:secretsmanager:{{ .nuon.cloud_account.aws.region }}::secret:rds!*",
+            "Condition": {
+                "StringEquals": {
+                    "aws:ResourceTag/install.nuon.co/id": "{{ .nuon.install.id }}"
+                }
+            }
+        }
+    ]
+}
+"""
+
+[[maintenance_role.policies]]
+name = "{{ .nuon.install.id }}-allow-secret-list"
+contents = """
+{
+    "Version": "2012-10-17",
+    "Statement": [
         {
             "Sid": "AllowListSecrets",
             "Effect": "Allow",
@@ -41,7 +57,7 @@ contents = """
 """
 
 [[maintenance_role.policies]]
-name = "bucket-put-policy-scoped"
+name = "{{ .nuon.install.id }}-limited-put-bucket-policy"
 contents = """
 {
     "Version": "2012-10-17",
@@ -49,43 +65,25 @@ contents = """
         {
             "Effect": "Allow",
             "Action": "s3:PutBucketPolicy",
-            "Resource": "arn:aws:s3:::{{ .nuon.install.name }}-byoc-nuon-*"
+            "Resource": "arn:aws:s3:{{ .nuon.cloud_account.aws.region }}::{{ .nuon.install.id }}-*"
         }
     ]
 }
 """
 
-# [[maintenance_role.policies]]
-# name = "allow-describe-cluster"
-# contents = """
-# {
-#     "Version": "2012-10-17",
-#     "Statement": [
-#         {
-#             "Effect": "Allow",
-#             "Action": [
-#                 "eks:*"
-#             ],
-#             "Resource": "arn:aws:eks:{{ .nuon.cloud_account.aws.region }}:::cluster/n-{{ .nuon.install.id }}"
-#         }
-#     ]
-# }
-# """
-
 [provision_role]
-name = "{{.nuon.install.id}}-provision"
-description = "maintenance"
-display_name = "maintenance"
+name                 = "{{ .nuon.install.id }}-provision"
+description          = "provision"
+display_name         = "byoc-nuon provision role"
 permissions_boundary = "./permissions/provision_boundary.json"
 
 [[provision_role.policies]]
 managed_policy_name = "AdministratorAccess"
 
-
 [deprovision_role]
-name = "{{.nuon.install.id}}-deprovision"
-description = "deprovision"
-display_name = "deprovision"
+name                 = "{{.nuon.install.id}}-deprovision"
+description          = "deprovision"
+display_name         = "byoc-nuon deprovision role"
 permissions_boundary = "./permissions/deprovision_boundary.json"
 
 [[deprovision_role.policies]]
