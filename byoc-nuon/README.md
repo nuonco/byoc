@@ -1,3 +1,4 @@
+{{ $region := .nuon.cloud_account.aws.region }}
 {{ $public_domain  := (dig "outputs" "nuon_dns" "public_domain"  "name" .nuon.inputs.inputs.root_domain .nuon.sandbox) }}
 {{ $private_domain := (dig "outputs" "nuon_dns" "private_domain" "name" .nuon.inputs.inputs.root_domain .nuon.sandbox) }}
 
@@ -13,32 +14,37 @@ AWS | 000000000000 | xx-vvvv-00 | vpc-000000
   </small>
 </center>
 
-- [Installing Nuon](#installingnuon)
-  - [Configure DNS (Optional)](#configurednsoptional)
-  - [Configure Github App](#configuregithubapp)
-  - [Configure Auth0](#configureauth0)
-  - [Update Inputs](#updateinputs)
-  - [Update Secrets](#updatesecrets)
-- [Application Links](#applicationlinks)
-- [Accessing the EKS Cluster](#accessingtheekscluster)
+- [Installing Nuon](#installing-nuon)
+  - [Configure DNS (Optional)](#configure-dns-optional)
+  - [Configure Github App](#configure-github-app)
+  - [Configure Auth0](#configure-auth0)
+    - [API](#api)
+    - [Single Page Application](#single-page-application)
+    - [Native Applicaton](#native-applicaton)
+  - [Update Inputs](#update-inputs)
+    - [Nuon configuration (Optional)](#nuon-configuration-optional)
+    - [Nuon database configuration (Optional)](#nuon-database-configuration-optional)
+    - [Temporal database configuration](#temporal-database-configuration)
+    - [Clickhouse Cluster](#clickhouse-cluster)
+    - [Authentication Configuration](#authentication-configuration)
+    - [Github](#github)
+    - [DNS Configuration](#dns-configuration)
+  - [Update Secrets](#update-secrets)
+- [Application Links](#application-links)
+- [Accessing the EKS Cluster](#accessing-the-eks-cluster)
 - [Secrets](#secrets)
-  - [Updating Secrets](#updatingsecrets)
+  - [Updating Secrets](#updating-secrets)
 - [Components](#components)
-  - [RDS Clusters](#rdsclusters)
+  - [RDS Clusters](#rds-clusters)
 - [CLI](#cli)
 - [State](#state)
   - [Sandbox](#sandbox)
-  - [Install Stack](#installstack)
+  - [Install Stack](#install-stack)
   - [Actions](#actions)
   - [Components](#components-1)
   - [Inputs](#inputs)
   - [Secrets](#secrets-1)
-  - [Full State](#fullstate)
-
-{{ if and .nuon.install_stack.populated }}
-
-{{ $public_domain  := (dig "outputs" "nuon_dns" "public_domain"  "name" .nuon.inputs.inputs.root_domain .nuon.sandbox) }}
-{{ $private_domain := (dig "outputs" "nuon_dns" "private_domain" "name" .nuon.inputs.inputs.root_domain .nuon.sandbox) }}
+  - [Full State](#full-state)
 
 ## Installing Nuon
 
