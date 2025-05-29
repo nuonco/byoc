@@ -81,7 +81,7 @@ module "install_template_bucket" {
   }
 
   source  = "terraform-aws-modules/s3-bucket/aws"
-  version = ">= v3.2.4"
+  version = ">= v4.9.0"
 
   bucket = local.install_templates_bucket_name
   versioning = {
@@ -91,9 +91,11 @@ module "install_template_bucket" {
   attach_deny_insecure_transport_policy = true
   attach_require_latest_tls_policy      = true
 
-  attach_public_policy = false
-  block_public_acls    = false
-  block_public_policy  = false
+  attach_public_policy    = true
+  block_public_acls       = false
+  block_public_policy     = false
+  restrict_public_buckets = false
+  ignore_public_acls      = false
 
   control_object_ownership = true
   object_ownership         = "BucketOwnerEnforced"
