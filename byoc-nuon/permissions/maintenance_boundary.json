@@ -3,7 +3,21 @@
   "Statement": [
     {
       "Effect": "Allow",
-      "Action": "*",
+      "Action": [
+        "cloudwatch:*",
+        "ec2:*",
+        "eks:*",
+        "iam:*",
+        "rds:*",
+        "s3:*",
+        "secretsmanager:*",
+        "sqs:*",
+        "ecr:*",
+        "acm:*",
+        "Route53:*",
+        "kms:*",
+        "organizations:DescribeOrganization"
+      ],
       "Resource": "*"
     }
   ]

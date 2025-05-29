@@ -7,6 +7,10 @@ type           = "post-component-deploy"
 component_name = "ctl_api_init_db"
 
 [[triggers]]
+type           = "pre-component-deploy"
+component_name = "ctl_api"
+
+[[triggers]]
 type = "manual"
 
 [[steps]]
@@ -19,6 +23,8 @@ directory = "byoc-nuon/src/actions"
 branch    = "main"
 
 [steps.env_vars]
+DB_USER    = "{{ .nuon.components.rds_cluster_nuon.outputs.db_instance_username }}"
+DB_NAME    = "{{ .nuon.components.rds_cluster_nuon.outputs.db_instance_name }}"
 SECRET_ARN = "{{ .nuon.components.rds_cluster_nuon.outputs.db_instance_master_user_secret_arn }}"
 DB_ADDR    = "{{ .nuon.components.rds_cluster_nuon.outputs.address }}"
 DB_PORT    = "5432"
