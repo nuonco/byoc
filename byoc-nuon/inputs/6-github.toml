@@ -2,7 +2,7 @@
 [[group]]
 name         = "github"
 description  = "Configure the GitHub Application for this BYOC Nuon install."
-display_name = "Github | Nuon configuration"
+display_name = "Nuon: Github App"
 
 [[input]]
 name         = "github_app_name"

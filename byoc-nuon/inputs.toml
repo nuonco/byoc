@@ -1,18 +1,19 @@
-# generated on: 2025-05-23 14:45:53.778325+00:00
+# generated on: 2025-05-29 05:27:12.502967+00:00
 
 # 1-rds-nuon.toml
 #:schema https://api.nuon.co/v1/general/config-schema?source=inputS
 [[group]]
 name         = "rds-nuon"
 description  = "Configuration for the postgres database Nuon will create for itself."
-display_name = "Nuon database configuration"
+display_name = "RDS Cluster: Nuon"
 
 [[input]]
 name         = "nuon_db_instance_type"
 description  = "What RDS DB instance type would you like to deploy for nuon?"
-default      = "db.t4g.medium"
+default      = "db.r6gd.large"
 display_name = "RDS Instance Type"
 group        = "rds-nuon"
+internal     = true
 
 
 # 2-rds-temporal.toml
@@ -20,14 +21,15 @@ group        = "rds-nuon"
 [[group]]
 name         = "rds-temporal"
 description  = "Configuration for the postgres database Nuon will create for the Temporal deployment."
-display_name = "Temporal database configuration"
+display_name = "RDS Cluster: Temporal"
 
 [[input]]
 name         = "temporal_db_instance_type"
 description  = "What RDS DB instance type would you like to deploy for temporal?"
-default      = "db.t4g.medium"
+default      = "db.m5.2xlarge"
 display_name = "RDS Instance Type"
 group        = "rds-temporal"
+internal     = true
 
 
 # 3-clickhouse.toml
@@ -43,6 +45,7 @@ description  = "What EC2 instance type should each clickhouse cluster node deplo
 default      = "t3a.large"
 display_name = "Cluster Instance Type"
 group        = "clickhouse"
+internal     = true
 
 [[input]]
 name         = "ch_instance_type_keeper"
@@ -50,14 +53,15 @@ description  = "What EC2 instance type should each clickhouse cluster node deplo
 default      = "t3a.medium"
 display_name = "Keeper Instance Type"
 group        = "clickhouse"
+internal     = true
 
 
 # 4-auth.toml
 #:schema https://api.nuon.co/v1/general/config-schema?source=inputs
 [[group]]
 name         = "auth"
-description  = "Auth0"
-display_name = "Authentication Configuration."
+description  = "Auth0 Configuration"
+display_name = "Nuon: Auth0"
 
 [[input]]
 name         = "auth_issuer_url"
@@ -93,14 +97,15 @@ group        = "auth"
 [[group]]
 name         = "nuon"
 description  = "Configure your Nuon install."
-display_name = "Nuon configuration"
+display_name = "Nuon Configuration"
 
 [[input]]
 name         = "env"
 description  = "The nuon env. One of: dev, prod. If unsure, it's prod."
 default      = "prod"
-display_name = "Environment"
+display_name = "Environement"
 group        = "nuon"
+internal     = true
 
 
 # 6-github.toml
@@ -108,7 +113,7 @@ group        = "nuon"
 [[group]]
 name         = "github"
 description  = "Configure the GitHub Application for this BYOC Nuon install."
-display_name = "Github configuration"
+display_name = "Nuon: Github App"
 
 [[input]]
 name         = "github_app_name"
@@ -116,6 +121,7 @@ description  = "The name of the GitHub app to use for VCS connections."
 default      = ""
 display_name = "GitHub App Name"
 group        = "github"
+required     = true
 
 [[input]]
 name         = "github_app_id"
@@ -123,6 +129,7 @@ description  = "The github app id."
 default      = ""
 display_name = "GitHub App ID"
 group        = "github"
+required     = true
 
 [[input]]
 name         = "github_app_client_id"
@@ -130,14 +137,15 @@ description  = "The github app client id."
 default      = ""
 display_name = "GitHub App Client ID"
 group        = "github"
+required     = true
 
 
 # 7-dns.toml
 #:schema https://api.nuon.co/v1/general/config-schema?source=inputs
 [[group]]
 name         = "dns"
-description  = "DNS Configuration"
-display_name = "Configuration for your install's networking."
+description  = "Configurations for the root domain for Route53"
+display_name = "Nuon: DNS"
 
 [[input]]
 name         = "root_domain"
