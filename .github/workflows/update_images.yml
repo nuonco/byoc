@@ -28,11 +28,10 @@ jobs:
       - name: Save version
         run: |
           echo "$VERSION" > version.txt
-      - name: Update Images
-        working-directory: ./byoc-nuon/
+      - name: Update Image Tags
         run: |
-          ./scripts/update_images.sh ./components/4-image-nuon_ctl_api.toml "$VERSION"
-          ./scripts/update_images.sh ./components/4-image-nuon_dashboard_ui.toml "$VERSION"
+          ./scripts/update_image_tag.sh ./byoc-nuon/components/4-image-nuon_ctl_api.toml "$VERSION"
+          ./scripts/update_image_tag.sh ./byoc-nuon/components/4-image-nuon_dashboard_ui.toml "$VERSION"
       - name: Commit changes
         run: |
           git checkout -b "nuonbot/update-${VERSION}"
