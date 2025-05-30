@@ -1,0 +1,44 @@
+---
+name: Update Images
+on:
+  repository_dispatch:
+    types: [update_images]
+  workflow_dispatch:
+    inputs:
+      version:
+        required: true
+        type: string
+env:
+  GH_TOKEN: ${{ secrets.NUON_BOT_GITHUB_TOKEN }}
+  VERSION: ${{ github.event.client_payload.version }}
+jobs:
+  update_images:
+    name: Update Images
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+      - name: Enable commit signing
+        uses: crazy-max/ghaction-import-gpg@v6
+        with:
+          gpg_private_key: ${{ secrets.NUON_BOT_PRIVATE_KEY }}
+          passphrase: ${{ secrets.NUON_BOT_PASSPHRASE }}
+          git_user_signingkey: true
+          git_commit_gpgsign: true
+      - name: Save version
+        run: |
+          echo "$VERSION" > version.txt
+      - name: Update Images
+        working-directory: ./byoc-nuon/
+        run: |
+          ./scripts/update_images.sh ./components/4-image-nuon_ctl_api.toml "$VERSION"
+          ./scripts/update_images.sh ./components/4-image-nuon_dashboard_ui.toml "$VERSION"
+      - name: Commit changes
+        run: |
+          git checkout -b "nuonbot/update-${VERSION}"
+          git add .
+          git commit -m "ci: update images for Nuon ${VERSION}"
+          git push -u origin "nuonbot/update-${VERSION}"
+      - name: Open PR
+        run: |
+          gh pr create --title "ci: update images for Nuon ${VERSION}" --body "ci: update images for Nuon ${VERSION}"
