@@ -10,7 +10,7 @@ on:
         type: string
 env:
   GH_TOKEN: ${{ secrets.NUON_BOT_GITHUB_TOKEN }}
-  VERSION: ${{ github.event.client_payload.version }}
+  VERSION: ${{ inputs.version }}
 jobs:
   update_images:
     name: Update Images
