@@ -3,14 +3,9 @@ name: Update Images
 on:
   repository_dispatch:
     types: [update_images]
-  workflow_dispatch:
-    inputs:
-      version:
-        required: true
-        type: string
 env:
   GH_TOKEN: ${{ secrets.NUON_BOT_GITHUB_TOKEN }}
-  VERSION: ${{ inputs.version }}
+  VERSION: ${{ github.event.client_payload.version }}
 jobs:
   update_images:
     name: Update Images
