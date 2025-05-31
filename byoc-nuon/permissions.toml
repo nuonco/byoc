@@ -65,7 +65,7 @@ contents = """
         {
             "Effect": "Allow",
             "Action": "s3:PutBucketPolicy",
-            "Resource": "arn:aws:s3:{{ .nuon.cloud_account.aws.region }}::{{ .nuon.install.id }}-*"
+            "Resource": "*"
         }
     ]
 }
