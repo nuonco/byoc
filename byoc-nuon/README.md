@@ -61,6 +61,8 @@ click on "Reprovision Install" in the "Manage" menu.
 
 ### Configure DNS (Optional)
 
+#### Use a Custom Domain
+
 To host BYOC Nuon under a custom domain, configure DNS for your `root_domain` to point to the Route53 Zone created in
 the sandbox.
 
@@ -87,6 +89,89 @@ the sandbox.
 Additional Documentation
 
 - [Creating a subdomain that uses Amazon Route 53 as the DNS service without migrating the parent domain](https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/CreatingNewSubdomain.html)
+
+#### Subdomain Delegation
+
+To make provisioning DNS for installs automatic, Nuon supports subdomain delegation under a root domain of your
+choosing.
+
+To use this feature, set up a Route53 zone, and enter it's domain in the "Root Domain" input when installing Nuon. Then,
+add the required runner permissions to create and delete records from the zone.
+
+```toml
+[[provision_role.policies]]
+name = "{{ .nuon.install.id }}-limited-put-bucket-policy"
+contents = """
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "AllowUpsertNSRecords",
+      "Effect": "Allow",
+      "Action": [
+        "route53:ChangeResourceRecordSets"
+      ],
+      "Resource": "arn:aws:route53:::hostedzone/Z1234567890ABC",
+      "Condition": {
+        "StringEquals": {
+          "route53:RRType": "NS"
+        },
+        "ForAllValues:StringEquals": {
+          "route53:ChangeAction": [
+            "UPSERT"
+          ]
+        }
+      }
+  ]
+}
+"""
+
+[[deprovision_role.policies]]
+name = "{{ .nuon.install.id }}-limited-put-bucket-policy"
+contents = """
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "AllowDeleteNSRecords",
+      "Effect": "Allow",
+      "Action": [
+        "route53:ChangeResourceRecordSets"
+      ],
+      "Resource": "arn:aws:route53:::hostedzone/Z1234567890ABC",
+      "Condition": {
+        "StringEquals": {
+          "route53:RRType": "NS"
+        },
+        "ForAllValues:StringEquals": {
+          "route53:ChangeAction": [
+            "DELETE"
+          ]
+        }
+      }
+    }
+  ]
+}
+"""
+```
+
+If you're using our aws-eks sandbox, add `enable_nuon_dns = "true"` to the vars.
+
+```toml
+#:schema https://api.nuon.co/v1/general/config-schema?source=sandbox
+terraform_version = "1.11.3"
+
+[public_repo]
+directory = "."
+repo      = "nuonco/aws-eks-sandbox"
+branch    = "main"
+
+[vars]
+enable_nuon_dns = "true"
+```
+
+When provisioning an install for this app, an NS record named `{{install_id}}.{{your_root_domain}}` will be created in
+your Route53 zone.
 
 ### Configure Github App
 
