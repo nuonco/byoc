@@ -6,18 +6,17 @@ on:
   workflow_dispatch:
     inputs:
       NUON_DEBUG:
-       description: NUON_DEBUG
-       required: true
-       default: "false"
-       type: choice
-       options:
-       - true
-       - false
+        description: NUON_DEBUG
+        required: true
+        default: "false"
+        type: choice
+        options:
+          - true
+          - false
 defaults:
   run:
     shell: bash
 env:
-  NUON_ORG_ID: ${{ secrets.NUON_ORG_ID }}
   NUON_API_TOKEN: ${{ secrets.NUON_API_TOKEN }}
   NUON_DEBUG: "${{ github.event.inputs.NUON_DEBUG }}"
 
@@ -27,19 +26,20 @@ jobs:
     name: Push to Nuon
     steps:
       - name: Checkout code
+        id: checkout
         uses: actions/checkout@v3
       - name: Install CLI
         id: cli
         run: ./scripts/install-cli.sh
-      - name: Change Directory
-        id: cd
-        run: |
-          cd byoc-nuon
-          pwd
-          tree
-      - name: Sync configs
+      - name: Sync
         id: sync
-        run: |
-          cd byoc-nuon
-          echo "syncing from inside directory: "`pwd`
-          nuon apps sync-dir .
+        working-directory: byoc-nuon
+        run: nuon apps sync-dir .
+        env:
+          NUON_ORG_ID: org4f5hq4tyo44legra6r4nm18
+      - name: Sync to orggxqsc8f5zns1jra0oplc0ff
+        id: sync_to_orggxqsc8f5zns1jra0oplc0ff
+        working-directory: byoc-nuon
+        run: nuon apps sync-dir .
+        env:
+          NUON_ORG_ID: orggxqsc8f5zns1jra0oplc0ff
