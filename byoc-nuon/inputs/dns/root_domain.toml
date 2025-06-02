@@ -1,13 +1,3 @@
-<<<<<<< HEAD:byoc-nuon/inputs/7-dns.toml
-#:schema https://api.nuon.co/v1/general/config-schema?source=inputs
-[[group]]
-name         = "dns"
-description  = "Configurations for the root domain for Route53"
-display_name = "Nuon: DNS"
-
-[[input]]
-=======
->>>>>>> 86f051b (feat: update to new structure):byoc-nuon/inputs/dns/root_domain.toml
 name         = "root_domain"
 description  = "The root domain. Services will be made available at subdomains of this root domain."
 default      = "byoc.for.everyone.example.com"

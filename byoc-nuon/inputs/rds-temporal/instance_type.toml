@@ -1,0 +1,7 @@
+#:schema http://localhost:8081/v1/general/config-schema?type=inputs
+name         = "temporal_db_instance_type"
+description  = "What RDS DB instance type would you like to deploy for temporal?"
+default      = "db.m5.2xlarge"
+display_name = "RDS Instance Type"
+group        = "rds-temporal"
+
