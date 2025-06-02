@@ -1,15 +1,28 @@
+<<<<<<< HEAD:byoc-nuon/permissions.toml
 [maintenance_role]
 name                 = "{{ .nuon.install.id }}-maintenance"
 description          = "maintenance"
 display_name         = "byoc-nuon maintenance role"
 permissions_boundary = "./permissions/maintenance_boundary.json"
+=======
+type = "maintenance"
+name = "{{.nuon.id}}-maintenance"
+description = "maintenance"
+display_name = "maintenance"
+permissions_boundary = "./maintenance_boundary.json"
+>>>>>>> 86f051b (feat: update to new structure):byoc-nuon/permissions/maintenance.toml
 
-[[maintenance_role.policies]]
+[[policies]]
 managed_policy_name = "AdministratorAccess"
 
+<<<<<<< HEAD:byoc-nuon/permissions.toml
 # NOTE: the tag in this policy is determined by the rds_cluster_* component config. the format is known ahead of time by convention.
 [[maintenance_role.policies]]
 name = "{{ .nuon.install.id }}-limited-secrets-manage-rds"
+=======
+[[policies]]
+name = "limited-secrets-manage"
+>>>>>>> 86f051b (feat: update to new structure):byoc-nuon/permissions/maintenance.toml
 contents = """
 {
     "Version": "2012-10-17",
@@ -56,8 +69,13 @@ contents = """
 }
 """
 
+<<<<<<< HEAD:byoc-nuon/permissions.toml
 [[maintenance_role.policies]]
 name = "{{ .nuon.install.id }}-limited-put-bucket-policy"
+=======
+[[policies]]
+name = "bucket-put-policy-scoped"
+>>>>>>> 86f051b (feat: update to new structure):byoc-nuon/permissions/maintenance.toml
 contents = """
 {
     "Version": "2012-10-17",
@@ -71,6 +89,7 @@ contents = """
 }
 """
 
+<<<<<<< HEAD:byoc-nuon/permissions.toml
 [provision_role]
 name                 = "{{ .nuon.install.id }}-provision"
 description          = "provision"
@@ -88,3 +107,21 @@ permissions_boundary = "./permissions/deprovision_boundary.json"
 
 [[deprovision_role.policies]]
 managed_policy_name = "AdministratorAccess"
+=======
+# [[maintenance_role.policies]]
+# name = "allow-describe-cluster"
+# contents = """
+# {
+#     "Version": "2012-10-17",
+#     "Statement": [
+#         {
+#             "Effect": "Allow",
+#             "Action": [
+#                 "eks:*"
+#             ],
+#             "Resource": "arn:aws:eks:{{ .nuon.cloud_account.aws.region }}:::cluster/n-{{ .nuon.install.id }}"
+#         }
+#     ]
+# }
+# """
+>>>>>>> 86f051b (feat: update to new structure):byoc-nuon/permissions/maintenance.toml

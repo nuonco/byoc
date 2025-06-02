@@ -1,0 +1,6 @@
+name         = "ch_instance_type_keeper"
+description  = "What EC2 instance type should each clickhouse cluster node deploy on?"
+default      = "t3a.medium"
+display_name = "Keeper Instance Type"
+group        = "clickhouse"
+
