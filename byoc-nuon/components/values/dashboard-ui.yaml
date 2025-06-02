@@ -33,6 +33,8 @@ env:
   NUON_ORG_SUPPORT: "false"
   NUON_RUNNERS: "true"
   NUON_WORKFLOWS: "true"
+  NUON_TEMPORAL_UI_URL: "http://temporal-web.temporal.svc.cluster.local:8080"
+  NUON_CTL_API_ADMIN_URL: "http://ctl-api-admin.ctl-api.svc.cluster.local:8082"
 
   SEGMENT_WRITE_KEY: "false"
 
