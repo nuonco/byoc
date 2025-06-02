@@ -1,0 +1,7 @@
+#:schema http://localhost:8081/v1/general/config-schema?type=inputs
+name         = "nuon_db_instance_type"
+description  = "What RDS DB instance type would you like to deploy for nuon?"
+default      = "db.r6gd.large"
+display_name = "RDS Instance Type"
+group        = "rds-nuon"
+internal     = true

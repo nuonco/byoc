@@ -1,0 +1,6 @@
+name         = "vpc_id"
+description  = "The VPC you want to deploy Nuon in."
+sensitive    = false
+display_name = "VPC ID"
+group        = "aws"
+

@@ -1,0 +1,6 @@
+name         = "public_subnet_ids"
+description  = "The subnets you want public Nuon resources deployed in."
+sensitive    = false
+display_name = "Public subnet IDs"
+group        = "aws"
+

@@ -1,0 +1,3 @@
+name         = "github"
+description  = "Configure the GitHub Application for this BYOC Nuon install."
+display_name = "Github | Nuon configuration"

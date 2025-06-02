@@ -1,10 +1,3 @@
-#:schema https://api.nuon.co/v1/general/config-schema?source=inputs
-[[group]]
-name         = "dns"
-description  = "Configurations for the root domain for Route53"
-display_name = "Nuon: DNS"
-
-[[input]]
 name         = "root_domain"
 description  = "The root domain. Services will be made available at subdomains of this root domain."
 default      = "byoc.for.everyone.example.com"

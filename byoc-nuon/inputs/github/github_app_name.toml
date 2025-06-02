@@ -1,0 +1,7 @@
+name         = "github_app_name"
+description  = "The name of the GitHub app to use for VCS connections."
+default      = ""
+display_name = "GitHub App Name"
+group        = "github"
+required     = true
+

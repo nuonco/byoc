@@ -1,0 +1,5 @@
+name         = "ch_instance_type_cluster"
+description  = "What EC2 instance type should each clickhouse cluster node deploy on?"
+default      = "t3a.large"
+display_name = "Cluster Instance Type"
+group        = "clickhouse"

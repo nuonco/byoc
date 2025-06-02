@@ -1,0 +1,6 @@
+name         = "github_app_id"
+description  = "The github app id."
+default      = ""
+display_name = "GitHub App ID"
+group        = "github"
+required     = true
