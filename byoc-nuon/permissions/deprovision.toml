@@ -1,3 +1,4 @@
+type = "deprovision"
 name = "{{.nuon.install.id}}-deprovision"
 description = "deprovision"
 display_name = "deprovision"

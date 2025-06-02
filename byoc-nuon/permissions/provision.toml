@@ -1,3 +1,4 @@
+type = "provision"
 name = "{{.nuon.install.id}}-provision"
 description = "maintenance"
 display_name = "maintenance"
