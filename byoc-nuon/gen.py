@@ -3,7 +3,7 @@ import os
 
 
 def generate_inputs():
-    for _, _, files in os.walk("./inputs"):
+    for _, _, files in os.walk("./inputs-gen"):
         input_files = [f for f in files if ".toml" in f and f[0].isdigit()]
 
     lines = [f"# generated on: {datetime.datetime.now(datetime.UTC)}\n\n"]
