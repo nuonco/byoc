@@ -1,0 +1,4 @@
+name         = "aws"
+description  = "Configure your AWS deployment of Nuon"
+display_name = "AWS configuration"
+

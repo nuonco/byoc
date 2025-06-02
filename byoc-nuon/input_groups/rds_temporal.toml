@@ -1,0 +1,4 @@
+name         = "rds-temporal"
+description  = "Configuration for the postgres database Nuon will create for the Temporal deployment."
+display_name = "Temporal database configuration"
+

@@ -1,0 +1,5 @@
+name         = "auth_audience"
+description  = "Auth0 Audience"
+default      = "api.{{.nuon.install.id}}.nuon.run"
+display_name = "Auth0 Audience"
+group        = "auth"
