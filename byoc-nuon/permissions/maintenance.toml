@@ -2,7 +2,7 @@ type = "maintenance"
 name                 = "{{ .nuon.install.id }}-maintenance"
 description          = "maintenance"
 display_name         = "byoc-nuon maintenance role"
-permissions_boundary = "./permissions/maintenance_boundary.json"
+permissions_boundary = "./maintenance_boundary.json"
 
 [[policies]]
 managed_policy_name = "AdministratorAccess"
