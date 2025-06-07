@@ -6,7 +6,7 @@ timeout = "0m30s"
 type = "manual"
 
 [[triggers]]
-type           = "post-component-deploy"
+type           = "post-deploy-component"
 component_name = "ctl_api"
 
 [[steps]]

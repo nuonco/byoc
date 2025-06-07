@@ -3,7 +3,7 @@ name    = "ctl_api_startup"
 timeout = "1m30s"
 
 [[triggers]]
-type           = "post-component-deploy"
+type           = "post-deploy-component"
 component_name = "ctl_api"
 
 [[triggers]]

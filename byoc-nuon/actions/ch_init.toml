@@ -3,7 +3,7 @@ name    = "ch_init"
 timeout = "1m30s"
 
 [[triggers]]
-type           = "pre-component-deploy"
+type           = "pre-deploy-component"
 component_name = "ctl_api"
 
 [[triggers]]

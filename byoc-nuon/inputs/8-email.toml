@@ -1,0 +1,13 @@
+#:schema https://api.nuon.co/v1/general/config-schema?source=inputs
+[[group]]
+name         = "email"
+description  = "Configure email settings."
+display_name = "Email"
+
+[[input]]
+name         = "loops_api_key"
+description  = "An API key from your loops account."
+default      = "your-loops-api-key"
+display_name = "Loops API Key"
+group        = "email"
+required     = false

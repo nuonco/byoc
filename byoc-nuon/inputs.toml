@@ -1,4 +1,4 @@
-# generated on: 2025-05-29 05:27:12.502967+00:00
+# generated on: 2025-06-02 00:57:34.557585+00:00
 
 # 1-rds-nuon.toml
 #:schema https://api.nuon.co/v1/general/config-schema?source=inputS
@@ -153,3 +153,19 @@ description  = "The root domain. Services will be made available at subdomains o
 default      = "byoc.for.everyone.example.com"
 display_name = "Root Domain"
 group        = "dns"
+
+
+# 8-email.toml
+#:schema https://api.nuon.co/v1/general/config-schema?source=inputs
+[[group]]
+name         = "email"
+description  = "Configure email settings."
+display_name = "Email"
+
+[[input]]
+name         = "loops_api_key"
+description  = "An API key from your loops account."
+default      = "your-loops-api-key"
+display_name = "Loops API Key"
+group        = "email"
+required     = false
