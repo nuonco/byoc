@@ -64,7 +64,7 @@ env:
 
   # NOTE: deprecated or not in use in byoc
   SEGMENT_WRITE_KEY: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-  LOOPS_API_KEY: "c10cfcd16bb67b476c06cd59743c065e"
+  LOOPS_API_KEY: "{{ .nuon.inputs.inputs.loops_api_key }}"
 
   # NOTE: from management component (mostly)
   MANAGEMENT_ACCOUNT_ID: "{{ .nuon.components.management.outputs.management_account_id }}"

@@ -5,7 +5,7 @@ name    = "temporal_rds_creds"
 timeout = "1m"
 
 [[triggers]]
-type           = "post-component-deploy"
+type           = "post-deploy-component"
 component_name = "rds_cluster_temporal"
 
 [[triggers]]

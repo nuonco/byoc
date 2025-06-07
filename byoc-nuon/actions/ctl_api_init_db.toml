@@ -3,11 +3,11 @@ name    = "ctl_api_init_db"
 timeout = "5m"
 
 [[triggers]]
-type           = "post-component-deploy"
+type           = "post-deploy-component"
 component_name = "ctl_api_init_db"
 
 [[triggers]]
-type           = "pre-component-deploy"
+type           = "pre-deploy-component"
 component_name = "ctl_api"
 
 [[triggers]]

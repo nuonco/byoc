@@ -6,7 +6,7 @@ name    = "ch_cluster_creds"
 timeout = "1m"
 
 [[triggers]]
-type           = "pre-component-deploy"
+type           = "pre-deploy-component"
 component_name = "clickhouse_cluster"
 
 [[triggers]]
