@@ -18,7 +18,9 @@ set -u
 admin_api_addr="$ADMIN_API_URL"
 
 curl --max-time 5 -q \
-  "$admin_api_addr/v1/orgs?type=real"
+  "$admin_api_addr/v1/orgs?type=real" \
+  | jq .
+
 """
 
 [steps.env_vars]
