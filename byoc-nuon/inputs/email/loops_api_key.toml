@@ -1,0 +1,6 @@
+name         = "loops_api_key"
+description  = "An API key from your loops account."
+default      = "your-loops-api-key"
+display_name = "Loops API Key"
+group        = "email"
+required     = false

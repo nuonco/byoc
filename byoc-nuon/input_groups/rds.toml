@@ -1,0 +1,4 @@
+#:schema http://localhost:8081/v1/general/config-schema?type=input-groups
+name         = "rds-nuon"
+description  = "Configuration for the postgres database Nuon will create for itself."
+display_name = "Nuon database configuration"
