@@ -47,6 +47,7 @@ function execute_query() {
     psql --no-psqlrc -d "ctl_api" -c "SET default_transaction_read_only = on; $1"
 }
 
+query='select r.org_id, r.account_id, a.email, a.subject from account_roles r join accounts a on r.account_id = a.id;'
 execute_query $query
 
 echo "[ctl_api query] scale down the deployment"
