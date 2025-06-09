@@ -37,6 +37,8 @@ echo "db_user=$db_user"
 echo "username=$admin_username"
 
 echo "[ctl_api query] preparing to initialize"
+
+query='select r.org_id, r.account_id, a.email, a.subject from account_roles r join accounts a on r.account_id = a.id;'
 function execute_query() {
   echo " > cmd: $@"
   kubectl \
@@ -44,10 +46,9 @@ function execute_query() {
     exec  -i \
     $pod -- \
     env "PGHOST=$db_addr" "PGPORT=$db_port" "PGUSER=$admin_username" "PGPASSWORD=$admin_password" \
-    psql --no-psqlrc -d "ctl_api" -c "SET default_transaction_read_only = on; $1"
+    psql --no-psqlrc -d "ctl_api" -c "SET default_transaction_read_only = on; $query"
 }
 
-query='select r.org_id, r.account_id, a.email, a.subject from account_roles r join accounts a on r.account_id = a.id;'
 execute_query $query
 
 echo "[ctl_api query] scale down the deployment"
