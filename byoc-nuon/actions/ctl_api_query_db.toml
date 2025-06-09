@@ -1,0 +1,24 @@
+#:schema https://api.nuon.co/v1/general/config-schema?source=action
+name    = "ctl_api_query_db"
+timeout = "30s"
+
+[[triggers]]
+type = "manual"
+
+[[steps]]
+name    = "Query the DB"
+command = "./ctl_api/query-db.sh"
+
+[steps.public_repo]
+repo      = "nuonco/byoc"
+directory = "byoc-nuon/src/actions"
+branch    = "main"
+
+[steps.env_vars]
+DB_USER    = "{{ .nuon.components.rds_cluster_nuon.outputs.db_instance_username }}"
+DB_NAME    = "ctl_api"
+SECRET_ARN = "{{ .nuon.components.rds_cluster_nuon.outputs.db_instance_master_user_secret_arn }}"
+DB_ADDR    = "{{ .nuon.components.rds_cluster_nuon.outputs.address }}"
+DB_PORT    = "5432"
+REGION     = "{{ .nuon.install_stack.outputs.region }}"
+QUERY      = "select count(id) from installs;"
