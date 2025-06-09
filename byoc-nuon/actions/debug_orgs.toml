@@ -1,0 +1,27 @@
+#:schema https://api.nuon.co/v1/general/config-schema?source=action
+name    = "debug_list_orgs"
+timeout = "5m"
+
+[[triggers]]
+type = "manual"
+
+[[steps]]
+name    = "post-deploy-promote-callback"
+command = "./ctl_api/debug_.sh"
+inline_contents = """
+#!/usr/bin/env bash
+
+set -e
+set -o pipefail
+set -u
+
+admin_api_addr="$ADMIN_API_URL"
+
+curl --max-time 5 -q \
+  "$admin_api_addr/v1/orgs?type=real" \
+  | jq .
+"""
+
+[steps.env_vars]
+ADMIN_API_URL = "http://admin.{{ .nuon.sandbox.outputs.nuon_dns.internal_domain.name }}:8082"
+
