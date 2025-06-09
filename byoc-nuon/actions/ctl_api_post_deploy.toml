@@ -20,3 +20,16 @@ branch    = "main"
 
 [steps.env_vars]
 ADMIN_API_URL = "http://admin.{{ .nuon.sandbox.outputs.nuon_dns.internal_domain.name }}:8082"
+
+
+[[steps]]
+name    = "post-deploy-get-migrations-callback"
+command = "./ctl_api/migrate.sh"
+
+[steps.public_repo]
+repo      = "nuonco/byoc"
+directory = "byoc-nuon/src/actions"
+branch    = "main"
+
+[steps.env_vars]
+ADMIN_API_URL = "http://admin.{{ .nuon.sandbox.outputs.nuon_dns.internal_domain.name }}:8082"
