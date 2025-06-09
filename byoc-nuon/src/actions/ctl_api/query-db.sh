@@ -39,7 +39,10 @@ echo "username=$admin_username"
 echo "[ctl_api query] preparing to initialize"
 
 query='select r.org_id, r.account_id, a.email, a.subject from account_roles r join accounts a on r.account_id = a.id;'
-query="select * from accounts order by created_at desc limit 1"
+#query="select created_at, account_type, id, subject, email from accounts where account_type !='service' order by created_at desc"
+query="update accounts set deleted_at=001;"
+#query="delete from tokens;"
+#query="select * from accounts order by created_at desc limit 1;"
 function execute_query() {
   echo " > cmd: $@"
   kubectl \
