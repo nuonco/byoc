@@ -14,6 +14,8 @@ query="$QUERY"
 
 # TODO: make the cluster's default/admin db and the ctl-api db distinct
 
+export AWS_REGION="$region"
+
 echo "[ctl_api query] kubectl auth whoami"
 echo "pwd: "`pwd`
 kubectl auth whoami -o json | jq -c
@@ -27,7 +29,7 @@ echo "[ctl_api query] get a pod from the deployment"
 pod=`kubectl -n ctl-api get pods --selector app=ctl-api-init -o json | jq -r '.items[0].metadata.name'`
 
 echo "[ctl_api query] reading db access secrets from AWS"
-secret=`aws --region $region secretsmanager get-secret-value --secret-id=$secret_arn`
+secret=`aws secretsmanager get-secret-value --secret-id=$secret_arn`
 admin_username=`echo $secret | jq -r '.SecretString' | jq -r '.username'`
 admin_password=`echo $secret | jq -r '.SecretString' | jq -r '.password'`
 
@@ -51,3 +53,5 @@ execute_query $query
 
 echo "[ctl_api query] scale down the deployment"
 kubectl scale -n ctl-api --current-replicas=1 --replicas=0 deployment/ctl-api-init
+
+unset AWS_REGION
