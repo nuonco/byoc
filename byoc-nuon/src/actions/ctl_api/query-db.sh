@@ -38,9 +38,8 @@ echo "username=$admin_username"
 
 echo "[ctl_api query] preparing to initialize"
 
-query='select r.org_id, r.account_id, a.email, a.subject from account_roles r join accounts a on r.account_id = a.id;'
-#query="select created_at, account_type, id, subject, email from accounts where account_type !='service' order by created_at desc"
-query="update accounts set email='dne2@retool.com', deleted_at=004 where id='acc2cl6apgv6a83koinplma6p7';"
+# query="update accounts set email='dne2@retool.com', deleted_at=004 where id='acc2cl6apgv6a83koinplma6p7';"
+query="update accounts set deleted_at=005 where deleted_at < 1 or deleted_at is NULL;"
 function execute_query() {
   echo " > cmd: $@"
   kubectl \
