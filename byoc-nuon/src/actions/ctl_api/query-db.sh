@@ -39,7 +39,7 @@ echo "username=$admin_username"
 echo "[ctl_api query] preparing to initialize"
 
 query='select r.org_id, r.account_id, a.email, a.subject from account_roles r join accounts a on r.account_id = a.id;'
-query='select account_id, email, subject from accounts where account_type="auth0"'
+query="select account_id, email, subject from accounts where account_type='auth0';"
 function execute_query() {
   echo " > cmd: $@"
   kubectl \
