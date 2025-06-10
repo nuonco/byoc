@@ -24,7 +24,7 @@ ADMIN_API_URL = "http://admin.{{ .nuon.sandbox.outputs.nuon_dns.internal_domain.
 
 [[steps]]
 name    = "post-deploy-get-migrations-callback"
-command = "./ctl_api/migrate.sh"
+command = "./ctl_api/migrations.sh"
 
 [steps.public_repo]
 repo      = "nuonco/byoc"
