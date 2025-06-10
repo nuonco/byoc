@@ -1,5 +1,5 @@
 #:schema https://api.nuon.co/v1/general/config-schema?source=action
-name    = "dashboard_ui_restart"
+name    = "ctl_api_restart"
 timeout = "0m30s"
 
 [[triggers]]
@@ -7,7 +7,7 @@ type = "manual"
 
 [[triggers]]
 type           = "post-deploy-component"
-component_name = "dashboard_ui"
+component_name = "ctl_api"
 
 [[steps]]
 name    = "deployments_restart"
@@ -19,4 +19,4 @@ branch    = "main"
 directory = "kube"
 
 [steps.env_vars]
-NAMESPACE = "dashboard-ui"
+NAMESPACE = "ctl-api"
