@@ -1,6 +1,0 @@
-name         = "private_subnet_ids"
-description  = "The subnets you want private Nuon resources deployed in."
-sensitive    = false
-display_name = "Private subnet IDs"
-group        = "aws"
-
