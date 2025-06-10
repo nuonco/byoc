@@ -119,10 +119,10 @@ configure:
 
 #### An action that adds `email_address` to the claim
 We will need to add a trigger to enrich the claim with the email. Do the following
-1. Log in to your Axuth0 tenant
-1. Go to Actions> Library
-1. Click create from scratch
-1. Name the action `AddScope` and choose the latest runtime
+1. Log in to your Auth0 tenant
+2. Go to Actions> Library
+3. Click create from scratch
+4. Name the action `AddScope` and choose the latest runtime
 Replace the code in the window with this:
   ```
   exports.onExecutePostLogin = async (event, api) => {
@@ -134,7 +134,7 @@ Replace the code in the window with this:
   };
 
   ```
-1. Click Actions > triggers, click `Post-login trigger`, go to the right panel, click `Custom` then drag the `AddScope` trigger into the workflow (between the two steps), and hit save.
+5. Click Actions > triggers, click `Post-login trigger`, go to the right panel, click `Custom` then drag the `AddScope` trigger into the workflow (between the two steps), and hit save.
 
 
 
