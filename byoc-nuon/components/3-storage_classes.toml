@@ -2,7 +2,7 @@
 name           = "storage_classes"
 type           = "helm_chart"
 chart_name     = "storage-classes"
-storage_driver = "configmap"
+storage_driver = "nuon"
 
 [public_repo]
 repo      = "nuonco/byoc"

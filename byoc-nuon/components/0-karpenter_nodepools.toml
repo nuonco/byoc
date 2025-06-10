@@ -2,7 +2,7 @@
 name           = "karpenter_nodepools"
 type           = "helm_chart"
 chart_name     = "karpenter-nodepools"
-storage_driver = "configmap"
+storage_driver = "nuon"
 
 [public_repo]
 repo      = "nuonco/byoc"

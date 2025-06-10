@@ -1,7 +1,7 @@
 name           = "ctl_api_init_db"
 type           = "helm_chart"
 chart_name     = "clt-api-init"
-storage_driver = "configmap"
+storage_driver = "nuon"
 namespace      = "ctl-api"
 
 dependencies   = ["rds_cluster_nuon", "karpenter_nodepools"]

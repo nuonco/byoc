@@ -3,7 +3,7 @@ name           = "crd_clickhouse_operator"
 type           = "helm_chart"
 chart_name     = "clickhouse-operator"
 namespace      = "kube-system"
-storage_driver = "configmap"
+storage_driver = "nuon"
 
 dependencies   = ["storage_classes"]
 

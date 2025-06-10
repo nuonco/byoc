@@ -3,7 +3,7 @@ name           = "ctl_api"
 type           = "helm_chart"
 chart_name     = "ctl-api"
 namespace      = "ctl-api"
-storage_driver = "configmap"
+storage_driver = "nuon"
 dependencies   = ["rds_cluster_nuon", "karpenter_nodepools", "clickhouse_cluster", "temporal", "management", "ctl_api_init_db"]
 
 [public_repo]

@@ -3,7 +3,7 @@ name           = "dashboard_ui"
 type           = "helm_chart"
 chart_name     = "dashboard-ui"
 namespace      = "dashboard-ui"
-storage_driver = "configmap"
+storage_driver = "nuon"
 
 dependencies = ["ctl_api"]
 
