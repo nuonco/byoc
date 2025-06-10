@@ -1,0 +1,23 @@
+#:schema https://api.nuon.co/v1/general/config-schema?source=action
+name    = "clt_api_admin"
+timeout = "5m"
+
+[[triggers]]
+type = "manual"
+
+[[steps]]
+name    = "forget-org"
+inline_contents = """
+set -e
+set -o pipefail
+set -u
+
+admin_api_addr="$ADMIN_API_URL"
+
+curl --max-time 5 -q \
+  "$admin_api_addr/v1/$path" \
+  | jq .
+"""
+
+[steps.env_vars]
+PATH = ""
