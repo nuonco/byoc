@@ -90,7 +90,7 @@ Additional Documentation
 
 ### Configure Github App
 
-Create a github app so BYOC Nuon can clone code for components from private repos. Configure it thusly:
+Create a github app so BYOC Nuon can clone code for components from private repos. (To configure a new App: https://github.com/settings/apps) Configure it thusly:
 
 - Github app name: (pick any name)
 - Homepage URL: https://app.{{ $public_domain }}
@@ -112,9 +112,31 @@ later.
 Nuon uses Auth0 for authentication. If you do not already have an Auth0 tenant, create one. In this tenant you must
 configure:
 
+- An action that adds `email_address` to the claim
 - An API
 - A Single Page Application (for the CTL API to use)
 - A Native Application (for the Dashboard to use)
+
+#### An action that adds `email_address` to the claim
+We will need to add a trigger to enrich the claim with the email. Do the following
+1. Log in to your Axuth0 tenant
+1. Go to Actions> Library
+1. Click create from scratch
+1. Name the action `AddScope` and choose the latest runtime
+Replace the code in the window with this:
+  ```
+  exports.onExecutePostLogin = async (event, api) => {
+    const email = event.user.email;
+    
+
+      // Set claims 
+      api.accessToken.setCustomClaim(`email`, email);
+  };
+
+  ```
+1. Click Actions > triggers, click `Post-login trigger`, go to the right panel, click `Custom` then drag the `AddScope` trigger into the workflow (between the two steps), and hit save.
+
+
 
 #### API
 
