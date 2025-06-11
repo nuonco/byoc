@@ -3,8 +3,8 @@
 {{ $private_domain := (dig "outputs" "nuon_dns" "private_domain" "name" .nuon.inputs.inputs.root_domain .nuon.sandbox) }}
 
 <center>
-  <img src="https://mintlify.s3-us-west-1.amazonaws.com/nuoninc/logo/dark.svg"/>
-  <h1>BYOC Nuon</h1>
+  <img class="mt-0 block dark:hidden" src="https://mintlify.s3-us-west-1.amazonaws.com/nuoninc/logo/light.svg"/>
+  <img class="mt-0 hidden dark:block" src="https://mintlify.s3-us-west-1.amazonaws.com/nuoninc/logo/dark.svg"/>
   <small>
 {{ if .nuon.install_stack.outputs }}
 AWS | {{ dig "account_id" "000000000000" .nuon.install_stack.outputs }} | {{ $region }} | {{ dig "vpc_id" "vpc-000000" .nuon.install_stack.outputs }}
@@ -13,6 +13,44 @@ AWS | 000000000000 | xx-vvvv-00 | vpc-000000
 {{ end }}
   </small>
 </center>
+
+<div>
+    <table style="width:100%">
+        <thead>
+            <tr>
+                <th></th>
+                <th>Monitor</th>
+                <th>Status</th>
+                <th>Outputs</th>
+            </tr>
+        </thead>
+        <tbody>
+        {{ if .nuon.actions.populated }}
+            {{range $name, $action := .nuon.actions.workflows}}
+                {{if contains "healthcheck" $name}}
+                    <tr>
+                        <td style="width: 1rem">
+                        {{with $action.status}}
+                            {{if eq . "error"}}
+                                🔴
+                            {{else if eq . "finished"}}
+                                🟢
+                            {{else}}
+                                🟡
+                            {{end}}
+                        {{end}}
+                        </td>
+                        <td>{{$name}}</td>
+                        <td>{{$action.status}}</td>
+                        <td><pre style="margin-top: 0; margin-bottom: 0">{{$action.outputs}}</pre></td>
+                    </tr>
+                {{end}}
+            {{end}}
+        {{ end }}
+        </tbody>
+    </table>
+
+</div>
 
 - [Installing Nuon](#installingnuon)
   - [Configure DNS (Optional)](#configurednsoptional)
