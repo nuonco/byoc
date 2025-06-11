@@ -2,10 +2,6 @@
 variable "auth0_domain" {
   type        = string
   description = "Your Auth0 domain (e.g., your-tenant.auth0.com)"
-  validation {
-    condition     = can(regex("^[a-zA-Z0-9][a-zA-Z0-9-]*\\.auth0\\.com$", var.auth0_domain))
-    error_message = "The auth0_domain must be a valid Auth0 domain (e.g., your-tenant.auth0.com)"
-  }
 }
 
 variable "auth0_client_id" {
@@ -64,9 +60,16 @@ variable "logout_urls" {
   description = "Allowed logout URLs for the applications"
   default     = []
   validation {
-    condition     = alltrue([for url in var.logout_urls : can(regex("^https?://.*$", url))])
-    error_message = "Logout URLs must be valid HTTP/HTTPS URLs"
+    condition     = alltrue([for url in var.logout_urls : can(regex("^https?://", url))])
+    error_message = "All logout URLs must start with http:// or https://"
   }
+  # This will be set in locals to avoid validation issues with computed values
+}
+
+variable "web_origins" {
+  type        = list(string)
+  description = "Allowed web origins for CORS (domain only, no paths)"
+  default     = []
 }
 
 variable "default_logout_urls" {
@@ -75,25 +78,6 @@ variable "default_logout_urls" {
   default     = []
   
   # This will be set in locals to avoid validation issues with computed values
-}
-
-# Auth0 Tenant Configuration
-variable "tenant_name" {
-  type        = string
-  description = "Friendly name for the Auth0 tenant"
-  validation {
-    condition     = length(var.tenant_name) > 0
-    error_message = "Tenant name cannot be empty"
-  }
-}
-
-variable "support_email" {
-  type        = string
-  description = "Support email address for the tenant"
-  validation {
-    condition     = can(regex("^[^@]+@[^@]+\\.[^@]+$", var.support_email))
-    error_message = "Please provide a valid email address for support"
-  }
 }
 
 
