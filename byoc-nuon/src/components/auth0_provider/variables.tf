@@ -39,11 +39,7 @@ variable "app_name" {
   }
 }
 
-variable "public_domain" {
-  type        = string
-  description = "Nuon public domain (from .nuon.install.public_domain)"
-  default     = ""
-}
+# Public domain is now defined in the Nuon variables section below
 
 variable "callback_urls" {
   type        = list(string)
@@ -79,23 +75,6 @@ variable "default_logout_urls" {
   default     = []
   
   # This will be set in locals to avoid validation issues with computed values
-}
-
-# Security Settings
-variable "session_lifetime" {
-  type        = number
-  description = "Session lifetime in hours"
-  default     = 72
-  validation {
-    condition     = var.session_lifetime > 0 && var.session_lifetime <= 1000
-    error_message = "Session lifetime must be between 1 and 1000 hours"
-  }
-}
-
-variable "allow_signup" {
-  type        = bool
-  description = "Whether to allow user signup"
-  default     = false
 }
 
 # Auth0 Tenant Configuration
