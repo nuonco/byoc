@@ -231,8 +231,8 @@ Adjust the instance size if needed.
 
 #### DNS Configuration
 
-If you set up a custom root domain, provide it here. Otherwise leave this empty and a `nuon.run` domain will be
-provisioned using your install ID.
+If you set up a custom root domain, provide it here. Otherwise, set `{{.nuon.install.id}}.nuon.run` to use a
+Nuon-provided root domain.
 
 ### Update Secrets
 
