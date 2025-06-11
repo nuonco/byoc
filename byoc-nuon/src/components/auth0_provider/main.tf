@@ -2,7 +2,7 @@ terraform {
   required_providers {
     auth0 = {
       source  = "auth0/auth0"
-      version = "~> 1.0"
+      version = "~> 1.21.0"
     }
   }
 }
@@ -12,8 +12,6 @@ provider "auth0" {
   client_id     = var.auth0_client_id
   client_secret = var.auth0_client_secret
 
-  # Note: The Auth0 provider will automatically handle retries and timeouts
-  # with sensible defaults. No need to configure them explicitly.
 }
 
 # Define default URLs based on Nuon public_domain
@@ -33,31 +31,14 @@ locals {
   # Use provided logout_urls or default to the standard logout URL
   logout_urls = length(var.logout_urls) > 0 ? var.logout_urls : [local.default_logout_url]
 
-  # Web origins for CORS
-  web_origins = length(var.callback_urls) > 0 ? var.callback_urls : [local.default_web_origin]
-}
-
-# Auth0 Tenant Configuration
-resource "auth0_tenant" "tenant" {
-  friendly_name = var.tenant_name
-  support_email = var.support_email
-
-  # Security settings
-  allowed_logout_urls = local.logout_urls
-
-  # Password policy - use the first callback URL as the default redirect
-  default_redirection_uri = local.callback_urls[0]
-
-  # Session settings
-  session_cookie {
-    mode = "persistent"
-  }
+  # Web origins for CORS - should be domain only without paths
+  web_origins = length(var.web_origins) > 0 ? var.web_origins : [local.default_web_origin]
 }
 
 # SPA Application
 resource "auth0_client" "spa_application" {
   name              = "${var.app_name}-spa"
-  description       = "${var.tenant_name} - SPA Application"
+  description       = "SPA Application"
   app_type          = "spa"
   oidc_conformant   = true
   cross_origin_auth = true
@@ -74,8 +55,8 @@ resource "auth0_client" "spa_application" {
   grant_types = [
     "authorization_code",
     "implicit",
-    "refresh_token",
-    "client_credentials"
+    "refresh_token"
+    # client_credentials removed - not compatible with SPA applications
   ]
 
   refresh_token {
@@ -98,7 +79,7 @@ resource "auth0_client" "spa_application" {
 # Native Application for the tenant (based on README.md)
 resource "auth0_client" "native_application" {
   name            = "${var.app_name}-native"
-  description     = "${var.tenant_name} - Native Application"
+  description     = "Native Application"
   app_type        = "native"
   oidc_conformant = true
 
@@ -114,7 +95,7 @@ resource "auth0_client" "native_application" {
   grant_types = [
     "authorization_code",
     "refresh_token",
-    "client_credentials"
+    "urn:ietf:params:oauth:grant-type:device_code"
   ]
 
   refresh_token {
@@ -131,71 +112,6 @@ resource "auth0_client" "native_application" {
   sso = true
 }
 
-# Database connection for username/password authentication
-resource "auth0_connection" "database" {
-  name         = "Username-Password-Authentication"
-  display_name = "Username-Password-Authentication"
-  strategy     = "auth0"
-
-  options {
-    # Password policy settings
-    password_policy = "excellent"
-
-    # Password complexity options
-    password_complexity_options {
-      min_length = 12
-    }
-
-    # Password history
-    password_history {
-      enable = true
-      size   = 5
-    }
-
-    # Dictionary settings
-    password_dictionary {
-      enable     = true
-      dictionary = []
-    }
-
-    # Prevent personal info in passwords
-    password_no_personal_info {
-      enable = true
-    }
-
-    # Disable signup
-    disable_signup = true
-
-    # Brute force protection
-    brute_force_protection = true
-
-    # MFA settings
-    mfa {
-      active                 = true
-      return_enroll_settings = true
-    }
-
-    # Disable import mode
-    import_mode = false
-
-    # Disable custom scripts
-    custom_scripts = {}
-
-    # Empty configuration
-    configuration = {}
-
-    # Enable username input
-    requires_username = false
-  }
-
-  # Lifecycle settings to prevent configuration drift
-  lifecycle {
-    ignore_changes = [
-      options[0].configuration
-    ]
-  }
-}
-
 # Auth0 API resource for authentication (as specified in README)
 resource "auth0_resource_server" "api" {
   name       = "API Gateway {{ .nuon.install.id }}"
@@ -203,7 +119,7 @@ resource "auth0_resource_server" "api" {
 
   # Enable RBAC for the API
   enforce_policies = true
-  token_lifetime   = 86400
+  token_lifetime   = 2592000
   token_dialect    = "access_token_authz"
 
   # Allow skipping user consent during authorization
@@ -211,20 +127,4 @@ resource "auth0_resource_server" "api" {
 
   # Allow offline access (refresh tokens)
   allow_offline_access = true
-}
-
-# Associate the database connection with the SPA and native applications
-resource "auth0_connection_clients" "database_clients" {
-  connection_id = auth0_connection.database.id
-  enabled_clients = [
-    auth0_client.spa_application.client_id,
-    auth0_client.native_application.client_id
-  ]
-
-  # Ensure the connection and clients are created first
-  depends_on = [
-    auth0_connection.database,
-    auth0_client.spa_application,
-    auth0_client.native_application
-  ]
 }
