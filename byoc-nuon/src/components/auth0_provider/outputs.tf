@@ -1,13 +1,6 @@
 # Tenant Information
-output "tenant_id" {
-  description = "The ID of the Auth0 tenant"
-  value       = auth0_tenant.tenant.id
-}
-
-output "tenant_name" {
-  description = "The friendly name of the Auth0 tenant"
-  value       = auth0_tenant.tenant.friendly_name
-}
+# Note: tenant_id and tenant_name outputs have been removed as the auth0_tenant resource is not used
+# The Management API does not allow creating tenants, only configuring existing ones
 
 output "auth0_domain" {
   description = "The Auth0 domain"
@@ -36,12 +29,6 @@ output "spa_application_id" {
   value       = auth0_client.spa_application.client_id
 }
 
-output "spa_application_client_secret" {
-  description = "The client secret of the Auth0 SPA application"
-  value       = auth0_client.spa_application.client_secret
-  sensitive   = true
-}
-
 output "spa_application_name" {
   description = "The name of the created SPA application"
   value       = auth0_client.spa_application.name
@@ -57,12 +44,6 @@ output "auth_client_id_dashboard_ui" {
 output "native_application_id" {
   description = "The ID of the Auth0 Native application"
   value       = auth0_client.native_application.client_id
-}
-
-output "native_application_secret" {
-  description = "The client secret of the Auth0 Native application"
-  value       = auth0_client.native_application.client_secret
-  sensitive   = true
 }
 
 output "native_application_name" {
@@ -82,33 +63,20 @@ output "api_identifier" {
   value       = auth0_resource_server.api.identifier
 }
 
-# Database connection outputs
-output "database_connection_id" {
-  description = "The ID of the database connection"
-  value       = auth0_connection.database.id
-}
-
 # Output all client configurations as a map for easy consumption
 output "client_configs" {
   description = "Map of all client configurations"
   value = {
     spa = {
-      client_id     = auth0_client.spa_application.client_id
-      client_secret = auth0_client.spa_application.client_secret
-      name          = auth0_client.spa_application.name
-      type          = "spa"
+      client_id = auth0_client.spa_application.client_id
+      name      = auth0_client.spa_application.name
+      type      = "spa"
     }
     native = {
-      client_id     = auth0_client.native_application.client_id
-      client_secret = auth0_client.native_application.client_secret
-      name          = auth0_client.native_application.name
-      type          = "native"
+      client_id = auth0_client.native_application.client_id
+      name      = auth0_client.native_application.name
+      type      = "native"
     }
   }
   sensitive = true
-}
-
-output "database_connection_name" {
-  description = "The name of the database connection"
-  value       = auth0_connection.database.name
 }
