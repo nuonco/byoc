@@ -15,7 +15,5 @@ auth0_client_id = ""  # Replace with your Auth0 Management API Client ID
 auth0_client_secret = ""  # Replace with your Auth0 Management API Client Secret
 tenant_name = "{{ .nuon.install.name }}"  # Will use Nuon install name as tenant name
 
-# Optional Configuration (with defaults)
-session_lifetime = 72  # Session lifetime in hours
-allow_signup = false  # Whether to allow user signup
+
 
