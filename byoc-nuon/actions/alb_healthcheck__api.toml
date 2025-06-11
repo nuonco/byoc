@@ -11,13 +11,71 @@ type = "manual"
 
 [[steps]]
 name    = "alb-healthcheck-ctl-api-public"
-command = "./healthcheck.sh"
+inline_contents = """
+#!/usr/bin/env sh
 
-[steps.public_repo]
-repo      = "nuonco/byoc"
-directory = "byoc-nuon/src/actions/alb"
-branch    = "main"
+set -e
+set -o pipefail
+set -u
 
+echo >&2 "checking ingress..."
+
+ingress_json=`kubectl get --namespace $INGRESS_NAMESPACE ingress $INGRESS_NAME -o json | jq -c`
+status=`echo $ingress_json |jq -c '.status'`
+
+# determine status
+lb_ingress_count=`echo $status | jq '.loadBalancer.ingress | length'`
+if [ "$lb_ingress_count" == "0" ];
+  then
+    indicator="🔴"
+  else
+    indicator="🟢"
+fi
+
+# compose the output
+outputs=`jq --null-input --arg indicatorVar "$indicator" --argjson statusVar "$status" '{"status": $statusVar, "indicator": $indicatorVar}'`
+echo $outputs >> $NUON_ACTIONS_OUTPUT_FILEPATH
+
+# force this to succeed so the next step runs
+exit 0
+"""
 [steps.env_vars]
 INGRESS_NAME      = "ctl-api-public"
 INGRESS_NAMESPACE = "ctl-api"
+
+[[steps]]
+name = "notify-on-error"
+inline_contents = """
+#!/usr/bin/env sh
+#
+set -e
+set -o pipefail
+set -u
+
+echo "reading outputs from $NUON_ACTIONS_OUTPUT_FILEPATH"
+OUTPUTS=$(cat $NUON_ACTIONS_OUTPUT_FILEPATH)
+
+echo "checking healthcheck status"
+IND=$(echo $OUTPUTS | jq '.indicator')
+if [ "$IND" = '"🔴"' ]; then
+    echo "healthcheck failed, sending notification"
+    TEXT=$(cat $OUTPUTS | jq -c . | jq -R .)
+    PAYLOAD='{
+        "channel": "'$CHANNEL'",
+        "username": "BYOBot",
+        "icon_emoji": ":'$EMOJI':",
+        "text": '$TEXT'
+    }'
+    
+    echo "sending message to Slack"
+    curl -X POST -H 'Content-type: application/json' -d "$PAYLOAD" "$WEBHOOK_URL"
+
+    exit 1
+fi
+
+exit 0
+"""
+[steps.env_vars]
+WEBHOOK_URL = "https://hooks.slack.com/services/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"
+CHANNEL = "jordan-test"
+EMOJI = "nuon"
