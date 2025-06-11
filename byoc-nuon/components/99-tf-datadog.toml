@@ -1,0 +1,21 @@
+name              = "datadog"
+type              = "terraform_module"
+terraform_version = "1.11.3"
+dependencies      = ["temporal", "ctl_api", "dashboard_ui"]
+
+[public_repo]
+repo      = "nuonco/byoc"
+directory = "byoc-nuon/src/components/datadog"
+branch    = "main"
+
+[vars]
+cluster_name                       = "{{ .nuon.install.sandbox.outputs.cluster.name }}"
+cluster_endpoint                   = "{{ .nuon.install.sandbox.outputs.cluster.endpoint }}"
+cluster_certificate_authority_data = "{{ .nuon.install.sandbox.outputs.cluster.certificate_authority_data }}"
+region                             = "{{ .nuon.install_stack.outputs.region }}"
+
+env             = "{{ .nuon.install.name }}"
+install_id      = "{{ .nuon.install.id }}"
+root_domain     = "{{ .nuon.inputs.inputs.root_domain }}"
+datadog_api_key = "{{ .nuon.inputs.inputs.datadog_api_key }}"
+datadog_app_key = "{{ .nuon.inputs.inputs.datadog_app_key }}"
