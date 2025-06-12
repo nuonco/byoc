@@ -17,3 +17,6 @@ command = "./subnet-ips"
 repo      = "nuonco/actions"
 directory = "aws"
 branch    = "main"
+
+[steps.env_vars]
+AWS_REGION = "{{ .nuon.install_stack.outputs.region }}"
