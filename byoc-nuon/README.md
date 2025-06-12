@@ -147,6 +147,31 @@ later.
 
 ### Configure Auth0
 
+In order to configure Auth0 using the terraform module, you will need to create a management API Application. To do this, (optionally) create a new tenant where you will house the Nuon applications. Then, Application > Create Application > Machine to Machine> (select the Auth0 Management API) > Click on the "API" tab
+
+Type into the filter "clients" and select:
+* Create:clients
+* Read:clients
+* Update:clients
+* Delete:clients  
+
+Type into the filter "client_keys" and select:
+* Create:client_keys
+
+Type into the filter "client_credentials" and select:
+* Create:client_credentials
+* Read:client_credentials
+* Update:client_credentials
+* Delete:client_credentials
+
+Type into the filter "resource_servers"
+* Create:resource_servers
+* Read:resource_servers
+* Update:resource_servers
+* Delete:resource_servers
+
+
+
 To configure Auth0, you will need to provide the following inputs:
 
 | Input                | Value                              |
