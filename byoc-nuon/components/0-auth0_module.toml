@@ -10,6 +10,6 @@ branch    = "tw/auth0-module"
 
 [vars]
 # Required Auth0 Configuration
-auth0_domain = "your-tenant.auth0.com"  # Replace with your Auth0 domain
+auth0_domain = "{{ .nuon.inputs.inputs.auth_issuer_url }}"  # Replace with your Auth0 domain
 auth0_mgmt_client_id = "{{ .nuon.inputs.inputs.auth0_mgmt_client_id }}"  # Replace with your Auth0 Management API Client ID
 auth0_mgmt_client_secret = "{{ .nuon.inputs.inputs.auth0_mgmt_client_secret }}"  # Replace with your Auth0 Management API Client Secret
