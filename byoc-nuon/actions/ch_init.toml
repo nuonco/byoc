@@ -2,6 +2,13 @@
 name    = "ch_init"
 timeout = "1m30s"
 
+# It can take about 20 minutes for clickhouse to be ready,
+# so we don't use the post-deploy hook on clickhouse itself,
+# because that would add 20 minutes to an already lengthy provision.
+#
+# Instead, while clickhouse is provisioning, we move forward with deploying all the other components.
+# 
+# We attach this to ctl-api's post deploy, because ctl-api will need clickhouse to be ready.
 [[triggers]]
 type           = "pre-deploy-component"
 component_name = "ctl_api"

@@ -7,10 +7,6 @@ type          = "cron"
 cron_schedule = "0 */1 * * *"
 
 [[triggers]]
-type           = "post-deploy-component"
-component_name = "ctl_api"
-
-[[triggers]]
 type = "manual"
 
 [[steps]]
