@@ -132,6 +132,12 @@ Type into the filter "resource_servers"
 * Update:resource_servers
 * Delete:resource_servers
 
+Type into the filter "actions" and select:
+* Create:actions
+* Read:actions
+* Update:actions
+* Delete:actions
+
 YOu will need to collect the following for inputs:
 
 - auth_issuer_url - This is the domain of your Auth0 tenant (e.g. `your-tenant-name.us.auth0.com` Do not include the https: or the trailing slash)
