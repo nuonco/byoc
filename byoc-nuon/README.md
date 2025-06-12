@@ -170,58 +170,11 @@ Type into the filter "resource_servers"
 * Update:resource_servers
 * Delete:resource_servers
 
+YOu will need to collect the following for inputs:
 
-
-To configure Auth0, you will need to provide the following inputs:
-
-| Input                | Value                              |
-
-
-
-
-Nuon uses Auth0 for authentication. If you do not already have an Auth0 tenant, create one. In this tenant you must
-configure:
-
-- An API
-- A Single Page Application (for the CTL API to use)
-- A Native Application (for the Dashboard to use)
-
-#### API
-
-The value of "Identifier" must be `https://api.{{ $public_domain }}`. This will be used the audience identifier and must
-match the API URL. It cannot be changed after creation, so make sure this accurate.
-
-| Setting                                    | Value                            | Section              |
-| ------------------------------------------ | -------------------------------- | -------------------- |
-| Name                                       | API Gateway {{.nuon.install.id}} | In creation modal.   |
-| Identifier                                 | api.{{ $public_domain }}         | In creation modal.   |
-| Maximum Access Token Lifetime              | 2592000                          | Access Token Setting |
-| Implicit/Hybrid Flow Access Token Lifetime | 86400                            | Access Token Setting |
-| Allow Skipping User Consent                | true                             | Access Settings      |
-
-#### Single Page Application
-
-| Setting                          | Value                                              | Section                      |
-| -------------------------------- | -------------------------------------------------- | ---------------------------- |
-| Name                             | Nuon App - {{ .nuon.install.name }}                | In creation modal.           |
-| Logout URL                       | <blank/>                                           | Application URIs             |
-| Application Login URI            | <blank/>                                           | Application URIs             |
-| Allowed Callback URLs            | https://app.{{ $public_domain }}/api/auth/callback | Application URIs             |
-| Allowed Logout URLs              | https://app.{{ $public_domain }}                   | Application URIs             |
-| Allowed Web Origins              | https://app.{{ $public_domain }}                   | Application URIs             |
-| Alow Cross-Origin Authentication | true                                               | Cross-Origing Authentication |
-| Maxmium Refresh Token Lifetime   | 31557600                                           | Refresh Token Expiration     |
-| Allow Refresh Token Rotation     | true                                               | Refresh Token Rotation       |
-| Rotation Overlap Period          | 0                                                  | Refresh Token Rotation       |
-
-#### Native Applicaton
-
-| Setting                           | Value                                        | Section                         |
-| --------------------------------- | -------------------------------------------- | ------------------------------- |
-| Name                              | Nuon CTL API - {{ .nuon.install.name }}      | In creation modal.              |
-| Description                       | For BYOC Nuon Install {{ .nuon.install.id }} | In creation modal.              |
-| Allow Cross-Origin Authentication | true                                         | Cross-Origin Authentication     |
-| Device Code                       | checked                                      | Advanced Settings > Grant Types |
+- auth_issuer_url - This is the domain of your Auth0 tenant (e.g. `your-tenant-name.us.auth0.com` Do not include the https: or the trailing slash)
+- auth0_mgmt_client_id
+- auth0_mgmt_client_secret  
 
 ### Update Inputs
 
