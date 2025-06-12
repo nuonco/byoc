@@ -109,6 +109,13 @@ later.
 
 ### Configure Auth0
 
+To configure Auth0, you will need to provide the following inputs:
+
+| Input                | Value                              |
+
+
+
+
 Nuon uses Auth0 for authentication. If you do not already have an Auth0 tenant, create one. In this tenant you must
 configure:
 
@@ -255,7 +262,7 @@ The following secrets are created in the CloudFormation stack and then synced in
 | clickhouse-cluster-pw    | value             | ctl-api      | clickhouse-cluster-pw    | action:ch_cluster_creds   | a copy of the secret in the `ctl-api` ns    |
 | github-app-key           | value             | ctl-api      | github-app-key           | secrets-sync              | github app key                              |
 | auth0_secret             | value             | dashboard-ui | auth0-secret             | secrets-sync              | Auth0 secret for the dashboard-ui           |
-| auth0_client_secret      | value             | dashboard-ui | auth0-client-secret      | secrets-sync              | Auto-generated cookie secret                |
+| auth0_spa_client_secret  | value             | dashboard-ui | auth0-client-secret      | secrets-sync              | Auto-generated SPA application client secret |
 | rds!rds-cluster-nuon     | username/password | ctl-api      | nuon-db                  | action:nuon_rds_creds     | nuon-db credentials for ctl-api             |
 | rds!rds-cluster-temporal | username/password | temporal     | temporal-db              | action:temporal_rds_creds | temporal-db credentials for temporal        |
 
