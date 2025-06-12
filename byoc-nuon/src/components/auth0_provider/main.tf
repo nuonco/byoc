@@ -111,6 +111,25 @@ resource "auth0_client" "native_application" {
   sso = true
 }
 
+# Auth0 Action to add email claim to access token
+resource "auth0_action" "add_email_claim" {
+  name    = "add-email-claim"
+  code    = <<-EOT
+    exports.onExecutePostLogin = async (event, api) => {
+      const email = event.user.email;
+      
+      // Set email claim in the access token
+      api.accessToken.setCustomClaim(`email`, email);
+    };
+  EOT
+  deploy  = true
+  runtime = "node22"
+  supported_triggers {
+    id      = "post-login"
+    version = "v3"
+  }
+}
+
 # Auth0 API resource for authentication (as specified in README)
 resource "auth0_resource_server" "api" {
   name       = "API Gateway {{ .nuon.install.id }}"
