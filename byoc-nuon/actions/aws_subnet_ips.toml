@@ -11,7 +11,7 @@ type = "manual"
 
 [[steps]]
 name    = "check_subnet_ips"
-command = "./subnet_ips.sh"
+command = "./subnet_ips"
 
 [steps.public_repo]
 repo      = "nuonco/actions"
