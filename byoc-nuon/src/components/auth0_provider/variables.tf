@@ -4,23 +4,23 @@ variable "auth0_domain" {
   description = "Your Auth0 domain (e.g., your-tenant.auth0.com)"
 }
 
-variable "auth0_client_id" {
+variable "auth0_mgmt_client_id" {
   type        = string
   description = "Auth0 Management API Client ID"
   sensitive   = true
   validation {
-    condition     = length(var.auth0_client_id) > 0
-    error_message = "Auth0 client ID cannot be empty"
+    condition     = length(var.auth0_mgmt_client_id) > 0
+    error_message = "Auth0 Management API Client ID must be provided"
   }
 }
 
-variable "auth0_client_secret" {
+variable "auth0_mgmt_client_secret" {
   type        = string
   description = "Auth0 Management API Client Secret"
   sensitive   = true
   validation {
-    condition     = length(var.auth0_client_secret) > 0
-    error_message = "Auth0 client secret cannot be empty"
+    condition     = length(var.auth0_mgmt_client_secret) > 0
+    error_message = "Auth0 Management API Client Secret must be provided"
   }
 }
 
@@ -28,11 +28,7 @@ variable "auth0_client_secret" {
 variable "app_name" {
   type        = string
   description = "Name prefix for created Auth0 applications"
-  default     = "nuon-app"
-  validation {
-    condition     = can(regex("^[a-zA-Z0-9-]+$", var.app_name))
-    error_message = "App name can only contain alphanumeric characters and hyphens"
-  }
+  default     = "BYOC-"
 }
 
 # Public domain is now defined in the Nuon variables section below
