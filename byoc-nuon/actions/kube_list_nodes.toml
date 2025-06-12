@@ -1,0 +1,19 @@
+#:schema https://api.nuon.co/v1/general/config-schema?source=action
+name    = "kube_list_nodes"
+timeout = "15s"
+
+# [[triggers]]
+# type          = "cron"
+# cron_schedule = "0 */1 * * *"
+
+[[triggers]]
+type = "manual"
+
+[[steps]]
+name    = "kube_list_nodes"
+command = "./list-nodes"
+
+[steps.public_repo]
+repo      = "nuonco/actions"
+directory = "kube"
+branch    = "main"
