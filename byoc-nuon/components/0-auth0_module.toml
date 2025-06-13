@@ -10,9 +10,13 @@ branch    = "tw/auth0-module"
 
 [vars]
 # Required Auth0 Configuration
-auth0_domain = "{{ .nuon.inputs.inputs.auth_issuer_url }}"  # Replace with your Auth0 domain
-auth0_mgmt_client_id = "{{ .nuon.inputs.inputs.auth0_mgmt_client_id }}"  # Replace with your Auth0 Management API Client ID
-auth0_mgmt_client_secret = "{{ .nuon.inputs.inputs.auth0_mgmt_client_secret }}"  # Replace with your Auth0 Management API Client Secret
-public_domain = "{{ .nuon.inputs.inputs.public_domain }}"
-internal_domain = "{{ .nuon.inputs.inputs.internal_domain }}"
-install_name="{{ .nuon.inputs.inputs.name }}"
+auth0_domain = "{{ .nuon.inputs.inputs.auth_issuer_url }}"  
+auth0_mgmt_client_id = "{{ .nuon.inputs.inputs.auth0_mgmt_client_id }}"  
+auth0_mgmt_client_secret = "{{ .nuon.inputs.inputs.auth0_mgmt_client_secret }}"
+auth0_audience = "https://api.{{ .nuon.install.sandbox.outputs.nuon_dns.public_domain.name }}"  
+public_domain = "{{ .nuon.install.sandbox.outputs.nuon_dns.public_domain.name }}"
+internal_domain = "{{ .nuon.install.sandbox.outputs.nuon_dns.internal_domain.name }}"
+install_name="{{ .nuon.install.name }}"
+callback_url = "https://app.{{ .nuon.install.sandbox.outputs.nuon_dns.public_domain.name }}/api/auth/callback"
+logout_url = "https://app.{{ .nuon.install.sandbox.outputs.nuon_dns.public_domain.name }}"
+web_origin = "https://app.{{ .nuon.install.sandbox.outputs.nuon_dns.public_domain.name }}"
