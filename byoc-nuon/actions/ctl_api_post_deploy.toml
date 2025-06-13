@@ -49,7 +49,7 @@ command = "./ctl_api/migrations.sh"
 [steps.public_repo]
 repo      = "nuonco/byoc"
 directory = "byoc-nuon/src/actions"
-branch    = "ja/fix-ctl-api-promote"
+branch    = "main"
 [steps.env_vars]
 ADMIN_API_URL = "http://admin.{{ .nuon.sandbox.outputs.nuon_dns.internal_domain.name }}:8082"
 

@@ -2,9 +2,9 @@
 name    = "alb_healthcheck_runner"
 timeout = "30s"
 
-[[triggers]]
-type          = "cron"
-cron_schedule = "0 */1 * * *"
+# [[triggers]]
+# type          = "cron"
+# cron_schedule = "0 */1 * * *"
 
 [[triggers]]
 type = "manual"
@@ -21,3 +21,11 @@ branch    = "main"
 [steps.env_vars]
 INGRESS_NAME      = "ctl-api-runner"
 INGRESS_NAMESPACE = "ctl-api"
+
+[[steps]]
+name = "notify-on-error"
+inline_contents = "{{.slack_contents}}"
+[steps.env_vars]
+WEBHOOK_URL="{{.slack_webhook_url}}"
+CHANNEL="{{.slack_channel}}"
+EMOJI="{{.slack_emoji}}"
