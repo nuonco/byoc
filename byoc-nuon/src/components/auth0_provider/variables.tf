@@ -24,112 +24,44 @@ variable "auth0_mgmt_client_secret" {
   }
 }
 
-# Application Configuration
-variable "app_name" {
-  type        = string
-  description = "Name prefix for created Auth0 applications"
-  default     = "BYOC-"
-}
-
-# Public domain is now defined in the Nuon variables section below
-
-variable "callback_urls" {
-  type        = list(string)
-  description = "Allowed callback URLs for the applications"
-  default     = []
-  validation {
-    condition     = alltrue([for url in var.callback_urls : can(regex("^https?://.*$", url))])
-    error_message = "Callback URLs must be valid HTTP/HTTPS URLs"
-  }
-}
-
-variable "default_callback_urls" {
-  type        = list(string)
-  description = "Default callback URLs based on public_domain"
-  default     = []
-  
-  # This will be set in locals to avoid validation issues with computed values
-}
-
-variable "logout_urls" {
-  type        = list(string)
-  description = "Allowed logout URLs for the applications"
-  default     = []
-  validation {
-    condition     = alltrue([for url in var.logout_urls : can(regex("^https?://", url))])
-    error_message = "All logout URLs must start with http:// or https://"
-  }
-  # This will be set in locals to avoid validation issues with computed values
-}
-
-variable "web_origins" {
-  type        = list(string)
-  description = "Allowed web origins for CORS (domain only, no paths)"
-  default     = []
-}
-
-variable "default_logout_urls" {
-  type        = list(string)
-  description = "Default logout URLs based on public_domain"
-  default     = []
-  
-  # This will be set in locals to avoid validation issues with computed values
-}
-
-
-# Nuon Variables (from Nuon context)
-# These use Nuon's built-in interpolations:
-# - {{ .nuon.install.name }} - The name of the installation
-# - {{ .nuon.install.id }} - The unique ID of the installation
-# - {{ .nuon.install.public_domain }} - The public domain for the installation
-# - {{ .nuon.install.internal_domain }} - The internal domain for the installation
-
-# Note: These variables are automatically populated by Nuon at runtime
 variable "install_name" {
   type        = string
   description = "Nuon installation name (populated by Nuon)"
-  default     = "{{ .nuon.install.name }}"
-}
-
-variable "install_id" {
-  type        = string
-  description = "Nuon installation ID (populated by Nuon)"
-  default     = "{{ .nuon.install.id }}"
 }
 
 variable "public_domain" {
   type        = string
-  description = "Nuon public domain (populated by Nuon)"
-  default     = "{{ .nuon.install.public_domain }}"
+  description = "Public domain for the installation"
 }
 
 variable "internal_domain" {
   type        = string
-  description = "Nuon internal domain (populated by Nuon)"
-  default     = "{{ .nuon.install.internal_domain }}"
+  description = "Internal domain for the installation"
 }
 
-variable "issuer_url" {
+variable "callback_url" {
   type        = string
-  description = "The issuer URL for the Auth0 tenant"
-  default     = "https://{{ .nuon.install.public_domain }}"
+  description = "The callback URL for the SPA application"
+  validation {
+    condition     = can(regex("^https?://.*$", var.callback_url))
+    error_message = "Callback URL must be a valid HTTP/HTTPS URL"
+  }
 }
 
-variable "org_id" {
+variable "logout_url" {
   type        = string
-  description = "Nuon organization ID (from .nuon.org.id)"
-  default     = "" # Will be populated from Nuon context
+  description = "The logout URL for the SPA application"
+  validation {
+    condition     = can(regex("^https?://", var.logout_url))
+    error_message = "Logout URL must start with http:// or https://"
+  }
 }
 
-variable "app_id" {
+variable "web_origin" {
   type        = string
-  description = "Nuon application ID (from .nuon.app.id)"
-  default     = "" # Will be populated from Nuon context
-}
-
-# Auth0 Connection Configuration
-variable "allow_signup" {
-  type        = bool
-  description = "Whether to allow users to sign up"
-  default     = false
+  description = "The web origin for CORS (domain only, no paths)"
+  validation {
+    condition     = can(regex("^https?://[^/]+$", var.web_origin))
+    error_message = "Web origin must be a domain-only URL (no paths) starting with http:// or https://"
+  }
 }

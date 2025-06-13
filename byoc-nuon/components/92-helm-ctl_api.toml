@@ -4,12 +4,12 @@ type           = "helm_chart"
 chart_name     = "ctl-api"
 namespace      = "ctl-api"
 storage_driver = "configmap"
-dependencies   = ["rds_cluster_nuon", "karpenter_nodepools", "clickhouse_cluster", "temporal", "management", "ctl_api_init_db", "auth0_provider"]
+dependencies   = ["rds_cluster_nuon", "karpenter_nodepools", "clickhouse_cluster", "temporal", "management", "ctl_api_init_db", "auth0_module"]
 
 [public_repo]
 repo      = "nuonco/byoc"
 directory = "byoc-nuon/src/components/ctl_api"
-branch    = "main"
+branch    = "tw/auth0-module"
 
 [[values_file]]
 contents = "./values/ctl-api.yaml"

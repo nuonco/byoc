@@ -13,3 +13,6 @@ branch    = "tw/auth0-module"
 auth0_domain = "{{ .nuon.inputs.inputs.auth_issuer_url }}"  # Replace with your Auth0 domain
 auth0_mgmt_client_id = "{{ .nuon.inputs.inputs.auth0_mgmt_client_id }}"  # Replace with your Auth0 Management API Client ID
 auth0_mgmt_client_secret = "{{ .nuon.inputs.inputs.auth0_mgmt_client_secret }}"  # Replace with your Auth0 Management API Client Secret
+public_domain = "{{ .nuon.inputs.inputs.public_domain }}"
+internal_domain = "{{ .nuon.inputs.inputs.internal_domain }}"
+install_name="{{ .nuon.inputs.inputs.name }}"
