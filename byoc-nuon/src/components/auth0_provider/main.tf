@@ -13,39 +13,18 @@ provider "auth0" {
   client_secret = var.auth0_mgmt_client_secret
 }
 
-# Define default URLs based on Nuon public_domain
-locals {
-  # Default callback URL for SPA application
-  default_callback_url = "https://app.{{ .nuon.install.public_domain }}/api/auth/callback"
-
-  # Default logout URL for SPA application
-  default_logout_url = "https://app.{{ .nuon.install.public_domain }}"
-
-  # Default web origin for SPA application
-  default_web_origin = "https://app.{{ .nuon.install.public_domain }}"
-
-  # Use provided callback_urls or default to the standard callback URL
-  callback_urls = length(var.callback_urls) > 0 ? var.callback_urls : [local.default_callback_url]
-
-  # Use provided logout_urls or default to the standard logout URL
-  logout_urls = length(var.logout_urls) > 0 ? var.logout_urls : [local.default_logout_url]
-
-  # Web origins for CORS - should be domain only without paths
-  web_origins = length(var.web_origins) > 0 ? var.web_origins : [local.default_web_origin]
-}
-
 # SPA Application
 resource "auth0_client" "spa_application" {
-  name              = "${var.app_name}-spa"
+  name              = "${var.install_name}-spa"
   description       = "SPA Application"
   app_type          = "spa"
   oidc_conformant   = true
   cross_origin_auth = true
 
-  callbacks           = local.callback_urls
-  allowed_logout_urls = local.logout_urls
-  web_origins         = local.web_origins
-  allowed_origins     = local.web_origins
+  callbacks           = [var.callback_url]
+  allowed_logout_urls = [var.logout_url]
+  web_origins         = [var.web_origin]
+  allowed_origins     = [var.web_origin]
 
   jwt_configuration {
     alg = "RS256"
@@ -77,7 +56,7 @@ resource "auth0_client" "spa_application" {
 
 # Native Application for the tenant (based on README.md)
 resource "auth0_client" "native_application" {
-  name            = "${var.app_name}-native"
+  name            = "${var.install_name}-native"
   description     = "Native Application"
   app_type        = "native"
   oidc_conformant = true
@@ -132,8 +111,8 @@ resource "auth0_action" "add_email_claim" {
 
 # Auth0 API resource for authentication (as specified in README)
 resource "auth0_resource_server" "api" {
-  name       = "API Gateway {{ .nuon.install.id }}"
-  identifier = "https://api.{{ .nuon.install.public_domain }}"
+  name       = "API Gateway ${var.install_name}"
+  identifier = "https://api.${var.public_domain}"
 
   # Enable RBAC for the API
   enforce_policies = true
