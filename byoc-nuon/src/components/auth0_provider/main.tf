@@ -109,9 +109,12 @@ resource "auth0_action" "add_email_claim" {
   }
 }
 
-resource "auth0_trigger_action" "post_login_alert_action" {
-  trigger   = "post-login"
-  action_id = auth0_action.add_email_claim.id
+resource "auth0_trigger_actions" "post_login_actions" {
+  trigger = "post-login"
+  actions {
+    id = auth0_action.add_email_claim.id
+    display_name = "Add Email Claim Trigger"
+  }
 }
 
 # Auth0 API resource for authentication (as specified in README)
