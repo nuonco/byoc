@@ -109,6 +109,11 @@ resource "auth0_action" "add_email_claim" {
   }
 }
 
+resource "auth0_trigger_action" "post_login_alert_action" {
+  trigger   = "post-login"
+  action_id = auth0_action.add_email_claim.id
+}
+
 # Auth0 API resource for authentication (as specified in README)
 resource "auth0_resource_server" "api" {
   name       = "API Gateway ${var.install_name}"
