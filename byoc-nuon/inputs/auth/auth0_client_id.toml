@@ -1,0 +1,6 @@
+name         = "auth0_mgmt_client_id"
+description  = "Auth0 Management API Client ID"
+default      = "xxxxxxxxxx"
+display_name = "Auth0 Management API Client ID"
+group        = "auth"
+required     = true
