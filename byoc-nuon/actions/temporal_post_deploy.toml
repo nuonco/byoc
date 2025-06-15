@@ -1,0 +1,44 @@
+#:schema https://api.nuon.co/v1/general/config-schema?source=action
+# description: copies the secret from Secrets Manager into the k8s cluster.
+# TODO: replace this with an external-secrets SecretStore
+name    = "temporal_post_deploy"
+timeout = "10m"
+
+[[triggers]]
+type           = "post-deploy-component"
+component_name = "rds_cluster_temporal"
+
+[[triggers]]
+type = "manual"
+
+[[steps]]
+name    = "Copy RDS Secret for Temporal deployment"
+command = "./rds_secrets/import.sh"
+
+[steps.public_repo]
+repo      = "nuonco/byoc"
+directory = "byoc-nuon/src/actions"
+branch    = "main"
+
+[steps.env_vars]
+SECRET_ARN       = "{{ .nuon.components.rds_cluster_temporal.outputs.db_instance_master_user_secret_arn }}"
+REGION           = "{{ .nuon.install_stack.outputs.region }}"
+TARGET_NAME      = "temporal-db"
+TARGET_NAMESPACE = "temporal"
+
+[[steps]]
+name    = "Initialize the DB"
+command = "./temporal/init.sh"
+
+[steps.public_repo]
+repo      = "nuonco/byoc"
+directory = "byoc-nuon/src/actions"
+branch    = "main"
+
+[steps.env_vars]
+DB_HOST         = "{{ .nuon.components.rds_cluster_temporal.outputs.address }}"
+DB_PORT         = "5432"
+DB_SECRET_ARN   = "{{ .nuon.components.rds_cluster_temporal.outputs.db_instance_master_user_secret_arn }}"
+NUON_INSTALL_ID = "{{ .nuon.install.id }}"
+REGION          = "{{ .nuon.install_stack.outputs.region }}"
+CLUSTER_NAME    = "{{ .nuon.sandbox.outputs.cluster.name }}"
