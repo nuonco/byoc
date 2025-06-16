@@ -1,5 +1,5 @@
 name         = "root_domain"
 description  = "The root domain. Services will be made available at subdomains of this root domain."
-default      = "byoc.for.everyone.example.com"
 display_name = "Root Domain"
+required     = true
 group        = "dns"

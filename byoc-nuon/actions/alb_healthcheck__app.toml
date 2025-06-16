@@ -25,11 +25,3 @@ branch    = "main"
 [steps.env_vars]
 INGRESS_NAME      = "dashboard-ui"
 INGRESS_NAMESPACE = "dashboard-ui"
-
-[[steps]]
-name = "notify-on-error"
-inline_contents = "{{.slack_contents}}"
-[steps.env_vars]
-WEBHOOK_URL="{{.slack_webhook_url}}"
-CHANNEL="{{.slack_channel}}"
-EMOJI="{{.slack_emoji}}"
