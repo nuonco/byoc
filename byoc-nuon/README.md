@@ -92,17 +92,14 @@ Nuon has a few dependencies you must configure ahead of time.
 - Github App
 - Auth0 API
 
-You will need an install ID to configure these. For this reason, the first step in the installation process is to create
-your Nuon install -- don't bother updating any of the inputs -- and then cancel the provision. You will use the install
-ID to configure the dependencies as detailed below. Once the dependencies are ready, update your install's inputs, then
-click on "Reprovision Install" in the "Manage" menu.
+### Configure DNS
 
-### Configure DNS (Optional)
+Nuon will need to provision subdomains for some of it's services, so create a domain in your registrar of choice. You
+will need to provide this as an input when creating the install. Nuon will provision the following subdomains under it:
 
-#### Use a Custom Domain
-
-To host BYOC Nuon under a custom domain, configure DNS for your `root_domain` to point to the Route53 Zone created in
-the sandbox.
+- `app.`: The Nuon Dashboard.
+- `api.`: The API used by the dashboard and CLI.
+- `runner.`: The API used by runners in installs of your app.
 
 {{ if (and .nuon.sandbox.populated .nuon.sandbox.outputs) }}
 
@@ -120,7 +117,7 @@ the sandbox.
 
 {{ else }}
 
-> [!WARNING] Waiting on Sandbox Provision. Once the Sandbox is ready, results will be visible here.
+> [!WARNING] Waiting on Sandbox Provision. Once the Sandbox is ready, DNS outputs will be visible here.
 
 {{ end }}
 
@@ -128,13 +125,24 @@ Additional Documentation
 
 - [Creating a subdomain that uses Amazon Route 53 as the DNS service without migrating the parent domain](https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/CreatingNewSubdomain.html)
 
-#### Subdomain Delegation
+### (Optional) DNS Delegation
 
-To make provisioning DNS for installs automatic, Nuon supports subdomain delegation under a root domain of your
-choosing.
+> [!WARNING] This feature requires an AWS Route52 zone.
 
-To use this feature, set up a Route53 zone, and enter it's domain in the "Root Domain" input when installing Nuon. Then,
-add the required runner permissions to create and delete records from the zone.
+Nuon can automatically provision subdomains for installs of your app, making the installation process easier for your
+customers. You must be using a Route53 zone for this.
+
+#### Create the Route53 Zone
+
+Create a zone in Route53 to create NS records in. For example, we use `nuon.run`. When an install is provisioned, an NS
+record will be added to this zone, using the install ID and the nameserver outputs from the install's sandbox. For
+example: `{{.nuon.install.id}}.{{.nuon.components.mananement.root_domain}}`.
+
+#### Configure your App
+
+You will need to configure permissions to add NS records to your domain.
+
+> [!WARNING] Nuon does not currently delete NS records when an install is deprovisioned.
 
 ```toml
 [[provision_role.policies]]
@@ -163,37 +171,11 @@ contents = """
   ]
 }
 """
-
-[[deprovision_role.policies]]
-name = "{{ .nuon.install.id }}-limited-put-bucket-policy"
-contents = """
-{
-  "Version": "2012-10-17",
-  "Statement": [
-    {
-      "Sid": "AllowDeleteNSRecords",
-      "Effect": "Allow",
-      "Action": [
-        "route53:ChangeResourceRecordSets"
-      ],
-      "Resource": "arn:aws:route53:::hostedzone/Z1234567890ABC",
-      "Condition": {
-        "StringEquals": {
-          "route53:RRType": "NS"
-        },
-        "ForAllValues:StringEquals": {
-          "route53:ChangeAction": [
-            "DELETE"
-          ]
-        }
-      }
-    }
-  ]
-}
-"""
 ```
 
-If you're using our aws-eks sandbox, add `enable_nuon_dns = "true"` to the vars.
+The provison workflow looks for an `enable_nuon_dns` output to determine whether to set up delegation. Make sure the
+sandbox you are using provides this output and that it's set to `true`. If you're using one of our
+off-the-shelf-sandboxes, you can enable this in your app config.
 
 ```toml
 #:schema https://api.nuon.co/v1/general/config-schema?source=sandbox
@@ -207,9 +189,6 @@ branch    = "main"
 [vars]
 enable_nuon_dns = "true"
 ```
-
-When provisioning an install for this app, an NS record named `{{install_id}}.{{your_root_domain}}` will be created in
-your Route53 zone.
 
 ### Configure Github App
 
