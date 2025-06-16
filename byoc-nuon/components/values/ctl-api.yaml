@@ -74,7 +74,7 @@ env:
   MANAGEMENT_IAM_ROLE_ARN: "{{ .nuon.components.management.outputs.org_access_role.iam_role_arn }}"
 
   DNS_MANAGEMENT_IAM_ROLE_ARN: "{{ .nuon.components.management.outputs.dns_management_role_arn }}"
-  DNS_ROOT_DOMAIN: "{{ .nuon.components.management.outputs.route53_zone.domain }}"
+  DNS_ROOT_DOMAIN: "{{ .nuon.inputs.inputs.delegation_domain }}"
   DNS_ZONE_ID: "{{ .nuon.components.management.outputs.route53_zone.zone_id }}"
 
   ORG_RUNNER_K8S_CA_DATA: "{{ .nuon.components.management.outputs.cluster.certificate_authority_data }}"
