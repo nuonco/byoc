@@ -1,12 +1,19 @@
-We’re going to be doing your initial Nuon platform installation in your cloud, and there’s some information we’ll need to collect and pre-requisites we’ll need to have set up before we can deploy.
+# BYOC Nuon Setup
 
-1. **Region** - Which region would you like to deploy to?
+Setting up a BYOC Nuon install requires a few steps. The following document will guide you through the process.
+
+## Timeline
+We anticipate that the setup instructions take around 20 minutes to complete.
+
+## Setup steps 
+
+1. **Region** - Which region would you like to deploy to? We currently support (us-east-1, us-east-2, us-west-1)
 2. **Public domain** - Decide on a public domain for the install. That is, if you were to log into the nuon platform, you’d navigate to https://app.<thedomainthatyouchoose.com>.  After the setup is complete, you’ll be setting that domain’s NS record to a route53 within the installation.
     - Subdomains are fine, eg. byoc.yourdomain.com
 3. **Github App** - We require you to create a github app that has read only permission scopes to the repositories that you wish to pull code from. There will be instructions attached to this email that detail this process, but you’ll need the chosen domain from above.
 4. **Auth0** setup- We require you to create an auth0 tenant to serve as an auth provider. We currently only support Google Workspace as the federated IDP at the moment, but if you have additional needs, please let us know. There is a document attached to this email that has detailed set up instructions, as well as a [terraform module](https://github.com/nuonco/byoc-auth0) to make this easier for you.
 
-In summary, you will need to collect:
+## Information that you need to provide
 
 - And provide to us:
     - Region : e.g. us-east-1
@@ -24,6 +31,7 @@ In summary, you will need to collect:
     - Auth0 :
         - Single Page App : Secret Key
 
+After you have provided the above information, we will provision your install, and set up a further live setup call.
 
 
 ---
