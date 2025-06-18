@@ -1,0 +1,6 @@
+name         = "runner-image-tag"
+description  = "The image tag for the new runners"
+default      = "latest"
+display_name = "Runner Image Tag"
+group        = "nuon"
+required     = true
