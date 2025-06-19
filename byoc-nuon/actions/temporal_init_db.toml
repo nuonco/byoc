@@ -1,0 +1,34 @@
+#:schema https://api.nuon.co/v1/general/config-schema?source=action
+name    = "temporal_init_db"
+timeout = "1m30s"
+
+[[triggers]]
+type           = "post-deploy-component"
+component_name = "temporal_init_db"
+
+[[triggers]]
+type = "manual"
+
+[[steps]]
+name    = "Initialize the DB"
+command = "./temporal/init-db.sh"
+
+[steps.public_repo]
+repo      = "nuonco/byoc"
+directory = "byoc-nuon/src/actions"
+branch    = "fd/temporal/db-refinements"
+
+[steps.env_vars]
+REGION          = "{{ .nuon.install_stack.outputs.region }}"
+
+[[steps]]
+name    = "Create DB Users"
+command = "./temporal/create-db-users.sh"
+
+[steps.public_repo]
+repo      = "nuonco/byoc"
+directory = "byoc-nuon/src/actions"
+branch    = "fd/temporal/db-refinements"
+
+[steps.env_vars]
+REGION          = "{{ .nuon.install_stack.outputs.region }}"
