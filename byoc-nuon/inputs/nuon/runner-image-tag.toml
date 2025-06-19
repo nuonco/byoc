@@ -1,4 +1,4 @@
-name         = "runner-image-tag"
+name         = "runner_image_tag"
 description  = "The image tag for the new runners"
 default      = "latest"
 display_name = "Runner Image Tag"

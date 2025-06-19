@@ -1,4 +1,4 @@
-name         = "runner-image-url"
+name         = "runner_image_url"
 description  = "The image url for the new runners"
 default      = "public.ecr.aws/p7e3r5y0/runner"
 display_name = "Runner Image URL"
