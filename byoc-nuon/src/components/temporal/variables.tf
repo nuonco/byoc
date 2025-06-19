@@ -45,9 +45,14 @@ variable "cluster_certificate_authority_data" {
 
 # db details
 
-variable "db_instance_master_user_secret_arn" {
+variable "temporal_pw_secret_arn" {
   type        = string
-  description = "The ARN  of the AWS Secret Manager Secret that holds the username,password for the RDS instance."
+  description = "The ARN  of the AWS Secret Manager Secret that holds the password for the temporal db user."
+}
+
+variable "temporal_visibility_pw_secret_arn" {
+  type        = string
+  description = "The ARN  of the AWS Secret Manager Secret that holds the username,password for the temporal_visibility_db user instance."
 }
 
 variable "db_instance_address" {

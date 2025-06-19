@@ -1,14 +1,32 @@
 locals {
   temporal = {
     version       = "0.33.0"
-    image_tag     = "${local.vars.image_tag}"
+    image_tag     = local.vars.image_tag
     value_file    = "values/temporal.yaml"
     override_file = "values/${local.name}.yaml"
     namespace     = "temporal"
     frontend_url  = "temporal-frontend.${local.zone}"
     web_url       = "temporal-ui.${local.zone}"
   }
-  environment = local.tags.environment
+  db = {
+    default = {
+      username = "temporal"
+      password = data.aws_secretsmanager_secret_version.db_default_password.secret_string
+    }
+    visibility = {
+      username = "temporal_visibility"
+      password = data.aws_secretsmanager_secret_version.db_visibility_password.secret_string
+    }
+  }
+  # environment = local.tags.environment
+}
+
+data "aws_secretsmanager_secret_version" "db_default_password" {
+  secret_id = var.temporal_pw_secret_arn
+}
+
+data "aws_secretsmanager_secret_version" "db_visibility_password" {
+  secret_id = var.temporal_visibility_pw_secret_arn
 }
 
 resource "helm_release" "temporal" {
@@ -36,8 +54,8 @@ resource "helm_release" "temporal" {
                 sql = {
                   host     = var.db_instance_address
                   port     = var.db_instance_port
-                  user     = local.db_username
-                  password = local.db_password
+                  user     = local.db.default.username
+                  password = local.db.default.password
                   # TODO: replace password w/ existingSecret existingSecret
                 }
               }
@@ -45,8 +63,8 @@ resource "helm_release" "temporal" {
                 sql = {
                   host     = var.db_instance_address
                   port     = var.db_instance_port
-                  user     = local.db_username
-                  password = local.db_password
+                  user     = local.db.visibility.username
+                  password = local.db.visibility.password
                 }
               }
             }
