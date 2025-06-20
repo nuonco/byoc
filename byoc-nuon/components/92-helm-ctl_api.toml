@@ -9,7 +9,7 @@ dependencies   = ["rds_cluster_nuon", "karpenter_nodepools", "clickhouse_cluster
 [public_repo]
 repo      = "nuonco/byoc"
 directory = "byoc-nuon/src/components/ctl_api"
-branch    = "tw/runner-tag-input"
+branch    = "main"
 
 [[values_file]]
 contents = "./values/ctl-api.yaml"

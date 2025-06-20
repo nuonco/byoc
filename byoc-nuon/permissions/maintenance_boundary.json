@@ -5,6 +5,7 @@
       "Effect": "Allow",
       "Action": [
         "cloudwatch:*",
+        "logs:*",
         "ec2:*",
         "eks:*",
         "iam:*",
@@ -14,7 +15,7 @@
         "sqs:*",
         "ecr:*",
         "acm:*",
-        "Route53:*",
+        "route53:*",
         "kms:*",
         "organizations:DescribeOrganization"
       ],
