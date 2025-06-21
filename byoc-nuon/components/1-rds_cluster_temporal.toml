@@ -11,8 +11,8 @@ branch    = "main"
 [vars]
 identifier      = "temporal-{{ .nuon.install.id }}"
 port            = "5432"
-db_name         = "temporal"
-db_user         = "temporal"
+db_name         = "temporaladmin"
+db_user         = "temporaladmin"
 instance_class  = "{{ .nuon.install.inputs.temporal_db_instance_type }}"
 subnet_group_id = "{{ .nuon.components.rds_subnet.outputs.id }}"
 
