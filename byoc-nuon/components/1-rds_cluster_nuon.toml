@@ -6,7 +6,7 @@ terraform_version = "1.11.3"
 [public_repo]
 repo      = "nuonco/byoc"
 directory = "byoc-nuon/src/components/rds_cluster_nuon"
-branch    = "main"
+branch    = "tw/byoc-testing-certificate-upgrade"
 
 [vars]
 identifier      = "nuon-{{ .nuon.install.id }}"

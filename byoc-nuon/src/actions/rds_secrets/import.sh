@@ -14,6 +14,9 @@ echo "pwd: "`pwd`
 kubectl auth whoami -o json | jq -c
 
 echo "[rds-secrets import] reading db access secrets from AWS"
+echo "updating cacerts"
+update-ca-certificates
+echo "done updating cacerts"
 secret=`aws --region $region secretsmanager get-secret-value --secret-id=$secret_arn`
 username=`echo $secret | jq -r '.SecretString' | jq -r '.username'`
 password=`echo $secret | jq -r '.SecretString' | jq -r '.password'`
