@@ -16,7 +16,7 @@ command = "./temporal/init-db.sh"
 [steps.public_repo]
 repo      = "nuonco/byoc"
 directory = "byoc-nuon/src/actions"
-branch    = "fd/temporal/db-refinements"
+branch    = "main"
 
 [steps.env_vars]
 REGION          = "{{ .nuon.install_stack.outputs.region }}"
@@ -28,7 +28,7 @@ command = "./temporal/create-db-users.sh"
 [steps.public_repo]
 repo      = "nuonco/byoc"
 directory = "byoc-nuon/src/actions"
-branch    = "fd/temporal/db-refinements"
+branch    = "main"
 
 [steps.env_vars]
 REGION          = "{{ .nuon.install_stack.outputs.region }}"

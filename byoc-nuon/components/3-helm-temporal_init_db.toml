@@ -9,7 +9,7 @@ dependencies   = ["karpenter_nodepools", "rds_cluster_temporal"]
 [public_repo]
 repo      = "nuonco/byoc"
 directory = "byoc-nuon/src/components/temporal_init_db"
-branch    = "fd/temporal/db-refinements"
+branch    = "main"
 
 [[values_file]]
 contents = "./values/temporal-init.yaml"
