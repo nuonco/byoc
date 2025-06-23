@@ -6,7 +6,7 @@ dependencies      = ["karpenter_nodepools", "temporal_init_db"]
 [public_repo]
 repo      = "nuonco/byoc"
 directory = "byoc-nuon/src/components/temporal"
-branch    = "767b59a979124403df4245fd388e0707cff37678"
+branch    = "main"
 
 [vars]
 env                                = "prod"
