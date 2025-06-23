@@ -35,12 +35,11 @@ nodepools:
     limits:
       cpu: 8
       memory: "32Gi"
-    expireAfter: "2160h"
+    expireAfter: "Never"
     disruption:
+      consolidationPolicy: WhenEmpty
       budgets:
-        - nodes: "0"
-      consolidationPolicy: "WhenEmptyOrUnderutilized"
-      consolidateAfter: "15m"
+      - nodes: 1
     taints:
       - effect: NoSchedule
         key: installation
@@ -52,12 +51,11 @@ nodepools:
     limits:
       cpu: 14
       memory: "1000Gi"
-    expireAfter: "2160h"
+    expireAfter: "Never"
     disruption:
+      consolidationPolicy: WhenEmpty
       budgets:
-        - nodes: "0"
-      consolidationPolicy: "WhenEmpty"
-      consolidateAfter: "15m"
+      - nodes: 1
     taints:
       - effect: NoSchedule
         key: installation
