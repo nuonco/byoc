@@ -40,37 +40,9 @@ echo $outputs >> $NUON_ACTIONS_OUTPUT_FILEPATH
 
 echo >&2 "status is $indicator"
 if [ "$indicator" = '"🔴"' ]; then
-    echo >&2 "healthcheck failed, sending notification"
-    TEXT=$(cat $outputs | jq -c . | jq -R .)
-    PAYLOAD='{
-        "channel": "'$CHANNEL'",
-        "username": "BYOBot",
-        "icon_emoji": ":'$EMOJI':",
-        "text": '$TEXT'
-    }'
-    
-    echo >&2 "sending message to Slack"
-    curl -X POST -H 'Content-type: application/json' -d "$PAYLOAD" "$WEBHOOK_URL"
-
-    # force this step to fail, so the correct status is displayed in the README
     exit 1
 fi
-
-echo >&2 "healthcheck succeeded, sending notification"
-TEXT=$(cat $outputs | jq -c . | jq -R .)
-PAYLOAD='{
-    "channel": "'$CHANNEL'",
-    "username": "BYOBot",
-    "icon_emoji": ":'$EMOJI':",
-    "text": '$TEXT'
-}'
-
-echo >&2 "sending message to Slack"
-curl -X POST -H 'Content-type: application/json' -d "$PAYLOAD" "$WEBHOOK_URL"
 """
 [steps.env_vars]
 INGRESS_NAME      = "ctl-api-public"
 INGRESS_NAMESPACE = "ctl-api"
-WEBHOOK_URL = "https://hooks.slack.com/services/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"
-CHANNEL = "jordan-test"
-EMOJI = "nuon"
