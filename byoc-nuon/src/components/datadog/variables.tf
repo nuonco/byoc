@@ -4,11 +4,6 @@ locals {
   enabled   = (var.datadog_api_key != "" && var.datadog_app_key != "")
 }
 
-variable "env" {
-  type        = string
-  description = "The environment to use. Typically one of dev, stage, prod. In this case, the installation name."
-}
-
 variable "datadog_api_key" {
   type        = string
   description = "The datadog api key - used by the agents."
@@ -23,6 +18,12 @@ variable "install_id" {
   type        = string
   description = "Install ID"
 }
+
+variable "install_name" {
+  type        = string
+  description = "Install name"
+}
+
 # Cluster Info
 variable "region" {
   type        = string
