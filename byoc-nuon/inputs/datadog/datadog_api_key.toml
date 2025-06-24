@@ -1,5 +1,0 @@
-name         = "datadog_api_key"
-description  = "Datadog API Key"
-default      = ""
-display_name = "Datadog API Key"
-group        = "datadog"
