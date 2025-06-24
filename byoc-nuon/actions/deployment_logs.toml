@@ -6,7 +6,7 @@ timeout = "2m0s"
 type = "manual"
 
 [[steps]]
-name    = "chat-api-logs"
+name    = "get_deployment_logs"
 command = "./deployment-logs"
 
 [steps.public_repo]
