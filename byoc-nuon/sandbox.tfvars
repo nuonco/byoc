@@ -18,4 +18,5 @@ additional_namespaces = [
   "clickhouse",
   "ctl-api",
   "dashboard-ui",
+  "datadog",
 ]
