@@ -17,7 +17,11 @@ resource "kubectl_manifest" "clickhouse_keeper_installation" {
             "layout" = {
               "replicasCount" = 3
             }
-            "name" = "chk-simple"
+            "name" = "chk-simple",
+            "templates" = {
+              "podTemplate"     = "clickhouse:${var.cluster_image_tag}"
+              "serviceTemplate" = "clickhouse:${var.cluster_image_tag}"
+            }
           },
         ]
         "settings" = {
@@ -81,7 +85,7 @@ resource "kubectl_manifest" "clickhouse_keeper_installation" {
                 }
               ]
               "tolerations" = [{
-                "key"      = "installation"
+                "key"      = "pool.nuon.co"
                 "operator" = "Equal"
                 "value"    = "clickhouse-keeper"
                 "effect"   = "NoSchedule"
