@@ -16,7 +16,7 @@ data:
     # already in env: SQL_HOST, SQL_PORT, SQL_USER, SQL_PASSWORD, SQL_PLUGIN
     temporal-sql-tool --db temporal_visibility create;
     temporal-sql-tool --db temporal_visibility setup-schema -v 0.0;
-    temporal-sql-tool --db temporal_visibility update-schema -d ./schema/postgresql/v12/temporal/versioned/;
+    temporal-sql-tool --db temporal_visibility update-schema -d ./schema/postgresql/v12/visibility/versioned/;
   create_db_users.sh: |
     #!/bin/bash
     # idempotent script for the creation of a dedicated DB user for temporal
