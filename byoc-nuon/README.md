@@ -13,7 +13,7 @@ AWS | 000000000000 | xx-vvvv-00 | vpc-000000
 {{ end }}
   </small>
 
-{{ if .nuon.inputs.inputs.datadog_api_key }}
+  {{ if .nuon.inputs.inputs.datadog_api_key }}
 
 <small>[datadog](https://us5.datadoghq.com/logs?query=env%3Abyoc%20install.id%3A{{ .nuon.install.id}})</small>
 
@@ -162,6 +162,8 @@ configure:
 - A Single Page Application (for the CTL API to use)
 - A Native Application (for the Dashboard to use)
 
+Nuon maintains a [terraform module](https://github.com/nuonco/byoc-auth0) to help with this process. We recommend utilizing that terraform module to configure Auth0.
+
 #### An action that adds `email_address` to the claim
 We will need to add a trigger to enrich the claim with the email. Do the following
 1. Log in to your Auth0 tenant
@@ -219,6 +221,41 @@ match the API URL. It cannot be changed after creation, so make sure this accura
 | Description                       | For BYOC Nuon Install {{ .nuon.install.id }} | In creation modal.              |
 | Allow Cross-Origin Authentication | true                                         | Cross-Origin Authentication     |
 | Device Code                       | checked                                      | Advanced Settings > Grant Types |
+
+
+## (Optional) Configure additional Identity Providers
+Auth0 allows multiple Identity Providers to be configured against applications. Out of the box, the above configuration 
+allows for Google authentication. 
+
+The user key in the BYOC application is `email`. Regardless of which authentication path, organizations and apps are 
+associated with the user based on this key. Any new identity providers configured will need to ensure that email is returned as a claim on the access token.
+
+We have tested Okta as an additional identity provider. The process is as follows:
+[Source Documentation](https://auth0.com/docs/authenticate/identity-providers/enterprise-identity-providers/okta#add-test-user-to-okta-app-integration)
+
+### Okta
+
+## Step 1: Create in Okta an "OIDC Application
+- Name - <choose any name>
+- Sign In Redirect = `<your auth0 tenant>/login/callback`
+- Trusted Origins = `<your public domain>`
+- Retain the Client ID/Secret (these will be utilized in the next step)
+
+## Step 2: Create in Auth0 an Enterprise Connection
+    1. Auth0 Dashboard > Authentication > Enterprise> Okta Workforce > Create
+        - Connection name - must be unique across the tenant. We recommend setting the same name used in step 1
+        - Okta domain (upper left corner of your Okta tenant)
+        - Client ID + Client Secret (from step 1)
+    2. Select Sync user profiles at each login
+    3. User Mapping:
+```{
+  "attributes": {
+    "email": "${context.tokenset.email}"
+  },
+  "mapping_mode": "use_map"
+}```
+
+
 
 ### Update Inputs
 
