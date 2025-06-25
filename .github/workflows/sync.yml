@@ -31,15 +31,15 @@ jobs:
       - name: Install CLI
         id: cli
         run: ./scripts/install-cli.sh
-      - name: Sync
-        id: sync
+      - name: Sync to org4f5hq4tyo44legra6r4nm18
+        id: sync_to_org4f5hq4tyo44legra6r4nm18
         working-directory: byoc-nuon
-        run: nuon apps sync-dir .
+        run: nuon apps sync .
         env:
           NUON_ORG_ID: org4f5hq4tyo44legra6r4nm18
       - name: Sync to orggxqsc8f5zns1jra0oplc0ff
         id: sync_to_orggxqsc8f5zns1jra0oplc0ff
         working-directory: byoc-nuon
-        run: nuon apps sync-dir .
+        run: nuon apps sync .
         env:
           NUON_ORG_ID: orggxqsc8f5zns1jra0oplc0ff
