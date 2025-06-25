@@ -1,9 +1,12 @@
 locals {
-  tables = [
-    "ctl_api.otel_log_records",
-    "ctl_api.runner_heart_beats",
-    "ctl_api.runner_health_checks",
-  ]
+  backups = {
+    tables = [
+      "ctl_api.otel_log_records",
+      # omitted
+      # "ctl_api.runner_heart_beats",
+      # "ctl_api.runner_health_checks",
+    ]
+  }
 }
 
 variable "install_id" {
