@@ -12,6 +12,13 @@ type = "manual"
 [[steps]]
 name    = "tctl cluster health"
 inline_contents = """
+#!/usr/bin/env sh
+
+set +e
+set -o pipefail
+set -u
+
+echo >&2 "checking temporal cluster health..."
 kubectl config set-context --current --namespace=temporal
 POD_NAME=$(kubectl get pods -l app.kubernetes.io/component=admintools -o custom-columns=NAME:.metadata.name --no-headers)
 STATUS=$(kubectl exec -i $POD_NAME -- tctl cluster health)
@@ -23,15 +30,12 @@ else
     indicator="🔴"
 fi
 
-# compose the output
+echo >&2 "saving status to outputs..."
 outputs=`jq --null-input --arg indicatorVar "$indicator" '{"indicator": $indicatorVar}'`
 echo $outputs >> $NUON_ACTIONS_OUTPUT_FILEPATH
-"""
 
-[[steps]]
-name = "notify-on-error"
-inline_contents = "{{.slack_contents}}"
-[steps.env_vars]
-WEBHOOK_URL="{{.slack_webhook_url}}"
-CHANNEL="{{.slack_channel}}"
-EMOJI="{{.slack_emoji}}"
+echo >&2 "status is $indicator"
+if [ "$indicator" = '"🔴"' ]; then
+    exit 1
+fi
+"""
