@@ -2,9 +2,9 @@
 name    = "alb_healthcheck_app"
 timeout = "30s"
 
-# [[triggers]]
-# type          = "cron"
-# cron_schedule = "0 */1 * * *"
+[[triggers]]
+type          = "cron"
+cron_schedule = "*/5 */1 * * *"
 
 [[triggers]]
 type           = "post-deploy-component"

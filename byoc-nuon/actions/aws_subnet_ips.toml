@@ -2,9 +2,9 @@
 name    = "aws_subnet_ips"
 timeout = "15s"
 
-# [[triggers]]
-# type          = "cron"
-# cron_schedule = "0 */1 * * *"
+[[triggers]]
+type          = "cron"
+cron_schedule = "0 */1 * * *"
 
 [[triggers]]
 type = "manual"
