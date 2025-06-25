@@ -233,7 +233,7 @@ We have tested Okta as an additional identity provider. The process is as follow
 
 ### Okta
 
-## Step 1: Create in Okta an "OIDC Application
+## Step 1: Create in Okta an "OIDC Application"
 - Name -  Choose any name
 - Sign In Redirect = `<your auth0 tenant>/login/callback`
 - Trusted Origins = `<your public domain>`
