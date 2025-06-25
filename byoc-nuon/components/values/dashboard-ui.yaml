@@ -38,7 +38,7 @@ env:
 
   HTTP_PORT: "4000"
 
-  VERSION: "0.19.581"
+  VERSION: "0.19.590"
 
 envSecrets:
   - name: "AUTH0_CLIENT_SECRET"
