@@ -3,7 +3,7 @@
 set -u
 
 region="$REGION"
-secret_arn="$AUTH0_CLIENT_SECRET_ARN"
+secret_arn="$SECRET_ARN"
 
 
 aws --region $region sts get-caller-identity
