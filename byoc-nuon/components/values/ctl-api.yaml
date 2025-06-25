@@ -2,7 +2,7 @@
 env:
   ENV: prod
   GIT_REF: dne # TODO: update
-  VERSION: "0.19.581"
+  VERSION: "0.19.590"
   MIDDLEWARES: log,error,public_metrics,public,timeout,size,global,auth,org,offset_pagination,invites,headers,cors,config
   RUNNER_MIDDLEWARES: log,runner_metrics,error,public,timeout,size,auth,runner_org,offset_pagination,headers,cors,config
   INTERNAL_MIDDLEWARES: log,headers,internal_metrics,error,public,timeout,size,global,config,admin,offset_pagination
@@ -36,7 +36,7 @@ env:
   GRACEFUL_SHUTDOWN_TIMEOUT: 10s
   RUNNER_CONTAINER_IMAGE_TAG: "{{ .nuon.inputs.inputs.runner_image_tag }}"
   RUNNER_CONTAINER_IMAGE_URL: "{{ .nuon.inputs.inputs.runner_image_url }}"
-  
+
   GITHUB_APP_ID: !!string {{ .nuon.inputs.inputs.github_app_id }}
 
   INTEGRATION_GITHUB_INSTALL_ID: !!string 00000000
