@@ -13,7 +13,7 @@ AWS | 000000000000 | xx-vvvv-00 | vpc-000000
 {{ end }}
   </small>
 
-  {{ if .nuon.inputs.inputs.datadog_api_key }}
+{{ if .nuon.inputs.inputs.datadog_api_key }}
 
 <small>[datadog](https://us5.datadoghq.com/logs?query=env%3Abyoc%20install.id%3A{{ .nuon.install.id}})</small>
 
@@ -175,11 +175,9 @@ Replace the code in the window with this:
   exports.onExecutePostLogin = async (event, api) => {
     const email = event.user.email;
     
-
-      // Set claims 
-      api.accessToken.setCustomClaim(`email`, email);
+    // Set claims 
+    api.accessToken.setCustomClaim(`email`, email);
   };
-
   ```
 5. Click Actions > triggers, click `Post-login trigger`, go to the right panel, click `Custom` then drag the `AddScope` trigger into the workflow (between the two steps), and hit save.
 
@@ -236,7 +234,7 @@ We have tested Okta as an additional identity provider. The process is as follow
 ### Okta
 
 ## Step 1: Create in Okta an "OIDC Application
-- Name - <choose any name>
+- Name -  Choose any name
 - Sign In Redirect = `<your auth0 tenant>/login/callback`
 - Trusted Origins = `<your public domain>`
 - Retain the Client ID/Secret (these will be utilized in the next step)
@@ -248,12 +246,15 @@ We have tested Okta as an additional identity provider. The process is as follow
         - Client ID + Client Secret (from step 1)
     2. Select Sync user profiles at each login
     3. User Mapping:
-```{
+
+```
+{
   "attributes": {
     "email": "${context.tokenset.email}"
   },
   "mapping_mode": "use_map"
-}```
+}
+```
 
 
 
