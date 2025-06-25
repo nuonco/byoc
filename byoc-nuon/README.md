@@ -13,7 +13,7 @@ AWS | 000000000000 | xx-vvvv-00 | vpc-000000
 {{ end }}
   </small>
 
-  {{ if .nuon.inputs.inputs.datadog_api_key }}
+{{ if .nuon.inputs.inputs.datadog_api_key }}
 
 <small>[datadog](https://us5.datadoghq.com/logs?query=env%3Abyoc%20install.id%3A{{ .nuon.install.id}})</small>
 
