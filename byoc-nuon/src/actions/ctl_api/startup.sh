@@ -8,6 +8,8 @@ db_addr="$DB_ADDR"
 db_port="$DB_PORT"
 region="$REGION"
 secret_arn="$SECRET_ARN"
+log_level="${LOG_LEVEL:-info}"
+db_log_queries="${DB_LOG_QUERIES:-false}"
 
 # internal
 deployment_name="ctl-api-startup"
@@ -26,7 +28,9 @@ echo "[ctl_api startup] get a pod from the deployment"
 pod=`kubectl -n ctl-api get pods --selector app.nuon.co/name="$deployment_name" -o json | jq -r '.items[0].metadata.name'`
 
 echo "[ctl_api startup] preparing to initialize"
-kubectl --namespace=ctl-api exec  -i $pod -- /bin/service startup
+kubectl --namespace=ctl-api exec  -i $pod -- \
+  env "LOG_LEVEL=$log_level" "DB_LOG_QUERIES=$db_log_queries" \
+  /bin/service startup
 
 echo "[ctl_api startup] scale down the deployment"
 kubectl scale -n ctl-api --current-replicas=1 --replicas=0 "deployment/$deployment_name"
