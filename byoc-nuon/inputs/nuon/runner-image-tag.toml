@@ -1,6 +1,6 @@
 name         = "runner_image_tag"
 description  = "The image tag for the new runners"
-default      = "ja-azure-test"
+default      = "300807c"
 display_name = "Runner Image Tag"
 group        = "nuon"
 required     = true
