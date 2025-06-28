@@ -2,9 +2,9 @@
 name    = "healthcheck_temporal"
 timeout = "30s"
 
-[[triggers]]
-type          = "cron"
-cron_schedule = "*/15 */1 * * *"
+# [[triggers]]
+# type          = "cron"
+# cron_schedule = "*/15 */1 * * *"
 
 [[triggers]]
 type = "manual"
