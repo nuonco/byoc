@@ -5,8 +5,6 @@ install_id = "{{ .nuon.install.id }}"
 region                = "{{ .nuon.install_stack.outputs.region }}"
 management_account_id = "{{ .nuon.sandbox.outputs.account.id }}"
 
-root_domain = "{{ .nuon.inputs.inputs.root_domain }}"
-
 cluster = {
   arn                        = "{{ .nuon.sandbox.outputs.cluster.arn }}"
   certificate_authority_data = "{{ .nuon.sandbox.outputs.cluster.certificate_authority_data }}"
