@@ -1,0 +1,18 @@
+#:schema https://api.nuon.co/v1/general/config-schema?source=action
+name    = "runner_asg_instance_refresh"
+timeout = "1m"
+
+[[triggers]]
+type = "manual"
+
+[[steps]]
+name    = "runner_asg_instance_refresh"
+command = "./aws/runner-asg-instance-refresh.sh"
+
+[steps.public_repo]
+repo      = "nuonco/byoc"
+directory = "byoc-nuon/src/actions"
+branch    = "main"
+
+[steps.env_vars]
+DRY_RUN = "true"
