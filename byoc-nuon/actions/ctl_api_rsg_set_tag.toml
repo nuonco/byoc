@@ -1,0 +1,24 @@
+#:schema https://api.nuon.co/v1/general/config-schema?source=action
+name    = "ctl_api_rsg_set_tag"
+timeout = "5m"
+
+[[triggers]]
+type = "manual"
+
+# TODO: uncomment the following, in due time
+# [[triggers]]
+# type           = "pre-deploy-component"
+# component_name = "ctl_api"
+
+[[steps]]
+name    = "Initialize the DB"
+command = "./ctl_api/rsg-set-tag.sh"
+
+[steps.public_repo]
+repo      = "nuonco/byoc"
+directory = "byoc-nuon/src/actions"
+branch    = "main"
+
+[steps.env_vars]
+ADMIN_API_URL = "http://admin.{{ .nuon.sandbox.outputs.nuon_dns.internal_domain.name }}:8082"
+TAG           = "cloud"
