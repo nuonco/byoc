@@ -8,7 +8,7 @@ image:
   tag: "{{ .nuon.components.img_nuon_dashboard_ui.outputs.image.tag }}"
 
 env:
-  VERSION: "0.19.595"
+  VERSION: "0.19.596"
 
   NEXT_PUBLIC_API_URL: "https://api.{{ .nuon.sandbox.outputs.nuon_dns.public_domain.name }}"
   NEXT_PUBLIC_ADMIN_API_URL: "http://ctl-api-admin.ctl-api.svc.cluster.local:8082"
