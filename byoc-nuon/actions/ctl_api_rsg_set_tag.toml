@@ -11,7 +11,7 @@ type = "manual"
 # component_name = "ctl_api"
 
 [[steps]]
-name    = "Initialize the DB"
+name    = "rsg_set_tag"
 command = "./ctl_api/rsg-set-tag.sh"
 
 [steps.public_repo]
