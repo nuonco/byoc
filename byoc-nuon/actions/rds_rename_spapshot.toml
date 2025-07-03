@@ -1,0 +1,18 @@
+#:schema https://api.nuon.co/v1/general/config-schema?source=action
+name    = "rds_rename_final_snapshot"
+timeout = "5m"
+
+[[triggers]]
+type = "manual"
+
+[[steps]]
+name    = "rename_final_snapshot"
+command = "./rename-final-snapshot.sh"
+
+[steps.public_repo]
+repo      = "nuonco/byoc"
+directory = "byoc-nuon/src/actions/rds"
+branch    = "main"
+
+[steps.env_vars]
+PREFIX = "final-temporal-"
