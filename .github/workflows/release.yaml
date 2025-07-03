@@ -2,8 +2,9 @@
 name: release
 on:
   push:
-    branches:
-      - main
+    branches: main
+    paths:
+      - "byoc-nuon/**"
 
 permissions:
   contents: write
