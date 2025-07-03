@@ -48,6 +48,6 @@ server:
 web:
   additionalEnv:
     - name: TEMPORAL_CSRF_COOKIE_INSECURE
-      value: !!str "true"
+      value: !!str "false"
     - name: TEMPORAL_UI_PUBLIC_PATH
-      value: /admin/temporal
+      value: / # /admin/temporal # disabled for byoc-nuon
