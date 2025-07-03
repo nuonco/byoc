@@ -23,7 +23,7 @@ password=`echo $secret | jq -r '.SecretString' | jq -r '.password'`
 echo "[rds-secrets import] list all secrets"
 aws --region $region secretsmanager list-secrets
 
-echo "[rds-secrets import] create RDS access secrets"
+echo "[rds-secrets import] copy RDS access secrets"
 kubectl create -n $namespace secret generic $name \
   --save-config    \
   --dry-run=client \
