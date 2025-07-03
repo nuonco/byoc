@@ -25,3 +25,7 @@ output "db_instance_name" {
 output "db_instance_username" {
   value = module.db.db_instance_username
 }
+
+output "db_instance_availability_zone" {
+  value = module.db.db_instance_availability_zone
+}
