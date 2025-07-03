@@ -9,6 +9,8 @@ secret_arn="$SECRET_ARN"
 name="$TARGET_NAME"
 namespace="$TARGET_NAMESPACE"
 
+
+export AWS_PAGER=""
 echo "[rds-secrets import] kubectl auth whoami"
 echo "pwd: "`pwd`
 kubectl auth whoami -o json | jq -c
@@ -17,6 +19,9 @@ echo "[rds-secrets import] reading db access secrets from AWS"
 secret=`aws --region $region secretsmanager get-secret-value --secret-id=$secret_arn`
 username=`echo $secret | jq -r '.SecretString' | jq -r '.username'`
 password=`echo $secret | jq -r '.SecretString' | jq -r '.password'`
+
+echo "[rds-secrets import] list all secrets"
+aws --region $region secretsmanager list-secrets
 
 echo "[rds-secrets import] create RDS access secrets"
 kubectl create -n $namespace secret generic $name \
