@@ -447,13 +447,6 @@ nuon -f ~/.nuon.byoc login
 <pre>{{ toPrettyJson .nuon.actions }}</pre>
 </details>
 
-### Components
-
-<details>
-<summary>.nuon.components</summary>
-<pre>{{ toPrettyJson .nuon.components }}</pre>
-</details>
-
 ### Inputs
 
 <details>
@@ -466,11 +459,4 @@ nuon -f ~/.nuon.byoc login
 <details>
 <summary>.nuon.secrets</summary>
 <pre>{{ toPrettyJson .nuon.secrets }}</pre>
-</details>
-
-### Full State
-
-<details>
-<summary>Full Install State</summary>
-<pre>{{ toPrettyJson .nuon }}</pre>
 </details>
