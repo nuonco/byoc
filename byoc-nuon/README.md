@@ -447,13 +447,6 @@ nuon -f ~/.nuon.byoc login
 <pre>{{ toPrettyJson .nuon.actions }}</pre>
 </details>
 
-### Components
-
-<details>
-<summary>.nuon.components</summary>
-<pre>{{ toPrettyJson .nuon.components }}</pre>
-</details>
-
 ### Inputs
 
 <details>
