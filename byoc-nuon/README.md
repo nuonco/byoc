@@ -467,10 +467,3 @@ nuon -f ~/.nuon.byoc login
 <summary>.nuon.secrets</summary>
 <pre>{{ toPrettyJson .nuon.secrets }}</pre>
 </details>
-
-### Full State
-
-<details>
-<summary>Full Install State</summary>
-<pre>{{ toPrettyJson .nuon }}</pre>
-</details>
