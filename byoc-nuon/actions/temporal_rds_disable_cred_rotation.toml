@@ -1,0 +1,19 @@
+#:schema https://api.nuon.co/v1/general/config-schema?source=action
+name    = "temporal_rds_disable_cred_rotation"
+timeout = "1m"
+
+[[triggers]]
+type           = "post-deploy-component"
+component_name = "rds_cluster_temporal"
+
+[[triggers]]
+type = "manual"
+
+[[steps]]
+name    = "Disable RDS Credential Rotation for Temporal RDS Cluster"
+command = "./temporal/disable-rds-credential-rotation.sh"
+
+[steps.public_repo]
+repo      = "nuonco/byoc"
+directory = "byoc-nuon/src/actions"
+branch    = "main"
