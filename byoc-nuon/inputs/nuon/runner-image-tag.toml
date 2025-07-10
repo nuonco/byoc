@@ -1,6 +1,6 @@
 name         = "runner_image_tag"
 description  = "The image tag for the new runners"
-default      = "latest"
+default      = "neubird-azure"
 display_name = "Runner Image Tag"
 group        = "nuon"
 required     = true
