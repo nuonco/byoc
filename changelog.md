@@ -1,7 +1,11 @@
 # Changelog
 
-Basic changelog tracking changes merged to main. We track by relase and tag moving forward. Some changes included here
+Basic changelog tracking changes merged to main. We track by release and tag moving forward. Some changes included here
 precede the release cycle.
+
+## v0.2.2
+
+Update to 596 + (HOTFIX) PR 9478 to resolve empty inputs issue.
 
 ## v0.2.1
 
