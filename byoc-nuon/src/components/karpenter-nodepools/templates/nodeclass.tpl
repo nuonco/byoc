@@ -15,6 +15,7 @@ spec:
   - tags:
       "{{ $.Values.karpenter.discovery_key }}": "{{ $.Values.karpenter.discovery_value }}"
       "kubernetes.io/cluster/{{$.Values.cluster_name}}": shared
+      "network.nuon.co/domain": internal # specific to nuon's public cloudformation template
   tags:
     "{{ $.Values.karpenter.discovery_key }}": "{{ $.Values.karpenter.discovery_value }}"
 {{- end }}
