@@ -3,6 +3,16 @@
 Basic changelog tracking changes merged to main. We track by relase and tag moving forward. Some changes included here
 precede the release cycle.
 
+## v0.2.1
+
+Ensure all workloads run on nodes in the private subnets.
+
+## v0.2.0
+
+- Temporal dynamic configs for large activities.
+- New RDS Output.
+- Improved README.
+
 ## v0.1.0
 
 Introduces a new action `ctl_api_rsg_set_tag` used to ensure all runners for a given install use the
