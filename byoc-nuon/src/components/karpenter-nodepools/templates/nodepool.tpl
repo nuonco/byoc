@@ -9,17 +9,17 @@ metadata:
   name: "{{ .name }}"
 spec:
   disruption:
+    {{/* allows up to 10% of notes to rotate during the 4 hours between (1000 UTC to 1400 UTC); and only one at a time otherwise. */}}
     budgets:
+    - nodes: "10%"
     - nodes: "1"
-      reasons:
-      - Empty
-      - Drifted
-    - duration: 20h
-      nodes: "1"
+      duration: 20h
       reasons:
       - Underutilized
-      schedule: 0 8 * * 1,2,3,4,5
-    consolidateAfter: 1m
+      - Empty
+      - Drifted
+      schedule: 0 14 * * *  # https://crontab.guru/#0_8_*_*_*
+    consolidateAfter: 5m
     consolidationPolicy: WhenEmptyOrUnderutilized
   limits:
     cpu: {{ .limits.cpu }}
