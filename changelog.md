@@ -3,6 +3,10 @@
 Basic changelog tracking changes merged to main. We track by release and tag moving forward. Some changes included here
 precede the release cycle.
 
+## v0.2.3
+
+Revert to `0.19.596` image.
+
 ## v0.2.2
 
 Update to 596 + (HOTFIX) PR 9478 to resolve empty inputs issue.
