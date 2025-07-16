@@ -3,6 +3,11 @@
 Basic changelog tracking changes merged to main. We track by release and tag moving forward. Some changes included here
 precede the release cycle.
 
+## v0.2.6
+
+- release 0.19.601
+- remove `GIT_REF` and `VERSION` env vars from dashboard-ui and ctl-api.
+
 ## v0.2.5
 
 Simplify nodepool disruption budgets.
