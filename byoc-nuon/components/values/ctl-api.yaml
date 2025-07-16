@@ -1,9 +1,9 @@
 ---
 env:
   ENV: prod
-  MIDDLEWARES: log,error,public_metrics,public,timeout,size,global,auth,org,offset_pagination,invites,headers,cors,config
-  RUNNER_MIDDLEWARES: log,runner_metrics,error,public,timeout,size,auth,runner_org,offset_pagination,headers,cors,config
-  INTERNAL_MIDDLEWARES: log,headers,internal_metrics,error,public,timeout,size,global,config,admin,offset_pagination
+  MIDDLEWARES: log,error,public_metrics,public,timeout,size,global,auth,org,offset_pagination,invites,headers,cors,config,patcher
+  RUNNER_MIDDLEWARES: log,runner_metrics,error,public,timeout,size,auth,runner_org,offset_pagination,headers,cors,config,patcher
+  INTERNAL_MIDDLEWARES: log,headers,internal_metrics,error,public,timeout,size,global,config,admin,offset_pagination,patcher
 
   DB_HOST: "{{ .nuon.components.rds_cluster_nuon.outputs.address }}"
   DB_NAME: "ctl_api"      # hardcoded, for now - also, main db not the desired db we created
