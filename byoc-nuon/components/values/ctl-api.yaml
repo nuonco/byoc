@@ -62,6 +62,8 @@ env:
   TEMPORAL_UI_URL: http://temporal-ui.{{ .nuon.install_stack.outputs.region }}.{{ .nuon.sandbox.outputs.nuon_dns.internal_domain.name }}:8080
 
   SANDBOX_MODE_SLEEP: 1s
+  
+  FORCE_DEBUG_MODE: !!string true
 
   # NOTE: deprecated or not in use in byoc
   SEGMENT_WRITE_KEY: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
