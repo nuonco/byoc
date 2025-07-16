@@ -18,7 +18,7 @@ for runner_id in `echo $runners | jq -r '.[].id'`; do
     "$admin_api_url/v1/runners/$runner_id/settings" \
     -H 'accept: application/json' \
     -H 'Content-Type: application/json' \
-    -d '{"container_image_tag": "'tag'"}'
+    -d '{"container_image_tag": "'$tag'"}'
 done
 
 echo "[runner-settings-group] get install runners"
@@ -31,5 +31,5 @@ for runner_id in `echo $runners | jq -r '.[].id'`; do
     "$admin_api_url/v1/runners/$runner_id/settings" \
     -H 'accept: application/json' \
     -H 'Content-Type: application/json' \
-    -d '{"container_image_tag": "'tag'"}'
+    -d '{"container_image_tag": "'$tag'"}'
 done
