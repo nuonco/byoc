@@ -1,6 +1,6 @@
 name         = "runner_image_tag"
 description  = "The image tag for the new runners"
-default      = "2abd9ab"
+default      = "032cddb"
 display_name = "Runner Image Tag"
 group        = "nuon"
 required     = true
