@@ -38,7 +38,7 @@ echo "username=$admin_username"
 
 echo "[ctl_api query] preparing to initialize"
 function execute_query() {
-  echo " > cmd: $@"
+  echo " > query: $1"
   kubectl \
     --namespace=ctl-api \
     exec  -i \
@@ -46,8 +46,10 @@ function execute_query() {
     env "PGHOST=$db_addr" "PGPORT=$db_port" "PGUSER=$admin_username" "PGPASSWORD=$admin_password" \
     psql --no-psqlrc -d "ctl_api" -c "SET default_transaction_read_only = on; $1"
 }
+# sleep so logs have time to flush?
+sleep 1
 
-execute_query $query
+execute_query "$query"
 
 echo "[ctl_api query] scale down the deployment"
 kubectl scale -n ctl-api --current-replicas=1 --replicas=0 deployment/ctl-api-init
