@@ -3,6 +3,10 @@
 Basic changelog tracking changes merged to main. We track by release and tag moving forward. Some changes included here
 precede the release cycle.
 
+## v0.3.1
+
+release 0.19.602
+
 ## v0.2.8
 
 ctl-api should log w/ log-level info
