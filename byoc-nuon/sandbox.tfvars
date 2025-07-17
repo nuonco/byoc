@@ -19,3 +19,7 @@ additional_namespaces = [
   "ctl-api",
   "dashboard-ui",
 ]
+
+additional_tags = {
+    "app.nuon.co/name" = "nuon"
+}
