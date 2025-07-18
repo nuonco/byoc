@@ -62,7 +62,7 @@ env:
   TEMPORAL_UI_URL: http://temporal-ui.{{ .nuon.install_stack.outputs.region }}.{{ .nuon.sandbox.outputs.nuon_dns.internal_domain.name }}:8080
 
   SANDBOX_MODE_SLEEP: 1s
-  
+
   FORCE_DEBUG_MODE: !!string true
 
   # NOTE: deprecated or not in use in byoc
@@ -129,6 +129,13 @@ worker:
       minReplicas: 2
       maxReplicas: 10
       command: ["/bin/service", "worker", "--namespace=installs"]
+      resources:
+        limits:
+          cpu: 250m
+          memory: 512Mi
+        requests:
+          cpu: 100m
+          memory: 256Mi
     - namespace: releases
       minReplicas: 2
       maxReplicas: 5
