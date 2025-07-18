@@ -52,14 +52,8 @@ spec:
             name: pprof
             protocol: TCP
           image: "{{ $.Values.image.repository }}:{{ $.Values.image.tag }}"
-          command: {{- .command  | toYaml | nindent 14 }}
-          resources:
-            limits:
-              cpu: {{ $.Values.worker.resources.limits.cpu }}
-              memory: {{ $.Values.worker.resources.limits.memory }}
-            requests:
-              cpu: {{ $.Values.worker.resources.requests.cpu }}
-              memory: {{ $.Values.worker.resources.requests.memory }}
+          command: {{- .command  | toYaml | nindent 14}}
+          resources: {{ merge (default (dict) .resources) $.Values.worker.resources | toYaml | nindent 14 }}
           envFrom:
             - configMapRef:
                 name: {{ include "common.fullname" $ }}
