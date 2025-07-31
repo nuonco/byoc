@@ -1,7 +1,6 @@
 locals {
   service = "temporal"
-  name    = local.service # "${var.env}-${local.vars.pool}-${local.service}"
-  zone    = var.zone      # nonsensitive(data.tfe_outputs.infra-eks-nuon.values.private_zone)
+  zone    = var.zone
 
   tags = {
     environment = var.env

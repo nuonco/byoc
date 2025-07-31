@@ -1,12 +1,11 @@
 locals {
   temporal = {
-    version       = "0.33.0"
-    image_tag     = local.vars.image_tag
-    value_file    = "values/temporal.yaml"
-    override_file = "values/${local.name}.yaml"
-    namespace     = "temporal"
-    frontend_url  = "temporal-frontend.${local.zone}"
-    web_url       = "temporal-ui.${local.zone}"
+    version      = "0.33.0"
+    image_tag    = local.vars.image_tag
+    value_file   = "values/temporal.yaml"
+    namespace    = "temporal"
+    frontend_url = "temporal-frontend.${local.zone}"
+    web_url      = "temporal-ui.${local.zone}"
   }
   db = {
     default = {
@@ -18,7 +17,6 @@ locals {
       password = data.aws_secretsmanager_secret_version.db_visibility_password.secret_string
     }
   }
-  # environment = local.tags.environment
 }
 
 data "aws_secretsmanager_secret_version" "db_default_password" {
@@ -39,7 +37,6 @@ resource "helm_release" "temporal" {
 
   values = [
     file(local.temporal.value_file),
-    fileexists(local.temporal.override_file) ? file(local.temporal.override_file) : "",
     yamlencode(
       {
         server = {
@@ -187,11 +184,8 @@ resource "helm_release" "temporal" {
 
         admintools = {
           image = {
-
             repository = var.temporal_admin_tools_image_repository
             tag        = var.temporal_admin_tools_image_tag
-            # repository = "431927561584.dkr.ecr.us-west-2.amazonaws.com/mirror/temporalio/admin-tools"
-            # tag        = local.temporal.image_tag
           }
           topologySpreadConstraints = [
             {
@@ -229,8 +223,6 @@ resource "helm_release" "temporal" {
           image = {
             repository = var.temporal_web_image_repository
             tag        = var.temporal_web_image_tag
-            # repository = "431927561584.dkr.ecr.us-west-2.amazonaws.com/mirror/temporalio/ui"
-            # tag        = "2.34.0"
           }
           topologySpreadConstraints = [
             {
