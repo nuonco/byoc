@@ -1,7 +1,6 @@
 locals {
   service = "temporal"
-  name    = local.service # "${var.env}-${local.vars.pool}-${local.service}"
-  zone    = var.zone      # nonsensitive(data.tfe_outputs.infra-eks-nuon.values.private_zone)
+  zone    = var.zone
 
   tags = {
     environment = var.env
@@ -12,8 +11,12 @@ locals {
   vars = yamldecode(data.utils_deep_merge_yaml.vars.output)
 }
 
-#
+variable "ctl_api_host" {
+  type        = string
+  description = "The host of the Nuon CTL API."
+}
 
+#
 variable "env" {
   type        = string
   description = "The environment to use."

@@ -16,6 +16,8 @@ cluster_name                       = "{{ .nuon.install.sandbox.outputs.cluster.n
 cluster_endpoint                   = "{{ .nuon.install.sandbox.outputs.cluster.endpoint }}"
 cluster_certificate_authority_data = "{{ .nuon.install.sandbox.outputs.cluster.certificate_authority_data }}"
 
+ctl_api_host = "api.{{ .nuon.install.sandbox.outputs.nuon_dns.public_domain.name }}"
+
 temporal_pw_secret_arn            = '{{ .nuon.install_stack.outputs.temporal_temporal_pw_arn }}'
 temporal_visibility_pw_secret_arn = '{{ .nuon.install_stack.outputs.temporal_visibility_pw_arn }}'
 db_instance_address               = "{{ .nuon.components.rds_cluster_temporal.outputs.address }}"
