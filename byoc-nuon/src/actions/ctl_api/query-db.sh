@@ -44,7 +44,7 @@ function execute_query() {
     exec  -i \
     $pod -- \
     env "PGHOST=$db_addr" "PGPORT=$db_port" "PGUSER=$admin_username" "PGPASSWORD=$admin_password" \
-    psql --no-psqlrc -d "ctl_api" -c "SET default_transaction_read_only = on; $1"
+    psql --no-psqlrc -d "ctl_api" -c "$1"
 }
 # sleep so logs have time to flush?
 sleep 1
