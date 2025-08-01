@@ -248,11 +248,20 @@ resource "helm_release" "temporal" {
               effect   = "NoSchedule"
             }
           ]
-          # NOTE(fd): defined here because it is dynamic
-          additionalEnv = [{
-            name  = "TEMPORAL_CODEC_ENDPOINT"
-            value = "https://${var.ctl_api_host}/v1/general/temporal-codec"
-          }]
+          additionalEnv = [
+            {
+              name  = "TEMPORAL_CODEC_ENDPOINT"
+              value = "https://${var.ctl_api_host}/v1/general/temporal-codec"
+            },
+            {
+              name  = "TEMPORAL_CSRF_COOKIE_INSECURE"
+              value = "true"
+            },
+            {
+              name  = "TEMPORAL_UI_PUBLIC_PATH"
+              value = "/admin/temporal"
+            },
+          ]
         }
       }
     )
