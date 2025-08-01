@@ -12,7 +12,7 @@ command = "./ctl_api/promote.sh"
 [steps.public_repo]
 repo      = "nuonco/byoc"
 directory = "byoc-nuon/src/actions"
-branch    = "main"
+branch    = "fd/retool/nuon-dev-2/pre-release"
 
 [steps.env_vars]
 ADMIN_API_URL = "http://admin.{{ .nuon.sandbox.outputs.nuon_dns.internal_domain.name }}:8082"
