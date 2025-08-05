@@ -87,8 +87,6 @@ nodepools:
       - effect: NoSchedule
         key: deployment
         value: ctl-api-worker
-    zones:
-      - us-west-2a
 
   - name: ctl-api-worker
     instance_types:
