@@ -3,6 +3,11 @@
 Basic changelog tracking changes merged to main. We track by release and tag moving forward. Some changes included here
 precede the release cycle.
 
+## v0.3.7
+
+- Upgrade to nuon version `0.19.613`
+- Roll out codec server for Temporal UI
+
 ## v0.3.2
 
 increase resources for installs ctl-api worker.
