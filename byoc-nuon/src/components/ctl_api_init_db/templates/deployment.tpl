@@ -44,9 +44,9 @@ spec:
               path: grant_public.sql
       {{/* NodeSelection and Tolerations so this deployment runs on the ctl-api nodepool */}}
       nodeSelector:
-        pool.nuon.co: "ctl-api"
+        pool.nuon.co: "ctl-api-worker"
       tolerations:
         - key: "pool.nuon.co"
           operator: "Equal"
-          value: "ctl-api"
+          value: "ctl-api-worker"
           effect: "NoSchedule"
