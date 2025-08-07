@@ -41,10 +41,6 @@ nodepools:
         - nodes: "0"
       consolidationPolicy: "WhenEmptyOrUnderutilized"
       consolidateAfter: "15m"
-    taints:
-      - effect: NoSchedule
-        key: installation
-        value: clickhouse-keeper
 
   - name: clickhouse-installation
     instance_types:
@@ -58,10 +54,6 @@ nodepools:
         - nodes: "0"
       consolidationPolicy: "WhenEmpty"
       consolidateAfter: "15m"
-    taints:
-      - effect: NoSchedule
-        key: installation
-        value: clickhouse-installation
 
   - name: ctl-api
     instance_types:
@@ -83,10 +75,6 @@ nodepools:
           - "Underutilized"
       consolidationPolicy: "WhenEmptyOrUnderutilized"
       consolidateAfter: "30s"
-    taints:
-      - effect: NoSchedule
-        key: deployment
-        value: ctl-api
 
   - name: ctl-api-worker
     instance_types:
@@ -108,10 +96,6 @@ nodepools:
           - "Underutilized"
       consolidationPolicy: "WhenEmptyOrUnderutilized"
       consolidateAfter: "30s"
-    taints:
-      - effect: NoSchedule
-        key: deployment
-        value: ctl-api-worker
     zones:
       - us-west-2a
 
