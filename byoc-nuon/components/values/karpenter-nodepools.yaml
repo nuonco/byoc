@@ -86,7 +86,7 @@ nodepools:
     taints:
       - effect: NoSchedule
         key: deployment
-        value: ctl-api-worker
+        value: ctl-api
 
   - name: ctl-api-worker
     instance_types:
