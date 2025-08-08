@@ -1,0 +1,18 @@
+#:schema https://api.nuon.co/v1/general/config-schema?source=action
+name    = "kubectl_list_nodepools"
+timeout = "30s"
+
+[[triggers]]
+type = "manual"
+
+[[steps]]
+name = "kubectl list nodepools"
+inline_contents = """
+#!/usr/bin/env sh
+results=`kubectl get nodepools -o json | jq -c`
+echo $results | jq
+echo $results >> $NUON_ACTIONS_OUTPUT_FILEPATH
+"""
+
+[steps.env_vars]
+NAMESPACE = "default"

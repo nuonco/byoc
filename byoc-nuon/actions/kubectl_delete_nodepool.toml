@@ -1,0 +1,19 @@
+#:schema https://api.nuon.co/v1/general/config-schema?source=action
+name    = "kubectl_delete_nodepools"
+timeout = "30s"
+
+[[triggers]]
+type = "manual"
+
+[[steps]]
+name = "kubectl delete nodepools"
+inline_contents = """
+#!/usr/bin/env sh
+kubectl delete nodepools $NODEPOOL
+results=`kubectl get nodepools -o json | jq -c`
+echo $results | jq
+echo $results >> $NUON_ACTIONS_OUTPUT_FILEPATH
+"""
+
+[steps.env_vars]
+NODEPOOL = "dne"
