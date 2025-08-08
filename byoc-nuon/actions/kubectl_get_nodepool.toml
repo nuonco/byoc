@@ -1,0 +1,36 @@
+#:schema https://api.nuon.co/v1/general/config-schema?source=action
+name    = "kubectl_get_nodepool"
+timeout = "30s"
+
+[[triggers]]
+type = "manual"
+
+[[steps]]
+name = "kubectl get nodepool"
+inline_contents = """
+#!/usr/bin/env sh
+results=`kubectl get nodepools $NODEPOOL -o json | jq -c`
+echo $results | jq -c
+echo $results >> $NUON_ACTIONS_OUTPUT_FILEPATH
+"""
+
+[[steps]]
+name = "kubectl get nodeclass"
+inline_contents = """
+#!/usr/bin/env sh
+results=`kubectl get ec2nc $NODEPOOL -o json | jq -c`
+echo $results | jq -c
+echo $results >> $NUON_ACTIONS_OUTPUT_FILEPATH
+"""
+
+[[steps]]
+name = "kubectl get nodeclaims"
+inline_contents = """
+#!/usr/bin/env sh
+results=`kubectl get nodeclaims $NODEPOOL -o json | jq -c`
+echo $results | jq -c
+echo $results >> $NUON_ACTIONS_OUTPUT_FILEPATH
+"""
+
+[steps.env_vars]
+NODEPOOL = "ctl-api"
