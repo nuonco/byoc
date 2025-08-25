@@ -8,11 +8,11 @@ terraform {
     }
     kubectl = {
       source  = "gavinbunney/kubectl"
-      version = ">= 1.19"
+      version = "1.19"
     }
     kubernetes = {
       source  = "hashicorp/kubernetes"
-      version = ">= 2.36.0"
+      version = "2.36.0"
     }
   }
 }

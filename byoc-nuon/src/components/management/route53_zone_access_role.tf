@@ -1,7 +1,7 @@
 data "aws_iam_policy_document" "dns_access" {
   statement {
     effect = "Allow"
-    // TODO: limite these as necessary
+    // TODO: limit these as necessary
     actions = [
       "route53:*",
     ]
@@ -32,7 +32,7 @@ data "aws_iam_policy_document" "dns_access_trust" {
 
 module "dns_access_role" {
   source  = "terraform-aws-modules/iam/aws//modules/iam-assumable-role"
-  version = ">= 5.1.0"
+  version = "5.59.0"
 
   create_role       = true
   role_requires_mfa = false
