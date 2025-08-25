@@ -1,6 +1,6 @@
 module "iam_eks_role" {
   source      = "terraform-aws-modules/iam/aws//modules/iam-eks-role"
-  version     = ">= 5.1.0"
+  version     = "5.1.0"
   create_role = true
 
   role_name = "eks-byoc-nuon-ctl-api-${var.install_id}"
