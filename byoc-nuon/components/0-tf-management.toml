@@ -8,8 +8,5 @@ repo      = "nuonco/byoc"
 directory = "byoc-nuon/src/components/management"
 branch    = "main"
 
-[vars]
-foo = "bar"
-
 [[var_file]]
 contents = "./values/management.tfvars"
