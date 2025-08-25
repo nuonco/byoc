@@ -23,10 +23,6 @@ variable "org_id" {
   type = string
 }
 
-variable "org_name" {
-  type = string
-}
-
 # dns
 variable "root_domain" {
   type        = string

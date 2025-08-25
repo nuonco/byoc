@@ -41,7 +41,7 @@ resource "aws_iam_policy" "orgs_iam_access_policy" {
 
 module "org_access_role" {
   source  = "terraform-aws-modules/iam/aws//modules/iam-assumable-role"
-  version = ">= 5.1.0"
+  version = "5.59.0"
 
   create_role       = true
   role_requires_mfa = false
