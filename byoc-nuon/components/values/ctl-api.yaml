@@ -5,6 +5,7 @@ env:
   MIDDLEWARES: log,error,public_metrics,public,timeout,size,global,auth,org,offset_pagination,invites,headers,cors,config,patcher
   RUNNER_MIDDLEWARES: log,runner_metrics,error,public,timeout,size,auth,runner_org,offset_pagination,headers,cors,config,patcher
   INTERNAL_MIDDLEWARES: log,headers,internal_metrics,error,public,timeout,size,global,config,admin,offset_pagination,patcher
+  GIN_MODE: "release"
 
   DB_HOST: "{{ .nuon.components.rds_cluster_nuon.outputs.address }}"
   DB_NAME: "ctl_api"      # hardcoded, for now - also, main db not the desired db we created
@@ -62,8 +63,6 @@ env:
   TEMPORAL_UI_URL: http://temporal-ui.{{ .nuon.install_stack.outputs.region }}.{{ .nuon.sandbox.outputs.nuon_dns.internal_domain.name }}:8080
 
   SANDBOX_MODE_SLEEP: 1s
-
-  FORCE_DEBUG_MODE: !!string true
 
   # NOTE: deprecated or not in use in byoc
   SEGMENT_WRITE_KEY: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
