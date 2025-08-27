@@ -53,7 +53,7 @@ env:
   APP_URL: https://app.{{ .nuon.sandbox.outputs.nuon_dns.public_domain.name }}
   PUBLIC_API_URL: https://api.{{ .nuon.sandbox.outputs.nuon_dns.public_domain.name }}
   RUNNER_API_URL: https://runner.{{ .nuon.sandbox.outputs.nuon_dns.public_domain.name }}
-  ADMIN_API_URL: https://admin.{{ .nuon.sandbox.outputs.nuon_dns.internal_domain.name }}
+  ADMIN_API_URL: https://app.{{ .nuon.sandbox.outputs.nuon_dns.public_domain.name }}/admin/swagger
 
   # TODO: sort out tailscale for the ui and admin api
   TEMPORAL_HOST: temporal-frontend-headless.temporal.svc.cluster.local:7233
