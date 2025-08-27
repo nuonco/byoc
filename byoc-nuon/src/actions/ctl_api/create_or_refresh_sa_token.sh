@@ -29,7 +29,7 @@ result=`curl -X 'POST' -s -q --max-time 5 "$admin_api_addr/v1/orgs/$org_id/admin
 sa_email=`echo $result | jq -r ".email"`
 
 echo "Preparing to create token for Service Account for $sa_email"
-token=$(curl -X 'POST' \
+token=$(curl -X 'POST' -s -q --max-time 5 \
   "$admin_api_addr/v1/general/admin-static-token" \
   -H 'accept: application/json' \
   -H 'Content-Type: application/json' \
