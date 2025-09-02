@@ -7,6 +7,7 @@ metadata:
   labels:
     {{- include "common.apiLabels" . | nindent 4 }}
     app.nuon.co/name: {{ include "common.fullname" . }}-admin
+    tags.datadoghq.com/service: {{ include "common.fullname" . }}-admin
 spec:
   selector:
     matchLabels:
@@ -17,6 +18,7 @@ spec:
       labels:
         {{- include "common.apiSelectorLabels" . | nindent 8 }}
         app.nuon.co/name: {{ include "common.fullname" . }}-admin
+        tags.datadoghq.com/service: {{ include "common.fullname" . }}-admin
     spec:
       serviceAccountName: {{ .Values.serviceAccount.name }}
       automountServiceAccountToken: true
@@ -93,6 +95,10 @@ spec:
               valueFrom:
                   fieldRef:
                       fieldPath: spec.nodeName
+            - name: DD_SERVICE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.labels['tags.datadoghq.com/service']
           lifecycle:
             preStop:
               exec:
