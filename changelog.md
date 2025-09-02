@@ -3,6 +3,21 @@
 Basic changelog tracking changes merged to main. We track by release and tag moving forward. Some changes included here
 precede the release cycle.
 
+## v0.7.8
+
+- ctl-api: internal admin api now fronted by NLB instead of ALB
+- actions: updated to use new admin api url
+- dashboard-ui: update dot use new admin api url
+- temporal: use new codec endpoint
+
+## v0.7.7
+
+- new action: create a service account for an org
+
+## v0.7.6
+
+ci: update images for Nuon 0.19.623
+
 ## v0.3.10
 
 - Upgrade to nuon version `0.19.613`
