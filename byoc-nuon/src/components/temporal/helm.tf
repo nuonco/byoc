@@ -251,7 +251,7 @@ resource "helm_release" "temporal" {
           additionalEnv = [
             {
               name  = "TEMPORAL_CODEC_ENDPOINT"
-              value = "https://${var.ctl_api_host}/v1/general/temporal-codec"
+              value = var.codec_endpoint
             },
             {
               name  = "TEMPORAL_CSRF_COOKIE_INSECURE"

@@ -17,11 +17,10 @@ set -u
 
 admin_api_addr="$ADMIN_API_URL"
 
-curl --max-time 5 -q \
+curl --max-time 5 -q -s \
   "$admin_api_addr/v1/orgs?type=real" \
-  | jq .
+  | jq
 """
 
 [steps.env_vars]
-ADMIN_API_URL = "http://admin.{{ .nuon.sandbox.outputs.nuon_dns.internal_domain.name }}:8082"
-
+ADMIN_API_URL = "http://admin.{{ .nuon.sandbox.outputs.nuon_dns.internal_domain.name }}"
