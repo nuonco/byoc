@@ -16,6 +16,11 @@ variable "ctl_api_host" {
   description = "The host of the Nuon CTL API."
 }
 
+variable "codec_endpoint" {
+  type        = string
+  description = "The temporal codec url."
+}
+
 #
 variable "env" {
   type        = string
