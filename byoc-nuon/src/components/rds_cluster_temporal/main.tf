@@ -12,7 +12,9 @@ module "db" {
   db_name  = var.db_name
   username = var.db_user
 
-  manage_master_user_password = true
+  manage_master_user_password                            = true
+  manage_master_user_password_rotation                   = true
+  master_user_password_rotation_automatically_after_days = 365
 
   iam_database_authentication_enabled = local.iam_database_authentication_enabled
   apply_immediately                   = local.apply_immediately
