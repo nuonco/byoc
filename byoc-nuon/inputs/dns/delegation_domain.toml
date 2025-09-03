@@ -1,0 +1,5 @@
+name         = "delegation_domain"
+description  = "Domain to host installs under. NS records will be created here to delegate DNS to each install's nameservers."
+display_name = "Delegation Domain (optional)"
+required     = false
+group        = "dns"
