@@ -36,20 +36,6 @@ variable "zone" {
   description = "Internal Nuon DNS Domain name (not zone id). Used to construct domains (or it will be)."
 }
 
-variable "cluster_name" {
-  type        = string
-  description = "AWS EKS Cluster name"
-}
-
-variable "cluster_endpoint" {
-  type        = string
-  description = "AWS EKS Cluster Endpoint"
-}
-
-variable "cluster_certificate_authority_data" {
-  type        = string
-  description = "AWS EKS Cluster CA Data"
-}
 
 # db details
 
