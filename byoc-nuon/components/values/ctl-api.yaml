@@ -130,10 +130,10 @@ worker:
       command: ["/bin/service", "worker", "--namespace=installs"]
       resources:
         limits:
-          cpu: 250m
+          cpu: 1000m
           memory: 512Mi
         requests:
-          cpu: 100m
+          cpu: 500m
           memory: 256Mi
     - namespace: releases
       minReplicas: 2
