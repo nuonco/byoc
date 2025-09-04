@@ -1,4 +1,4 @@
-#:schema https://api.nuon.co/v1/general/config-schema?source=action
+#:schema https://api.nuon.co/v1/general/config-schema?type=action
 # description: copies the secret from the k8s secret synced from Secret Manager during secrets-sync; it copies it into the k8s cluster in two locations; one for the chi and one for ctl-api.
 # TODO: use an internal-input for the username
 # TODO: replace this with an external-secrets SecretStore
