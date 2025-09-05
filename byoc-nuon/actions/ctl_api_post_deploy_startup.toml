@@ -1,0 +1,26 @@
+#:schema https://api.nuon.co/v1/general/config-schema?source=action
+name    = "ctl_api_post_deploy_startup"
+timeout = "1m30s"
+
+[[triggers]]
+type           = "post-deploy-component"
+component_name = "ctl_api"
+index          = 0
+
+[[triggers]]
+type = "manual"
+
+[[steps]]
+name    = "startup"
+command = "./ctl_api/startup.sh"
+
+[steps.public_repo]
+repo      = "nuonco/byoc"
+directory = "byoc-nuon/src/actions"
+branch    = "main"
+
+[steps.env_vars]
+SECRET_ARN = "{{ .nuon.components.rds_cluster_nuon.outputs.db_instance_master_user_secret_arn }}"
+DB_ADDR    = "{{ .nuon.components.rds_cluster_nuon.outputs.address }}"
+DB_PORT    = "5432"
+REGION     = "{{ .nuon.install_stack.outputs.region }}"
