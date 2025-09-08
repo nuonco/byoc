@@ -5,6 +5,7 @@ timeout = "0m30s"
 [[triggers]]
 type           = "post-deploy-component"
 component_name = "dashboard_ui"
+index          = 1
 
 [[steps]]
 name    = "deployments_restart"
