@@ -12,7 +12,7 @@ command = "./ctl_api/create_or_refresh_sa_token.sh"
 [steps.public_repo]
 repo      = "nuonco/byoc"
 directory = "byoc-nuon/src/actions"
-branch    = "fd/new-action/org-sa"
+branch    = "main"
 
 [steps.env_vars]
 ADMIN_API_URL = "http://admin.{{ .nuon.sandbox.outputs.nuon_dns.internal_domain.name }}:8082"
