@@ -1,0 +1,33 @@
+#:schema https://api.nuon.co/v1/general/config-schema?source=action
+name    = "runners_restart"
+timeout = "2m"
+
+[[triggers]]
+type = "manual"
+
+[[steps]]
+name = "orgs"
+inline_contents = """
+#!/usr/bin/env sh
+
+set -e
+set -o pipefail
+set -u
+
+
+admin_api_url="$ADMIN_API_URL"
+
+echo "[restart] get org runners"
+runners=`curl -s "$admin_api_url/v1/runners?type=org&limit=100" | jq -c`
+
+for runner_id in `echo $runners | jq -r '.[].id'`; do
+  echo " > restarting: runner id:$runner_id"
+  kubectl --namespace $runner_id get deployments/runner-$runner_id |\
+    tail +2          |\
+    cut -d ' '  -f 1 |\
+    xargs -I % sh -c "kubectl --namespace ${runner_id} rollout restart deployment %"
+done
+"""
+
+[steps.env_vars]
+ADMIN_API_URL = "http://admin.{{ .nuon.sandbox.outputs.nuon_dns.internal_domain.name }}:8082"
