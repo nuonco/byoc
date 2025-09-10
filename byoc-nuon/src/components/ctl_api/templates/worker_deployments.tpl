@@ -8,6 +8,7 @@ metadata:
   labels:
     {{- include "common.workerLabels" $ | nindent 4 }}
     app.nuon.co/worker-namespace: {{ .namespace }}
+    tags.datadoghq.com/service:  {{ include "common.fullname" $ }}-worker-{{ .namespace }}
 spec:
   selector:
     matchLabels:
@@ -18,6 +19,8 @@ spec:
       labels:
         {{- include "common.workerSelectorLabels" $ | nindent 8 }}
         app.nuon.co/worker-namespace: {{ .namespace }}
+        tags.datadoghq.com/service:  {{ include "common.fullname" $ }}-worker-{{ .namespace }}
+
     spec:
       serviceAccountName: {{ $.Values.serviceAccount.name }}
       automountServiceAccountToken: true
@@ -73,4 +76,8 @@ spec:
               valueFrom:
                   fieldRef:
                       fieldPath: spec.nodeName
+            - name: DD_SERVICE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.labels['tags.datadoghq.com/service']
 {{- end }}
