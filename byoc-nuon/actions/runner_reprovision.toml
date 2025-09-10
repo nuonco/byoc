@@ -17,13 +17,13 @@ set -u
 
 admin_api_url="$ADMIN_API_URL"
 
-echo "[reprovision] get org runners"
-runners=`curl -s "$admin_api_url/v1/runners?type=org&limit=100" | jq -c`
+echo "[reprovision] get org"
+orgs=`curl -s "$admin_api_url/v1/orgs?type=real&limit=100" | jq -c`
 
-for runner_id in `echo $runners | jq -r '.[].id'`; do
-  echo " > reprovisioning: runner id:$runner_id"
-  curl -X 'POST' \
-    "$admin_api_url/v1/runners/$runner_id/reprovision" \
+for org_id in `echo $orgs | jq -r '.[].id'`; do
+  echo " > reprovisioning: org id:$org_id"
+  curl -s -X 'POST' \
+    "$admin_api_url/v1/orgs/$org_id/admin-reprovision" \
     -H 'accept: application/json'         \
     -H 'Content-Type: application/json'   \
     -H 'X-Nuon-Admin-Email:jon@nuon.co' \
