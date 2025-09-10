@@ -1,12 +1,12 @@
 #:schema https://api.nuon.co/v1/general/config-schema?source=action
-name    = "org_runners_reprovision"
+name    = "org_runners_restart"
 timeout = "2m"
 
 [[triggers]]
 type = "manual"
 
 [[steps]]
-name = "org_runners_reprovision"
+name = "org_runners_restart"
 inline_contents = """
 #!/usr/bin/env sh
 
@@ -17,17 +17,15 @@ set -u
 
 admin_api_url="$ADMIN_API_URL"
 
-echo "[reprovision] get org runners"
+echo "[restart] get org runners"
 runners=`curl -s "$admin_api_url/v1/runners?type=org&limit=100" | jq -c`
 
 for runner_id in `echo $runners | jq -r '.[].id'`; do
-  echo " > reprovisioning: runner id:$runner_id"
-  curl -X 'POST' \
-    "$admin_api_url/v1/runners/$runner_id/reprovision" \
-    -H 'accept: application/json'         \
-    -H 'Content-Type: application/json'   \
-    -H 'X-Nuon-Admin-Email:jon@nuon.co' \
-    -d '{}'
+  echo " > restarting: runner id:$runner_id"
+  kubectl --namespace $runner_id get deployments/runner-$runner_id |\
+    tail +2          |\
+    cut -d ' '  -f 1 |\
+    xargs -I % sh -c "kubectl --namespace ${runner_id} rollout restart deployment %"
 done
 """
 
