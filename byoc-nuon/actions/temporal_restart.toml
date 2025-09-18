@@ -3,6 +3,9 @@ name    = "temporal_restart"
 timeout = "0m30s"
 
 [[triggers]]
+type           = "manual"
+
+[[triggers]]
 type           = "post-deploy-component"
 component_name = "temporal"
 

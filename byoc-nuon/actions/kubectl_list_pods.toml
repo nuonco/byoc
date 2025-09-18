@@ -9,8 +9,9 @@ type = "manual"
 name = "kubectl get pods"
 inline_contents = """
 #!/usr/bin/env sh
-kubectl get pods -A
+kubectl --namespace $NAMESPACE get pods
+kubectl --namespace $NAMESPACE get pods  -o json | jq -c >> $NUON_ACTIONS_OUTPUT_FILEPATH
 """
 
 [steps.env_vars]
-NAMESPACE = "default"
+NAMESPACE = "ctl-api"
