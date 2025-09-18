@@ -14,7 +14,7 @@ nodepools:
     limits:
       cpu: 50
       memory: "100Gi"
-    expireAfter: "2160h"
+    expireAfter: "168h"
     disruption:
       consolidationPolicy: "WhenEmptyOrUnderutilized"
       consolidateAfter: "1m"
