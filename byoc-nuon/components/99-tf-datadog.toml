@@ -16,6 +16,8 @@ region                             = "{{ .nuon.install_stack.outputs.region }}"
 
 install_name = "{{ .nuon.install.name }}"
 install_id   = "{{ .nuon.install.id }}"
+org_id       = "{{ .nuon.org.id }}"
+org_name     = "{{ .nuon.org.name }}"
 
 datadog_api_key = "{{ .nuon.inputs.inputs.datadog_api_key }}"
 datadog_app_key = "{{ .nuon.inputs.inputs.datadog_app_key }}"
