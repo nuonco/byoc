@@ -4,4 +4,6 @@ ENV: {{ .Values.environment | quote }}
 CONTAINER_PLATFORM: "EKS"
 SERVICE_NAME: {{ .Chart.Name }}
 SERVICE_VERSION: {{ .Chart.Version }}
+DD_ENV: byoc
+DD_SERVICE: ctl-api
 {{- end -}}

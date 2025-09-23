@@ -17,6 +17,7 @@ metadata:
     alb.ingress.kubernetes.io/healthcheck-timeout-seconds: '2'
     alb.ingress.kubernetes.io/unhealthy-threshold-count: '2'
     alb.ingress.kubernetes.io/healthy-threshold-count: '2'
+    alb.ingress.kubernetes.io/tags: 'service=ctl-api,service_type=api,service_deployment=admin,env={{ .Values.env.ENV }}'
     external-dns.alpha.kubernetes.io/hostname: {{ .Values.api.admin.domain }}
 spec:
   ingressClassName: alb

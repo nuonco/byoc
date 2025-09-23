@@ -8,6 +8,9 @@ image:
   tag: "{{ .nuon.components.img_nuon_dashboard_ui.outputs.image.tag }}"
 
 env:
+  ENV: byoc
+  METRICS_TAGS: "org_id:{{ .nuon.org.id }},org_name:{{ .nuon.org.name }}"
+
   NEXT_PUBLIC_API_URL: "https://api.{{ .nuon.sandbox.outputs.nuon_dns.public_domain.name }}"
 
   NEXT_PUBLIC_DATADOG_ENV: "byoc-nuon"
@@ -69,14 +72,14 @@ ui:
 
   alb:
     public_domain: "app.{{ .nuon.sandbox.outputs.nuon_dns.public_domain.name }}"
-    public_domain_certificate: "{{ .nuon.components.certificate_wildcard_public.outputs.public_domain_certificate_arn }}"
+    public_domain_certificate:
+      "{{ .nuon.components.certificate_wildcard_public.outputs.public_domain_certificate_arn }}"
 
   autoscaling:
     minReplicas: 2
     maxReplicas: 5
     targetCPUUtilizationPercentage: 50
     targetMemoryUtilizationPercentage: 50
-
 
 serviceAccount:
   name: dashboard-ui

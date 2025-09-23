@@ -7,6 +7,9 @@ metadata:
   labels:
     {{- include "common.apiLabels" . | nindent 4 }}
     app.nuon.co/name: {{ include "common.fullname" . }}-admin
+    tags.datadoghq.com/service: ctl-api
+    tags.datadoghq.com/service_type: api
+    tags.datadoghq.com/service_deployment: admin
 spec:
   selector:
     matchLabels:
@@ -17,6 +20,9 @@ spec:
       labels:
         {{- include "common.apiSelectorLabels" . | nindent 8 }}
         app.nuon.co/name: {{ include "common.fullname" . }}-admin
+        tags.datadoghq.com/service: ctl-api
+        tags.datadoghq.com/service_type: api
+        tags.datadoghq.com/service_deployment: admin
     spec:
       serviceAccountName: {{ .Values.serviceAccount.name }}
       automountServiceAccountToken: true
@@ -61,11 +67,11 @@ spec:
               protocol: TCP
           readinessProbe:
             httpGet:
-              path: {{ .Values.api.readiness_probe}}
+              path: {{ .Values.api.readiness_probe }}
               port: http-internal
           livenessProbe:
             httpGet:
-              path: {{ .Values.api.liveness_probe}}
+              path: {{ .Values.api.liveness_probe }}
               port: http-internal
           resources:
             limits:
@@ -93,6 +99,12 @@ spec:
               valueFrom:
                   fieldRef:
                       fieldPath: spec.nodeName
+            - name: DD_SERVICE
+              value: ctl-api
+            - name: SERVICE_TYPE
+              value: api
+            - name: SERVICE_DEPLOYMENT
+              value: admin
           lifecycle:
             preStop:
               exec:
