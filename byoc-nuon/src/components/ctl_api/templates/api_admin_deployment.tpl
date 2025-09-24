@@ -7,9 +7,6 @@ metadata:
   labels:
     {{- include "common.apiLabels" . | nindent 4 }}
     app.nuon.co/name: {{ include "common.fullname" . }}-admin
-    tags.datadoghq.com/service: ctl-api
-    tags.datadoghq.com/service_type: api
-    tags.datadoghq.com/service_deployment: admin
 spec:
   selector:
     matchLabels:
@@ -21,8 +18,8 @@ spec:
         {{- include "common.apiSelectorLabels" . | nindent 8 }}
         app.nuon.co/name: {{ include "common.fullname" . }}-admin
         tags.datadoghq.com/service: ctl-api
-        tags.datadoghq.com/service_type: api
-        tags.datadoghq.com/service_deployment: admin
+      annotations:
+        ad.datadoghq.com/tags: '{"service_type":"api","service_deployment":"admin"}'
     spec:
       serviceAccountName: {{ .Values.serviceAccount.name }}
       automountServiceAccountToken: true

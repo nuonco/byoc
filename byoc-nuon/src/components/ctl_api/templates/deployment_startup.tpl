@@ -7,8 +7,6 @@ metadata:
   labels:
     {{- include "common.apiLabels" . | nindent 4 }}
     app.nuon.co/name: {{ include "common.fullname" . }}-startup
-    tags.datadoghq.com/service: ctl-api
-    tags.datadoghq.com/service_type: startup
 spec:
   replicas: 1
   selector:
@@ -21,7 +19,8 @@ spec:
         {{- include "common.apiSelectorLabels" . | nindent 8 }}
         app.nuon.co/name: {{ include "common.fullname" . }}-startup
         tags.datadoghq.com/service: ctl-api
-        tags.datadoghq.com/service_type: startup
+      annotations:
+        ad.datadoghq.com/tags: '{"service_type":"startup"}'
     spec:
       serviceAccountName: {{ .Values.serviceAccount.name }}
       automountServiceAccountToken: true
