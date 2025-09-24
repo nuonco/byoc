@@ -6,6 +6,8 @@ metadata:
   namespace: {{ .Release.Namespace }}
   labels:
     {{- include "common.labels" . | nindent 4 }}
+    tags.datadoghq.com/service: dashboard-ui
+    tags.datadoghq.com/service_type: ui
 spec:
   selector:
     matchLabels:
@@ -14,6 +16,8 @@ spec:
     metadata:
       labels:
         {{- include "common.selectorLabels" . | nindent 8 }}
+        tags.datadoghq.com/service: dashboard-ui
+        tags.datadoghq.com/service_type: ui
     spec:
       # start: NodePool Selection
       nodeSelector:
@@ -87,6 +91,10 @@ spec:
               valueFrom:
                   fieldRef:
                       fieldPath: spec.nodeName
+            - name: DD_SERVICE
+              value: dashboard-ui
+            - name: SERVICE_TYPE
+              value: ui
 ---
 apiVersion: policy/v1
 kind: PodDisruptionBudget

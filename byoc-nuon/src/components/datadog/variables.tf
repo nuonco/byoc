@@ -24,6 +24,16 @@ variable "install_name" {
   description = "Install name"
 }
 
+variable "org_id" {
+  type        = string
+  description = "Organization ID"
+}
+
+variable "org_name" {
+  type        = string
+  description = "Organization Name"
+}
+
 # Cluster Info
 variable "region" {
   type        = string
@@ -44,4 +54,3 @@ variable "cluster_certificate_authority_data" {
   type        = string
   description = "AWS EKS Cluster CA Data"
 }
-

@@ -19,8 +19,14 @@ resource "helm_release" "datadog" {
     file(local.datadog.value_file),
     yamlencode({
       datadog = {
-        apiKey      = var.datadog_api_key
-        tags        = ["env:byoc", "install.id:${var.install_id}", "install.name:${var.install_name}"]
+        apiKey = var.datadog_api_key
+        tags = [
+          "env:byoc",
+          "install.id:${var.install_id}",
+          "install.name:${var.install_name}",
+          "org.id:${var.org_id}",
+          "org.name:${var.org_name}",
+        ]
         clusterName = var.cluster_name
       }
     })

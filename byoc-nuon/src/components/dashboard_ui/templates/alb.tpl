@@ -17,6 +17,7 @@ metadata:
     alb.ingress.kubernetes.io/healthcheck-timeout-seconds: '2'
     alb.ingress.kubernetes.io/unhealthy-threshold-count: '2'
     alb.ingress.kubernetes.io/healthy-threshold-count: '2'
+    alb.ingress.kubernetes.io/tags: 'service=dashboard-ui,service_type=ui,env={{ .Values.env.ENV }}'
     external-dns.alpha.kubernetes.io/hostname: {{ .Values.ui.alb.public_domain }}
 spec:
   ingressClassName: alb

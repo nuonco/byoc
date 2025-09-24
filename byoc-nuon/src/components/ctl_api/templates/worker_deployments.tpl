@@ -8,6 +8,10 @@ metadata:
   labels:
     {{- include "common.workerLabels" $ | nindent 4 }}
     app.nuon.co/worker-namespace: {{ .namespace }}
+    tags.datadoghq.com/service:  ctl-api
+    tags.datadoghq.com/service_type: worker
+    tags.datadoghq.com/service_deployment: {{ .namespace }}
+    tags.datadoghq.com/temporal_namespace: {{ .namespace }}
 spec:
   selector:
     matchLabels:
@@ -18,6 +22,10 @@ spec:
       labels:
         {{- include "common.workerSelectorLabels" $ | nindent 8 }}
         app.nuon.co/worker-namespace: {{ .namespace }}
+        tags.datadoghq.com/service:  ctl-api
+        tags.datadoghq.com/service_type: worker
+        tags.datadoghq.com/service_deployment: {{ .namespace }}
+        tags.datadoghq.com/temporal_namespace: {{ .namespace }}
     spec:
       serviceAccountName: {{ $.Values.serviceAccount.name }}
       automountServiceAccountToken: true
@@ -73,4 +81,13 @@ spec:
               valueFrom:
                   fieldRef:
                       fieldPath: spec.nodeName
+            - name: DD_SERVICE
+              value: ctl-api
+            - name: SERVICE_TYPE
+              value: worker
+            - name: SERVICE_DEPLOYMENT
+              value: {{ .namespace }}
+            - name: TEMPORAL_NAMESPACE
+              value: {{ .namespace }}
+
 {{- end }}

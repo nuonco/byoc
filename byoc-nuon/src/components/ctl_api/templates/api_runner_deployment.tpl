@@ -7,6 +7,9 @@ metadata:
   labels:
     {{- include "common.apiLabels" . | nindent 4 }}
     app.nuon.co/name: {{ include "common.fullname" . }}-runner
+    tags.datadoghq.com/service: ctl-api
+    tags.datadoghq.com/service_type: api
+    tags.datadoghq.com/service_deployment: runner
 spec:
   selector:
     matchLabels:
@@ -17,6 +20,9 @@ spec:
       labels:
         {{- include "common.apiSelectorLabels" . | nindent 8 }}
         app.nuon.co/name: {{ include "common.fullname" . }}-runner
+        tags.datadoghq.com/service: ctl-api
+        tags.datadoghq.com/service_type: api
+        tags.datadoghq.com/service_deployment: runner
     spec:
       serviceAccountName: {{ .Values.serviceAccount.name }}
       automountServiceAccountToken: true
@@ -96,6 +102,12 @@ spec:
               valueFrom:
                   fieldRef:
                       fieldPath: spec.nodeName
+            - name: DD_SERVICE
+              value: ctl-api
+            - name: SERVICE_TYPE
+              value: api
+            - name: SERVICE_DEPLOYMENT
+              value: runner
           lifecycle:
             preStop:
               exec:
