@@ -6,8 +6,6 @@ metadata:
   namespace: {{ .Release.Namespace }}
   labels:
     {{- include "common.labels" . | nindent 4 }}
-    tags.datadoghq.com/service: dashboard-ui
-    tags.datadoghq.com/service_type: ui
 spec:
   selector:
     matchLabels:
@@ -17,7 +15,8 @@ spec:
       labels:
         {{- include "common.selectorLabels" . | nindent 8 }}
         tags.datadoghq.com/service: dashboard-ui
-        tags.datadoghq.com/service_type: ui
+      annotations:
+        ad.datadoghq.com/tags: '{"service_type":"ui"}'
     spec:
       # start: NodePool Selection
       nodeSelector:

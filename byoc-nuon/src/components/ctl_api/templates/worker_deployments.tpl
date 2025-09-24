@@ -8,10 +8,6 @@ metadata:
   labels:
     {{- include "common.workerLabels" $ | nindent 4 }}
     app.nuon.co/worker-namespace: {{ .namespace }}
-    tags.datadoghq.com/service:  ctl-api
-    tags.datadoghq.com/service_type: worker
-    tags.datadoghq.com/service_deployment: {{ .namespace }}
-    tags.datadoghq.com/temporal_namespace: {{ .namespace }}
 spec:
   selector:
     matchLabels:
@@ -23,9 +19,8 @@ spec:
         {{- include "common.workerSelectorLabels" $ | nindent 8 }}
         app.nuon.co/worker-namespace: {{ .namespace }}
         tags.datadoghq.com/service:  ctl-api
-        tags.datadoghq.com/service_type: worker
-        tags.datadoghq.com/service_deployment: {{ .namespace }}
-        tags.datadoghq.com/temporal_namespace: {{ .namespace }}
+      annotations:
+        ad.datadoghq.com/tags: '{"service_type":"worker","service_deployment":"{{ .namespace }}","temporal_namespace":"{{ .namespace }}"}'
     spec:
       serviceAccountName: {{ $.Values.serviceAccount.name }}
       automountServiceAccountToken: true
