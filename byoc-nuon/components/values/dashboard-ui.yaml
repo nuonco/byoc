@@ -59,8 +59,8 @@ envSecrets:
 
 ui:
   port: 4000
-  liveness_probe: /
-  readiness_probe: /
+  liveness_probe: /livez
+  readiness_probe: /readyz
 
   resources:
     limits:
