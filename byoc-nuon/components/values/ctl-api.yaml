@@ -21,8 +21,6 @@ env:
 
   AUTH0_ISSUER_URL: "{{ .nuon.inputs.inputs.auth_issuer_url }}"
   AUTH0_AUDIENCE: "{{ .nuon.inputs.inputs.auth_audience }}"
-  TEMPORAL_MAX_CONCURRENT_ACTIVITIES: !!string 100
-  TEMPORAL_STICKY_WORKFLOW_CACHE_SIZE: !!string 10000
 
   CLICKHOUSE_DB_PORT: !!string 9000
   CLICKHOUSE_DB_USE_TLS: "false"
@@ -59,9 +57,8 @@ env:
   # TODO: sort out tailscale for the ui and admin api
   TEMPORAL_HOST: temporal-frontend-headless.temporal.svc.cluster.local:7233
   TEMPORAL_MAX_CONCURRENT_ACTIVITIES: !!string 3500
-  TEMPORAL_STICKY_WORKFLOW_CACHE_SIZE: !!string 10
+  TEMPORAL_STICKY_WORKFLOW_CACHE_SIZE: !!string 10000
   TEMPORAL_UI_URL: http://temporal-ui.{{ .nuon.install_stack.outputs.region }}.{{ .nuon.sandbox.outputs.nuon_dns.internal_domain.name }}:8080
-
   SANDBOX_MODE_SLEEP: 1s
 
   # NOTE: deprecated or not in use in byoc
@@ -134,6 +131,9 @@ worker:
         requests:
           cpu: 500m
           memory: 256Mi
+      extraEnv:
+        - name: TEMPORAL_STICKY_WORKFLOW_CACHE_SIZE
+          value: !!string 500
     - namespace: releases
       minReplicas: 2
       maxReplicas: 5
@@ -146,6 +146,9 @@ worker:
       minReplicas: 2
       maxReplicas: 10
       command: ["/bin/service", "worker", "--namespace=runners"]
+      extraEnv:
+        - name: TEMPORAL_STICKY_WORKFLOW_CACHE_SIZE
+          value: !!string 1000
   autoscaling:
     targetCPUUtilizationPercentage: 90
     targetMemoryUtilizationPercentage: 65
@@ -162,10 +165,11 @@ worker:
   nodepool:
     capacity_types:
       - on-demand
-    # docs: https://karpenter.sh/v0.37/reference/instance-types/#t3amedium
+    # docs: https://karpenter.sh/docs/reference/instance-types/#t3axlarge
     instance_types:
       - t3a.xlarge
   zones:
+    # TODO: Template / load this dynamically
     - us-west-2a
     - us-west-2b
 
