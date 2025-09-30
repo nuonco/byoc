@@ -106,7 +106,6 @@ image:
   tag: "{{ .nuon.components.img_nuon_ctl_api.outputs.image.tag }}"
 
 worker:
-  minDomains: 3
   instances:
     - namespace: orgs
       minReplicas: 2
