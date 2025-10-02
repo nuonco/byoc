@@ -2,10 +2,11 @@
 env:
   ENV: byoc
   LOG_LEVEL: INFO
-  MIDDLEWARES: tracer,log,error,public_metrics,public,size,global,auth,org,offset_pagination,invites,headers,cors,config,patcher,panicker
-  RUNNER_MIDDLEWARES: tracer,log,runner_metrics,error,public,size,auth,runner_org,offset_pagination,headers,cors,config,panicker
-  INTERNAL_MIDDLEWARES: tracer,log,headers,internal_metrics,error,public,size,global,config,admin,offset_pagination,panicker
+  MIDDLEWARES: tracer,public_metrics,error,public,size,global,public_audit,auth,org,log,offset_pagination,invites,headers,cors,config,patcher,panicker
+  RUNNER_MIDDLEWARES: tracer,runner_metrics,error,size,public,runner_audit,auth,runner_org,log,offset_pagination,headers,cors,config,panicker
+  INTERNAL_MIDDLEWARES: tracer,internal_metrics,error,size,internal_audit,public,log,global,config,admin,offset_pagination,cors,config,panicker
   GIN_MODE: "release"
+  ENABLE_ENDPOINT_AUDITING: "true"
 
   DB_HOST: "{{ .nuon.components.rds_cluster_nuon.outputs.address }}"
   DB_NAME: "ctl_api"      # hardcoded, for now - also, main db not the desired db we created
