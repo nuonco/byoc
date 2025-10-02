@@ -23,7 +23,7 @@ subnet_ids = "{{ index .nuon.sandbox.outputs.vpc.private_subnet_ids 0}},{{ index
 nuon_id = "{{ .nuon.install.id }}"
 
 iam_database_authentication_enabled = "true"
-deletion_protection                 = "false"  # until we're out of dev
+deletion_protection                 = "true"
 
 allocated_storage = "100"
 apply_immediately = "true"

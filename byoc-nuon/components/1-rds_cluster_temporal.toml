@@ -16,8 +16,9 @@ db_user         = "temporaladmin"
 instance_class  = "{{ .nuon.install.inputs.temporal_db_instance_type }}"
 subnet_group_id = "{{ .nuon.components.rds_subnet.outputs.id }}"
 
-allocated_storage = "100"
-apply_immediately = "true"
+allocated_storage   = "100"
+apply_immediately   = "true"
+deletion_protection = "true"
 
 region     = "{{ .nuon.install_stack.outputs.region }}"
 vpc_id     = "{{ .nuon.install_stack.outputs.vpc_id }}"
