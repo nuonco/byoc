@@ -73,15 +73,13 @@ resource "kubectl_manifest" "clickhouse_keeper_installation" {
                   "minDomains"        = 3
                   "labelSelector" = {
                     "matchLabels" = {
-                      # NOTE(fd): this label is automatically applied by the CRD so we can assume it exists.
-                      #           that is, however, an assumption
-                      "app" = "clickhouse-keeper"
+                      "clickhouse-keeper.altinity.com/chk" = "clickhouse-keeper"
                     }
                   }
                 }
               ]
               "tolerations" = [{
-                "key"      = "installation"
+                "key"      = "pool.nuon.co"
                 "operator" = "Equal"
                 "value"    = "clickhouse-keeper"
                 "effect"   = "NoSchedule"
