@@ -35,11 +35,11 @@ nodepools:
     limits:
       cpu: 8
       memory: "32Gi"
-    expireAfter: "2160h"
+    expireAfter: "Never"
     disruption:
       budgets:
         - nodes: "0"
-      consolidationPolicy: "WhenEmptyOrUnderutilized"
+      consolidationPolicy: "WhenEmpty"
       consolidateAfter: "15m"
 
   - name: clickhouse-installation
@@ -48,7 +48,7 @@ nodepools:
     limits:
       cpu: 14
       memory: "1000Gi"
-    expireAfter: "2160h"
+    expireAfter: "Never"
     disruption:
       budgets:
         - nodes: "0"
