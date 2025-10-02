@@ -6,7 +6,7 @@ timeout = "1m"
 type = "manual"
 
 [[steps]]
-name    = "runner_asg_instance_refresh"
+name    = "refresh"
 command = "./aws/runner-asg-instance-refresh.sh"
 
 [steps.public_repo]
