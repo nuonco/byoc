@@ -8,8 +8,8 @@ type = "manual"
 # TODO(fd): add cron trigger
 
 [[steps]]
-name = "check_org_runner_deployments"
-command = "./monitor.sh"
+name = "org"
+command = "./check-org-runners-statuses.sh"
 
 [steps.public_repo]
 repo      = "nuonco/byoc"
