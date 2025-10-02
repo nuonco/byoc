@@ -3,6 +3,6 @@ type = "container_image"
 
 [aws_ecr]
 image_url = "431927561584.dkr.ecr.us-west-2.amazonaws.com/mono/dashboard-ui"
-tag          = "0.19.631"
+tag          = "0.19.649"
 region = "us-west-2"
 iam_role_arn = "arn:aws:iam::431927561584:role/nuon-ecr-access"
