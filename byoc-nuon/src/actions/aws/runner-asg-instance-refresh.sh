@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+# triggers a runner ASG instance refresh for the install runner that corresponds to this BYOC Nuon Install
+
 set -e
 set -o pipefail
 set -u
