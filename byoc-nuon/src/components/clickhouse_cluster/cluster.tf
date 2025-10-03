@@ -47,7 +47,7 @@ resource "kubectl_manifest" "clickhouse_installation" {
           },
         ]
         "settings" = {
-          "logger/level"                    = "information"
+          "logger/level"                    = local.logLevel
           "logger/console"                  = true
           "prometheus/endpoint"             = "/metrics"
           "prometheus/port"                 = 9363
