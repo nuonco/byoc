@@ -1,4 +1,5 @@
 locals {
+  logLevel = "warning"
   backups = {
     tables = [
       "ctl_api.otel_log_records",
