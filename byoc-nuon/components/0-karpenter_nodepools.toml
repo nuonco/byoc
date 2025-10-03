@@ -4,7 +4,7 @@ type           = "helm_chart"
 chart_name     = "karpenter-nodepools"
 storage_driver = "configmap"
 
-drift_schedule = "0 * * * *"
+drift_schedule = "0 0 * * *"
 
 
 [public_repo]

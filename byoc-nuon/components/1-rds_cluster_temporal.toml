@@ -2,6 +2,7 @@
 name              = "rds_cluster_temporal"
 type              = "terraform_module"
 terraform_version = "1.11.3"
+drift_schedule = "0 0 * * *"
 
 [public_repo]
 repo      = "nuonco/byoc"
