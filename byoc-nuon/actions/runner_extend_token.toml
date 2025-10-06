@@ -1,0 +1,19 @@
+#:schema https://api.nuon.co/v1/general/config-schema?type=action
+name    = "runner_extend_token"
+timeout = "10s"
+
+[[triggers]]
+type = "manual"
+
+[[steps]]
+name    = "extend_token"
+command = "./runners/extend_token.sh"
+
+[steps.public_repo]
+repo      = "nuonco/byoc"
+directory = "byoc-nuon/src/actions"
+branch    = "main"
+
+[steps.env_vars]
+ADMIN_API_URL = "http://admin.{{ .nuon.sandbox.outputs.nuon_dns.internal_domain.name }}"
+RUNNER_ID        = ""
