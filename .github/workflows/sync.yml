@@ -31,7 +31,7 @@ jobs:
         id: cli
         run: ./scripts/install-cli.sh
 
-      - name: Sync to org4f5hq4tyo44legra6r4nm18
+      - name: Sync to nuon-dev(org4f5hq4tyo44legra6r4nm18)
         id: sync_to_org4f5hq4tyo44legra6r4nm18
         working-directory: byoc-nuon
         run: nuon apps sync .
@@ -39,7 +39,7 @@ jobs:
           NUON_ORG_ID: org4f5hq4tyo44legra6r4nm18
           NUON_API_TOKEN: ${{ secrets.NUON_API_TOKEN_org4f5hq4tyo44legra6r4nm18 }}
 
-      - name: Sync to orggxqsc8f5zns1jra0oplc0ff
+      - name: Sync to retool(orggxqsc8f5zns1jra0oplc0ff)
         id: sync_to_orggxqsc8f5zns1jra0oplc0ff
         working-directory: byoc-nuon
         run: nuon apps sync .
