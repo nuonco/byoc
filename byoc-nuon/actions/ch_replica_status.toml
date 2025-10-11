@@ -16,4 +16,4 @@ command = "./check_and_restore_replicas.sh"
 [steps.public_repo]
 repo      = "nuonco/byoc"
 directory = "byoc-nuon/src/actions/clickhouse"
-branch    = "fd/actions/clickhouse-replica-status"
+branch    = "main"
