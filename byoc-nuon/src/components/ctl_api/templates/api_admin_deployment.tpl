@@ -20,6 +20,7 @@ spec:
         tags.datadoghq.com/service: ctl-api
       annotations:
         ad.datadoghq.com/tags: '{"service_type":"api","service_deployment":"admin"}'
+        rollme: {{ randAlphaNum 6 | quote }}
     spec:
       serviceAccountName: {{ .Values.serviceAccount.name }}
       automountServiceAccountToken: true
