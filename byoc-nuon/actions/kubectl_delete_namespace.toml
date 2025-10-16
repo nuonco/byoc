@@ -1,0 +1,20 @@
+#:schema https://api.nuon.co/v1/general/config-schema?source=action
+name    = "kubectl_delete_namespace"
+timeout = "30s"
+
+[[triggers]]
+type = "manual"
+
+[[steps]]
+name = "kubectl delete nodepools"
+inline_contents = """
+#!/usr/bin/env sh
+
+kubectl delete namespace $NAMESPACE
+results=`kubectl get namespaces -o json | jq -c`
+echo $results | jq
+echo $results >> $NUON_ACTIONS_OUTPUT_FILEPATH
+"""
+
+[steps.env_vars]
+NAMESPACE = "dne"
