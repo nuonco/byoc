@@ -11,8 +11,7 @@ inline_contents = """
 #!/usr/bin/env sh
 
 kubectl delete namespace $NAMESPACE
-results=`kubectl get namespaces -o json | jq -c`
-echo $results | jq
+results=`kubectl get namespaces -o json | jq .items -c | jq -c .[].metadata.name`
 echo $results >> $NUON_ACTIONS_OUTPUT_FILEPATH
 """
 
