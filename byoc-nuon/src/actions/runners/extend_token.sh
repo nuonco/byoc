@@ -15,7 +15,7 @@ OUTPUT=$(curl -s \
   --max-time 5 \
   -q \
   -X 'POST' \
-  "$admin_api_addr/v1/runners/$runner_id" \
+  "$admin_api_url/v1/runners/$runner_id" \
   --data '{"duration":"8760h"}')
 
 outputs=$(echo "$OUTPUT" | jq '{email: .email, expires_at: .expires_at}')
