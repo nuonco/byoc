@@ -16,7 +16,7 @@ spec:
         {{- include "common.selectorLabels" . | nindent 8 }}
         tags.datadoghq.com/service: dashboard-ui
       annotations:
-        ad.datadoghq.com/tags: '{"service_type":"ui"}'
+        ad.datadoghq.com/tags: '{"service_type":"ui", "service_deployment":"dashboard"}'
     spec:
       # start: NodePool Selection
       nodeSelector:
@@ -94,6 +94,8 @@ spec:
               value: dashboard-ui
             - name: SERVICE_TYPE
               value: ui
+            - name: SERVICE_DEPLOYMENT
+              value: dashboard
 ---
 apiVersion: policy/v1
 kind: PodDisruptionBudget
