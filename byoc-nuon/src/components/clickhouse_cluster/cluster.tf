@@ -70,7 +70,7 @@ resource "kubectl_manifest" "clickhouse_installation" {
         # https://clickhouse.com/docs/en/integrations/s3#configure-clickhouse-to-use-the-s3-bucket-as-a-disk
         # https://clickhouse.com/docs/en/operations/backup#configuring-backuprestore-to-use-an-s3-endpoint
         "files" = {
-          "config.d/disks.xml" = <<-EOT
+          "config.d/disks.xml"         = <<-EOT
           <clickhouse>
             <storage_configuration>
               <disks>
@@ -99,12 +99,33 @@ resource "kubectl_manifest" "clickhouse_installation" {
             </storage_configuration>
           </clickhouse>
           EOT
-          "config.d/s3.xml"    = <<-EOT
+          "config.d/s3.xml"            = <<-EOT
             <clickhouse>
               <s3>
                   <use_environment_credentials>true</use_environment_credentials>
               </s3>
             </clickhouse>
+          EOT
+          "config.d/z_log_disable.xml" = <<-EOT
+          <clickhouse>
+              <asynchronous_metric_log remove="1"/>
+              <backup_log remove="1"/>
+              <error_log remove="1"/>
+              <metric_log remove="1"/>
+              <query_metric_log remove="1"/>
+              <query_thread_log remove="1" />
+              <query_log remove="1" />
+              <query_views_log remove="1" />
+              <part_log remove="1"/>
+              <session_log remove="1"/>
+              <text_log remove="1" />
+              <trace_log remove="1"/>
+              <crash_log remove="1"/>
+              <opentelemetry_span_log remove="1"/>
+              <zookeeper_log remove="1"/>
+              <processors_profile_log remove="1"/>
+              <latency_log remove="1"/>
+          </clickhouse>
           EOT
         }
       }
