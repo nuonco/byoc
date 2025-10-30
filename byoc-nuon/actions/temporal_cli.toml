@@ -1,0 +1,28 @@
+#:schema https://api.nuon.co/v1/general/config-schema?type=action
+name    = "temporal_cli"
+timeout = "10m"
+
+[[triggers]]
+type = "manual"
+
+[[steps]]
+name    = "temporal-cli"
+inline_contents = """
+#!/usr/bin/env sh
+
+set -e
+set -o pipefail
+set -u
+set -x
+
+echo "Downloading Temporal CLI..."
+curl "https://temporal.download/cli/archive/latest?platform=linux&arch=amd64" -o /tmp/temporal-cli.tar.gz
+tar -xzf /tmp/temporal-cli.tar.gz -C /tmp
+
+echo "List workflows"
+/tmp/temporal workflow list
+/tmp/temporal $SUB_COMMAND
+"""
+
+[steps.env_vars]
+SUB_COMMAND = "-h"
