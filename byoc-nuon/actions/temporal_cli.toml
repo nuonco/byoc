@@ -20,7 +20,6 @@ curl "https://temporal.download/cli/archive/latest?platform=linux&arch=amd64" -o
 tar -xzf /tmp/temporal-cli.tar.gz -C /tmp
 
 echo "List workflows"
-/tmp/temporal workflow list
 /tmp/temporal $SUB_COMMAND
 """
 
