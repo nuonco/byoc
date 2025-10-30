@@ -15,13 +15,17 @@ set -o pipefail
 set -u
 set -x
 
+echo '{{ .nuon.components.img_temporal_server.outputs }}'
+
+
 echo "Downloading Temporal CLI..."
 curl "https://temporal.download/cli/archive/latest?platform=linux&arch=amd64" -o /tmp/temporal-cli.tar.gz
 tar -xzf /tmp/temporal-cli.tar.gz -C /tmp
 
-echo "List workflows"
+echo "Executing command..."
 /tmp/temporal $SUB_COMMAND
 """
 
 [steps.env_vars]
 SUB_COMMAND = "-h"
+ADDRESS = ""
