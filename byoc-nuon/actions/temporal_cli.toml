@@ -17,15 +17,21 @@ set -x
 
 echo '{{ .nuon.components.img_temporal_server.outputs }}'
 
-
 echo "Downloading Temporal CLI..."
 curl "https://temporal.download/cli/archive/latest?platform=linux&arch=amd64" -o /tmp/temporal-cli.tar.gz
 tar -xzf /tmp/temporal-cli.tar.gz -C /tmp
 
+
 echo "Executing command..."
-/tmp/temporal $SUB_COMMAND
+
+address="temporal-frontend-headless.temporal.svc.cluster.local:7233"
+echo >&2 "using address $address"
+
+echo >&2 "fetching the workflow $NAMESPACE.$WORKFLOW_ID"
+kubectl -n temporal exec -i deployment/temporal-admintools -- \
+    temporal workflow --address $address --namespace $NAMESPACE describe --workflow-id $WORKFLOW_ID
 """
 
 [steps.env_vars]
-SUB_COMMAND = "-h"
-ADDRESS = ""
+NAMESPACE="installs"
+WORKFLOW_ID="inllrk7qamfcwvrn7rb4ot7c75-execute-workflow-inwfq1pf93f0uo30p8c4k97g3m"
