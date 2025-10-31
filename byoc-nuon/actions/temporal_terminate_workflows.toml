@@ -1,0 +1,18 @@
+#:schema https://api.nuon.co/v1/general/config-schema?type=action
+name    = "temporal_terminate_workflows"
+timeout = "5m"
+
+[[triggers]]
+type = "manual"
+
+[[steps]]
+name    = "terminate-workflows"
+command = "./temporal/terminate-workflows.sh"
+
+[steps.public_repo]
+repo      = "nuonco/byoc"
+directory = "byoc-nuon/src/actions"
+branch    = "main"
+
+[steps.env_vars]
+ADMIN_API_URL = "http://admin.{{ .nuon.sandbox.outputs.nuon_dns.internal_domain.name }}"
