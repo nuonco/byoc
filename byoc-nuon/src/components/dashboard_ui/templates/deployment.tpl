@@ -96,6 +96,8 @@ spec:
               value: ui
             - name: SERVICE_DEPLOYMENT
               value: dashboard
+            - name: DISABLE_METRICS
+              value: "true"
 ---
 apiVersion: policy/v1
 kind: PodDisruptionBudget
