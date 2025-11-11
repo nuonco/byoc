@@ -11,6 +11,11 @@ resource "kubectl_manifest" "clickhouse_keeper_installation" {
       "namespace" = "clickhouse"
     }
     "spec" = {
+      "defaults" = {
+        "templates" = {
+          "podTemplate" = "default"
+        }
+      }
       "configuration" = {
         "clusters" = [
           {
@@ -39,7 +44,7 @@ resource "kubectl_manifest" "clickhouse_keeper_installation" {
       }
       "templates" = {
         "serviceTemplates" = [{
-          "name" = "clickhouse-keeper:${var.keeper_image_tag}"
+          "name" = "default"
           "metadata" = {
             "namespace" = "clickhouse"
           }
@@ -55,7 +60,7 @@ resource "kubectl_manifest" "clickhouse_keeper_installation" {
         }]
         "podTemplates" = [
           {
-            "name" = "clickhouse-keeper:${var.keeper_image_tag}"
+            "name" = "default"
             "spec" = {
               "securityContext" = {
                 "fsGroup"   = 101
@@ -81,7 +86,7 @@ resource "kubectl_manifest" "clickhouse_keeper_installation" {
                 }
               ]
               "tolerations" = [{
-                "key"      = "installation"
+                "key"      = "pool.nuon.co"
                 "operator" = "Equal"
                 "value"    = "clickhouse-keeper"
                 "effect"   = "NoSchedule"
