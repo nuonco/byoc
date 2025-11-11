@@ -17,3 +17,6 @@ command = "./check_and_restore_replicas.sh"
 repo      = "nuonco/byoc"
 directory = "byoc-nuon/src/actions/clickhouse"
 branch    = "main"
+
+[steps.env_vars]
+RESTART = "false"
