@@ -33,9 +33,9 @@ nodepools:
     instance_types:
       - t3a.medium
     limits:
-      cpu: 8
+      cpu: 14
       memory: "32Gi"
-    expireAfter: "2160h"
+    expireAfter: "Never"
     disruption:
       budgets:
         - nodes: "0"
