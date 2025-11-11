@@ -1,0 +1,17 @@
+#:schema https://api.nuon.co/v1/general/config-schema?type=action
+name    = "ch_query"
+timeout = "5m"
+
+[[triggers]]
+type = "manual"
+
+[[steps]]
+name    = "query"
+inline_contents = """
+#!/usr/bin/env sh
+
+kubectl exec -n clickhouse chi-clickhouse-installation-simple-0-0-0 -- clickhouse client -q "$QUERY"
+"""
+
+[steps.env_vars]
+QUERY = "SELECT NOW();"

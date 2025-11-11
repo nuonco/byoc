@@ -1,6 +1,6 @@
 #:schema https://api.nuon.co/v1/general/config-schema?type=action
 name    = "ch_cluster_replicas"
-timeout = "120s"
+timeout = "5m"
 
 [[triggers]]
 type  = "manual"
@@ -17,3 +17,6 @@ command = "./check_and_restore_replicas.sh"
 repo      = "nuonco/byoc"
 directory = "byoc-nuon/src/actions/clickhouse"
 branch    = "main"
+
+[steps.env_vars]
+RESTART = "false"
