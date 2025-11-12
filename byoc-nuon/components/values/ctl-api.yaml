@@ -134,7 +134,7 @@ worker:
           memory: 256Mi
       extraEnv:
         - name: TEMPORAL_STICKY_WORKFLOW_CACHE_SIZE
-          value: !!string 500
+          value: !!string 1000
     - namespace: releases
       minReplicas: 2
       maxReplicas: 5
