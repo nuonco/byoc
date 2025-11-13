@@ -1,0 +1,57 @@
+name: Check Runner Image Tag Consistency
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+jobs:
+  check-tags:
+    runs-on: ubuntu-latest
+    name: Validate Runner Image Tags Match
+    permissions:
+      pull-requests: write
+      contents: read
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Extract tags and compare
+        id: compare
+        run: ./scripts/check-runner-image-tag.sh
+
+      - name: Comment on PR if tags don't match
+        if: steps.compare.outputs.tags_match == 'false'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const tomlTag = '${{ steps.compare.outputs.toml_tag }}';
+            const yamlTag = '${{ steps.compare.outputs.yaml_tag }}';
+
+            const comment = `## ⚠️ **RUNNER IMAGE TAG MISMATCH DETECTED** ⚠️
+
+            ### 👀 Sus Configuration 👀
+
+            The runner container image tags in your configuration files **DO NOT MATCH**:
+
+            | File | Tag Value |
+            |------|-----------|
+            | \`byoc-nuon/components/4-image-nuon_ctl_api.toml\` | \`${tomlTag}\` |
+            | \`byoc-nuon/components/values/ctl-api.yaml\` | \`${yamlTag}\` |
+
+            ### ⚡ Action may be Required
+
+            These values **should probably** be identical before merging. Please ensure this mismatch is not on purpose.
+
+            - Update \`tag\` in \`byoc-nuon/components/4-image-nuon_ctl_api.toml\`
+            - Update \`RUNNER_CONTAINER_IMAGE_TAG\` in \`byoc-nuon/components/values/ctl-api.yaml\`
+
+            ---
+
+            *This check was performed automatically by the Runner Image Tag Consistency workflow.*`;
+
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: comment
+            });
