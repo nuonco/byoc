@@ -29,7 +29,7 @@ jobs:
 
             const comment = `## ⚠️ **RUNNER IMAGE TAG MISMATCH DETECTED** ⚠️
 
-            ### 🚨 Critical Configuration Error 🚨
+            ### 👀 Sus Configuration 👀
 
             The runner container image tags in your configuration files **DO NOT MATCH**:
 
@@ -38,9 +38,9 @@ jobs:
             | \`byoc-nuon/components/4-image-nuon_ctl_api.toml\` | \`${tomlTag}\` |
             | \`byoc-nuon/components/values/ctl-api.yaml\` | \`${yamlTag}\` |
 
-            ### ⚡ Action Required
+            ### ⚡ Action may be Required
 
-            These values **MUST** be identical before merging. Please update one or both files to ensure consistency.
+            These values **should probably** be identical before merging. Please ensure this mismatch is not on purpose.
 
             - Update \`tag\` in \`byoc-nuon/components/4-image-nuon_ctl_api.toml\`
             - Update \`RUNNER_CONTAINER_IMAGE_TAG\` in \`byoc-nuon/components/values/ctl-api.yaml\`
