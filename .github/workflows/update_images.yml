@@ -27,6 +27,7 @@ jobs:
         run: |
           ./scripts/update_image_tag.sh ./byoc-nuon/components/4-image-nuon_ctl_api.toml "$VERSION"
           ./scripts/update_image_tag.sh ./byoc-nuon/components/4-image-nuon_dashboard_ui.toml "$VERSION"
+          ./scripts/update_runner_image_tag.sh ./byoc-nuon/components/values/ctl-api.yaml "$VERSION"
       - name: Commit changes
         run: |
           git checkout -b "nuonbot/update-${VERSION}"

@@ -19,3 +19,4 @@ OUTPUT=$(curl -s \
   --data '{"duration":"8760h"}')
 
 echo "$OUTPUT"
+echo "$OUTPUT" >> $NUON_ACTIONS_OUTPUT_FILEPATH

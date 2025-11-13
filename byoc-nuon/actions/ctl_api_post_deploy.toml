@@ -72,3 +72,12 @@ branch    = "main"
 [steps.env_vars]
 INGRESS_NAME      = "ctl-api-runner"
 INGRESS_NAMESPACE = "ctl-api"
+
+[[steps]]
+name    = "runners-update-version"
+command = "./update-version.sh"
+
+[steps.public_repo]
+repo      = "nuonco/byoc"
+directory = "byoc-nuon/src/actions/runners"
+branch    = "main"

@@ -1,3 +1,4 @@
+# deprecated: do not use. will be deleted in the near future.
 name         = "runner_image_tag"
 description  = "The image tag for the new runners"
 default      = "latest"
