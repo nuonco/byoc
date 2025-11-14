@@ -1,6 +1,7 @@
 {{ $region := .nuon.cloud_account.aws.region }}
 {{ $public_domain  := (dig "outputs" "nuon_dns" "public_domain"  "name" .nuon.inputs.inputs.root_domain .nuon.sandbox) }}
 {{ $private_domain := (dig "outputs" "nuon_dns" "private_domain" "name" .nuon.inputs.inputs.root_domain .nuon.sandbox) }}
+
 <center>
   <img class="mt-0 block dark:hidden" src="https://mintlify.s3-us-west-1.amazonaws.com/nuoninc/logo/light.svg"/>
   <img class="mt-0 hidden dark:block" src="https://mintlify.s3-us-west-1.amazonaws.com/nuoninc/logo/dark.svg"/>
@@ -12,11 +13,10 @@ AWS | 000000000000 | xx-vvvv-00 | vpc-000000
 {{ end }}
   </small>
 
-{{ if .nuon.inputs.inputs.datadog_api_key }}
-
-<small>[datadog](https://us5.datadoghq.com/logs?query=env%3Abyoc%20install.id%3A{{ .nuon.install.id}})</small>
-
-{{ end }}
+{{ if .nuon.inputs.inputs.datadog_api_key }}<small>[DataDog](https://us5.datadoghq.com/logs?query=env%3Abyoc%20install.id%3A{{
+.nuon.install.id}})</small> | {{ end }}[Dashboard](https://app.{{
+$public_domain }}) | [API](https://api.{{
+$public_domain }}/docs/index.html)
 
 </center>
 
@@ -134,7 +134,8 @@ Additional Documentation
 
 ### Configure Github App
 
-Create a github app so BYOC Nuon can clone code for components from private repos. (To configure a new App: https://github.com/settings/apps) Configure it thusly:
+Create a github app so BYOC Nuon can clone code for components from private repos. (To configure a new App:
+https://github.com/settings/apps) Configure it thusly:
 
 - Github app name: (pick any name)
 - Homepage URL: https://app.{{ $public_domain }}
@@ -161,26 +162,29 @@ configure:
 - A Single Page Application (for the CTL API to use)
 - A Native Application (for the Dashboard to use)
 
-Nuon maintains a [terraform module](https://github.com/nuonco/byoc-auth0) to help with this process. We recommend utilizing that terraform module to configure Auth0.
+Nuon maintains a [terraform module](https://github.com/nuonco/byoc-auth0) to help with this process. We recommend
+utilizing that terraform module to configure Auth0.
 
 #### An action that adds `email_address` to the claim
+
 We will need to add a trigger to enrich the claim with the email. Do the following
+
 1. Log in to your Auth0 tenant
 2. Go to Actions> Library
 3. Click create from scratch
-4. Name the action `AddScope` and choose the latest runtime
-Replace the code in the window with this:
-  ```
-  exports.onExecutePostLogin = async (event, api) => {
-    const email = event.user.email;
-    
-    // Set claims 
-    api.accessToken.setCustomClaim(`email`, email);
-  };
-  ```
-5. Click Actions > triggers, click `Post-login trigger`, go to the right panel, click `Custom` then drag the `AddScope` trigger into the workflow (between the two steps), and hit save.
+4. Name the action `AddScope` and choose the latest runtime Replace the code in the window with this:
 
+```
+exports.onExecutePostLogin = async (event, api) => {
+  const email = event.user.email;
 
+  // Set claims
+  api.accessToken.setCustomClaim(`email`, email);
+};
+```
+
+5. Click Actions > triggers, click `Post-login trigger`, go to the right panel, click `Custom` then drag the `AddScope`
+   trigger into the workflow (between the two steps), and hit save.
 
 #### API
 
@@ -219,13 +223,14 @@ match the API URL. It cannot be changed after creation, so make sure this accura
 | Allow Cross-Origin Authentication | true                                         | Cross-Origin Authentication     |
 | Device Code                       | checked                                      | Advanced Settings > Grant Types |
 
-
 ## (Optional) Configure additional Identity Providers
-Auth0 allows multiple Identity Providers to be configured against applications. Out of the box, the above configuration 
-allows for Google authentication. 
 
-The user key in the BYOC application is `email`. Regardless of which authentication path, organizations and apps are 
-associated with the user based on this key. Any new identity providers configured will need to ensure that email is returned as a claim on the access token.
+Auth0 allows multiple Identity Providers to be configured against applications. Out of the box, the above configuration
+allows for Google authentication.
+
+The user key in the BYOC application is `email`. Regardless of which authentication path, organizations and apps are
+associated with the user based on this key. Any new identity providers configured will need to ensure that email is
+returned as a claim on the access token.
 
 We have tested Okta as an additional identity provider. The process is as follows:
 [Source Documentation](https://auth0.com/docs/authenticate/identity-providers/enterprise-identity-providers/okta#add-test-user-to-okta-app-integration)
@@ -233,12 +238,14 @@ We have tested Okta as an additional identity provider. The process is as follow
 ### Okta
 
 ## Step 1: Create in Okta an "OIDC Application"
-- Name -  Choose any name
+
+- Name - Choose any name
 - Sign In Redirect = `<your auth0 tenant>/login/callback`
 - Trusted Origins = `<your public domain>`
 - Retain the Client ID/Secret (these will be utilized in the next step)
 
 ## Step 2: Create in Auth0 an Enterprise Connection
+
     1. Auth0 Dashboard > Authentication > Enterprise> Okta Workforce > Create
         - Connection name - must be unique across the tenant. We recommend setting the same name used in step 1
         - Okta domain (upper left corner of your Okta tenant)
@@ -254,8 +261,6 @@ We have tested Okta as an additional identity provider. The process is as follow
   "mapping_mode": "use_map"
 }
 ```
-
-
 
 ### Update Inputs
 
