@@ -14,9 +14,9 @@ AWS | 000000000000 | xx-vvvv-00 | vpc-000000
   </small>
 
 {{ if .nuon.inputs.inputs.datadog_api_key }}<small>[DataDog](https://us5.datadoghq.com/logs?query=env%3Abyoc%20install.id%3A{{
-.nuon.install.id}})</small> | {{ end }}[Dashboard](https://app.{{
-$public_domain }}) | [API](https://api.{{
-$public_domain }}/docs/index.html)
+.nuon.install.id}})</small> | {{ end }}<small>[Dashboard](https://app.{{
+$public_domain }})</small> | <small>[API](https://api.{{
+$public_domain }}/docs/index.html)</small>
 
 </center>
 
