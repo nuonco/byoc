@@ -1,4 +1,5 @@
 #:schema https://api.nuon.co/v1/general/config-schema?source=action
+# NOTE(fd): use this is you need to set all install runners to a specific version
 name    = "runners_update_and_restart"
 timeout = "5m"
 
@@ -8,45 +9,49 @@ type = "manual"
 [[steps]]
 name = "install"
 inline_contents = """
+#!/usr/bin/env sh
+dry_run="$DRY_RUN"
 version="$VERSION"
 admin_api_url="$ADMIN_API_URL"
 
-OUTPUT='{}'
-
-echo "getting RUNNER_CONTAINER_IMAGE_TAG from ctl-api configmap"
-RUNNER_CONTAINER_IMAGE_TAG=$(kubectl get -n ctl-api configmaps ctl-api -o yaml |\
-  grep RUNNER_CONTAINER_IMAGE_TAG |\
-  cut -d ':' -f 2 |\
-  sed 's/ //g')
+OUTPUTS='{}'
 
 echo "getting install runners"
-install_runner_ids=""
 offset="0"
 limit="100"
+page="0"
 url="$admin_api_url/v1/runners?type=install&limit=$limit&offset=$offset"
-runners=`curl -s --max-time 5 -q -X GET "$url" | jq -r '.[].id'`
+echo " > url: $url"
+runners=`curl -s --max-time 5 -X GET "$url" | jq -r '.[].id'`
 
-# iterate through runners, and set container_image_tag to $RUNNER_CONTAINER_IMAGE_TAG
 for runner_id in $runners; do
-  echo "updating runner $runner_id to version $RUNNER_CONTAINER_IMAGE_TAG"
+  echo "updating runner $runner_id to version $version"
   url="$admin_api_url/v1/runners/$runner_id/settings"
 
-  response=$(curl -s --max-time 5 -X PATCH "$url" \
-    -H "Content-Type: application/json" \
-    -d "{\"container_image_tag\": \"$RUNNER_CONTAINER_IMAGE_TAG\"}")
+  if [ "$dry_run" = "true" ]; then
+    echo "[DRY RUN] Would execute: curl -s --max-time 5 -X PATCH \"$url\" -H \"Content-Type: application/json\" -d \"{\\\"container_image_tag\\\": \\\"$version\\\"}\""
+    echo "[DRY RUN] Would execute: curl -X 'POST' \"$admin_api_url/v1/runners/$runner_id/restart\" -H 'accept: application/json' -H 'Content-Type: application/json' -d '{}'"
+    response="dry_run_skipped"
+  else
+    response=$(curl -s --max-time 5 -X PATCH "$url" \
+      -H "Content-Type: application/json" \
+      -d '{"container_image_tag": "'$version'", "aws_max_instance_lifetime": 604800}')
+    echo $container_image_tag
 
-  # append runner.id and response to outputs
-  OUTPUTS=$(echo "$OUTPUTS" | jq --arg id "$runner_id" --arg resp "$response" '. + {($id): $resp}')
-  curl -X 'POST' \
-    "$admin_api_url/v1/runners/$runner_id/restart" \
-    -H 'accept: application/json' \
-    -H 'Content-Type: application/json' \
-    -d '{}'
+    # append runner.id and response to outputs
+    OUTPUTS=$(echo "$OUTPUTS" | jq --arg id "$runner_id" --arg resp "$response" '. + {($id): $resp}')
+    curl -s -X 'POST' \
+      "$admin_api_url/v1/runners/$runner_id/graceful-shutdown" \
+      -H 'accept: application/json' \
+      -H 'Content-Type: application/json' \
+      -d '{}'
+  fi
 done
 
-echo "$OUTPUTS" >> $NUON_ACTIONS_OUTPUT_FILEPATH
+echo $OUTPUTS | jq -c  >> $NUON_ACTIONS_OUTPUT_FILEPATH
 """
 
 [steps.env_vars]
+DRY_RUN="true"
 VERSION = "0.19.689"
-ADMIN_API_URL = "http://admin.{{ .nuon.sandbox.outputs.nuon_dns.internal_domain.name }}:8082"
+ADMIN_API_URL = "http://admin.{{ .nuon.sandbox.outputs.nuon_dns.internal_domain.name }}"
