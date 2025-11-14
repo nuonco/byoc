@@ -19,7 +19,7 @@ install_runner_ids=""
 offset="0"
 limit="100"
 url="$admin_api_url/v1/runners?type=install&limit=$limit&offset=$offset"
-runners=`curl -s --max-time 5 -q -X GET "$url" | jq -r '.[].id'`
+runners=`curl -s --max-time 5 -X GET "$url" | jq -r '.[].id'`
 
 # iterate through runners, and set container_image_tag to $RUNNER_CONTAINER_IMAGE_TAG
 for runner_id in $runners; do
