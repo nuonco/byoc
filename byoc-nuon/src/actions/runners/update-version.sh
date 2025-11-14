@@ -6,7 +6,7 @@ set -u
 
 admin_api_url="$ADMIN_API_URL"
 
-OUTPUT='{}'
+OUTPUTS='{}'
 
 echo "getting RUNNER_CONTAINER_IMAGE_TAG from ctl-api configmap"
 RUNNER_CONTAINER_IMAGE_TAG=$(kubectl get -n ctl-api configmaps ctl-api -o yaml |\
