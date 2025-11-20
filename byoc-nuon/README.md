@@ -401,7 +401,6 @@ Diagram
 
 ```mermaid
 graph TD
-  %% Foundation components (no dependencies)
   management[management]
   rds_subnet[rds_subnet]
   s3_buckets[s3_buckets]
@@ -409,7 +408,6 @@ graph TD
   karpenter_nodepools[karpenter_nodepools]
   certificate_wildcard_public[certificate_wildcard_public]
 
-  %% Image components
   img_temporal_server[img_temporal_server]
   img_temporal_ui[img_temporal_ui]
   img_temporal_admin_tools[img_temporal_admin_tools]
@@ -417,32 +415,24 @@ graph TD
   img_clickhouse_keeper[img_clickhouse_keeper]
   img_nuon_ctl_api[img_nuon_ctl_api]
   img_nuon_dashboard_ui[img_nuon_dashboard_ui]
-  img_clickhouse_metrics_exporter[img_clickhouse_metrics_exporter]
-  img_altinity_clickhouse_operator[img_altinity_clickhouse_operator]
 
-  %% RDS clusters
   rds_cluster_nuon[rds_cluster_nuon]
   rds_cluster_temporal[rds_cluster_temporal]
 
-  %% Temporal stack
   temporal_init_db[temporal_init_db]
   temporal[temporal]
 
-  %% ClickHouse stack
   crd_clickhouse_operator[crd_clickhouse_operator]
   clickhouse_cluster[clickhouse_cluster]
 
-  %% API and UI
   ctl_api_init_db[ctl_api_init_db]
   ctl_api_role[ctl_api_role]
   dashboard_ui_role[dashboard_ui_role]
   ctl_api[ctl_api]
   dashboard_ui[dashboard_ui]
 
-  %% Monitoring
   datadog[datadog]
 
-  %% Dependencies
   rds_subnet --> rds_cluster_nuon
   rds_subnet --> rds_cluster_temporal
 
@@ -481,24 +471,6 @@ graph TD
   temporal --> datadog
   ctl_api --> datadog
   dashboard_ui --> datadog
-
-  %% Styling
-  classDef foundation fill:#e1f5ff
-  classDef image fill:#fff4e1
-  classDef database fill:#ffe1f5
-  classDef app fill:#e1ffe1
-  classDef monitoring fill:#f5e1ff
-
-  class
-management,rds_subnet,s3_buckets,storage_classes,karpenter_nodepools,certificate_wildcard_public
-foundation
-  class img_temporal_server,img_temporal_ui,img_temporal_admin_tools,img_clickhouse_server,img_cli
-ckhouse_keeper,img_nuon_ctl_api,img_nuon_dashboard_ui,img_clickhouse_metrics_exporter,img_altinity_c
-lickhouse_operator image
-  class rds_cluster_nuon,rds_cluster_temporal database
-  class temporal_init_db,temporal,crd_clickhouse_operator,clickhouse_cluster,ctl_api_init_db,ctl_a
-pi_role,dashboard_ui_role,ctl_api,dashboard_ui app
-  class datadog monitoring
 ```
 
 </details>
