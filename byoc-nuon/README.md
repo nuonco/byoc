@@ -393,6 +393,116 @@ Secrets can be updated by re-provisioning the stack and updating the secret valu
 
 ## Components
 
+<details >
+
+<summary>
+Diagram
+</summary>
+
+```mermaid
+  graph TD
+      %% Foundation components (no dependencies)
+      management[management]
+      rds_subnet[rds_subnet]
+      s3_buckets[s3_buckets]
+      storage_classes[storage_classes]
+      karpenter_nodepools[karpenter_nodepools]
+      certificate_wildcard_public[certificate_wildcard_public]
+
+      %% Image components
+      img_temporal_server[img_temporal_server]
+      img_temporal_ui[img_temporal_ui]
+      img_temporal_admin_tools[img_temporal_admin_tools]
+      img_clickhouse_server[img_clickhouse_server]
+      img_clickhouse_keeper[img_clickhouse_keeper]
+      img_nuon_ctl_api[img_nuon_ctl_api]
+      img_nuon_dashboard_ui[img_nuon_dashboard_ui]
+      img_clickhouse_metrics_exporter[img_clickhouse_metrics_exporter]
+      img_altinity_clickhouse_operator[img_altinity_clickhouse_operator]
+
+      %% RDS clusters
+      rds_cluster_nuon[rds_cluster_nuon]
+      rds_cluster_temporal[rds_cluster_temporal]
+
+      %% Temporal stack
+      temporal_init_db[temporal_init_db]
+      temporal[temporal]
+
+      %% ClickHouse stack
+      crd_clickhouse_operator[crd_clickhouse_operator]
+      clickhouse_cluster[clickhouse_cluster]
+
+      %% API and UI
+      ctl_api_init_db[ctl_api_init_db]
+      ctl_api_role[ctl_api_role]
+      dashboard_ui_role[dashboard_ui_role]
+      ctl_api[ctl_api]
+      dashboard_ui[dashboard_ui]
+
+      %% Monitoring
+      datadog[datadog]
+
+      %% Dependencies
+      rds_subnet --> rds_cluster_nuon
+      rds_subnet --> rds_cluster_temporal
+
+      karpenter_nodepools --> temporal_init_db
+      rds_cluster_temporal --> temporal_init_db
+
+      karpenter_nodepools --> temporal
+      temporal_init_db --> temporal
+      rds_cluster_temporal --> temporal
+      img_temporal_ui --> temporal
+      img_temporal_server --> temporal
+      img_temporal_admin_tools --> temporal
+
+      storage_classes --> crd_clickhouse_operator
+
+      crd_clickhouse_operator --> clickhouse_cluster
+      karpenter_nodepools --> clickhouse_cluster
+      s3_buckets --> clickhouse_cluster
+      img_clickhouse_server --> clickhouse_cluster
+      img_clickhouse_keeper --> clickhouse_cluster
+
+      rds_cluster_nuon --> ctl_api_init_db
+      karpenter_nodepools --> ctl_api_init_db
+
+      rds_cluster_nuon --> ctl_api_role
+
+      rds_cluster_nuon --> ctl_api
+      karpenter_nodepools --> ctl_api
+      clickhouse_cluster --> ctl_api
+      temporal --> ctl_api
+      management --> ctl_api
+      ctl_api_init_db --> ctl_api
+
+      ctl_api --> dashboard_ui
+
+      temporal --> datadog
+      ctl_api --> datadog
+      dashboard_ui --> datadog
+
+      %% Styling
+      classDef foundation fill:#e1f5ff
+      classDef image fill:#fff4e1
+      classDef database fill:#ffe1f5
+      classDef app fill:#e1ffe1
+      classDef monitoring fill:#f5e1ff
+
+      class
+  management,rds_subnet,s3_buckets,storage_classes,karpenter_nodepools,certificate_wildcard_public
+  foundation
+      class img_temporal_server,img_temporal_ui,img_temporal_admin_tools,img_clickhouse_server,img_cli
+  ckhouse_keeper,img_nuon_ctl_api,img_nuon_dashboard_ui,img_clickhouse_metrics_exporter,img_altinity_c
+  lickhouse_operator image
+      class rds_cluster_nuon,rds_cluster_temporal database
+      class temporal_init_db,temporal,crd_clickhouse_operator,clickhouse_cluster,ctl_api_init_db,ctl_a
+  pi_role,dashboard_ui_role,ctl_api,dashboard_ui app
+      class datadog monitoring
+```
+
+</details>
+
 ### RDS Clusters
 
 The nuon cluster is created w/ an admin user and a `nuon` db. This admin user is responsible for creating the `ctl_api`
