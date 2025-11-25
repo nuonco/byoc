@@ -3,8 +3,8 @@ env:
   ENV: byoc
   LOG_LEVEL: INFO
   MIDDLEWARES: tracer,public_metrics,error,public,size,global,auth,org,log,offset_pagination,invites,headers,cors,config,patcher,panicker
-  RUNNER_MIDDLEWARES: tracer,runner_metrics,error,size,public,auth,runner_org,log,offset_pagination,headers,cors,config,panicker
-  INTERNAL_MIDDLEWARES: tracer,internal_metrics,error,size,public,log,global,config,admin,offset_pagination,cors,config,panicker
+  RUNNER_MIDDLEWARES: tracer,runner_metrics,error,size,public,auth,runner_org,log,offset_pagination,headers,cors,config,patcher,panicker
+  INTERNAL_MIDDLEWARES: tracer,internal_metrics,error,size,public,log,global,config,admin,offset_pagination,cors,config,patcher,panicker
   GIN_MODE: "release"
 
   DB_HOST: "{{ .nuon.components.rds_cluster_nuon.outputs.address }}"
