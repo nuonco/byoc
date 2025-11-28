@@ -393,6 +393,88 @@ Secrets can be updated by re-provisioning the stack and updating the secret valu
 
 ## Components
 
+<details >
+
+<summary>
+Diagram
+</summary>
+
+```mermaid
+graph TD
+  management[management]
+  rds_subnet[rds_subnet]
+  s3_buckets[s3_buckets]
+  storage_classes[storage_classes]
+  karpenter_nodepools[karpenter_nodepools]
+  certificate_wildcard_public[certificate_wildcard_public]
+
+  img_temporal_server[img_temporal_server]
+  img_temporal_ui[img_temporal_ui]
+  img_temporal_admin_tools[img_temporal_admin_tools]
+  img_clickhouse_server[img_clickhouse_server]
+  img_clickhouse_keeper[img_clickhouse_keeper]
+  img_nuon_ctl_api[img_nuon_ctl_api]
+  img_nuon_dashboard_ui[img_nuon_dashboard_ui]
+
+  rds_cluster_nuon[rds_cluster_nuon]
+  rds_cluster_temporal[rds_cluster_temporal]
+
+  temporal_init_db[temporal_init_db]
+  temporal[temporal]
+
+  crd_clickhouse_operator[crd_clickhouse_operator]
+  clickhouse_cluster[clickhouse_cluster]
+
+  ctl_api_init_db[ctl_api_init_db]
+  ctl_api_role[ctl_api_role]
+  dashboard_ui_role[dashboard_ui_role]
+  ctl_api[ctl_api]
+  dashboard_ui[dashboard_ui]
+
+  datadog[datadog]
+
+  rds_subnet --> rds_cluster_nuon
+  rds_subnet --> rds_cluster_temporal
+
+  karpenter_nodepools --> temporal_init_db
+  rds_cluster_temporal --> temporal_init_db
+
+  karpenter_nodepools --> temporal
+  temporal_init_db --> temporal
+  rds_cluster_temporal --> temporal
+  img_temporal_ui --> temporal
+  img_temporal_server --> temporal
+  img_temporal_admin_tools --> temporal
+
+  storage_classes --> crd_clickhouse_operator
+
+  crd_clickhouse_operator --> clickhouse_cluster
+  karpenter_nodepools --> clickhouse_cluster
+  s3_buckets --> clickhouse_cluster
+  img_clickhouse_server --> clickhouse_cluster
+  img_clickhouse_keeper --> clickhouse_cluster
+
+  rds_cluster_nuon --> ctl_api_init_db
+  karpenter_nodepools --> ctl_api_init_db
+
+  rds_cluster_nuon --> ctl_api_role
+
+  rds_cluster_nuon --> ctl_api
+  karpenter_nodepools --> ctl_api
+  clickhouse_cluster --> ctl_api
+  temporal --> ctl_api
+  management --> ctl_api
+  ctl_api_init_db --> ctl_api
+
+  ctl_api --> dashboard_ui
+
+  temporal --> datadog
+  ctl_api --> datadog
+  dashboard_ui --> datadog
+```
+
+</details>
+
 ### RDS Clusters
 
 The nuon cluster is created w/ an admin user and a `nuon` db. This admin user is responsible for creating the `ctl_api`
