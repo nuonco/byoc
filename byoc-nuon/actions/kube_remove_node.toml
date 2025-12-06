@@ -1,0 +1,34 @@
+#:schema https://api.nuon.co/v1/general/config-schema?type=action
+name    = "kube_remove_node"
+timeout = "2m"
+
+[[triggers]]
+type = "manual"
+
+[[steps]]
+name            = "drain"
+inline_contents = """
+#!/bin/bash
+
+set -e
+set -o pipefail
+set -u
+
+kubectl drain $NODE_NAME --ignore-daemonsets
+sleep 10
+"""
+
+[[steps]]
+name            = "delete"
+inline_contents = """
+#!/bin/bash
+
+set -e
+set -o pipefail
+set -u
+
+kubectl delete node $NODE_NAME
+"""
+
+[steps.env_vars]
+NODE_NAME = "dne"
