@@ -64,11 +64,11 @@ ui:
 
   resources:
     limits:
-      cpu: 400m
-      memory: 512Mi
+      cpu: 1000m
+      memory: 1024Mi
     requests:
-      cpu: 200m
-      memory: 256Mi
+      cpu: 1000m
+      memory: 1024Mi
 
   alb:
     public_domain: "app.{{ .nuon.sandbox.outputs.nuon_dns.public_domain.name }}"
