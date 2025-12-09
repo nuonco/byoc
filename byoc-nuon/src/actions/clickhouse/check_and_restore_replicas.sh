@@ -21,12 +21,9 @@ for table in $tables; do
       kubectl --namespace=clickhouse exec -i $pod -- \
         clickhouse client -d ctl_api --distributed_ddl_task_timeout=3600 --progress -q "SYSTEM RESTART REPLICA ON CLUSTER simple ctl_api.$table;"
       sleep 3
+    else
+      echo " sql: SYSTEM RESTORE REPLICA ON CLUSTER simple ctl_api.$table;"
     fi
-    echo " sql: SYSTEM RESTORE REPLICA ON CLUSTER simple ctl_api.$table;"
-    kubectl --namespace=clickhouse exec -i $pod -- \
-      clickhouse client -d ctl_api --distributed_ddl_task_timeout=3600 --progress -q "SYSTEM RESTORE REPLICA ON CLUSTER simple ctl_api.$table;"
-    echo " > table replication restore - taking a small nap $table"
-    sleep 1
 done
 
 outputs=$(echo "$tables" | jq -R -s -c 'split("\n") | map(select(length > 0)) | {repaired_tables: .}')
