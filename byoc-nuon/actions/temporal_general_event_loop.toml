@@ -1,0 +1,19 @@
+#:schema https://api.nuon.co/v1/general/config-schema?type=action
+name    = "temporal_general_event_loop"
+timeout = "5m"
+
+[[triggers]]
+type = "manual"
+
+[[steps]]
+name    = "general-event-loop"
+command = "./temporal/general_event_loop.sh"
+
+[steps.public_repo]
+repo      = "nuonco/byoc"
+directory = "byoc-nuon/src/actions"
+branch    = "main"
+
+[steps.env_vars]
+ADMIN_API_URL = "http://admin.{{ .nuon.sandbox.outputs.nuon_dns.internal_domain.name }}"
+
