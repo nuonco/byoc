@@ -84,7 +84,7 @@ variable "apply_immediately" {
 variable "allocated_storage" {
   type        = string
   description = "Allocated storage"
-  default     = 100
+  default     = 500
 }
 
 variable "multi_az" {
