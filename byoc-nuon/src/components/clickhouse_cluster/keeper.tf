@@ -26,20 +26,21 @@ resource "kubectl_manifest" "clickhouse_keeper_installation" {
           },
         ]
         "settings" = {
-          "keeper_server/coordination_settings/raft_logs_level" = "information"
-          "keeper_server/four_letter_word_white_list"           = "*"
-          "keeper_server/raft_configuration/server/port"        = "9444"
-          "keeper_server/storage_path"                          = "/var/lib/clickhouse-keeper"
-          "keeper_server/tcp_port"                              = "2181"
-          "listen_host"                                         = "0.0.0.0"
-          "logger/console"                                      = "true"
-          "logger/level"                                        = local.logLevel
-          "prometheus/asynchronous_metrics"                     = "true"
-          "prometheus/endpoint"                                 = "/metrics"
-          "prometheus/events"                                   = "true"
-          "prometheus/metrics"                                  = "true"
-          "prometheus/port"                                     = "7000"
-          "prometheus/status_info"                              = "false"
+          "keeper_server/coordination_settings/raft_logs_level"   = "information"
+          "keeper_server/four_letter_word_white_list"             = "*"
+          "keeper_server/raft_configuration/server/port"          = "9444"
+          "keeper_server/storage_path"                            = "/var/lib/clickhouse-keeper"
+          "keeper_server/tcp_port"                                = "2181"
+          "keeper_server/cgroups_memory_usage_observer_wait_time" = "0"
+          "listen_host"                                           = "0.0.0.0"
+          "logger/console"                                        = "true"
+          "logger/level"                                          = local.logLevel
+          "prometheus/asynchronous_metrics"                       = "true"
+          "prometheus/endpoint"                                   = "/metrics"
+          "prometheus/events"                                     = "true"
+          "prometheus/metrics"                                    = "true"
+          "prometheus/port"                                       = "7000"
+          "prometheus/status_info"                                = "false"
         }
       }
       "templates" = {
