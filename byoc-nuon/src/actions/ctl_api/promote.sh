@@ -7,6 +7,6 @@ set -u
 admin_api_addr="$ADMIN_API_URL"
 
 echo "[ctl_api promote] executing ctl-api promote callback"
-curl -s --max-time 5 -q -X 'POST' \
+curl -s --max-time 5 -X 'POST' \
   "$admin_api_addr/v1/general/promotion" \
   --data '{"tag":"byoc"}'
