@@ -69,6 +69,22 @@ resource "kubectl_manifest" "clickhouse_keeper_installation" {
               "nodeSelector" = {
                 "pool.nuon.co" = "clickhouse-keeper"
               }
+              "affinity" = {
+                "podAntiAffinity" = {
+                  "requiredDuringSchedulingIgnoredDuringExecution" = [
+                    {
+                      "labelSelector" = {
+                        "matchLabels" = {
+                          # NOTE(fd): this label is automatically applied by the CRD so we can assume it exists.
+                          #           that is, however, an assumption
+                          "clickhouse.altinity.com/chk" = "clickhouse-keeper"
+                        }
+                      }
+                      "topologyKey" = "kubernetes.io/hostname"
+                    }
+                  ]
+                }
+              }
               "topologySpreadConstraints" = [
                 # spread the pods across nodes.
                 {
@@ -80,7 +96,7 @@ resource "kubectl_manifest" "clickhouse_keeper_installation" {
                     "matchLabels" = {
                       # NOTE(fd): this label is automatically applied by the CRD so we can assume it exists.
                       #           that is, however, an assumption
-                      "app" = "clickhouse-keeper"
+                      "clickhouse.altinity.com/chk" = "clickhouse-keeper"
                     }
                   }
                 }
