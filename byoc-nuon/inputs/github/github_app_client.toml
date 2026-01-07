@@ -5,3 +5,4 @@ display_name = "GitHub App Client ID"
 group        = "github"
 required     = true
 
+user_configurable = true
