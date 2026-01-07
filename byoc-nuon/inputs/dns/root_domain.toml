@@ -3,3 +3,5 @@ description  = "The root domain. Services will be made available at subdomains o
 display_name = "Root Domain"
 required     = true
 group        = "dns"
+
+user_configurable = true
