@@ -5,3 +5,5 @@ default      = "db.r6gd.large"
 display_name = "RDS Instance Type"
 group        = "rds-nuon"
 internal     = true
+
+user_configurable = false

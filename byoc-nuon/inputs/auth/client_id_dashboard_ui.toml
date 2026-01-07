@@ -4,3 +4,5 @@ default      = "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
 display_name = "Auth0 Client ID - Dashboard UI"
 required     = true
 group        = "auth"
+
+user_configurable = false
