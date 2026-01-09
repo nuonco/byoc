@@ -1,8 +1,8 @@
-name         = "auth_issuer_url"
-description  = "Auth0 Issuer URL - include trailing slash."
-default      = "https://your-tenant-name.us.auth0.com/"
-display_name = "Auth0 Issuer URL"
-required     = true
+name         = "nuon_auth_issuer_url"
+description  = "OIDC Issuer URL. Not required for Google OAuth - leave empty. Required for generic OIDC providers."
+default      = ""
+display_name = "Auth Issuer URL"
+required     = false
 group        = "auth"
 
 user_configurable = true
