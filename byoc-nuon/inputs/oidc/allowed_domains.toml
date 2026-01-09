@@ -1,0 +1,9 @@
+name         = "nuon_auth_allowed_domains"
+description  = "A comma delimited lists of domains from which user are allowed to register. Usually your org's email domain."
+default      = ""
+display_name = "Allowed Domains"
+required     = true
+group        = "oidc"
+type         = "string"
+
+user_configurable = false

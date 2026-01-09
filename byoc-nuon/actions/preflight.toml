@@ -9,7 +9,7 @@ timeout = "1m"
 type = "manual"
 
 [[steps]]
-name    = "Ensure Secrets Access is Denied: Auth0 Client Secret ARN"
+name    = "Ensure Secrets Access is Denied: Auth Client Secret ARN"
 command = "./preflight/ensure-secrets-access.sh"
 
 [steps.public_repo]
@@ -18,7 +18,7 @@ directory = "byoc-nuon/src/actions"
 branch    = "main"
 
 [steps.env_vars]
-SECRET_ARN = "{{.nuon.install_stack.outputs.auth0_client_secret_arn }}" # cannot read
+SECRET_ARN = "{{.nuon.install_stack.outputs.nuon_auth_client_secret_arn }}" # cannot read
 REGION     = "{{ .nuon.install_stack.outputs.region }}"
 
 [[steps]]
