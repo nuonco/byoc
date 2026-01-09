@@ -1,8 +1,8 @@
 name         = "nuon_auth_client_id"
 description  = "OIDC Client ID from your identity provider."
-default      = "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+default      = ""
 display_name = "Auth Client ID"
-required     = true
-group        = "auth"
+required     = false
+group        = "oidc"
 
 user_configurable = true
