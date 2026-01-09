@@ -19,8 +19,11 @@ env:
   DB_MIGRATIONS_PATH: /migrations
   DB_REGION: "{{ .nuon.install_stack.outputs.region }}"  # NOTE(fd): this assumes the db and deployment are in the same region
 
-  AUTH0_ISSUER_URL: "{{ .nuon.inputs.inputs.auth_issuer_url }}"
-  AUTH0_AUDIENCE: "{{ .nuon.inputs.inputs.auth_audience }}"
+  ROOT_DOMAIN: "{{ .nuon.sandbox.outputs.nuon_dns.public_domain.name }}"
+  NUON_AUTH_PROVIDER_TYPE: "{{ .nuon.inputs.inputs.nuon_auth_provider_type }}"
+  NUON_AUTH_CLIENT_ID: "{{ .nuon.inputs.inputs.nuon_auth_client_id }}"
+  NUON_AUTH_ISSUER_URL: "{{ .nuon.inputs.inputs.nuon_auth_issuer_url }}"
+  NUON_AUTH_REDIRECT_URL: "https://auth.{{ .nuon.sandbox.outputs.nuon_dns.public_domain.name }}/auth"
 
   CLICKHOUSE_DB_PORT: !!string 9000
   CLICKHOUSE_DB_USE_TLS: "false"
@@ -39,8 +42,6 @@ env:
 
   INTEGRATION_GITHUB_INSTALL_ID: !!string 00000000
 
-  # TODO: may need to be renamed to scope to this component
-  AUTH0_CLIENT_ID: !!string "{{ .nuon.inputs.inputs.auth_client_id_ctl_api }}"
 
   INTERNAL_SLACK_WEBHOOK_URL: |-
     https://hooks.slack.com/services/xxxxxxxxxxx/xxxxxxxxxxx/xxxxxxxxxxxxxxxxxxxxxxxx
@@ -97,6 +98,18 @@ envSecrets:
   - name: "CLICKHOUSE_DB_PASSWORD"
     valueFrom:
       name: clickhouse-cluster-pw
+      key: value
+  - name: "NUON_AUTH_CLIENT_SECRET"
+    valueFrom:
+      name: ctl-api-auth-client-secret
+      key: value
+  - name: "NUON_AUTH_SESSION_KEY"
+    valueFrom:
+      name: ctl-api-auth-session-key
+      key: value
+  - name: "NUON_AUTH_JWT_SECRET"
+    valueFrom:
+      name: ctl-api-auth-jwt-secret
       key: value
 
 image:
