@@ -4,3 +4,5 @@ default      = "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
 display_name = "Auth0 Client ID - CTL API"
 required     = true
 group        = "auth"
+
+user_configurable = true
