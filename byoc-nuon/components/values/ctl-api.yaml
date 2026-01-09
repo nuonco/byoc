@@ -106,18 +106,6 @@ envSecrets:
     valueFrom:
       name: clickhouse-cluster-pw
       key: value
-  - name: "NUON_AUTH_CLIENT_SECRET"
-    valueFrom:
-      name: ctl-api-auth-client-secret
-      key: value
-  - name: "NUON_AUTH_SESSION_KEY"
-    valueFrom:
-      name: ctl-api-auth-session-key
-      key: value
-  - name: "NUON_AUTH_JWT_SECRET"
-    valueFrom:
-      name: ctl-api-auth-jwt-secret
-      key: value
 
 image:
   repository: "{{ .nuon.components.img_nuon_ctl_api.outputs.image.repository }}"
@@ -232,6 +220,15 @@ api:
       maxReplicas: 10
       targetCPUUtilizationPercentage: 35
       targetMemoryUtilizationPercentage: 40
+  auth:
+    port: 8084
+    domain: "auth.{{ .nuon.sandbox.outputs.nuon_dns.public_domain.name }}"
+    domain_certificate: "{{ .nuon.components.certificate_wildcard_public.outputs.public_domain_certificate_arn }}"
+    autoscaling:
+      minReplicas: 2
+      maxReplicas: 4
+      targetCPUUtilizationPercentage: 80
+      targetMemoryUtilizationPercentage: 80
 
   # topology spread
   minDomains: 2
@@ -241,6 +238,20 @@ api:
     - "{{ .nuon.install_stack.outputs.region }}a"
     - "{{ .nuon.install_stack.outputs.region }}b"
     - "{{ .nuon.install_stack.outputs.region }}c"
+
+# auth-specific secrets (in addition to the shared envSecrets)
+auth:
+  enabled: {{ ne "" .nuon.inputs.inputs.nuon_auth_provider_type }}
+  envSecrets:
+    - name: "NUON_AUTH_CLIENT_SECRET"
+      valueFrom:
+        name: ctl-api-auth-client-secret
+        key: value
+    - name: "NUON_AUTH_SESSION_KEY"
+      valueFrom:
+        name: ctl-api-auth-session-key
+        key: value
+
 
 serviceAccount:
   name: ctl-api
