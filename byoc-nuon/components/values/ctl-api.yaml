@@ -31,6 +31,8 @@ env:
   NUON_AUTH_CLIENT_ID: "{{ .nuon.inputs.inputs.nuon_auth_client_id }}"
   NUON_AUTH_ISSUER_URL: "{{ .nuon.inputs.inputs.nuon_auth_issuer_url }}"
   NUON_AUTH_REDIRECT_URL: "https://auth.{{ .nuon.sandbox.outputs.nuon_dns.public_domain.name }}/auth"
+  NUON_AUTH_ALLOWED_DOMAINS: "{{ .nuon.inputs.inputs.nuon_auth_allowed_domains }}"
+  NUON_AUTH_ALLOW_ALL_USERS: "{{ .nuon.inputs.inputs.nuon_auth_allow_all_users }}"
 
   CLICKHOUSE_DB_PORT: !!string 9000
   CLICKHOUSE_DB_USE_TLS: "false"
@@ -105,18 +107,6 @@ envSecrets:
   - name: "CLICKHOUSE_DB_PASSWORD"
     valueFrom:
       name: clickhouse-cluster-pw
-      key: value
-  - name: "NUON_AUTH_CLIENT_SECRET"
-    valueFrom:
-      name: ctl-api-auth-client-secret
-      key: value
-  - name: "NUON_AUTH_SESSION_KEY"
-    valueFrom:
-      name: ctl-api-auth-session-key
-      key: value
-  - name: "NUON_AUTH_JWT_SECRET"
-    valueFrom:
-      name: ctl-api-auth-jwt-secret
       key: value
 
 image:
@@ -232,6 +222,15 @@ api:
       maxReplicas: 10
       targetCPUUtilizationPercentage: 35
       targetMemoryUtilizationPercentage: 40
+  auth:
+    port: 8084
+    domain: "auth.{{ .nuon.sandbox.outputs.nuon_dns.public_domain.name }}"
+    domain_certificate: "{{ .nuon.components.certificate_wildcard_public.outputs.public_domain_certificate_arn }}"
+    autoscaling:
+      minReplicas: 2
+      maxReplicas: 4
+      targetCPUUtilizationPercentage: 80
+      targetMemoryUtilizationPercentage: 80
 
   # topology spread
   minDomains: 2
@@ -241,6 +240,20 @@ api:
     - "{{ .nuon.install_stack.outputs.region }}a"
     - "{{ .nuon.install_stack.outputs.region }}b"
     - "{{ .nuon.install_stack.outputs.region }}c"
+
+# auth-specific secrets (in addition to the shared envSecrets)
+auth:
+  enabled: {{ ne "" .nuon.inputs.inputs.nuon_auth_provider_type }}
+  envSecrets:
+    - name: "NUON_AUTH_CLIENT_SECRET"
+      valueFrom:
+        name: ctl-api-auth-client-secret
+        key: value
+    - name: "NUON_AUTH_SESSION_KEY"
+      valueFrom:
+        name: ctl-api-auth-session-key
+        key: value
+
 
 serviceAccount:
   name: ctl-api
