@@ -2,7 +2,7 @@ name         = "nuon_auth_provider_type"
 description  = "Identity provider type. Currently only 'google' is supported."
 default      = "google"
 display_name = "Auth Provider Type"
-required     = true
-group        = "auth"
+required     = false
+group        = "oidc"
 
 user_configurable = true

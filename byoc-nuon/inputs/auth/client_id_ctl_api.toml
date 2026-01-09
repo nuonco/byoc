@@ -1,0 +1,8 @@
+name         = "auth_client_id_ctl_api"
+description  = "Auth0 Client ID for the CTL API"
+default      = ""
+display_name = "Auth0 Client ID - CTL API"
+required     = false
+group        = "auth"
+
+user_configurable = true

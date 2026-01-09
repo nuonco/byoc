@@ -20,6 +20,13 @@ env:
   DB_REGION: "{{ .nuon.install_stack.outputs.region }}"  # NOTE(fd): this assumes the db and deployment are in the same region
 
   ROOT_DOMAIN: "{{ .nuon.sandbox.outputs.nuon_dns.public_domain.name }}"
+
+  # Auth0 config
+  AUTH0_ISSUER_URL: "{{ .nuon.inputs.inputs.auth_issuer_url }}"
+  AUTH0_AUDIENCE: "{{ .nuon.inputs.inputs.auth_audience }}"
+  AUTH0_CLIENT_ID: "{{ .nuon.inputs.inputs.auth_client_id_ctl_api }}"
+
+  # OIDC config
   NUON_AUTH_PROVIDER_TYPE: "{{ .nuon.inputs.inputs.nuon_auth_provider_type }}"
   NUON_AUTH_CLIENT_ID: "{{ .nuon.inputs.inputs.nuon_auth_client_id }}"
   NUON_AUTH_ISSUER_URL: "{{ .nuon.inputs.inputs.nuon_auth_issuer_url }}"
