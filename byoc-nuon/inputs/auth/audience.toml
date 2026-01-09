@@ -4,3 +4,5 @@ default      = "api.{{.nuon.install.id}}.nuon.run"
 display_name = "Auth0 Audience"
 required     = true
 group        = "auth"
+
+user_configurable = true
