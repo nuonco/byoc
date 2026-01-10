@@ -5,4 +5,4 @@ display_name = "Auth0 Audience"
 required     = false
 group        = "auth"
 
-user_configurable = true
+user_configurable = false
