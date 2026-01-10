@@ -5,3 +5,4 @@ default      = "db.m5.2xlarge"
 display_name = "RDS Instance Type"
 group        = "rds-temporal"
 
+user_configurable = false

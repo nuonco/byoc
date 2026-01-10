@@ -3,3 +3,5 @@ description  = "What EC2 instance type should each clickhouse cluster node deplo
 default      = "t3a.large"
 display_name = "Cluster Instance Type"
 group        = "clickhouse"
+
+user_configurable = false

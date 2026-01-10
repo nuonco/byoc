@@ -1,0 +1,8 @@
+name         = "nuon_auth_client_id"
+description  = "OIDC Client ID from your identity provider."
+default      = ""
+display_name = "Auth Client ID"
+required     = false
+group        = "oidc"
+
+user_configurable = false

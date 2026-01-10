@@ -2,5 +2,7 @@ name         = "auth_issuer_url"
 description  = "Auth0 Issuer URL - include trailing slash."
 default      = "https://your-tenant-name.us.auth0.com/"
 display_name = "Auth0 Issuer URL"
-required     = true
+required     = false
 group        = "auth"
+
+user_configurable = false
