@@ -10,7 +10,7 @@ dependencies = ["ctl_api"]
 [public_repo]
 repo      = "nuonco/byoc"
 directory = "byoc-nuon/src/components/dashboard_ui"
-branch    = "main"
+branch    = "sk/ch-user-configurable-inputs"
 
 [[values_file]]
 contents = "./values/dashboard-ui.yaml"
