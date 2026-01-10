@@ -27,20 +27,18 @@ jobs:
             const tomlTag = '${{ steps.compare.outputs.toml_tag }}';
             const yamlTag = '${{ steps.compare.outputs.yaml_tag }}';
 
-            const comment = `## ⚠️ **RUNNER IMAGE TAG MISMATCH DETECTED** ⚠️
-
-            ### 👀 Sus Configuration 👀
-
-            The runner container image tags in your configuration files **DO NOT MATCH**:
+            const comment = `##### Potential Issue Detected
+            > [!WARNING]
+            > The runner container image tags in your configuration files **do not match**
 
             | File | Tag Value |
             |------|-----------|
             | \`byoc-nuon/components/4-image-nuon_ctl_api.toml\` | \`${tomlTag}\` |
             | \`byoc-nuon/components/values/ctl-api.yaml\` | \`${yamlTag}\` |
 
-            ### ⚡ Action may be Required
+            ##### Action may be Required
 
-            These values **should probably** be identical before merging. Please ensure this mismatch is not on purpose.
+            These values should _probably_ be identical before merging. Please ensure this discrepancy is intentional.
 
             - Update \`tag\` in \`byoc-nuon/components/4-image-nuon_ctl_api.toml\`
             - Update \`RUNNER_CONTAINER_IMAGE_TAG\` in \`byoc-nuon/components/values/ctl-api.yaml\`
