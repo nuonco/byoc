@@ -5,4 +5,4 @@ display_name = "Auth0 Issuer URL"
 required     = false
 group        = "auth"
 
-user_configurable = false
+user_configurable = true

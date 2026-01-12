@@ -6,4 +6,4 @@ required     = true
 group        = "oidc"
 type         = "string"
 
-user_configurable = false
+user_configurable = true

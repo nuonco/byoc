@@ -5,4 +5,4 @@ display_name = "Auth0 Client ID - Dashboard UI"
 required     = false
 group        = "auth"
 
-user_configurable = false
+user_configurable = true

@@ -4,4 +4,4 @@ display_name = "Root Domain"
 required     = true
 group        = "dns"
 
-user_configurable = false
+user_configurable = true

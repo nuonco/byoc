@@ -5,4 +5,4 @@ display_name = "Loops API Key"
 group        = "email"
 required     = false
 
-user_configurable = false
+user_configurable = true

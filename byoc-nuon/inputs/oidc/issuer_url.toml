@@ -5,4 +5,4 @@ display_name = "Auth Issuer URL"
 required     = false
 group        = "oidc"
 
-user_configurable = false
+user_configurable = true

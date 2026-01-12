@@ -5,4 +5,4 @@ display_name = "GitHub App Name"
 group        = "github"
 required     = true
 
-user_configurable = false
+user_configurable = true
