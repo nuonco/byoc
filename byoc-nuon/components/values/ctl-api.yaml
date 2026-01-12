@@ -25,9 +25,9 @@ env:
   # Auth0 config
   # NOTE: with the advent of Nuon Auth, these are not strictly required. We are momentarily setting non-empty values until
   # we refactor the services configs wholesale.
-  AUTH0_ISSUER_URL: "{{ .nuon.inputs.inputs.auth_issuer_url }}"
-  AUTH0_AUDIENCE: "{{ .nuon.inputs.inputs.auth_audience }}"
-  AUTH0_CLIENT_ID: "{{ .nuon.inputs.inputs.auth_client_id_ctl_api }}"
+  AUTH0_ISSUER_URL: '{{ or .nuon.inputs.inputs.auth_issuer_url "auth_issuer_url" }}'
+  AUTH0_AUDIENCE: '{{ or .nuon.inputs.inputs.auth_audience "auth_audience" }}'
+  AUTH0_CLIENT_ID: '{{ or .nuon.inputs.inputs.auth_client_id_ctl_api "auth_client_id_ctl_api" }}'
 
   # OIDC config
   NUON_AUTH_PROVIDER_TYPE: "{{ .nuon.inputs.inputs.nuon_auth_provider_type }}"
