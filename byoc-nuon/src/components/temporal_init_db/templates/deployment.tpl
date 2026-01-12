@@ -135,4 +135,4 @@ spec:
         - key: "pool.nuon.co"
           operator: "Equal"
           value: "temporal"
-          Effect: "NoSchedule"
+          effect: "NoSchedule"
