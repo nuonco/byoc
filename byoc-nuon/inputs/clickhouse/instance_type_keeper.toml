@@ -4,4 +4,4 @@ default      = "t3a.medium"
 display_name = "Keeper Instance Type"
 group        = "clickhouse"
 
-user_configurable = true
+user_configurable = false

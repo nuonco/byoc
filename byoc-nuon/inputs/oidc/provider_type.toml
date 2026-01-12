@@ -5,4 +5,4 @@ display_name = "Auth Provider Type"
 required     = false
 group        = "oidc"
 
-user_configurable = true
+user_configurable = false
