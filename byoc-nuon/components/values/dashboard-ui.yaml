@@ -9,6 +9,7 @@ image:
 
 env:
   ENV: byoc
+  NUON_BYOC: "true"
   METRICS_TAGS: "org_id:{{ .nuon.org.id }},org_name:{{ .nuon.org.name }}"
 
   NEXT_PUBLIC_API_URL: "https://api.{{ .nuon.sandbox.outputs.nuon_dns.public_domain.name }}"
