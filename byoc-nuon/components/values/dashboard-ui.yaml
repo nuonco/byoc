@@ -43,7 +43,7 @@ env:
   NUON_WORKFLOWS: "true"
 
   # controls whether or not we nuon auth
-  NUON_AUTH_SERVICE_URL: '{{ ternary (print "auth." .nuon.sandbox.outputs.nuon_dns.public_domain.name) "" (ne "" ".nuon.inputs.inputs.nuon_auth_provider_type") }}' # if not empty, nuon auth is enabled
+  NUON_AUTH_SERVICE_URL: '{{ ternary (print "https://auth." .nuon.sandbox.outputs.nuon_dns.public_domain.name) "" (ne "" ".nuon.inputs.inputs.nuon_auth_provider_type") }}' # if not empty, nuon auth is enabled
   NUON_APP_URL: "https://app.{{.nuon.sandbox.outputs.nuon_dns.public_domain.name}}"
 
   SEGMENT_WRITE_KEY: "false"
