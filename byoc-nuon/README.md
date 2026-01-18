@@ -61,10 +61,8 @@ $public_domain }}/docs/index.html)</small>
 - [Installing Nuon](#installingnuon)
   - [Configure DNS (Optional)](#configurednsoptional)
   - [Configure Github App](#configuregithubapp)
-  - [Configure Auth0](#configureauth0)
-    - [API](#api)
-    - [Single Page Application](#singlepageapplication)
-    - [Native Applicaton](#nativeapplicaton)
+  - [Configure Google OAuth](#configure-google-oauth)
+    - [Create Google OAuth Credentials](#create-google-oauth-credentials)
   - [Update Inputs](#updateinputs)
     - [Nuon configuration (Optional)](#nuonconfigurationoptional)
     - [Nuon database configuration (Optional)](#nuondatabaseconfiguration-optional)
@@ -96,7 +94,7 @@ Nuon has a few dependencies you must configure ahead of time.
 
 - Custom DNS (Optional)
 - Github App
-- Auth0 API
+- Google OAuth
 
 You will need an install ID to configure these. For this reason, the first step in the installation process is to create
 your Nuon install -- don't bother updating any of the inputs -- and then cancel the provision. You will use the install
@@ -152,115 +150,27 @@ https://github.com/settings/apps) Configure it thusly:
 Once the app has been created, scroll to the bottom and generate a PEM key. You will need to provide this as a secret
 later.
 
-### Configure Auth0
+### Configure Google OAuth
 
-Nuon uses Auth0 for authentication. If you do not already have an Auth0 tenant, create one. In this tenant you must
-configure:
+Nuon uses Google OAuth for authentication. Users will sign in with their Google account.
 
-- An action that adds `email_address` to the claim
-- An API
-- A Single Page Application (for the CTL API to use)
-- A Native Application (for the Dashboard to use)
+The user key in the BYOC application is `email`. Organizations and apps are associated with the user based on this key.
 
-Nuon maintains a [terraform module](https://github.com/nuonco/byoc-auth0) to help with this process. We recommend
-utilizing that terraform module to configure Auth0.
+#### Create Google OAuth Credentials
 
-#### An action that adds `email_address` to the claim
+1. Go to [Google Cloud Console](https://console.cloud.google.com/)
+2. Create or select a project
+3. Navigate to **APIs & Services** > **Credentials**
+4. Click **Create Credentials** > **OAuth client ID**
+5. Select **Web application** as the application type
+6. Configure the OAuth client:
+   | Setting                     | Value                                    |
+   | --------------------------- | ---------------------------------------- |
+   | Name                        | BYOC Nuon (or any name)                  |
+   | Authorized JavaScript origins | `https://auth.{{ $public_domain }}`    |
+   | Authorized redirect URIs    | `https://auth.{{ $public_domain }}/auth` |
 
-We will need to add a trigger to enrich the claim with the email. Do the following
-
-1. Log in to your Auth0 tenant
-2. Go to Actions> Library
-3. Click create from scratch
-4. Name the action `AddScope` and choose the latest runtime Replace the code in the window with this:
-
-```
-exports.onExecutePostLogin = async (event, api) => {
-  const email = event.user.email;
-
-  // Set claims
-  api.accessToken.setCustomClaim(`email`, email);
-};
-```
-
-5. Click Actions > triggers, click `Post-login trigger`, go to the right panel, click `Custom` then drag the `AddScope`
-   trigger into the workflow (between the two steps), and hit save.
-
-#### API
-
-The value of "Identifier" must be `https://api.{{ $public_domain }}`. This will be used the audience identifier and must
-match the API URL. It cannot be changed after creation, so make sure this accurate.
-
-| Setting                                    | Value                            | Section              |
-| ------------------------------------------ | -------------------------------- | -------------------- |
-| Name                                       | API Gateway {{.nuon.install.id}} | In creation modal.   |
-| Identifier                                 | api.{{ $public_domain }}         | In creation modal.   |
-| Maximum Access Token Lifetime              | 2592000                          | Access Token Setting |
-| Implicit/Hybrid Flow Access Token Lifetime | 86400                            | Access Token Setting |
-| Allow Skipping User Consent                | true                             | Access Settings      |
-
-#### Single Page Application
-
-| Setting                          | Value                                              | Section                      |
-| -------------------------------- | -------------------------------------------------- | ---------------------------- |
-| Name                             | Nuon App - {{ .nuon.install.name }}                | In creation modal.           |
-| Logout URL                       | <blank/>                                           | Application URIs             |
-| Application Login URI            | <blank/>                                           | Application URIs             |
-| Allowed Callback URLs            | https://app.{{ $public_domain }}/api/auth/callback | Application URIs             |
-| Allowed Logout URLs              | https://app.{{ $public_domain }}                   | Application URIs             |
-| Allowed Web Origins              | https://app.{{ $public_domain }}                   | Application URIs             |
-| Alow Cross-Origin Authentication | true                                               | Cross-Origing Authentication |
-| Maxmium Refresh Token Lifetime   | 31557600                                           | Refresh Token Expiration     |
-| Allow Refresh Token Rotation     | true                                               | Refresh Token Rotation       |
-| Rotation Overlap Period          | 0                                                  | Refresh Token Rotation       |
-
-#### Native Applicaton
-
-| Setting                           | Value                                        | Section                         |
-| --------------------------------- | -------------------------------------------- | ------------------------------- |
-| Name                              | Nuon CTL API - {{ .nuon.install.name }}      | In creation modal.              |
-| Description                       | For BYOC Nuon Install {{ .nuon.install.id }} | In creation modal.              |
-| Allow Cross-Origin Authentication | true                                         | Cross-Origin Authentication     |
-| Device Code                       | checked                                      | Advanced Settings > Grant Types |
-
-## (Optional) Configure additional Identity Providers
-
-Auth0 allows multiple Identity Providers to be configured against applications. Out of the box, the above configuration
-allows for Google authentication.
-
-The user key in the BYOC application is `email`. Regardless of which authentication path, organizations and apps are
-associated with the user based on this key. Any new identity providers configured will need to ensure that email is
-returned as a claim on the access token.
-
-We have tested Okta as an additional identity provider. The process is as follows:
-[Source Documentation](https://auth0.com/docs/authenticate/identity-providers/enterprise-identity-providers/okta#add-test-user-to-okta-app-integration)
-
-### Okta
-
-## Step 1: Create in Okta an "OIDC Application"
-
-- Name - Choose any name
-- Sign In Redirect = `<your auth0 tenant>/login/callback`
-- Trusted Origins = `<your public domain>`
-- Retain the Client ID/Secret (these will be utilized in the next step)
-
-## Step 2: Create in Auth0 an Enterprise Connection
-
-    1. Auth0 Dashboard > Authentication > Enterprise> Okta Workforce > Create
-        - Connection name - must be unique across the tenant. We recommend setting the same name used in step 1
-        - Okta domain (upper left corner of your Okta tenant)
-        - Client ID + Client Secret (from step 1)
-    2. Select Sync user profiles at each login
-    3. User Mapping:
-
-```
-{
-  "attributes": {
-    "email": "${context.tokenset.email}"
-  },
-  "mapping_mode": "use_map"
-}
-```
+7. Note the **Client ID** and **Client Secret** - you'll need these for the install inputs and secrets
 
 ### Update Inputs
 
@@ -285,12 +195,11 @@ Adjust the instance size if needed.
 
 #### Authentication Configuration
 
-| Input                          | Value                                |
-| ------------------------------ | ------------------------------------ |
-| Auth0 Issuer URL               | your Auth0 tenant URL                |
-| Auth0 Audience                 | your Auth0 API audience              |
-| Auth0 Client ID - CTL API      | your Auth0 native app client ID      |
-| Auth0 Client ID - Dashboard UI | your Auth0 single-page app client ID |
+| Input               | Value                                                              |
+| ------------------- | ------------------------------------------------------------------ |
+| Auth Provider Type  | `google` (default)                                                 |
+| Auth Client ID      | Client ID from Google OAuth credentials                            |
+| Auth Redirect URL   | Defaults to `https://auth.{your-domain}/auth`                      |
 
 #### Github
 
@@ -307,15 +216,19 @@ Nuon-provided root domain.
 
 ### Update Secrets
 
-When provisioning the install CloudFormation stack, you will need to provide 2 secrets.
+When provisioning the install CloudFormation stack, you will need to provide the following secrets.
 
-| Secret             | Value                                            |
-| ------------------ | ------------------------------------------------ |
-| github_app_key     | your base64 encoded PEM key                      |
-| auth_client_secret | the client secret from you Auth0 single-page app |
+| Secret                   | Value                                        |
+| ------------------------ | -------------------------------------------- |
+| github_app_key           | your base64 encoded PEM key                  |
+| nuon_auth_client_secret  | the client secret from Google OAuth          |
 
 The github app PEM key must be base64 encoded. AWS CloudFormation does not preserve newlines in text fields. By encoding
 the PEM key before pasting it in, and decoding it later when it's read, we can preserve the newlines in the text.
+
+The following secrets are auto-generated and do not need to be provided:
+- `nuon_auth_session_key` - used for session nonce
+- `nuon_auth_jwt_secret` - used to sign JWT tokens
 
 ## Application Links
 
@@ -355,18 +268,19 @@ aws --region {{ .nuon.install_stack.outputs.region }} \
 
 The following secrets are created in the CloudFormation stack and then synced into the cluster.
 
-| Secret                   | Key(s)            | Namespace    | name                     | Source                    | Description                                 |
-| ------------------------ | ----------------- | ------------ | ------------------------ | ------------------------- | ------------------------------------------- |
-| clickhouse-operator-pw   | value             | clickhouse   | clickhouse-operator-pw   | secrets-sync              | clickhouse operator password                |
-| clickhouse-cluster-ro-pw | value             | clickhouse   | clickhouse-cluster-ro-pw | secrets-sync              | clickhouse cluster readonly user password   |
-| clickhouse-cluster-pw    | value             | clickhouse   | clickhouse-cluster-pw    | secrets-sync              | clickhouse cluster read/write user password |
-| clickhouse-operator-pw   | username/password | clickhouse   | clickhouse-operator      | action:ch_operator_creds  | creds in the format the operator wants      |
-| clickhouse-cluster-pw    | value             | ctl-api      | clickhouse-cluster-pw    | action:ch_cluster_creds   | a copy of the secret in the `ctl-api` ns    |
-| github-app-key           | value             | ctl-api      | github-app-key           | secrets-sync              | github app key                              |
-| auth0_secret             | value             | dashboard-ui | auth0-secret             | secrets-sync              | Auth0 secret for the dashboard-ui           |
-| auth0_client_secret      | value             | dashboard-ui | auth0-client-secret      | secrets-sync              | Auto-generated cookie secret                |
-| rds!rds-cluster-nuon     | username/password | ctl-api      | nuon-db                  | action:nuon_rds_creds     | nuon-db credentials for ctl-api             |
-| rds!rds-cluster-temporal | username/password | temporal     | temporal-db              | action:temporal_rds_creds | temporal-db credentials for temporal        |
+| Secret                   | Key(s)            | Namespace    | name                       | Source                    | Description                                 |
+| ------------------------ | ----------------- | ------------ | -------------------------- | ------------------------- | ------------------------------------------- |
+| clickhouse-operator-pw   | value             | clickhouse   | clickhouse-operator-pw     | secrets-sync              | clickhouse operator password                |
+| clickhouse-cluster-ro-pw | value             | clickhouse   | clickhouse-cluster-ro-pw   | secrets-sync              | clickhouse cluster readonly user password   |
+| clickhouse-cluster-pw    | value             | clickhouse   | clickhouse-cluster-pw      | secrets-sync              | clickhouse cluster read/write user password |
+| clickhouse-operator-pw   | username/password | clickhouse   | clickhouse-operator        | action:ch_operator_creds  | creds in the format the operator wants      |
+| clickhouse-cluster-pw    | value             | ctl-api      | clickhouse-cluster-pw      | action:ch_cluster_creds   | a copy of the secret in the `ctl-api` ns    |
+| github-app-key           | value             | ctl-api      | github-app-key             | secrets-sync              | github app key                              |
+| nuon_auth_client_secret  | value             | ctl-api      | ctl-api-auth-client-secret | secrets-sync              | OIDC client secret                          |
+| nuon_auth_session_key    | value             | ctl-api      | ctl-api-auth-session-key   | secrets-sync              | Auto-generated session key                  |
+| nuon_auth_jwt_secret     | value             | ctl-api      | ctl-api-auth-jwt-secret    | secrets-sync              | Auto-generated JWT signing secret           |
+| rds!rds-cluster-nuon     | username/password | ctl-api      | nuon-db                    | action:nuon_rds_creds     | nuon-db credentials for ctl-api             |
+| rds!rds-cluster-temporal | username/password | temporal     | temporal-db                | action:temporal_rds_creds | temporal-db credentials for temporal        |
 
 ### Updating Secrets
 

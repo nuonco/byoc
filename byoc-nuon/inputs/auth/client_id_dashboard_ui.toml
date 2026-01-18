@@ -2,5 +2,7 @@ name         = "auth_client_id_dashboard_ui"
 description  = "Auth0 Client ID for the Dashboard UI"
 default      = "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
 display_name = "Auth0 Client ID - Dashboard UI"
-required     = true
+required     = false
 group        = "auth"
+
+user_configurable = false
