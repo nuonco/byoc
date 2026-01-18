@@ -136,9 +136,9 @@ Create a github app so BYOC Nuon can clone code for components from private repo
 https://github.com/settings/apps) Configure it thusly:
 
 - Github app name: (pick any name)
-- Homepage URL: https://app.{{ $public_domain }}
+- Homepage URL: [https://app.{{ $public_domain }}](https://app.{{ $public_domain }})
 - Post Installation:
-  - Setup URL: https://app.{{ $public_domain }}/connect
+  - Setup URL: [https://app.{{ $public_domain }}/connect](https://app.{{ $public_domain }}/connect)
   - Redirect on Update: check
 - Webhook:
   - Webhook: un-check
@@ -163,12 +163,9 @@ The user key in the BYOC application is `email`. Organizations and apps are asso
 3. Navigate to **APIs & Services** > **Credentials**
 4. Click **Create Credentials** > **OAuth client ID**
 5. Select **Web application** as the application type
-6. Configure the OAuth client:
-   | Setting                     | Value                                    |
-   | --------------------------- | ---------------------------------------- |
-   | Name                        | BYOC Nuon (or any name)                  |
-   | Authorized JavaScript origins | `https://auth.{{ $public_domain }}`    |
-   | Authorized redirect URIs    | `https://auth.{{ $public_domain }}/auth` |
+6. Configure the OAuth client: | Setting | Value | | --------------------------- |
+   ---------------------------------------- | | Name | BYOC Nuon (or any name) | | Authorized JavaScript origins |
+   `https://auth.{{ $public_domain }}` | | Authorized redirect URIs | `https://auth.{{ $public_domain }}/auth` |
 
 7. Note the **Client ID** and **Client Secret** - you'll need these for the install inputs and secrets
 
@@ -195,11 +192,11 @@ Adjust the instance size if needed.
 
 #### Authentication Configuration
 
-| Input               | Value                                                              |
-| ------------------- | ------------------------------------------------------------------ |
-| Auth Provider Type  | `google` (default)                                                 |
-| Auth Client ID      | Client ID from Google OAuth credentials                            |
-| Auth Redirect URL   | Defaults to `https://auth.{your-domain}/auth`                      |
+| Input              | Value                                         |
+| ------------------ | --------------------------------------------- |
+| Auth Provider Type | `google` (default)                            |
+| Auth Client ID     | Client ID from Google OAuth credentials       |
+| Auth Redirect URL  | Defaults to `https://auth.{your-domain}/auth` |
 
 #### Github
 
@@ -211,22 +208,22 @@ Adjust the instance size if needed.
 
 #### DNS Configuration
 
-If you set up a custom root domain, provide it here. Otherwise, set `{{.nuon.install.id}}.nuon.run` to use a
-Nuon-provided root domain.
+Your root domain is: `{{.nuon.sandbox.outputs.nuon_dns.public_dns.name}}`
 
 ### Update Secrets
 
 When provisioning the install CloudFormation stack, you will need to provide the following secrets.
 
-| Secret                   | Value                                        |
-| ------------------------ | -------------------------------------------- |
-| github_app_key           | your base64 encoded PEM key                  |
-| nuon_auth_client_secret  | the client secret from Google OAuth          |
+| Secret                    | Value                               |
+| ------------------------- | ----------------------------------- |
+| `github_app_key`          | your base64 encoded PEM key         |
+| `nuon_auth_client_secret` | the client secret from Google OAuth |
 
 The github app PEM key must be base64 encoded. AWS CloudFormation does not preserve newlines in text fields. By encoding
 the PEM key before pasting it in, and decoding it later when it's read, we can preserve the newlines in the text.
 
 The following secrets are auto-generated and do not need to be provided:
+
 - `nuon_auth_session_key` - used for session nonce
 - `nuon_auth_jwt_secret` - used to sign JWT tokens
 
@@ -268,19 +265,19 @@ aws --region {{ .nuon.install_stack.outputs.region }} \
 
 The following secrets are created in the CloudFormation stack and then synced into the cluster.
 
-| Secret                   | Key(s)            | Namespace    | name                       | Source                    | Description                                 |
-| ------------------------ | ----------------- | ------------ | -------------------------- | ------------------------- | ------------------------------------------- |
-| clickhouse-operator-pw   | value             | clickhouse   | clickhouse-operator-pw     | secrets-sync              | clickhouse operator password                |
-| clickhouse-cluster-ro-pw | value             | clickhouse   | clickhouse-cluster-ro-pw   | secrets-sync              | clickhouse cluster readonly user password   |
-| clickhouse-cluster-pw    | value             | clickhouse   | clickhouse-cluster-pw      | secrets-sync              | clickhouse cluster read/write user password |
-| clickhouse-operator-pw   | username/password | clickhouse   | clickhouse-operator        | action:ch_operator_creds  | creds in the format the operator wants      |
-| clickhouse-cluster-pw    | value             | ctl-api      | clickhouse-cluster-pw      | action:ch_cluster_creds   | a copy of the secret in the `ctl-api` ns    |
-| github-app-key           | value             | ctl-api      | github-app-key             | secrets-sync              | github app key                              |
-| nuon_auth_client_secret  | value             | ctl-api      | ctl-api-auth-client-secret | secrets-sync              | OIDC client secret                          |
-| nuon_auth_session_key    | value             | ctl-api      | ctl-api-auth-session-key   | secrets-sync              | Auto-generated session key                  |
-| nuon_auth_jwt_secret     | value             | ctl-api      | ctl-api-auth-jwt-secret    | secrets-sync              | Auto-generated JWT signing secret           |
-| rds!rds-cluster-nuon     | username/password | ctl-api      | nuon-db                    | action:nuon_rds_creds     | nuon-db credentials for ctl-api             |
-| rds!rds-cluster-temporal | username/password | temporal     | temporal-db                | action:temporal_rds_creds | temporal-db credentials for temporal        |
+| Secret                   | Key(s)            | Namespace  | name                       | Source                    | Description                                 |
+| ------------------------ | ----------------- | ---------- | -------------------------- | ------------------------- | ------------------------------------------- |
+| clickhouse-operator-pw   | value             | clickhouse | clickhouse-operator-pw     | secrets-sync              | clickhouse operator password                |
+| clickhouse-cluster-ro-pw | value             | clickhouse | clickhouse-cluster-ro-pw   | secrets-sync              | clickhouse cluster readonly user password   |
+| clickhouse-cluster-pw    | value             | clickhouse | clickhouse-cluster-pw      | secrets-sync              | clickhouse cluster read/write user password |
+| clickhouse-operator-pw   | username/password | clickhouse | clickhouse-operator        | action:ch_operator_creds  | creds in the format the operator wants      |
+| clickhouse-cluster-pw    | value             | ctl-api    | clickhouse-cluster-pw      | action:ch_cluster_creds   | a copy of the secret in the `ctl-api` ns    |
+| github-app-key           | value             | ctl-api    | github-app-key             | secrets-sync              | github app key                              |
+| nuon_auth_client_secret  | value             | ctl-api    | ctl-api-auth-client-secret | secrets-sync              | OIDC client secret                          |
+| nuon_auth_session_key    | value             | ctl-api    | ctl-api-auth-session-key   | secrets-sync              | Auto-generated session key                  |
+| nuon_auth_jwt_secret     | value             | ctl-api    | ctl-api-auth-jwt-secret    | secrets-sync              | Auto-generated JWT signing secret           |
+| rds!rds-cluster-nuon     | username/password | ctl-api    | nuon-db                    | action:nuon_rds_creds     | nuon-db credentials for ctl-api             |
+| rds!rds-cluster-temporal | username/password | temporal   | temporal-db                | action:temporal_rds_creds | temporal-db credentials for temporal        |
 
 ### Updating Secrets
 
