@@ -18,6 +18,7 @@ env:
   DB_USE_IAM: "true"
   DB_MIGRATIONS_PATH: /migrations
   DB_REGION: "{{ .nuon.install_stack.outputs.region }}"  # NOTE(fd): this assumes the db and deployment are in the same region
+  APP_REGION: "{{ .nuon.install_stack.outputs.region }}" # NOTE(fd): can app region and db region ever be different?
 
   ROOT_DOMAIN: "{{ .nuon.sandbox.outputs.nuon_dns.public_domain.name }}"
 
