@@ -1,0 +1,8 @@
+name         = "nuon_auth_redirect_url"
+description  = "OIDC Redirect URL - the callback URL for your identity provider."
+default      = "https://auth.{{.nuon.inputs.inputs.root_domain}}/auth"
+display_name = "Auth Redirect URL"
+required     = false
+group        = "oidc"
+
+user_configurable = false
