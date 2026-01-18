@@ -27,11 +27,28 @@ jobs:
       - name: Checkout code
         id: checkout
         uses: actions/checkout@v3
+
+      - name: Check for skip-sync label
+        id: check_label
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          PR_NUMBER=$(gh pr list --search "${{ github.sha }}" --state merged --json number -q '.[0].number')
+          if [ -n "$PR_NUMBER" ]; then
+            LABELS=$(gh pr view "$PR_NUMBER" --json labels -q '.labels[].name')
+            if echo "$LABELS" | grep -q "skip-sync"; then
+              echo "skip=true" >> "$GITHUB_OUTPUT"
+              echo "Skipping sync due to skip-sync label on PR #$PR_NUMBER"
+            fi
+          fi
+
       - name: Install CLI
+        if: steps.check_label.outputs.skip != 'true'
         id: cli
         run: ./scripts/install-cli.sh
 
       - name: Sync to nuon-dev(org4f5hq4tyo44legra6r4nm18)
+        if: steps.check_label.outputs.skip != 'true'
         id: sync_to_org4f5hq4tyo44legra6r4nm18
         working-directory: byoc-nuon
         run: nuon apps sync .
@@ -40,6 +57,7 @@ jobs:
           NUON_API_TOKEN: ${{ secrets.NUON_API_TOKEN_org4f5hq4tyo44legra6r4nm18 }}
 
       - name: Sync to retool(orggxqsc8f5zns1jra0oplc0ff)
+        if: steps.check_label.outputs.skip != 'true'
         id: sync_to_orggxqsc8f5zns1jra0oplc0ff
         working-directory: byoc-nuon
         run: nuon apps sync .
