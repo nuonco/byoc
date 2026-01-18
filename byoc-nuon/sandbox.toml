@@ -14,5 +14,7 @@ enable_nuon_dns      = "true"
 public_root_domain   = "{{ .nuon.inputs.inputs.root_domain }}"
 internal_root_domain = "internal.{{ .nuon.inputs.inputs.root_domain }}"
 
+karpenter_version = "1.7.4"
+
 [[var_file]]
 contents = "./sandbox.tfvars"
