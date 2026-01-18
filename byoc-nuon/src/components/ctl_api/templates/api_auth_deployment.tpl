@@ -1,25 +1,26 @@
+{{- if .Values.auth.enabled }}
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "common.fullname" . }}-admin
+  name: {{ include "common.fullname" . }}-auth
   namespace: {{ .Release.Namespace }}
   labels:
     {{- include "common.apiLabels" . | nindent 4 }}
-    app.nuon.co/name: {{ include "common.fullname" . }}-admin
+    app.nuon.co/name: {{ include "common.fullname" . }}-auth
 spec:
   selector:
     matchLabels:
       {{- include "common.apiSelectorLabels" . | nindent 6 }}
-      app.nuon.co/name: {{ include "common.fullname" . }}-admin
+      app.nuon.co/name: {{ include "common.fullname" . }}-auth
   template:
     metadata:
       labels:
         {{- include "common.apiSelectorLabels" . | nindent 8 }}
-        app.nuon.co/name: {{ include "common.fullname" . }}-admin
+        app.nuon.co/name: {{ include "common.fullname" . }}-auth
         tags.datadoghq.com/service: ctl-api
       annotations:
-        ad.datadoghq.com/tags: '{"service_type":"api","service_deployment":"admin"}'
+        ad.datadoghq.com/tags: '{"service_type":"api","service_deployment":"auth"}'
     spec:
       serviceAccountName: {{ .Values.serviceAccount.name }}
       automountServiceAccountToken: true
@@ -42,7 +43,7 @@ spec:
           labelSelector:
             matchLabels:
               {{- /* plucked from common.apiSelectorLabels */}}
-              app.nuon.co/name: {{ include "common.fullname" . }}-admin
+              app.nuon.co/name: {{ include "common.fullname" . }}-auth
         - maxSkew: 2
           minDomains: {{ .Values.api.minDomains }}
           topologyKey: "kubernetes.io/hostname"
@@ -50,17 +51,17 @@ spec:
           labelSelector:
             matchLabels:
               {{- /* plucked from common.apiSelectorLabels */}}
-              app.nuon.co/name: {{ include "common.fullname" . }}-admin
+              app.nuon.co/name: {{ include "common.fullname" . }}-auth
       # end: Topology Spread Constraints
       containers:
-        - name: {{ include "common.fullname" . }}-admin
+        - name: {{ include "common.fullname" . }}-auth
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           command:
             - /bin/service
             - api
           ports:
             - name: http-internal
-              containerPort: {{ .Values.api.admin.port }}
+              containerPort: {{ .Values.api.auth.port }}
               protocol: TCP
           readinessProbe:
             httpGet:
@@ -90,6 +91,7 @@ spec:
           {{- end}}
           {{/* additional secrets for the auth service */}}
           {{- range $envSecret := .Values.auth.envSecrets }}
+
             - name: {{ $envSecret.name }}
               valueFrom:
                 secretKeyRef:
@@ -109,7 +111,7 @@ spec:
             - name: SERVICE_TYPE
               value: api
             - name: SERVICE_DEPLOYMENT
-              value: admin
+              value: auth
           lifecycle:
             preStop:
               exec:
@@ -121,11 +123,12 @@ spec:
 apiVersion: policy/v1
 kind: PodDisruptionBudget
 metadata:
-  name: {{ include "common.fullname" . }}-admin
+  name: {{ include "common.fullname" . }}-auth
   namespace: {{ .Release.Namespace }}
 spec:
   minAvailable: 1
   selector:
     matchLabels:
       {{- include "common.apiSelectorLabels" . | nindent 6 }}
-      app.nuon.co/name: {{ include "common.fullname" . }}-admin
+      app.nuon.co/name: {{ include "common.fullname" . }}-auth
+{{- end }}
