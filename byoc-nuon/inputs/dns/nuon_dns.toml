@@ -1,0 +1,7 @@
+name         = "nuon_dns_root_domain"
+description  = "The root domain for NuonDNS to allow installs to use automatically provisioned Route53 Zones under this domain."
+display_name = "Nuon DNS: Root Domain"
+required     = true
+group        = "dns"
+
+user_configurable = false

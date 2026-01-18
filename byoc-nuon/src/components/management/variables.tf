@@ -1,4 +1,7 @@
 locals {
+  nuon_dns = {
+    is_valid = var.nuon_dns_root_domain != var.root_domain
+  }
   tags = {
     "install.nuon.co/id"     = var.install_id
     "org.nuon.co/id"         = var.org_id
@@ -23,10 +26,15 @@ variable "org_id" {
   type = string
 }
 
-# dns
+# nuon dns
 variable "root_domain" {
   type        = string
-  description = "The root domain to create a zone for. This should be the same value as {{ .nuon.inputs.inputs.root_domain }}."
+  description = "The Root Domain for this Nuon Install. Used only to ensure the same value is not being used for nuon dns and the root dns."
+}
+
+variable "nuon_dns_root_domain" {
+  type        = string
+  description = "The Nuon DNS root domain for install DNS provisioning. This value should differ from {{ .nuon.inputs.inputs.root_domain }}."
 }
 
 # cluster details (passthrough from the sandbox)
