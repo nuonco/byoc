@@ -1,0 +1,76 @@
+name: Check Component Branches
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
+    paths:
+      - 'components/*.toml'
+
+jobs:
+  check-branches:
+    if: github.event.pull_request.draft == false
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check for non-main branches
+        id: check
+        run: |
+          non_main_branches=""
+
+          for file in components/*.toml; do
+            branch=$(grep -E '^\s*branch\s*=' "$file" | sed 's/.*=\s*"\(.*\)"/\1/' | head -1)
+            if [ -n "$branch" ] && [ "$branch" != "main" ]; then
+              component=$(basename "$file" .toml)
+              non_main_branches="${non_main_branches}- \`${component}\`: branch \`${branch}\`\n"
+            fi
+          done
+
+          if [ -n "$non_main_branches" ]; then
+            echo "found=true" >> $GITHUB_OUTPUT
+            echo "branches<<EOF" >> $GITHUB_OUTPUT
+            echo -e "$non_main_branches" >> $GITHUB_OUTPUT
+            echo "EOF" >> $GITHUB_OUTPUT
+          else
+            echo "found=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Comment on PR
+        if: steps.check.outputs.found == 'true'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const marker = '<!-- check-component-branches -->';
+            const body = `${marker}
+
+            📌 **Note:** :
+            > [!WARNING]
+            > Some components are using non-main branches. You most likely want to correct this before merging.
+
+            ${{ steps.check.outputs.branches }}
+
+            This is a friendly reminder to validate these before merging.`;
+
+            const { data: comments } = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+            });
+
+            const existing = comments.find(c => c.body.includes(marker));
+
+            if (existing) {
+              await github.rest.issues.updateComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                comment_id: existing.id,
+                body,
+              });
+            } else {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.issue.number,
+                body,
+              });
+            }
