@@ -208,7 +208,10 @@ Adjust the instance size if needed.
 
 #### DNS Configuration
 
-Your root domain is: `{{.nuon.sandbox.outputs.nuon_dns.public_dns.name}}`
+|                |                                                               |                                                                                      |
+| -------------- | ------------------------------------------------------------- | ------------------------------------------------------------------------------------ |
+| Root Domain    | `{{.nuon.sandbox.outputs.nuon_dns.public_domain.name}}`       | The root domain from which the nuon services are served.                             |
+| NuonDNS Domain | `{{.nuon.components.management.outputs.route53_zone.domain}}` | The domain used to provision domains for installs managed by this BYOC Nuon Install. |
 
 ### Update Secrets
 
