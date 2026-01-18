@@ -97,7 +97,7 @@ nodepools:
       consolidationPolicy: "WhenEmptyOrUnderutilized"
       consolidateAfter: "30s"
     zones:
-      - us-west-2a
+      - {{.nuon.install_stack.outputs.region}}a
 
   - name: public
     instance_types:

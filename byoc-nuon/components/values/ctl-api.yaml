@@ -184,8 +184,8 @@ worker:
       - t3a.xlarge
   zones:
     # TODO: Template / load this dynamically
-    - us-west-2a
-    - us-west-2b
+    - {{.nuon.install_stack.outputs.region}}a
+    - {{.nuon.install_stack.outputs.region}}b
 
 api:
   liveness_probe: /livez
