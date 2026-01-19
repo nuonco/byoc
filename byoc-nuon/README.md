@@ -59,7 +59,7 @@ $public_domain }}/docs/index.html)</small>
 </div>
 
 - [Installing Nuon](#installingnuon)
-  - [Configure DNS (Optional)](#configurednsoptional)
+  - [Configure DNS](#configurednsoptional)
   - [Configure Github App](#configuregithubapp)
   - [Configure Google OAuth](#configure-google-oauth)
     - [Create Google OAuth Credentials](#create-google-oauth-credentials)
@@ -101,12 +101,49 @@ your Nuon install -- don't bother updating any of the inputs -- and then cancel 
 ID to configure the dependencies as detailed below. Once the dependencies are ready, update your install's inputs, then
 click on "Reprovision Install" in the "Manage" menu.
 
-### Configure DNS (Optional)
+### Configure DNS
 
-To host BYOC Nuon under a custom domain, configure DNS for your `root_domain` to point to the Route53 Zone created in
-the sandbox.
+There are two domains at play with a BYOC Nuon deployment. The first is the `root_domain` under which all of the
+services (e.g. APIs & Frontend) are served. The second, `nuon_dns_domain`, is a domain which you can use to
+automate the provisioning of Route53 zones for installs. This second feature is optional but, at the time of writing, a
+default value must be provided.
+
+|                 | Input                  | Description                                                                          |
+| --------------- | ---------------------- | ------------------------------------------------------------------------------------ |
+| Root Domain     | `root_domain`          | The root domain from which the nuon services are served.                             |
+| Nuon DNS Domain | `nuon_dns_domain` | The domain used to provision domains for installs managed by this BYOC Nuon Install. |
+
+BYOC Nuon should be hosted under a custom domain of your choice, for example:
+
+- `byoc.organization.com`
+
+Nuon DNS should be hosted under a separate domain or a dedicated subdomain, such as:
+
+- `installs.organization.com`
+- `hosted.organization.io`
+
+<!-- prettier-ignore-start -->
+> [!NOTE]
+> We strongly suggest you choose your domains so there is NO overlap between the two.
+<!-- prettier-ignore-end -->
+
+Nuon DNS is optional, but a valid domain should be provided during installation nonetheless. It will remain inactive so
+long as app's set `enable_nuon_dns` to `false` in the sandbox configs
+([link](https://github.com/nuonco/aws-eks-sandbox?tab=readme-ov-file#input_enable_nuon_dns)).
+
+<!-- prettier-ignore-start -->
+> [!NOTE]
+> All Nuon-authored sandboxes implement a nuon_dns module whose outputs nuon knows how to read.
+<!-- prettier-ignore-end -->
+
+#### Current DNS Configurations
+
+When an install is created, a Route53 zone will be created for each of the domains. When these are ready, you can use
+those details to configure your domain in your registrar to use the AWS nameservers.
 
 {{ if (and .nuon.sandbox.populated .nuon.sandbox.outputs) }}
+
+##### Root Domain
 
 | Attribute   | Value                                                                                          |
 | ----------- | ---------------------------------------------------------------------------------------------- |
@@ -117,6 +154,28 @@ the sandbox.
 | Value     | Record Type | priority |
 | --------- | ----------- | -------- |
 {{ range $i, $ns := .nuon.sandbox.outputs.nuon_dns.public_domain.nameservers }}| {{ $ns }} | NS          | {{$i}}   |
+{{ end }}
+<!-- prettier-ignore-end -->
+
+{{ else }}
+
+> [!WARNING] Waiting on Sandbox Provision. Once the Sandbox is ready, results will be visible here.
+
+{{ end }}
+
+{{ if (and .nuon.components .nuon.components.management) }}
+
+##### Nuon DNS Root Domain
+
+| Attribute   | Value                                                          |
+| ----------- | -------------------------------------------------------------- |
+| Domain Name | {{ .nuon.components.management.outputs.route53_zone.domain }}  |
+| Zone ID     | {{ .nuon.components.management.outputs.route53_zone.zone_id }} |
+
+<!-- prettier-ignore-start -->
+| Value     | Record Type | priority |
+| --------- | ----------- | -------- |
+{{ range $i, $ns := .nuon.components.management.outputs.route53_zone.nameservers }}| {{ $ns }} | NS          | {{$i}}   |
 {{ end }}
 <!-- prettier-ignore-end -->
 
@@ -163,11 +222,14 @@ The user key in the BYOC application is `email`. Organizations and apps are asso
 3. Navigate to **APIs & Services** > **Credentials**
 4. Click **Create Credentials** > **OAuth client ID**
 5. Select **Web application** as the application type
-6. Configure the OAuth client: | Setting | Value | | --------------------------- |
-   ---------------------------------------- | | Name | BYOC Nuon (or any name) | | Authorized JavaScript origins |
-   `https://auth.{{ $public_domain }}` | | Authorized redirect URIs | `https://auth.{{ $public_domain }}/auth` |
-
+6. Configure the OAuth client (see table below)
 7. Note the **Client ID** and **Client Secret** - you'll need these for the install inputs and secrets
+
+| Setting                       | Value                                    |
+| ----------------------------- | ---------------------------------------- |
+| Name                          | `BYOC Nuon` (or any name)                |
+| Authorized JavaScript origins | `https://auth.{{ $public_domain }}`      |
+| Authorized redirect URIs      | `https://auth.{{ $public_domain }}/auth` |
 
 ### Update Inputs
 
@@ -192,11 +254,11 @@ Adjust the instance size if needed.
 
 #### Authentication Configuration
 
-| Input              | Value                                         |
-| ------------------ | --------------------------------------------- |
-| Auth Provider Type | `google` (default)                            |
-| Auth Client ID     | Client ID from Google OAuth credentials       |
-| Auth Redirect URL  | Defaults to `https://auth.{your-domain}/auth` |
+| Input              | Value                                                                                 |
+| ------------------ | ------------------------------------------------------------------------------------- |
+| Auth Provider Type | `google` (default)                                                                    |
+| Auth Client ID     | Client ID from Google OAuth credentials                                               |
+| Auth Redirect URL  | Defaults to `https://auth.{{.nuon.sandbox.outputs.nuon_dns.public_domain.name}}/auth` |
 
 #### Github
 
@@ -208,10 +270,10 @@ Adjust the instance size if needed.
 
 #### DNS Configuration
 
-|                |                                                               |                                                                                      |
-| -------------- | ------------------------------------------------------------- | ------------------------------------------------------------------------------------ |
-| Root Domain    | `{{.nuon.sandbox.outputs.nuon_dns.public_domain.name}}`       | The root domain from which the nuon services are served.                             |
-| NuonDNS Domain | `{{.nuon.components.management.outputs.route53_zone.domain}}` | The domain used to provision domains for installs managed by this BYOC Nuon Install. |
+|                 | Input                                                         | Description                                                                          |
+| --------------- | ------------------------------------------------------------- | ------------------------------------------------------------------------------------ |
+| Root Domain     | `{{.nuon.sandbox.outputs.nuon_dns.public_domain.name}}`       | The root domain from which the nuon services are served.                             |
+| Nuon DNS Domain | `{{.nuon.components.management.outputs.route53_zone.domain}}` | The domain used to provision domains for installs managed by this BYOC Nuon Install. |
 
 ### Update Secrets
 
@@ -333,48 +395,3 @@ Log in:
 ```yaml
 nuon -f ~/.nuon.byoc login
 ```
-
-## State
-
-### Sandbox
-
-{{ if .nuon.sandbox.outputs }}
-
-<details>
-<summary>Sandbox State</summary>
-<pre class="json">{{ toPrettyJson .nuon.sandbox.outputs }}</pre>
-</details>
-
-{{ else }}
-
-<pre>Working on it</pre>
-
-{{ end }}
-
-### Install Stack
-
-<details>
-  <summary>Install Stack</summary>
-  <pre>{{ toPrettyJson .nuon.install_stack }}</pre>
-</details>
-
-### Actions
-
-<details>
-<summary>.nuon.actions</summary>
-<pre>{{ toPrettyJson .nuon.actions }}</pre>
-</details>
-
-### Inputs
-
-<details>
-<summary>.nuon.inputs</summary>
-<pre>{{ toPrettyJson .nuon.inputs }}</pre>
-</details>
-
-### Secrets
-
-<details>
-<summary>.nuon.secrets</summary>
-<pre>{{ toPrettyJson .nuon.secrets }}</pre>
-</details>

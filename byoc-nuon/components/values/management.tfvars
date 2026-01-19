@@ -6,7 +6,7 @@ region                = "{{ .nuon.install_stack.outputs.region }}"
 management_account_id = "{{ .nuon.sandbox.outputs.account.id }}"
 
 root_domain          = "{{ .nuon.inputs.inputs.root_domain }}"
-nuon_dns_root_domain = "{{ .nuon.inputs.inputs.nuon_dns_root_domain }}"
+nuon_dns_domain = "{{ .nuon.inputs.inputs.nuon_dns_domain }}"
 
 cluster = {
   arn                        = "{{ .nuon.sandbox.outputs.cluster.arn }}"
