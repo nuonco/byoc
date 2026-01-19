@@ -8,7 +8,7 @@ This component is responsible for AWS resources required to create installs.
 
 ### DNS
 
-- Route53 Zone for `{{ .nuon.inputs.inputs.nuon_dns_root_domain }}`.
+- Route53 Zone for `{{ .nuon.inputs.inputs.nuon_dns_domain }}`.
 - IAM Role to manage Route53 Zone. Assumable by `ctl-api`'s service account.
 
 ### Orgs
@@ -25,8 +25,8 @@ This component is responsible for AWS resources required to create installs.
 - The NuonDNS and RootDNS are not the same. NuonDNS is the feature that allows a Nuon install to provision zones etc.,
   for installs it provisions. The RootDNS is the root url with which service fqdns are constructed. This component is
   concerned with the NuonDNS.
-- This component explicitly prohibits using the same value for the root_domain (install-wide) and nuon_dns_root_domain,
-  for installs dns.
+- This component explicitly prohibits using the same value for the root_domain (install-wide) and nuon_dns_domain, for
+  installs dns.
 - The ECR repository from the sandbox is passed through as a variable.
 
 <!-- terraform-docs markdown table . -->
@@ -78,7 +78,7 @@ This component is responsible for AWS resources required to create installs.
 | <a name="input_ecr"></a> [ecr](#input_ecr)                                                       | ECR details passed through from the sandbox.                                                                                 | <pre>object({<br/> id = string<br/> arn = string<br/> })</pre>                                                                                                                                                              | n/a     |   yes    |
 | <a name="input_install_id"></a> [install_id](#input_install_id)                                  | n/a                                                                                                                          | `string`                                                                                                                                                                                                                    | n/a     |   yes    |
 | <a name="input_management_account_id"></a> [management_account_id](#input_management_account_id) | n/a                                                                                                                          | `string`                                                                                                                                                                                                                    | n/a     |   yes    |
-| <a name="input_nuon_dns_root_domain"></a> [nuon_dns_root_domain](#input_nuon_dns_root_domain)    | The Nuon DNS root domain for install DNS provisioning. This value should differ from {{ .nuon.inputs.inputs.root\_domain }}. | `string`                                                                                                                                                                                                                    | n/a     |   yes    |
+| <a name="input_nuon_dns_domain"></a> [nuon_dns_domain](#input_nuon_dns_domain)                   | The Nuon DNS root domain for install DNS provisioning. This value should differ from {{ .nuon.inputs.inputs.root\_domain }}. | `string`                                                                                                                                                                                                                    | n/a     |   yes    |
 | <a name="input_org_id"></a> [org_id](#input_org_id)                                              | n/a                                                                                                                          | `string`                                                                                                                                                                                                                    | n/a     |   yes    |
 | <a name="input_region"></a> [region](#input_region)                                              | basic details                                                                                                                | `string`                                                                                                                                                                                                                    | n/a     |   yes    |
 | <a name="input_root_domain"></a> [root_domain](#input_root_domain)                               | The Root Domain for this Nuon Install. Used only to ensure the same value is not being used for nuon dns and the root dns.   | `string`                                                                                                                                                                                                                    | n/a     |   yes    |
