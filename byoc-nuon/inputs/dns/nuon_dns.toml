@@ -1,6 +1,6 @@
 name         = "nuon_dns_domain"
-description  = "The root domain for NuonDNS to allow installs to use automatically provisioned Route53 Zones under this domain."
-display_name = "Nuon DNS: Root Domain"
+description  = "The domain under which Route53 zones will be provisioned for installs, when using the nuon_dns feature."
+display_name = "Install DNS Delegation Domain"
 required     = true
 group        = "dns"
 
