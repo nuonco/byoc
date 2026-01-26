@@ -47,14 +47,16 @@ jobs:
         id: cli
         run: ./scripts/install-cli.sh
 
-      - name: Sync to nuon-dev(org4f5hq4tyo44legra6r4nm18)
-        if: steps.check_label.outputs.skip != 'true'
-        id: sync_to_org4f5hq4tyo44legra6r4nm18
-        working-directory: byoc-nuon
-        run: nuon apps sync .
-        env:
-          NUON_ORG_ID: org4f5hq4tyo44legra6r4nm18
-          NUON_API_TOKEN: ${{ secrets.NUON_API_TOKEN_org4f5hq4tyo44legra6r4nm18 }}
+      # we can't sync to the BYOC org until the auth branch is merged
+      # https://github.com/nuonco/byoc/pull/393
+      # - name: Sync to BYOC(org4f5hq4tyo44legra6r4nm18)
+      #   if: steps.check_label.outputs.skip != 'true'
+      #   id: sync_to_org4f5hq4tyo44legra6r4nm18
+      #   working-directory: byoc-nuon
+      #   run: nuon apps sync .
+      #   env:
+      #     NUON_ORG_ID: org4f5hq4tyo44legra6r4nm18
+      #     NUON_API_TOKEN: ${{ secrets.NUON_API_TOKEN_org4f5hq4tyo44legra6r4nm18 }}
 
       - name: Sync to retool(orggxqsc8f5zns1jra0oplc0ff)
         if: steps.check_label.outputs.skip != 'true'
