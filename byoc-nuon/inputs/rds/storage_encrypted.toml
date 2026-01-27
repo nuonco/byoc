@@ -1,0 +1,9 @@
+#:schema http://localhost:8081/v1/general/config-schema?type=inputs
+name              = "nuon_storage_encrypted"
+description       = "Enable encryption at rest for the Nuon RDS database"
+default           = "true"
+display_name      = "Enable Storage Encryption"
+group             = "rds-nuon"
+internal          = true
+
+user_configurable = false
