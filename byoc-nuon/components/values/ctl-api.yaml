@@ -32,11 +32,15 @@ env:
 
   # OIDC config
   NUON_AUTH_PROVIDER_TYPE: "{{ .nuon.inputs.inputs.nuon_auth_provider_type }}"
-  NUON_AUTH_CLIENT_ID: "{{ .nuon.inputs.inputs.nuon_auth_client_id }}"
-  NUON_AUTH_ISSUER_URL: "{{ .nuon.inputs.inputs.nuon_auth_issuer_url }}"
+  NUON_AUTH_CLIENT_ID: '{{ or .nuon.inputs.inputs.nuon_auth_client_id "nuon_auth_client_id" }}'
+  NUON_AUTH_ISSUER_URL: '{{ or .nuon.inputs.inputs.nuon_auth_issuer_url "nuon_auth_issuer_url" }}'
   NUON_AUTH_REDIRECT_URL: "https://auth.{{ .nuon.sandbox.outputs.nuon_dns.public_domain.name }}/auth"
-  NUON_AUTH_ALLOWED_DOMAINS: "{{ .nuon.inputs.inputs.nuon_auth_allowed_domains }}"
-  NUON_AUTH_ALLOW_ALL_USERS: "{{ .nuon.inputs.inputs.nuon_auth_allow_all_users }}"
+  NUON_AUTH_ALLOWED_DOMAINS: '{{ or .nuon.inputs.inputs.nuon_auth_allowed_domains "" }}'
+  NUON_AUTH_ALLOW_ALL_USERS: '{{ or .nuon.inputs.inputs.nuon_auth_allow_all_users "false" }}'
+  # NOTE(fd): these defaults are only necessary because they are required
+  # when all users are using nuon auth, we can remove them from this env section
+  NUON_AUTH_CLIENT_SECRET: "dne"
+  NUON_AUTH_SESSION_KEY: "dne"
 
   CLICKHOUSE_DB_PORT: !!string 9000
   CLICKHOUSE_DB_USE_TLS: "false"
