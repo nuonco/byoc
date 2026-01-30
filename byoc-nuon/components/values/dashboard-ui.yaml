@@ -19,9 +19,6 @@ env:
   NEXT_PUBLIC_DATADOG_CLIENT_TOKEN: "pubxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
   NEXT_PUBLIC_DATADOG_APP_ID: "iiiiiiii-yyyy-xxxx-0000-xxxxxxxxxxxx"
 
-  # OIDC config
-  NUON_AUTH_URL: "https://auth.{{ .nuon.sandbox.outputs.nuon_dns.public_domain.name }}"
-
   # Auth0 config
   AUTH0_BASE_URL: "https://app.{{ .nuon.sandbox.outputs.nuon_dns.public_domain.name }}"
   AUTH0_ISSUER_BASE_URL: "{{ .nuon.inputs.inputs.auth_issuer_url }}"
@@ -43,8 +40,9 @@ env:
   NUON_RUNNERS: "true"
   NUON_WORKFLOWS: "true"
 
-  # controls whether or not we nuon auth
-  NUON_AUTH_SERVICE_URL: '{{ ternary (print "https://auth." .nuon.sandbox.outputs.nuon_dns.public_domain.name) "" (ne "" ".nuon.inputs.inputs.nuon_auth_provider_type") }}' # if not empty, nuon auth is enabled
+  # Nuon Auth Configs
+  # if NUON_AUTH_SERVICE_URL is not empty, nuon auth is enabled
+  NUON_AUTH_SERVICE_URL: '{{ ternary (print "https://auth." .nuon.sandbox.outputs.nuon_dns.public_domain.name) "" (ne "" ".nuon.inputs.inputs.nuon_auth_provider_type") }}'
   NUON_APP_URL: "https://app.{{.nuon.sandbox.outputs.nuon_dns.public_domain.name}}"
 
   SEGMENT_WRITE_KEY: "false"
