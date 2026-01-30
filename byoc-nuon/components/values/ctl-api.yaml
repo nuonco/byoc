@@ -251,7 +251,7 @@ api:
 
 # auth-specific secrets (in addition to the shared envSecrets)
 auth:
-  enabled: {{ ne "" .nuon.inputs.inputs.nuon_auth_provider_type }}
+  enabled: {{ or (eq "google" .nuon.inputs.inputs.nuon_auth_provider_type) (eq "oidc" .nuon.inputs.inputs.nuon_auth_provider_type) }}
   envSecrets:
     - name: "NUON_AUTH_CLIENT_SECRET"
       valueFrom:
