@@ -1,0 +1,48 @@
+#:schema https://api.nuon.co/v1/general/config-schema?type=action
+name    = "runners"
+timeout = "5m"
+
+[[triggers]]
+type = "manual"
+
+[[steps]]
+name = "org"
+inline_contents = """
+#!/usr/bin/env bash
+
+set -e
+set -o pipefail
+set -u
+
+admin_api_addr="$ADMIN_API_URL"
+
+curl --max-time 5 -q -s \
+  "$admin_api_addr/v1/runners?type=org" \
+  -H 'accept: application/json' \
+  -H 'X-Nuon-Admin-Email: jon@nuon.co' \
+  | jq -c 'map({(.id): .}) | add // {}' >> $NUON_ACTIONS_OUTPUT_FILEPATH
+"""
+
+[steps.env_vars]
+ADMIN_API_URL = "http://admin.{{ .nuon.sandbox.outputs.nuon_dns.internal_domain.name }}"
+
+[[steps]]
+name = "install"
+inline_contents = """
+#!/usr/bin/env bash
+
+set -e
+set -o pipefail
+set -u
+
+admin_api_addr="$ADMIN_API_URL"
+
+curl --max-time 5 -q -s \
+  "$admin_api_addr/v1/runners?type=install" \
+  -H 'accept: application/json' \
+  -H 'X-Nuon-Admin-Email: jon@nuon.co' \
+  | jq -c 'map({(.id): .}) | add // {}' >> $NUON_ACTIONS_OUTPUT_FILEPATH
+"""
+
+[steps.env_vars]
+ADMIN_API_URL = "http://admin.{{ .nuon.sandbox.outputs.nuon_dns.internal_domain.name }}"
