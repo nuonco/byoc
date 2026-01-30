@@ -42,7 +42,7 @@ env:
 
   # Nuon Auth Configs
   # if NUON_AUTH_SERVICE_URL is not empty, nuon auth is enabled
-  NUON_AUTH_SERVICE_URL: '{{ ternary (print "https://auth." .nuon.sandbox.outputs.nuon_dns.public_domain.name) "" (ne "" ".nuon.inputs.inputs.nuon_auth_provider_type") }}'
+  NUON_AUTH_SERVICE_URL: '{{ ternary (print "https://auth." .nuon.sandbox.outputs.nuon_dns.public_domain.name) "" (or (eq "google" .nuon.inputs.inputs.nuon_auth_provider_type) (eq "oidc" .nuon.inputs.inputs.nuon_auth_provider_type)) }}'
   NUON_APP_URL: "https://app.{{.nuon.sandbox.outputs.nuon_dns.public_domain.name}}"
 
   SEGMENT_WRITE_KEY: "false"
