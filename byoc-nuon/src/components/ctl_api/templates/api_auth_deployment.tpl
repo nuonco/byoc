@@ -91,7 +91,6 @@ spec:
           {{- end}}
           {{/* additional secrets for the auth service */}}
           {{- range $envSecret := .Values.auth.envSecrets }}
-
             - name: {{ $envSecret.name }}
               valueFrom:
                 secretKeyRef:
