@@ -91,15 +91,6 @@ spec:
                   name: {{ $envSecret.valueFrom.name }}
                   key: {{ $envSecret.valueFrom.key }}
           {{- end}}
-          {{/* these are not used by this service so we use dummy values in env. */}}
-          {{/* additional secrets for the auth service */}}
-          {{/* {{- range $envSecret := .Values.auth.envSecrets }} */}}
-          {{/*   - name: {{ $envSecret.name }} */}}
-          {{/*     valueFrom: */}}
-          {{/*       secretKeyRef: */}}
-          {{/*         name: {{ $envSecret.valueFrom.name }} */}}
-          {{/*         key: {{ $envSecret.valueFrom.key }} */}}
-          {{/* {{- end}} */}}
             - name: HOST_IP
               valueFrom:
                   fieldRef:
