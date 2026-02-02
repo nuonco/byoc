@@ -14,11 +14,3 @@ branch    = "main"
 
 [[values_file]]
 contents = "./values/karpenter-nodepools.yaml"
-
-# [[values_file]]
-# # TODO: grab discovery from from the sandbox outputs for use here
-# contents = """# ← look at this comma!
-# instance_profile: "KarpenterNodeInstanceProfile-{{ .nuon.sandbox.outputs.cluster.name }}"
-# karpenter:
-#   discoveryKey: "{{ .nuon.sandbox.outputs.cluster.name}}"
-# """
