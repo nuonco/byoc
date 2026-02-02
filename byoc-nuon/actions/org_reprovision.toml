@@ -1,0 +1,31 @@
+# action
+# action to reprovision a single org
+name    = "org_reprovision"
+timeout = "30s"
+
+[[triggers]]
+type = "manual"
+
+[[steps]]
+name    = "reprovision"
+inline_contents = """
+#!/usr/bin/env bash
+
+set -e
+set -o pipefail
+set -u
+
+admin_api_addr="$ADMIN_API_URL"
+org_id="$ORG_ID"
+
+curl -X 'POST' -s -q \
+  "$admin_api_addr/v1/orgs/$org_id/admin-reprovision" \
+  -H 'accept: application/json' \
+  -H 'X-Nuon-Admin-Email: jon@nuon.co' \
+  -H 'Content-Type: application/json' \
+  -d '{}'
+"""
+
+[steps.env_vars]
+ADMIN_API_URL = "http://admin.{{ .nuon.sandbox.outputs.nuon_dns.internal_domain.name }}"
+ORG_ID        = "dne"
