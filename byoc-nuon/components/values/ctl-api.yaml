@@ -10,8 +10,6 @@ env:
   DB_HOST: "{{ .nuon.components.rds_cluster_nuon.outputs.address }}"
   DB_NAME: "ctl_api"      # hardcoded, for now - also, main db not the desired db we created
   DB_USER: "ctl_api"      # hardcoded, for now - also, main user, not the user we create
-  # DB_NAME: "nuonadmin" # hardcoded, for now - also, main db not the desired db we created
-  # DB_USER: "nuon"      # hardcoded, for now - also, main user, not the user we create
   DB_USE_SSL: "true"
   DB_SSL_MODE: verify-full
   DB_USE_ZAP: "true"
