@@ -58,7 +58,7 @@ spec:
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           command:
             - /bin/service
-            - api
+            - api-auth
           ports:
             - name: http-internal
               containerPort: {{ .Values.api.auth.port }}

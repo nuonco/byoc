@@ -57,7 +57,7 @@ spec:
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           command:
             - /bin/service
-            - api
+            - api-runner
           ports:
             - name: http-runner
               containerPort: {{ .Values.api.runner.port }}
