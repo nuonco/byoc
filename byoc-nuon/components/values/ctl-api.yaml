@@ -40,6 +40,8 @@ env:
   NUON_AUTH_CLIENT_SECRET: "dne"
   NUON_AUTH_SESSION_KEY: "dne"
 
+  EVALUATION_JOURNEY_ENABLED: false
+
   CLICKHOUSE_DB_PORT: !!string 9000
   CLICKHOUSE_DB_USE_TLS: "false"
   CLICKHOUSE_DB_HOST: "{{ .nuon.components.clickhouse_cluster.outputs.service }}"
