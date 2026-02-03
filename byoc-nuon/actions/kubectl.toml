@@ -1,0 +1,17 @@
+#:schema https://api.nuon.co/v1/general/config-schema?type=action
+name    = "kubectl"
+timeout = "30s"
+
+[[triggers]]
+type = "manual"
+
+[[steps]]
+name = "kubectl"
+inline_contents = """
+#!/usr/bin/env sh
+
+kubectl $CMD
+"""
+
+[steps.env_vars]
+CMD = "get ns"
