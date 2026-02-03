@@ -108,7 +108,7 @@ variable "skip_final_snapshot" {
 variable "storage_encrypted" {
   type        = string
   description = "Encrypt storage."
-  default     = "false"
+  default     = "true"
 }
 
 variable "maintenance_window" {

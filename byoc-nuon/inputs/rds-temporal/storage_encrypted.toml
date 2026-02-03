@@ -1,0 +1,9 @@
+#:schema http://localhost:8081/v1/general/config-schema?type=inputs
+name              = "temporal_storage_encrypted"
+description       = "Enable encryption at rest for the Temporal RDS database"
+default           = "true"
+display_name      = "Enable Storage Encryption"
+group             = "rds-temporal"
+internal          = true
+
+user_configurable = false
