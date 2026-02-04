@@ -10,8 +10,6 @@ env:
   DB_HOST: "{{ .nuon.components.rds_cluster_nuon.outputs.address }}"
   DB_NAME: "ctl_api"      # hardcoded, for now - also, main db not the desired db we created
   DB_USER: "ctl_api"      # hardcoded, for now - also, main user, not the user we create
-  # DB_NAME: "nuonadmin" # hardcoded, for now - also, main db not the desired db we created
-  # DB_USER: "nuon"      # hardcoded, for now - also, main user, not the user we create
   DB_USE_SSL: "true"
   DB_SSL_MODE: verify-full
   DB_USE_ZAP: "true"
@@ -32,11 +30,17 @@ env:
 
   # OIDC config
   NUON_AUTH_PROVIDER_TYPE: "{{ .nuon.inputs.inputs.nuon_auth_provider_type }}"
-  NUON_AUTH_CLIENT_ID: "{{ .nuon.inputs.inputs.nuon_auth_client_id }}"
-  NUON_AUTH_ISSUER_URL: "{{ .nuon.inputs.inputs.nuon_auth_issuer_url }}"
+  NUON_AUTH_CLIENT_ID: '{{ or .nuon.inputs.inputs.nuon_auth_client_id "nuon_auth_client_id" }}'
+  NUON_AUTH_ISSUER_URL: '{{ or .nuon.inputs.inputs.nuon_auth_issuer_url "nuon_auth_issuer_url" }}'
   NUON_AUTH_REDIRECT_URL: "https://auth.{{ .nuon.sandbox.outputs.nuon_dns.public_domain.name }}/auth"
-  NUON_AUTH_ALLOWED_DOMAINS: "{{ .nuon.inputs.inputs.nuon_auth_allowed_domains }}"
-  NUON_AUTH_ALLOW_ALL_USERS: "{{ .nuon.inputs.inputs.nuon_auth_allow_all_users }}"
+  NUON_AUTH_ALLOWED_DOMAINS: '{{ or .nuon.inputs.inputs.nuon_auth_allowed_domains "" }}'
+  NUON_AUTH_ALLOW_ALL_USERS: '{{ or .nuon.inputs.inputs.nuon_auth_allow_all_users "false" }}'
+  # NOTE(fd): these defaults are only necessary because they are required
+  # when all users are using nuon auth, we can remove them from this env section
+  NUON_AUTH_CLIENT_SECRET: "dne"
+  NUON_AUTH_SESSION_KEY: "dne"
+
+  EVALUATION_JOURNEY_ENABLED: false
 
   CLICKHOUSE_DB_PORT: !!string 9000
   CLICKHOUSE_DB_USE_TLS: "false"
@@ -48,7 +52,7 @@ env:
   INTERNAL_HTTP_PORT: !!string 8082
   RUNNER_HTTP_PORT: !!string 8083
   GRACEFUL_SHUTDOWN_TIMEOUT: 10s
-  RUNNER_CONTAINER_IMAGE_TAG: "0.19.718"
+  RUNNER_CONTAINER_IMAGE_TAG: "0.19.765"
   RUNNER_CONTAINER_IMAGE_URL: "{{ .nuon.inputs.inputs.runner_image_url }}"
 
   GITHUB_APP_ID: !!string {{ .nuon.inputs.inputs.github_app_id }}
@@ -247,7 +251,7 @@ api:
 
 # auth-specific secrets (in addition to the shared envSecrets)
 auth:
-  enabled: {{ ne "" .nuon.inputs.inputs.nuon_auth_provider_type }}
+  enabled: {{ if or (eq "google" .nuon.inputs.inputs.nuon_auth_provider_type) (eq "oidc" .nuon.inputs.inputs.nuon_auth_provider_type) }}true{{ else }}false{{ end }}
   envSecrets:
     - name: "NUON_AUTH_CLIENT_SECRET"
       valueFrom:
