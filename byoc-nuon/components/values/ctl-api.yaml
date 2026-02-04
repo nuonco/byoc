@@ -146,10 +146,10 @@ worker:
       resources:
         limits:
           cpu: 1000m
-          memory: 512Mi
+          memory: 1024Mi
         requests:
           cpu: 500m
-          memory: 256Mi
+          memory: 512Mi
       extraEnv:
         - name: TEMPORAL_STICKY_WORKFLOW_CACHE_SIZE
           value: !!string 1000
@@ -165,12 +165,19 @@ worker:
       minReplicas: 2
       maxReplicas: 10
       command: ["/bin/service", "worker", "--namespace=runners"]
+      resources:
+        limits:
+          cpu: 500m
+          memory: 1024Mi
+        requests:
+          cpu: 500m
+          memory: 512Mi
       extraEnv:
         - name: TEMPORAL_STICKY_WORKFLOW_CACHE_SIZE
           value: !!string 1000
   autoscaling:
-    targetCPUUtilizationPercentage: 90
-    targetMemoryUtilizationPercentage: 65
+    targetCPUUtilizationPercentage: 75
+    targetMemoryUtilizationPercentage: 75
   resources:
     limits:
       cpu: 500m
@@ -199,7 +206,7 @@ api:
   resources:
     limits:
       cpu: 500m
-      memory: 512Mi
+      memory: 1024Mi
     requests:
       cpu: 250m
       memory: 256Mi
