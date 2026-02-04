@@ -58,7 +58,7 @@ spec:
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           command:
             - /bin/service
-            - api
+            - api-auth
           ports:
             - name: http-internal
               containerPort: {{ .Values.api.auth.port }}
@@ -91,7 +91,6 @@ spec:
           {{- end}}
           {{/* additional secrets for the auth service */}}
           {{- range $envSecret := .Values.auth.envSecrets }}
-
             - name: {{ $envSecret.name }}
               valueFrom:
                 secretKeyRef:
