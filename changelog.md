@@ -3,6 +3,12 @@
 Basic changelog tracking changes merged to main. We track by release and tag moving forward. Some changes included here
 precede the release cycle.
 
+## v0.25.2
+
+- ctl-api: use new standalone api commands
+- ctl-api: add support for nuon auth
+- dashboard-ui: add support for nuon auth
+
 ## v0.7.8
 
 - ctl-api: internal admin api now fronted by NLB instead of ALB
