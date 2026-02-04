@@ -7,7 +7,6 @@ type = "manual"
 
 [[steps]]
 name    = "post-deploy-promote-callback"
-command = "./ctl_api/debug_.sh"
 inline_contents = """
 #!/usr/bin/env bash
 
