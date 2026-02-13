@@ -1,0 +1,20 @@
+# action
+name    = "rds_monitor"
+timeout = "30s"
+
+[[triggers]]
+type = "manual"
+
+[[steps]]
+name            = "disk"
+inline_contents = "./src/rds/disk_metrics.sh"
+
+[steps.env_vars]
+DB_IDENTIFIER = "{{.nuon.components.rds_cluster_temporal.outputs.db_instance_name}}"
+
+[[steps]]
+name            = "status"
+inline_contents = "./src/rds/instance_status.sh"
+
+[steps.env_vars]
+DB_IDENTIFIER = "temporal-{{.nuon.install.id}}" # <- TODO(fd): modify the clusters so they emit this
