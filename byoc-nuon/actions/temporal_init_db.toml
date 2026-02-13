@@ -10,25 +10,15 @@ component_name = "temporal_init_db"
 type = "manual"
 
 [[steps]]
-name    = "Initialize the DB"
-command = "./temporal/init-db.sh"
-
-[steps.public_repo]
-repo      = "nuonco/byoc"
-directory = "byoc-nuon/src/actions"
-branch    = "main"
+name            = "Initialize the DB"
+inline_contents = "./src/temporal/init-db.sh"
 
 [steps.env_vars]
-REGION          = "{{ .nuon.install_stack.outputs.region }}"
+REGION = "{{ .nuon.install_stack.outputs.region }}"
 
 [[steps]]
-name    = "Create DB Users"
-command = "./temporal/create-db-users.sh"
-
-[steps.public_repo]
-repo      = "nuonco/byoc"
-directory = "byoc-nuon/src/actions"
-branch    = "main"
+name            = "Create DB Users"
+inline_contents = "./src/temporal/create-db-users.sh"
 
 [steps.env_vars]
 REGION          = "{{ .nuon.install_stack.outputs.region }}"
