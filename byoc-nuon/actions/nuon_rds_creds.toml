@@ -1,4 +1,4 @@
-#:schema https://api.nuon.co/v1/general/config-schema?type=action
+# action
 # description: copies the secret from Secrets Manager into the k8s cluster.
 # TODO: replace this with an external-secrets SecretStore
 name    = "nuon_rds_creds"

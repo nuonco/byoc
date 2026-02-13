@@ -1,4 +1,4 @@
-#:schema https://api.nuon.co/v1/general/config-schema?type=action
+# action
 name    = "kubectl_logs"
 timeout = "30s"
 

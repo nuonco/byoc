@@ -1,4 +1,4 @@
-#:schema https://api.nuon.co/v1/general/config-schema?source=action
+# action
 name    = "runner_asg_instance_refresh"
 timeout = "1m"
 
