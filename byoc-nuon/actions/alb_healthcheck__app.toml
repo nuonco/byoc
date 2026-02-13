@@ -15,13 +15,8 @@ index          = 5
 type = "manual"
 
 [[steps]]
-name    = "alb-healthcheck-dashboard-ui"
-command = "./healthcheck.sh"
-
-[steps.public_repo]
-repo      = "nuonco/byoc"
-directory = "byoc-nuon/src/actions/alb"
-branch    = "main"
+name            = "alb-healthcheck-dashboard-ui"
+inline_contents = "./src/alb/healthcheck.sh"
 
 [steps.env_vars]
 INGRESS_NAME      = "dashboard-ui"
