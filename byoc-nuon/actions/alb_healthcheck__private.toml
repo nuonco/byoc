@@ -10,13 +10,8 @@ cron_schedule = "*/5 */1 * * *"
 type = "manual"
 
 [[steps]]
-name    = "alb-healthcheck-ctl-api-admin"
-command = "./healthcheck.sh"
-
-[steps.public_repo]
-repo      = "nuonco/byoc"
-directory = "byoc-nuon/src/actions/alb"
-branch    = "main"
+name            = "alb-healthcheck-ctl-api-admin"
+inline_contents = "./src/alb/healthcheck.sh"
 
 [steps.env_vars]
 INGRESS_NAME      = "ctl-api-admin"

@@ -23,64 +23,46 @@ directory = "kube"
 NAMESPACE = "ctl-api"
 
 [[steps]]
-name    = "promote-callback"
-command = "./ctl_api/promote.sh"
-
-[steps.public_repo]
-repo      = "nuonco/byoc"
-directory = "byoc-nuon/src/actions"
-branch    = "main"
-
-[steps.env_vars]
-ADMIN_API_URL = "http://admin.{{ .nuon.sandbox.outputs.nuon_dns.internal_domain.name }}"
-
-
-[[steps]]
-name    = "get-migrations-callback"
-command = "./ctl_api/migrations.sh"
-
-[steps.public_repo]
-repo      = "nuonco/byoc"
-directory = "byoc-nuon/src/actions"
-branch    = "main"
+name            = "promote-callback"
+inline_contents = "./src/ctl-api/promote.sh"
 
 [steps.env_vars]
 ADMIN_API_URL = "http://admin.{{ .nuon.sandbox.outputs.nuon_dns.internal_domain.name }}"
 
 [[steps]]
-name    = "public-alb-healthcheck"
-command = "./healthcheck.sh"
+name            = "get-migrations-callback"
+inline_contents = "./src/ctl-api/get-migrations.sh"
 
-[steps.public_repo]
-repo      = "nuonco/byoc"
-directory = "byoc-nuon/src/actions/alb"
-branch    = "main"
+[steps.env_vars]
+ADMIN_API_URL = "http://admin.{{ .nuon.sandbox.outputs.nuon_dns.internal_domain.name }}"
+
+[[steps]]
+name            = "public-alb-healthcheck"
+inline_contents = "./src/alb/healthcheck.sh"
 
 [steps.env_vars]
 INGRESS_NAME      = "ctl-api-public"
 INGRESS_NAMESPACE = "ctl-api"
 
 [[steps]]
-name    = "runner-alb-healthcheck"
-command = "./healthcheck.sh"
-
-[steps.public_repo]
-repo      = "nuonco/byoc"
-directory = "byoc-nuon/src/actions/alb"
-branch    = "main"
+name            = "runner-alb-healthcheck"
+inline_contents = "./src/alb/healthcheck.sh"
 
 [steps.env_vars]
 INGRESS_NAME      = "ctl-api-runner"
 INGRESS_NAMESPACE = "ctl-api"
 
 [[steps]]
-name    = "runners-update-version"
-command = "./update-version.sh"
+name            = "admin-alb-healthcheck"
+inline_contents = "./src/alb/healthcheck.sh"
 
-[steps.public_repo]
-repo      = "nuonco/byoc"
-directory = "byoc-nuon/src/actions/runners"
-branch    = "main"
+[steps.env_vars]
+INGRESS_NAME      = "ctl-api-admin"
+INGRESS_NAMESPACE = "ctl-api"
+
+[[steps]]
+name            = "runners-update-version"
+inline_contents = "./src/runners/update-version.sh"
 
 [steps.env_vars]
 ADMIN_API_URL = "http://admin.{{ .nuon.sandbox.outputs.nuon_dns.internal_domain.name }}"
