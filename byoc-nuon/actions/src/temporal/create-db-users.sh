@@ -1,8 +1,6 @@
 #!/usr/bin/env bash
 
-"""
-This script is concerned with running the temporal sql tools to migrate the db etc.
-"""
+# This script is concerned with running the temporal sql tools to migrate the db etc.
 
 set -e
 set -o pipefail
