@@ -1,15 +1,23 @@
 #!/usr/bin/env sh
+
+set -e
+set -o pipefail
+set -u
+
+# gather facts (ensure env vars are present)
 dry_run="$DRY_RUN"
 version="$VERSION"
 admin_api_url="$ADMIN_API_URL"
+runner_type="$RUNNER_TYPE"
 
+# prepare var for outputs
 OUTPUTS='{}'
 
-echo "getting install runners"
+echo "getting $runner_type runners"
 offset="0"
 limit="100"
 page="0"
-url="$admin_api_url/v1/runners?type=install&limit=$limit&offset=$offset"
+url="$admin_api_url/v1/runners?type=$runner_type&limit=$limit&offset=$offset"
 echo " > url: $url"
 runners=`curl -s --max-time 5 -X GET "$url" | jq -r '.[].id'`
 
@@ -25,7 +33,7 @@ for runner_id in $runners; do
     response=$(curl -s --max-time 5 -X PATCH "$url" \
       -H "Content-Type: application/json" \
       -d '{"container_image_tag": "'$version'", "aws_max_instance_lifetime": 604800}')
-    echo $container_image_tag
+    echo $response
 
     # append runner.id and response to outputs
     OUTPUTS=$(echo "$OUTPUTS" | jq --arg id "$runner_id" --arg resp "$response" '. + {($id): $resp}')
