@@ -1,5 +1,4 @@
 # action
-# action to reprovision a single org
 name    = "org_reprovision"
 timeout = "30s"
 

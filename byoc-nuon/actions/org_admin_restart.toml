@@ -1,5 +1,4 @@
 # action
-# action to admin-restart a single org
 name    = "org_admin_restart"
 timeout = "30s"
 

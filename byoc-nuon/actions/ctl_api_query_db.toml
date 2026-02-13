@@ -1,4 +1,4 @@
-#:schema https://api.nuon.co/v1/general/config-schema?source=action
+# action
 name    = "ctl_api_query_db"
 timeout = "30s"
 

@@ -1,4 +1,4 @@
-#:schema https://api.nuon.co/v1/general/config-schema?source=action
+# action
 # NOTE(fd): use this is you need to set all install runners to a specific version
 name    = "runners_update_and_restart"
 timeout = "5m"
