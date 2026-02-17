@@ -52,7 +52,7 @@ env:
   INTERNAL_HTTP_PORT: !!string 8082
   RUNNER_HTTP_PORT: !!string 8083
   GRACEFUL_SHUTDOWN_TIMEOUT: 10s
-  RUNNER_CONTAINER_IMAGE_TAG: "0.19.771"
+  RUNNER_CONTAINER_IMAGE_TAG: "0.19.788"
   RUNNER_CONTAINER_IMAGE_URL: "{{ .nuon.inputs.inputs.runner_image_url }}"
 
   GITHUB_APP_ID: !!string {{ .nuon.inputs.inputs.github_app_id }}
