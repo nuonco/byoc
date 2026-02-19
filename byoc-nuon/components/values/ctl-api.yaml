@@ -146,10 +146,10 @@ worker:
       resources:
         limits:
           cpu: 1000m
-          memory: 1024Mi
+          memory: 2048Mi
         requests:
           cpu: 500m
-          memory: 512Mi
+          memory: 1024Mi
       extraEnv:
         - name: TEMPORAL_STICKY_WORKFLOW_CACHE_SIZE
           value: !!string 1000
