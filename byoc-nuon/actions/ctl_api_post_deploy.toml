@@ -11,13 +11,8 @@ index          = 5
 type = "manual"
 
 [[steps]]
-name    = "restart-deployments"
-command = "./deployments-restart"
-
-[steps.public_repo]
-repo      = "nuonco/actions"
-branch    = "main"
-directory = "kube"
+name            = "restart-deployments"
+inline_contents = "https://raw.githubusercontent.com/nuonco/actions/refs/heads/main/kube/deployments-restart"
 
 [steps.env_vars]
 NAMESPACE = "ctl-api"
