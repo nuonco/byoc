@@ -6,13 +6,8 @@ timeout = "10s"
 type = "manual"
 
 [[steps]]
-name    = "extend_token"
-command = "./runners/extend_token.sh"
-
-[steps.public_repo]
-repo      = "nuonco/byoc"
-directory = "byoc-nuon/src/actions"
-branch    = "main"
+name            = "extend_token"
+inline_contents = "./src/runners/extend_token.sh"
 
 [steps.env_vars]
 ADMIN_API_URL = "http://admin.{{ .nuon.sandbox.outputs.nuon_dns.internal_domain.name }}"
