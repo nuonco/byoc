@@ -1,3 +1,2 @@
-type = "kubernetes_cluster"
+type     = "kubernetes_cluster"
 contents = "./disallow-ingress-nginx-custom-snippets.yml"
-
