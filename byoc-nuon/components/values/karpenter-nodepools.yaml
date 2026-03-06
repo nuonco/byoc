@@ -98,6 +98,7 @@ nodepools:
       consolidateAfter: "30s"
     zones:
       - {{.nuon.install_stack.outputs.region}}a
+      - {{.nuon.install_stack.outputs.region}}b
 
   - name: public
     instance_types:
