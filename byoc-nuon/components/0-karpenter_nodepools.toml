@@ -10,7 +10,7 @@ drift_schedule = "0 0 * * *"
 [public_repo]
 repo      = "nuonco/byoc"
 directory = "byoc-nuon/src/components/karpenter-nodepools"
-branch    = "main"
+branch    = "fd/chore/subnet-ip-depletion-fix"
 
 [[values_file]]
 contents = "./values/karpenter-nodepools.yaml"

@@ -9,7 +9,27 @@ metadata:
   name: "{{ .name }}"
 spec:
   disruption:
-    {{/* allows up to 10% of notes to rotate during the 4 hours between (1000 UTC to 1400 UTC); and only one at a time otherwise. */}}
+    {{- if .disruption }}
+    consolidationPolicy: {{ .disruption.consolidationPolicy | default "WhenEmptyOrUnderutilized" }}
+    consolidateAfter: {{ .disruption.consolidateAfter | default "5m" }}
+    budgets:
+    {{- range .disruption.budgets }}
+    - nodes: {{ .nodes | quote }}
+      {{- if .schedule }}
+      schedule: {{ .schedule | quote }}
+      {{- end }}
+      {{- if .duration }}
+      duration: {{ .duration }}
+      {{- end }}
+      {{- if .reasons }}
+      reasons:
+      {{- range .reasons }}
+      - {{ . }}
+      {{- end }}
+      {{- end }}
+    {{- end }}
+    {{- else }}
+    {{/* default: allows up to 10% of nodes to rotate during the 4 hours between (1000 UTC to 1400 UTC); and only one at a time otherwise. */}}
     budgets:
     - nodes: "10%"
     - nodes: "1"
@@ -21,6 +41,7 @@ spec:
       schedule: 0 14 * * *  # https://crontab.guru/#0_8_*_*_*
     consolidateAfter: 5m
     consolidationPolicy: WhenEmptyOrUnderutilized
+    {{- end }}
   limits:
     cpu: {{ .limits.cpu }}
     memory: {{ .limits.memory }}
@@ -45,9 +66,15 @@ spec:
       - key: topology.kubernetes.io/zone
         operator: In
         values:
+        {{- if .zones }}
+        {{- range .zones }}
+        - {{ . }}
+        {{- end }}
+        {{- else }}
         - {{ $.Values.region }}a
         - {{ $.Values.region }}b
         - {{ $.Values.region }}c
+        {{- end }}
       - key: pool.nuon.co
         operator: Exists
       - key: pool.nuon.co
