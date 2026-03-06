@@ -68,25 +68,36 @@ resource "helm_release" "temporal" {
           }
 
           frontend = {
-            service = {
-              annotations = {
-                "external-dns.alpha.kubernetes.io/internal-hostname" = local.temporal.frontend_url
-                "external-dns.alpha.kubernetes.io/ttl"               = "60"
+          service = {
+            annotations = {
+              "external-dns.alpha.kubernetes.io/internal-hostname" = local.temporal.frontend_url
+              "external-dns.alpha.kubernetes.io/ttl"               = "60"
+            }
+          }
+          topologySpreadConstraints = [
+            {
+              maxSkew           = 1
+              topologyKey       = "topology.kubernetes.io/zone"
+              whenUnsatisfiable = "ScheduleAnyway"
+              labelSelector = {
+                matchLabels = {
+                  "app.kubernetes.io/name"      = "temporal"
+                  "app.kubernetes.io/component" = "frontend"
+                },
+              }
+            },
+            {
+              maxSkew           = 2
+              topologyKey       = "kubernetes.io/hostname"
+              whenUnsatisfiable = "DoNotSchedule"
+              labelSelector = {
+                matchLabels = {
+                  "app.kubernetes.io/name"      = "temporal"
+                  "app.kubernetes.io/component" = "frontend"
+                },
               }
             }
-            topologySpreadConstraints = [
-              {
-                maxSkew           = 2
-                topologyKey       = "kubernetes.io/hostname"
-                whenUnsatisfiable = "DoNotSchedule"
-                labelSelector = {
-                  matchLabels = {
-                    "app.kubernetes.io/name"      = "temporal"
-                    "app.kubernetes.io/component" = "frontend"
-                  },
-                }
-              }
-            ]
+          ]
             nodeSelector = {
               "pool.nuon.co" = "temporal"
             }
@@ -102,6 +113,17 @@ resource "helm_release" "temporal" {
 
           worker = {
             topologySpreadConstraints = [
+              {
+                maxSkew           = 1
+                topologyKey       = "topology.kubernetes.io/zone"
+                whenUnsatisfiable = "ScheduleAnyway"
+                labelSelector = {
+                  matchLabels = {
+                    "app.kubernetes.io/name"      = "temporal"
+                    "app.kubernetes.io/component" = "worker"
+                  },
+                }
+              },
               {
                 maxSkew           = 2
                 topologyKey       = "kubernetes.io/hostname"
@@ -130,6 +152,17 @@ resource "helm_release" "temporal" {
           matching = {
             topologySpreadConstraints = [
               {
+                maxSkew           = 1
+                topologyKey       = "topology.kubernetes.io/zone"
+                whenUnsatisfiable = "ScheduleAnyway"
+                labelSelector = {
+                  matchLabels = {
+                    "app.kubernetes.io/name"      = "temporal"
+                    "app.kubernetes.io/component" = "matching"
+                  },
+                }
+              },
+              {
                 maxSkew           = 2
                 topologyKey       = "kubernetes.io/hostname"
                 whenUnsatisfiable = "DoNotSchedule"
@@ -156,6 +189,17 @@ resource "helm_release" "temporal" {
 
           history = {
             topologySpreadConstraints = [
+              {
+                maxSkew           = 1
+                topologyKey       = "topology.kubernetes.io/zone"
+                whenUnsatisfiable = "ScheduleAnyway"
+                labelSelector = {
+                  matchLabels = {
+                    "app.kubernetes.io/name"      = "temporal"
+                    "app.kubernetes.io/component" = "history"
+                  }
+                }
+              },
               {
                 maxSkew           = 2
                 topologyKey       = "kubernetes.io/hostname"
@@ -188,6 +232,17 @@ resource "helm_release" "temporal" {
             tag        = var.temporal_admin_tools_image_tag
           }
           topologySpreadConstraints = [
+            {
+              maxSkew           = 1
+              topologyKey       = "topology.kubernetes.io/zone"
+              whenUnsatisfiable = "ScheduleAnyway"
+              labelSelector = {
+                matchLabels = {
+                  "app.kubernetes.io/name"      = "temporal"
+                  "app.kubernetes.io/component" = "admintools"
+                },
+              }
+            },
             {
               maxSkew           = 2
               topologyKey       = "kubernetes.io/hostname"
@@ -225,6 +280,17 @@ resource "helm_release" "temporal" {
             tag        = var.temporal_web_image_tag
           }
           topologySpreadConstraints = [
+            {
+              maxSkew           = 1
+              topologyKey       = "topology.kubernetes.io/zone"
+              whenUnsatisfiable = "ScheduleAnyway"
+              labelSelector = {
+                matchLabels = {
+                  "app.kubernetes.io/name"      = "temporal"
+                  "app.kubernetes.io/component" = "web"
+                },
+              }
+            },
             {
               maxSkew           = 2
               topologyKey       = "kubernetes.io/hostname"
