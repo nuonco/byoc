@@ -1,7 +1,25 @@
 locals {
-  name      = "datadog-agent"
-  namespace = "datadog"
-  enabled   = (var.datadog_api_key != "" && var.datadog_app_key != "")
+  name            = "datadog-agent"
+  namespace       = "datadog"
+  datadog_enabled = lower(var.datadog_enabled) == "true"
+  has_keys        = (var.datadog_api_key != "" && var.datadog_app_key != "")
+  enabled         = local.datadog_enabled && local.has_keys
+}
+
+variable "datadog_enabled" {
+  type        = string
+  description = "Enable or disable the Datadog component"
+  default     = "false"
+
+  validation {
+    condition     = !(lower(var.datadog_enabled) == "true" && var.datadog_api_key == "")
+    error_message = "datadog_enabled is true but datadog_api_key is not set."
+  }
+
+  validation {
+    condition     = !(lower(var.datadog_enabled) == "true" && var.datadog_app_key == "")
+    error_message = "datadog_enabled is true but datadog_app_key is not set."
+  }
 }
 
 variable "datadog_api_key" {
