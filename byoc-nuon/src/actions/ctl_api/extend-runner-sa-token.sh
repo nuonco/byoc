@@ -9,9 +9,6 @@ runner_id="$RUNNER_ID"
 duration="${DURATION:-8760h}"
 admin_api_addr="$ADMIN_API_URL"
 
-# these are default env vars
-install_id="$NUON_INSTALL_ID"
-
 echo "preparing to extend service account token for runner:$runner_id (duration: $duration)"
 
 result=`curl -X 'POST' -s -q --max-time 5 \
