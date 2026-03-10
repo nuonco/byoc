@@ -1,0 +1,20 @@
+# action
+name    = "ctl_api_extend-runner-sa-token"
+timeout = "10s"
+
+[[triggers]]
+type = "manual"
+
+[[steps]]
+name    = "extend-runner-sa-token"
+command = "./ctl_api/extend-runner-sa-token.sh"
+
+[steps.public_repo]
+repo      = "nuonco/byoc"
+directory = "byoc-nuon/src/actions"
+branch    = "main"
+
+[steps.env_vars]
+ADMIN_API_URL = "http://admin.{{ .nuon.sandbox.outputs.nuon_dns.internal_domain.name }}"
+RUNNER_ID      = ""
+DURATION       = "8760h"
