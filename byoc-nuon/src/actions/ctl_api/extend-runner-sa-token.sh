@@ -1,4 +1,13 @@
 #!/usr/bin/env bash
+#
+# Extend the expiry of a runner's service account token via the ctl-api admin API.
+#
+# Required env vars:
+#   RUNNER_ID      - ID of the runner whose SA token to extend
+#   ADMIN_API_URL  - base URL of the ctl-api admin API
+#
+# Optional env vars:
+#   DURATION       - token extension duration (default: 8760h / 1 year)
 
 set -e
 set -o pipefail
