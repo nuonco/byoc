@@ -8,13 +8,8 @@ type = "manual"
 # TODO(fd): add cron trigger
 
 [[steps]]
-name = "org"
-command = "./check-org-runners-statuses.sh"
-
-[steps.public_repo]
-repo      = "nuonco/byoc"
-directory = "byoc-nuon/src/actions/runners"
-branch    = "main"
+name            = "org"
+inline_contents = "./src/runners/check-org-runners-statuses.sh"
 
 [steps.env_vars]
 ADMIN_API_URL = "http://admin.{{ .nuon.sandbox.outputs.nuon_dns.internal_domain.name }}"
