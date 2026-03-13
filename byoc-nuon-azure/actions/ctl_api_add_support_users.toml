@@ -1,0 +1,20 @@
+# action
+name    = "ctl_api_add_support_users"
+timeout = "10s"
+
+[[triggers]]
+type = "manual"
+
+[[steps]]
+name    = "support_users"
+command = "./ctl_api/support-users.sh"
+
+[steps.public_repo]
+repo      = "nuonco/byoc"
+directory = "byoc-nuon-azure/src/actions"
+branch    = "main"
+
+[steps.env_vars]
+ADMIN_API_URL = "http://admin.{{ .nuon.sandbox.outputs.nuon_dns.internal_domain.name }}"
+OPERATION     = "add"
+ORG_ID        = ""

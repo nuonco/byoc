@@ -1,0 +1,18 @@
+# action
+name    = "ingress_healthcheck_public"
+timeout = "30s"
+
+[[triggers]]
+type          = "cron"
+cron_schedule = "*/5 */1 * * *"
+
+[[triggers]]
+type = "manual"
+
+[[steps]]
+name            = "ingress-healthcheck-ctl-api-public"
+inline_contents = "./src/ingress/healthcheck.sh"
+
+[steps.env_vars]
+INGRESS_NAME      = "ctl-api-public"
+INGRESS_NAMESPACE = "ctl-api"

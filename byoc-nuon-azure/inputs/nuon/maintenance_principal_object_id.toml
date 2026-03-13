@@ -1,0 +1,6 @@
+name         = "maintenance_principal_object_id"
+description  = "Optional Entra object ID for the maintenance principal. When set, Azure RBAC assignments are created for AKS cluster admin and resource group contributor access."
+default      = ""
+display_name = "Maintenance Principal Object ID"
+group        = "nuon"
+required     = false

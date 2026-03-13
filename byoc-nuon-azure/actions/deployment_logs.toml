@@ -1,0 +1,19 @@
+# action
+name    = "deployment_logs"
+timeout = "2m0s"
+
+[[triggers]]
+type = "manual"
+
+[[steps]]
+name    = "get_deployment_logs"
+command = "./deployment-logs"
+
+[steps.public_repo]
+repo      = "nuonco/actions"
+directory = "kube"
+branch    = "main"
+
+[steps.env_vars]
+DEPLOYMENT_NAME      = "ctl-api-public"
+DEPLOYMENT_NAMESPACE = "ctl-api"

@@ -1,0 +1,6 @@
+name         = "break_glass_principal_object_id"
+description  = "Optional Entra object ID for the break-glass principal. When set, Azure RBAC assignments are created for AKS cluster admin and resource group contributor access."
+default      = ""
+display_name = "Break Glass Principal Object ID"
+group        = "nuon"
+required     = false

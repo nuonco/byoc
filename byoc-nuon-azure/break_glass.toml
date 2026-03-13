@@ -1,0 +1,14 @@
+[[role]]
+name                 = "byoc-nuon-break-glass-{{ .nuon.install.id }}"
+description          = "Break Glass Permissions for BYOC Install {{ .nuon.install.id }}"
+display_name         = "BYOC Nuon: Break Glass"
+
+# Placeholder policy for Azure (actual permissions via RBAC)
+[[role.policies]]
+name = "placeholder"
+contents = """
+{
+    "Version": "2012-10-17",
+    "Statement": []
+}
+"""

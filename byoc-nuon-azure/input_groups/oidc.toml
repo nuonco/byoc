@@ -1,0 +1,3 @@
+name         = "oidc"
+description  = "OIDC authentication configuration (Google OAuth, etc.)"
+display_name = "OIDC Authentication"

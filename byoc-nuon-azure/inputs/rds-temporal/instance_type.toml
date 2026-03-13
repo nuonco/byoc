@@ -1,0 +1,8 @@
+#:schema http://localhost:8081/v1/general/config-schema?type=inputs
+name         = "temporal_db_instance_type"
+description  = "What Azure PostgreSQL Flexible Server SKU should be used for Temporal DB?"
+default      = "GP_Standard_D8ds_v5"
+display_name = "PostgreSQL SKU"
+group        = "rds-temporal"
+
+user_configurable = false

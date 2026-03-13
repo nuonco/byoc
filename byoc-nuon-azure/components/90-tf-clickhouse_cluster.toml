@@ -1,0 +1,25 @@
+#:schema https://api.nuon.co/v1/general/config-schema?type=terraform
+name              = "clickhouse_cluster"
+type              = "terraform_module"
+terraform_version = "1.11.3"
+
+dependencies = ["crd_clickhouse_operator", "s3_buckets"]
+
+[public_repo]
+repo      = "nuonco/byoc"
+directory = "byoc-nuon-azure/src/components/clickhouse_cluster"
+branch    = "main"
+
+[vars]
+install_id = "{{ .nuon.install.id }}"
+region     = "{{ .nuon.install_stack.outputs.region }}"
+zone       = "{{ .nuon.sandbox.outputs.nuon_dns.internal_domain.name }}"
+
+clickhouse_storage_account_name           = "{{ .nuon.components.s3_buckets.outputs.clickhouse_bucket.storage_account_name }}"
+clickhouse_storage_container_name         = "{{ .nuon.components.s3_buckets.outputs.clickhouse_bucket.id }}"
+clickhouse_storage_account_resource_group = "{{ .nuon.install_stack.outputs.resource_group_name }}"
+
+cluster_image_repository = "{{ .nuon.sandbox.outputs.acr.login_server }}/{{ .nuon.components.img_clickhouse_server.outputs.image.repository }}"
+cluster_image_tag        = "{{ .nuon.components.img_clickhouse_server.outputs.image.tag }}"
+keeper_image_repository  = "{{ .nuon.sandbox.outputs.acr.login_server }}/{{ .nuon.components.img_clickhouse_keeper.outputs.image.repository }}"
+keeper_image_tag         = "{{ .nuon.components.img_clickhouse_keeper.outputs.image.tag }}"

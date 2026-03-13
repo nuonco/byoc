@@ -1,0 +1,19 @@
+# action
+name    = "uninstall_helm_chart"
+timeout = "30s"
+
+[[triggers]]
+type = "manual"
+
+[[steps]]
+name = "uninstall-helm-chart"
+inline_contents = """
+#!/usr/bin/env sh
+apk add --no-cache helm
+export HELM_DRIVER=configmap
+helm uninstall $CHART_NAME --namespace $NAMESPACE
+"""
+
+[steps.env_vars]
+NAMESPACE = ""
+CHART_NAME = ""

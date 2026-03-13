@@ -1,0 +1,8 @@
+name         = "public_domain_certificate_name"
+description  = "Optional certificate name already installed on the Azure Application Gateway used for ingress TLS."
+default      = ""
+display_name = "Application Gateway Certificate Name"
+required     = false
+group        = "dns"
+
+user_configurable = true

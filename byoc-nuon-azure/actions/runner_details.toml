@@ -1,0 +1,29 @@
+# action
+name    = "runners"
+timeout = "5m"
+
+[[triggers]]
+type = "manual"
+
+[[steps]]
+name            = "org"
+inline_contents = "./src/runners/admin-get.sh"
+
+[steps.env_vars]
+ADMIN_API_URL = "http://admin.{{ .nuon.sandbox.outputs.nuon_dns.internal_domain.name }}"
+RUNNER_TYPE   = "org"
+
+[[steps]]
+name            = "install"
+inline_contents = "./src/runners/admin-get.sh"
+
+[steps.env_vars]
+ADMIN_API_URL = "http://admin.{{ .nuon.sandbox.outputs.nuon_dns.internal_domain.name }}"
+RUNNER_TYPE   = "install"
+
+[[steps]]
+name = "settings"
+inline_contents = "./src/runners/settings.sh"
+
+[steps.env_vars]
+ADMIN_API_URL = "http://admin.{{ .nuon.sandbox.outputs.nuon_dns.internal_domain.name }}"

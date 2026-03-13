@@ -1,0 +1,48 @@
+# action
+name    = "preflight"
+timeout = "1m"
+
+# [[triggers]]
+# type           = "post-sandbox-run"
+
+[[triggers]]
+type = "manual"
+
+[[steps]]
+name    = "Ensure Secrets Access is Denied: Auth Client Secret ARN"
+command = "./preflight/ensure-secrets-access.sh"
+
+[steps.public_repo]
+repo      = "nuonco/byoc"
+directory = "byoc-nuon-azure/src/actions"
+branch    = "main"
+
+[steps.env_vars]
+SECRET_NAMESPACE = "ctl-api"
+SECRET_NAME      = "ctl-api-auth-client-secret"
+
+[[steps]]
+name    = "Ensure Secrets Access is Denied: Clickhouse Cluster r/w Secret"
+command = "./preflight/ensure-secrets-access.sh"
+
+[steps.public_repo]
+repo      = "nuonco/byoc"
+directory = "byoc-nuon-azure/src/actions"
+branch    = "main"
+
+[steps.env_vars]
+SECRET_NAMESPACE = "clickhouse"
+SECRET_NAME      = "clickhouse-cluster-pw"
+
+[[steps]]
+name    = "Ensure Secrets Access is Denied: Clickhouse Operator Secret"
+command = "./preflight/ensure-secrets-access.sh"
+
+[steps.public_repo]
+repo      = "nuonco/byoc"
+directory = "byoc-nuon-azure/src/actions"
+branch    = "main"
+
+[steps.env_vars]
+SECRET_NAMESPACE = "clickhouse"
+SECRET_NAME      = "clickhouse-operator-pw"

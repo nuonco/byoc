@@ -1,0 +1,13 @@
+# action
+name    = "karpenter_rotate_node"
+timeout = "1m"
+
+[[triggers]]
+type = "manual"
+
+[[steps]]
+name = "karpenter_rotate_node"
+inline_contents = "./src/karpenter/rotate_node.sh"
+
+[steps.env_vars]
+NODE_NAME = "dne"

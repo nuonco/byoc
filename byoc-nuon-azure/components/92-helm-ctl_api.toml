@@ -1,0 +1,15 @@
+#:schema https://api.nuon.co/v1/general/config-schema?type=helm
+name           = "ctl_api"
+type           = "helm_chart"
+chart_name     = "ctl-api"
+namespace      = "ctl-api"
+storage_driver = "configmap"
+dependencies   = ["rds_cluster_nuon", "s3_buckets", "clickhouse_cluster", "temporal", "management", "ctl_api_init_db"]
+
+[public_repo]
+repo      = "nuonco/byoc"
+directory = "byoc-nuon-azure/src/components/ctl_api"
+branch    = "main"
+
+[[values_file]]
+contents = "./values/ctl-api.yaml"

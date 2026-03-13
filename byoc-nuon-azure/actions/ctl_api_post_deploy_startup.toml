@@ -1,0 +1,24 @@
+# action
+name    = "ctl_api_post_deploy_startup"
+timeout = "1m30s"
+
+[[triggers]]
+type           = "post-deploy-component"
+component_name = "ctl_api"
+index          = 1
+
+[[triggers]]
+type = "manual"
+
+[[steps]]
+name    = "startup"
+command = "./ctl_api/startup.sh"
+
+[steps.public_repo]
+repo      = "nuonco/byoc"
+directory = "byoc-nuon-azure/src/actions"
+branch    = "main"
+
+[steps.env_vars]
+LOG_LEVEL      = "INFO"
+DB_LOG_QUERIES = "false"

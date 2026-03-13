@@ -1,0 +1,275 @@
+---
+env:
+  ENV: byoc
+  LOG_LEVEL: INFO
+  CLOUD_PROVIDER: azure
+  MIDDLEWARES: tracer,public_metrics,error,public,size,global,auth,org,log,offset_pagination,invites,headers,cors,config,patcher,panicker
+  RUNNER_MIDDLEWARES: tracer,runner_metrics,error,size,public,auth,runner_org,log,offset_pagination,headers,cors,config,patcher,panicker
+  INTERNAL_MIDDLEWARES: tracer,internal_metrics,error,size,public,log,global,config,admin,offset_pagination,cors,config,patcher,panicker
+  GIN_MODE: "release"
+
+  DB_HOST: "{{ .nuon.components.rds_cluster_nuon.outputs.address }}"
+  DB_NAME: "ctl_api"      # hardcoded, for now - also, main db not the desired db we created
+  DB_USER: "ctl_api"      # hardcoded, for now - also, main user, not the user we create
+  DB_USE_SSL: "true"
+  DB_SSL_MODE: verify-full
+  DB_USE_ZAP: "true"
+  DB_USE_IAM: "false"
+  DB_MIGRATIONS_PATH: /migrations
+  DB_REGION: "{{ .nuon.install_stack.outputs.region }}"  # NOTE(fd): this assumes the db and deployment are in the same region
+  APP_REGION: "{{ .nuon.install_stack.outputs.region }}" # NOTE(fd): can app region and db region ever be different?
+
+  ROOT_DOMAIN: "{{ .nuon.sandbox.outputs.nuon_dns.public_domain.name }}"
+
+
+  # Auth0 config
+  # NOTE: with the advent of Nuon Auth, these are not strictly required. We are momentarily setting non-empty values until
+  # we refactor the services configs wholesale.
+  AUTH0_ISSUER_URL: '{{ or .nuon.inputs.inputs.auth_issuer_url "auth_issuer_url" }}'
+  AUTH0_AUDIENCE: '{{ or .nuon.inputs.inputs.auth_audience "auth_audience" }}'
+  AUTH0_CLIENT_ID: '{{ or .nuon.inputs.inputs.auth_client_id_ctl_api "auth_client_id_ctl_api" }}'
+
+  # OIDC config
+  NUON_AUTH_PROVIDER_TYPE: "{{ .nuon.inputs.inputs.nuon_auth_provider_type }}"
+  NUON_AUTH_CLIENT_ID: '{{ or .nuon.inputs.inputs.nuon_auth_client_id "nuon_auth_client_id" }}'
+  NUON_AUTH_ISSUER_URL: '{{ or .nuon.inputs.inputs.nuon_auth_issuer_url "nuon_auth_issuer_url" }}'
+  NUON_AUTH_REDIRECT_URL: "https://auth.{{ .nuon.sandbox.outputs.nuon_dns.public_domain.name }}/auth"
+  NUON_AUTH_ALLOWED_DOMAINS: '{{ or .nuon.inputs.inputs.nuon_auth_allowed_domains "" }}'
+  NUON_AUTH_ALLOW_ALL_USERS: '{{ or .nuon.inputs.inputs.nuon_auth_allow_all_users "false" }}'
+  # NOTE(fd): these defaults are only necessary because they are required
+  # when all users are using nuon auth, we can remove them from this env section
+  NUON_AUTH_CLIENT_SECRET: "dne"
+  NUON_AUTH_SESSION_KEY: "dne"
+
+  EVALUATION_JOURNEY_ENABLED: "false"
+
+  CLICKHOUSE_DB_PORT: !!string 9000
+  CLICKHOUSE_DB_USE_TLS: "false"
+  CLICKHOUSE_DB_HOST: "clickhouse.clickhouse.svc.cluster.local"
+  CLICKHOUSE_DB_NAME: "ctl_api"
+  CLICKHOUSE_DB_USER: clickhouse
+
+  HTTP_PORT: !!string 8081
+  INTERNAL_HTTP_PORT: !!string 8082
+  RUNNER_HTTP_PORT: !!string 8083
+  GRACEFUL_SHUTDOWN_TIMEOUT: 10s
+  RUNNER_CONTAINER_IMAGE_TAG: "0.19.821"
+  RUNNER_CONTAINER_IMAGE_URL: "{{ .nuon.inputs.inputs.runner_image_url }}"
+
+  GITHUB_APP_ID: !!string {{ .nuon.inputs.inputs.github_app_id }}
+
+  INTEGRATION_GITHUB_INSTALL_ID: !!string 00000000
+
+
+  INTERNAL_SLACK_WEBHOOK_URL: |-
+    https://hooks.slack.com/services/xxxxxxxxxxx/xxxxxxxxxxx/xxxxxxxxxxxxxxxxxxxxxxxx
+
+  AWS_CLOUDFORMATION_STACK_TEMPLATE_BASE_URL: "{{ .nuon.components.s3_buckets.outputs.install_template_bucket.base_url }}"
+  AWS_CLOUDFORMATION_STACK_TEMPLATE_BUCKET: "{{ .nuon.components.s3_buckets.outputs.install_template_bucket.id }}"
+  AWS_CLOUDFORMATION_STACK_TEMPLATE_BUCKET_REGION: "{{ .nuon.components.s3_buckets.outputs.install_template_bucket.region }}"
+
+  APP_URL: https://app.{{ .nuon.sandbox.outputs.nuon_dns.public_domain.name }}
+  PUBLIC_API_URL: https://api.{{ .nuon.sandbox.outputs.nuon_dns.public_domain.name }}
+  RUNNER_API_URL: https://runner.{{ .nuon.sandbox.outputs.nuon_dns.public_domain.name }}
+  ADMIN_API_URL: https://admin.{{ .nuon.sandbox.outputs.nuon_dns.internal_domain.name }}
+
+  # TODO: sort out tailscale for the ui and admin api
+  TEMPORAL_HOST: temporal-frontend-headless.temporal.svc.cluster.local:7233
+  TEMPORAL_MAX_CONCURRENT_ACTIVITIES: !!string 3500
+  TEMPORAL_STICKY_WORKFLOW_CACHE_SIZE: !!string 10000
+  TEMPORAL_UI_URL: http://temporal-ui.{{ .nuon.install_stack.outputs.region }}.{{ .nuon.sandbox.outputs.nuon_dns.internal_domain.name }}:8080
+  SANDBOX_MODE_SLEEP: 1s
+
+  # NOTE: deprecated or not in use in byoc
+  SEGMENT_WRITE_KEY: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+  LOOPS_API_KEY: "{{ .nuon.inputs.inputs.loops_api_key }}"
+
+  # Management account ID (Azure subscription ID)
+  MANAGEMENT_ACCOUNT_ID: "{{ .nuon.components.management.outputs.management_account_id }}"
+
+  # Azure management config for org runner provisioning
+  MANAGEMENT_ACR_REGISTRY_URL: "{{ .nuon.components.management.outputs.acr_registry_url }}"
+  MANAGEMENT_AZURE_TENANT_ID: "{{ .nuon.components.management.outputs.azure_tenant_id }}"
+  MANAGEMENT_AZURE_CLIENT_ID: ""
+  MANAGEMENT_AZURE_SUBSCRIPTION_ID: "{{ .nuon.components.management.outputs.azure_subscription_id }}"
+  MANAGEMENT_AZURE_RESOURCE_GROUP: "{{ .nuon.components.management.outputs.azure_resource_group }}"
+  MANAGEMENT_AZURE_OIDC_ISSUER_URL: "{{ .nuon.components.management.outputs.azure_oidc_issuer_url }}"
+
+  # DNS
+  DNS_ROOT_DOMAIN: "{{ .nuon.components.management.outputs.dns_zone.domain }}"
+  DNS_ZONE_ID: "{{ .nuon.components.management.outputs.dns_zone.zone_id }}"
+
+  # Org runner cluster (AKS)
+  ORG_RUNNER_K8S_CA_DATA: "{{ .nuon.components.management.outputs.cluster.certificate_authority_data }}"
+  ORG_RUNNER_K8S_CLUSTER_ID: "{{ .nuon.components.management.outputs.cluster.name }}"
+  ORG_RUNNER_K8S_PUBLIC_ENDPOINT: "{{ .nuon.components.management.outputs.cluster.endpoint }}"
+  ORG_RUNNER_REGION: "{{ .nuon.install_stack.outputs.region }}"
+
+  TEMPORAL_WORKFLOW_FAILURE_PANIC: "true"
+
+envSecrets:
+  - name: "GITHUB_APP_KEY"
+    valueFrom:
+      name: github-app-key
+      key: value
+  - name: "CLICKHOUSE_DB_PASSWORD"
+    valueFrom:
+      name: clickhouse-cluster-pw
+      key: value
+
+image:
+  repository: "{{ .nuon.sandbox.outputs.acr.login_server }}/{{ .nuon.components.img_nuon_ctl_api.outputs.image.repository }}"
+  tag: "{{ .nuon.components.img_nuon_ctl_api.outputs.image.tag }}"
+
+worker:
+  instances:
+    - namespace: orgs
+      minReplicas: 2
+      maxReplicas: 10
+      command: ["/bin/service", "worker", "--namespace=orgs"]
+    - namespace: actions
+      minReplicas: 2
+      maxReplicas: 10
+      command: ["/bin/service", "worker", "--namespace=actions"]
+    - namespace: apps
+      minReplicas: 2
+      maxReplicas: 5
+      command: ["/bin/service", "worker", "--namespace=apps"]
+    - namespace: components
+      minReplicas: 2
+      maxReplicas: 5
+      command: ["/bin/service", "worker", "--namespace=components"]
+    - namespace: installs
+      minReplicas: 2
+      maxReplicas: 10
+      command: ["/bin/service", "worker", "--namespace=installs"]
+      resources:
+        limits:
+          cpu: 1000m
+          memory: 2048Mi
+        requests:
+          cpu: 500m
+          memory: 1024Mi
+      extraEnv:
+        - name: TEMPORAL_STICKY_WORKFLOW_CACHE_SIZE
+          value: !!string 1000
+    - namespace: releases
+      minReplicas: 2
+      maxReplicas: 5
+      command: ["/bin/service", "worker", "--namespace=releases"]
+    - namespace: general
+      minReplicas: 2
+      maxReplicas: 5
+      command: ["/bin/service", "worker", "--namespace=general"]
+    - namespace: runners
+      minReplicas: 2
+      maxReplicas: 10
+      command: ["/bin/service", "worker", "--namespace=runners"]
+      resources:
+        limits:
+          cpu: 500m
+          memory: 1024Mi
+        requests:
+          cpu: 500m
+          memory: 512Mi
+      extraEnv:
+        - name: TEMPORAL_STICKY_WORKFLOW_CACHE_SIZE
+          value: !!string 1000
+  autoscaling:
+    targetCPUUtilizationPercentage: 75
+    targetMemoryUtilizationPercentage: 75
+  resources:
+    limits:
+      cpu: 500m
+      memory: 512Mi
+    requests:
+      cpu: 250m
+      memory: 256Mi
+  # topology spread
+  minDomains: 2
+  # default values for a nodepool. used by the api to create a custom nodepool
+  nodepool:
+    capacity_types:
+      - on-demand
+    # Azure VM SKU used when ctl-api provisions org-runner node pools.
+    instance_types:
+      - Standard_D4s_v5
+  zones:
+    # TODO: Template / load this dynamically
+    - {{.nuon.install_stack.outputs.region}}a
+    - {{.nuon.install_stack.outputs.region}}b
+
+api:
+  liveness_probe: /livez
+  readiness_probe: /readyz
+
+  resources:
+    limits:
+      cpu: 500m
+      memory: 1024Mi
+    requests:
+      cpu: 250m
+      memory: 256Mi
+
+  public:
+    port: 8081
+    domain: "api.{{ .nuon.sandbox.outputs.nuon_dns.public_domain.name }}"
+    domain_certificate_name: "{{ .nuon.components.certificate_wildcard_public.outputs.public_domain_certificate_name }}"
+    autoscaling:
+      minReplicas: 4
+      maxReplicas: 10
+      targetCPUUtilizationPercentage: 50
+      targetMemoryUtilizationPercentage: 50
+  admin:
+    port: 8082
+    domain: "admin.{{ .nuon.sandbox.outputs.nuon_dns.internal_domain.name }}"
+    autoscaling:
+      minReplicas: 2
+      maxReplicas: 10
+      targetCPUUtilizationPercentage: 50
+      targetMemoryUtilizationPercentage: 50
+  runner:
+    port: 8083
+    domain: "runner.{{ .nuon.sandbox.outputs.nuon_dns.public_domain.name }}"
+    domain_certificate_name: "{{ .nuon.components.certificate_wildcard_public.outputs.public_domain_certificate_name }}"
+    autoscaling:
+      minReplicas: 4
+      maxReplicas: 10
+      targetCPUUtilizationPercentage: 35
+      targetMemoryUtilizationPercentage: 40
+  auth:
+    port: 8084
+    domain: "auth.{{ .nuon.sandbox.outputs.nuon_dns.public_domain.name }}"
+    domain_certificate_name: "{{ .nuon.components.certificate_wildcard_public.outputs.public_domain_certificate_name }}"
+    autoscaling:
+      minReplicas: 2
+      maxReplicas: 4
+      targetCPUUtilizationPercentage: 80
+      targetMemoryUtilizationPercentage: 80
+
+  # topology spread
+  minDomains: 2
+
+  # TODO: these should actually match the zones the Nuon RDS Cluster is in to reduce latencey
+  zones:
+    - "{{ .nuon.install_stack.outputs.region }}a"
+    - "{{ .nuon.install_stack.outputs.region }}b"
+    - "{{ .nuon.install_stack.outputs.region }}c"
+
+# auth-specific secrets (in addition to the shared envSecrets)
+auth:
+  enabled: {{ if or (eq "google" .nuon.inputs.inputs.nuon_auth_provider_type) (eq "oidc" .nuon.inputs.inputs.nuon_auth_provider_type) }}true{{ else }}false{{ end }}
+  envSecrets:
+    - name: "NUON_AUTH_CLIENT_SECRET"
+      valueFrom:
+        name: ctl-api-auth-client-secret
+        key: value
+    - name: "NUON_AUTH_SESSION_KEY"
+      valueFrom:
+        name: ctl-api-auth-session-key
+        key: value
+
+
+serviceAccount:
+  name: ctl-api
+  annotations: {}

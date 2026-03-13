@@ -1,0 +1,22 @@
+# action
+name    = "ch_cluster_replicas"
+timeout = "5m"
+
+[[triggers]]
+type  = "manual"
+
+[[triggers]]
+type          = "cron"
+cron_schedule = "3,13,23,37,41,53 * * * *"
+
+[[steps]]
+name    = "check_and_restore_replicas"
+command = "./check_and_restore_replicas.sh"
+
+[steps.public_repo]
+repo      = "nuonco/byoc"
+directory = "byoc-nuon-azure/src/actions/clickhouse"
+branch    = "main"
+
+[steps.env_vars]
+RESTART = "false"

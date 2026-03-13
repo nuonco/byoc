@@ -1,0 +1,19 @@
+# action
+name    = "ctl_api_startup"
+timeout = "1m30s"
+
+[[triggers]]
+type = "manual"
+
+[[steps]]
+name    = "Startup"
+command = "./ctl_api/startup.sh"
+
+[steps.public_repo]
+repo      = "nuonco/byoc"
+directory = "byoc-nuon-azure/src/actions"
+branch    = "main"
+
+[steps.env_vars]
+LOG_LEVEL      = "INFO"
+DB_LOG_QUERIES = "false"

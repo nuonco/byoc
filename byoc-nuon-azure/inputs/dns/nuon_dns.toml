@@ -1,0 +1,7 @@
+name         = "nuon_dns_domain"
+description  = "The domain under which DNS zones/records are provisioned for installs, when using the nuon_dns feature."
+display_name = "Install DNS Delegation Domain"
+required     = true
+group        = "dns"
+
+user_configurable = false

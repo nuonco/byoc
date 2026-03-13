@@ -1,0 +1,4 @@
+---
+rds:
+  db_name: temporal
+  instance_class: "db.t4g.xlarge"

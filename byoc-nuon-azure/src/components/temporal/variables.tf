@@ -1,0 +1,108 @@
+locals {
+  service = "temporal"
+  zone    = var.zone
+
+  tags = {
+    environment = var.env
+    service     = local.service
+    terraform   = "infra-temporal-${var.env}"
+  }
+
+  vars = yamldecode(data.utils_deep_merge_yaml.vars.output)
+}
+
+variable "ctl_api_host" {
+  type        = string
+  description = "The host of the Nuon CTL API."
+}
+
+variable "codec_endpoint" {
+  type        = string
+  description = "The temporal codec url."
+}
+
+#
+variable "env" {
+  type        = string
+  description = "The environment to use."
+}
+
+variable "region" {
+  type = string
+}
+
+variable "zone" {
+  type        = string
+  description = "Internal Nuon DNS Domain name (not zone id). Used to construct domains (or it will be)."
+}
+
+variable "cluster_name" {
+  type        = string
+  description = "Kubernetes cluster name"
+}
+
+variable "cluster_endpoint" {
+  type        = string
+  description = "Kubernetes cluster endpoint"
+}
+
+variable "cluster_certificate_authority_data" {
+  type        = string
+  description = "Kubernetes cluster certificate authority data"
+}
+
+# db details
+
+variable "db_instance_address" {
+  type        = string
+  description = "PostgreSQL host"
+}
+
+variable "db_instance_port" {
+  type        = string
+  default     = "5432"
+  description = "PostgreSQL port"
+}
+
+variable "db_instance_username" {
+  type        = string
+  description = "PostgreSQL username"
+}
+
+variable "db_instance_password" {
+  type        = string
+  sensitive   = true
+  description = "PostgreSQL password"
+}
+
+# Images
+
+variable "temporal_web_image_repository" {
+  type        = string
+  description = "Temporal web ui image repository"
+}
+
+variable "temporal_web_image_tag" {
+  type        = string
+  description = "Temporal web ui image tag"
+}
+
+variable "temporal_server_image_repository" {
+  type        = string
+  description = "Temporal server ui image repository"
+}
+
+variable "temporal_server_image_tag" {
+  type        = string
+  description = "Temporal server ui image tag"
+}
+
+variable "temporal_admin_tools_image_repository" {
+  type        = string
+  description = "Temporal admin_tools ui image repository"
+}
+
+variable "temporal_admin_tools_image_tag" {
+  type        = string
+  description = "Temporal admin_tools ui image tag"
+}

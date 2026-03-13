@@ -1,0 +1,231 @@
+locals {
+  username = "clickhouse"
+}
+#
+# clickhouse cluster (chi resource)
+#
+
+resource "kubectl_manifest" "clickhouse_installation" {
+  # generated with tfk8s and the source below
+  # https://github.com/Altinity/clickhouse-operator/blob/master/docs/quick_start.md
+  # NOTE: uses toleration to deploy to the NodePool defined above
+  # NOTE: uses topologySpreadConstraints to distribute pods across nodes
+
+  yaml_body = yamlencode({
+    "apiVersion" = "clickhouse.altinity.com/v1"
+    "kind"       = "ClickHouseInstallation"
+    "metadata" = {
+      "name"      = "clickhouse-installation"
+      "namespace" = "clickhouse"
+    }
+    "spec" = {
+      "configuration" = {
+        "users" = {
+          "${local.username}/networks/ip" = ["0.0.0.0/0"]
+          # "${local.username}/password_sha256_hex" = sha256(local.password)
+          "${local.username}/password" = {
+            "valueFrom" = {
+              "secretKeyRef" = {
+                "name" = "clickhouse-cluster-pw"
+                "key"  = "value"
+              }
+            }
+          }
+
+        }
+        "clusters" = [
+          {
+            "name" = "simple"
+            "templates" = {
+              "podTemplate"     = "clickhouse:${var.cluster_image_tag}"
+              "serviceTemplate" = "clickhouse:${var.cluster_image_tag}"
+            }
+            "layout" = {
+              "replicasCount" = 2
+              "shardsCount"   = 1
+            }
+          },
+        ]
+        "settings" = {
+          "logger/level"                    = local.logLevel
+          "logger/console"                  = true
+          "prometheus/endpoint"             = "/metrics"
+          "prometheus/port"                 = 9363
+          "prometheus/metrics"              = true
+          "prometheus/events"               = true
+          "prometheus/asynchronous_metrics" = true
+          "prometheus/status_info"          = true
+          "max_concurrent_queries"          = 2500
+        }
+        # configure to use the zookeeper nodes
+        "zookeeper" = {
+          "nodes" = [
+            { "host" : "chk-clickhouse-keeper-chk-simple-0-0.clickhouse.svc.cluster.local" },
+            { "host" : "chk-clickhouse-keeper-chk-simple-0-1.clickhouse.svc.cluster.local" },
+            { "host" : "chk-clickhouse-keeper-chk-simple-0-2.clickhouse.svc.cluster.local" },
+          ]
+        }
+        # keep logs disabled to reduce IO in single-cluster BYOC installs.
+        "files" = {
+          "config.d/z_log_disable.xml" = <<-EOT
+          <clickhouse>
+              <asynchronous_metric_log remove="1"/>
+              <backup_log remove="1"/>
+              <error_log remove="1"/>
+              <metric_log remove="1"/>
+              <query_metric_log remove="1"/>
+              <query_thread_log remove="1" />
+              <query_log remove="1" />
+              <query_views_log remove="1" />
+              <part_log remove="1"/>
+              <session_log remove="1"/>
+              <text_log remove="1" />
+              <trace_log remove="1"/>
+              <crash_log remove="1"/>
+              <opentelemetry_span_log remove="1"/>
+              <zookeeper_log remove="1"/>
+              <processors_profile_log remove="1"/>
+              <latency_log remove="1"/>
+          </clickhouse>
+          EOT
+        }
+      }
+      "defaults" = {
+        "templates" = {
+          "dataVolumeClaimTemplate" = "data-volume-template"
+          "serviceTemplate"         = "clickhouse:${var.cluster_image_tag}"
+        }
+      }
+      "templates" = {
+        # we define a clusterServiceTemplates so we can set an internal-hostname for access via twingate
+        "serviceTemplates" = [{
+          "name" = "clickhouse:${var.cluster_image_tag}"
+          # default type is ClusterIP
+          "spec" = {
+            "ports" = [
+              {
+                "name" = "http"
+                "port" = 8123
+              },
+              {
+                "name" = "client"
+                "port" = 9000
+              }
+            ]
+          }
+        }]
+        # we define a podTemplate to ensure the attributes for node pool selection are set
+        # and so we can define the image_tag dynamically
+        "podTemplates" = [{
+          "name" = "clickhouse:${var.cluster_image_tag}"
+          "imagePullPolicy" : "IfNotPresent"
+          "metadata" = {}
+          "spec" = {
+            "affinity" = {
+              "podAntiAffinity" = {
+                "requiredDuringSchedulingIgnoredDuringExecution" = [
+                  {
+                    "labelSelector" = {
+                      "matchLabels" = {
+                        # NOTE(fd): this label is automatically applied by the CRD so we can assume it exists.
+                        #           that is, however, an assumption
+                        "clickhouse.altinity.com/chi" = "clickhouse-installation"
+                      }
+                    }
+                    "topologyKey" = "kubernetes.io/hostname"
+                  },
+                  {
+                    "labelSelector" = {
+                      "matchLabels" = {
+                        # NOTE(fd): this label is automatically applied by the CRD so we can assume it exists.
+                        #           that is, however, an assumption
+                        "clickhouse.altinity.com/chi" = "clickhouse-installation"
+                      }
+                    }
+                    "topologyKey" = "topology.kubernetes.io/zone"
+                  },
+                ]
+              }
+            }
+            "topologySpreadConstraints" = [
+              # spread the pods across nodes.
+              {
+                "maxSkew"           = 1
+                "topologyKey"       = "kubernetes.io/hostname"
+                "whenUnsatisfiable" = "ScheduleAnyway"
+                "labelSelector" = {
+                  "matchLabels" = {
+                    # NOTE(fd): this label is automatically applied by the CRD so we can assume it exists.
+                    #           that is, however, an assumption
+                    "clickhouse.altinity.com/chi" = "clickhouse-installation"
+                  }
+                }
+              },
+              # spread the pods across az:
+              {
+                "maxSkew"           = 1
+                "topologyKey"       = "topology.kubernetes.io/zone"
+                "whenUnsatisfiable" = "ScheduleAnyway"
+                "labelSelector" = {
+                  "matchLabels" = {
+                    # NOTE(fd): this label is automatically applied by the CRD so we can assume it exists.
+                    #           that is, however, an assumption
+                    "clickhouse.altinity.com/chi" = "clickhouse-installation"
+                  }
+                }
+              }
+            ]
+            "containers" = [
+              {
+                "name"  = "clickhouse"
+                "image" = "${var.cluster_image_repository}:${var.cluster_image_tag}"
+                "env" = [{
+                  "name"  = "CLICKHOUSE_ALWAYS_RUN_INITDB_SCRIPTS"
+                  "value" = "true"
+                }]
+                "volumeMounts" = [
+                  {
+                    "name"      = "data-volume-template"
+                    "mountPath" = "/var/lib/clickhouse"
+                  },
+                  # {
+                  #   "name"      = "bootstrap-configmap-volume"
+                  #   "mountPath" = "/docker-entrypoint-initdb.d"
+                  # }
+                ],
+              }
+            ]
+            "volumes" = [
+              {
+                "name" = "bootstrap-configmap-volume"
+                "configMap" = {
+                  "name" : "bootstrap-configmap"
+                }
+              }
+            ]
+          }
+        }]
+        "volumeClaimTemplates" = [
+          {
+            "name" = "data-volume-template"
+            "spec" = {
+              "storageClassName" = "ebi"
+              "accessModes" = [
+                "ReadWriteOnce",
+              ]
+              "resources" = {
+                "requests" = {
+                  "storage" = "20Gi"
+                }
+              }
+            }
+          }
+        ]
+      }
+    }
+  })
+
+  depends_on = [
+    kubectl_manifest.clickhouse_keeper_installation
+  ]
+}

@@ -1,0 +1,17 @@
+# action
+# NOTE(fd): use this is you need to set all install runners to a specific version
+name    = "runners_update_and_restart"
+timeout = "5m"
+
+[[triggers]]
+type = "manual"
+
+[[steps]]
+name = "install"
+inline_contents = "./src/runners/update-and-restart.sh"
+
+[steps.env_vars]
+DRY_RUN       = "true"
+VERSION       = "cloud"
+ADMIN_API_URL = "http://admin.{{ .nuon.sandbox.outputs.nuon_dns.internal_domain.name }}"
+RUNNER_TYPE   = "install"

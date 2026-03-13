@@ -1,0 +1,26 @@
+# action
+name    = "ctl_api_init_db"
+timeout = "5m"
+
+[[triggers]]
+type           = "pre-deploy-component"
+component_name = "ctl_api"
+
+[[triggers]]
+type = "manual"
+
+[[steps]]
+name    = "Initialize the DB"
+command = "./ctl_api/init-db.sh"
+
+[steps.public_repo]
+repo      = "nuonco/byoc"
+directory = "byoc-nuon-azure/src/actions"
+branch    = "main"
+
+[steps.env_vars]
+DB_USER           = "{{ .nuon.components.rds_cluster_nuon.outputs.db_instance_username }}"
+DB_NAME           = "{{ .nuon.components.rds_cluster_nuon.outputs.db_instance_name }}"
+DB_ADMIN_PASSWORD = "{{ .nuon.components.rds_cluster_nuon.outputs.db_instance_password }}"
+DB_ADDR           = "{{ .nuon.components.rds_cluster_nuon.outputs.address }}"
+DB_PORT           = "5432"

@@ -1,0 +1,20 @@
+# action
+name    = "dashboard_ui_restart"
+timeout = "0m30s"
+
+[[triggers]]
+type           = "post-deploy-component"
+component_name = "dashboard_ui"
+index          = 1
+
+[[steps]]
+name    = "deployments_restart"
+command = "./deployments-restart"
+
+[steps.public_repo]
+repo      = "nuonco/actions"
+branch    = "main"
+directory = "kube"
+
+[steps.env_vars]
+NAMESPACE = "dashboard-ui"

@@ -1,0 +1,3 @@
+type        = "azure-bicep"
+name        = "byoc-nuon-azure-install-{{.nuon.install.id}}"
+description = "QuickLink to install runner for BYOC Nuon on Azure: Install {{.nuon.install.id}}"

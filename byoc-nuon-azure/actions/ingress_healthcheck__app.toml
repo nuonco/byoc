@@ -1,0 +1,23 @@
+# action
+name    = "ingress_healthcheck_app"
+timeout = "30s"
+
+[[triggers]]
+type          = "cron"
+cron_schedule = "*/5 */1 * * *"
+
+[[triggers]]
+type           = "post-deploy-component"
+component_name = "dashboard_ui"
+index          = 5
+
+[[triggers]]
+type = "manual"
+
+[[steps]]
+name            = "ingress-healthcheck-dashboard-ui"
+inline_contents = "./src/ingress/healthcheck.sh"
+
+[steps.env_vars]
+INGRESS_NAME      = "dashboard-ui"
+INGRESS_NAMESPACE = "dashboard-ui"
