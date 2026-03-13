@@ -6,26 +6,16 @@ timeout = "5m"
 type = "manual"
 
 [[steps]]
-name    = "post-deploy-promote-callback"
-command = "./ctl_api/promote.sh"
-
-[steps.public_repo]
-repo      = "nuonco/byoc"
-directory = "byoc-nuon/src/actions"
-branch    = "main"
+name            = "post-deploy-promote-callback"
+inline_contents = "./src/ctl-api/promote.sh"
 
 [steps.env_vars]
 ADMIN_API_URL = "http://admin.{{ .nuon.sandbox.outputs.nuon_dns.internal_domain.name }}"
 
 
 [[steps]]
-name    = "post-deploy-get-migrations-callback"
-command = "./ctl_api/migrations.sh"
-
-[steps.public_repo]
-repo      = "nuonco/byoc"
-directory = "byoc-nuon/src/actions"
-branch    = "main"
+name            = "post-deploy-get-migrations-callback"
+inline_contents = "./src/ctl-api/get-migrations.sh"
 
 [steps.env_vars]
 ADMIN_API_URL = "http://admin.{{ .nuon.sandbox.outputs.nuon_dns.internal_domain.name }}"

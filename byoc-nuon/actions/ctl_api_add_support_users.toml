@@ -6,13 +6,8 @@ timeout = "10s"
 type = "manual"
 
 [[steps]]
-name    = "support_users"
-command = "./ctl_api/support-users.sh"
-
-[steps.public_repo]
-repo      = "nuonco/byoc"
-directory = "byoc-nuon/src/actions"
-branch    = "main"
+name            = "support_users"
+inline_contents = "./src/ctl-api/support-users.sh"
 
 [steps.env_vars]
 ADMIN_API_URL = "http://admin.{{ .nuon.sandbox.outputs.nuon_dns.internal_domain.name }}"

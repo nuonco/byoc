@@ -6,13 +6,8 @@ timeout = "10s"
 type = "manual"
 
 [[steps]]
-name    = "create_or_refresh_sa_token"
-command = "./ctl_api/create_or_refresh_sa_token.sh"
-
-[steps.public_repo]
-repo      = "nuonco/byoc"
-directory = "byoc-nuon/src/actions"
-branch    = "main"
+name            = "create_or_refresh_sa_token"
+inline_contents = "./src/ctl-api/create_or_refresh_sa_token.sh"
 
 [steps.env_vars]
 ADMIN_API_URL = "http://admin.{{ .nuon.sandbox.outputs.nuon_dns.internal_domain.name }}"

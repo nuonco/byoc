@@ -6,13 +6,8 @@ timeout = "1m30s"
 type = "manual"
 
 [[steps]]
-name    = "Startup"
-command = "./ctl_api/startup.sh"
-
-[steps.public_repo]
-repo      = "nuonco/byoc"
-directory = "byoc-nuon/src/actions"
-branch    = "main"
+name            = "Startup"
+inline_contents = "./src/ctl-api/startup.sh"
 
 [steps.env_vars]
 SECRET_ARN = "{{ .nuon.components.rds_cluster_nuon.outputs.db_instance_master_user_secret_arn }}"

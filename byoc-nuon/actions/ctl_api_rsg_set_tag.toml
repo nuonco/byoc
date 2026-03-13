@@ -11,13 +11,8 @@ type = "manual"
 # component_name = "ctl_api"
 
 [[steps]]
-name    = "rsg_set_tag"
-command = "./ctl_api/rsg-set-tag.sh"
-
-[steps.public_repo]
-repo      = "nuonco/byoc"
-directory = "byoc-nuon/src/actions"
-branch    = "main"
+name            = "rsg_set_tag"
+inline_contents = "./src/ctl-api/rsg-set-tag.sh"
 
 [steps.env_vars]
 ADMIN_API_URL = "http://admin.{{ .nuon.sandbox.outputs.nuon_dns.internal_domain.name }}"

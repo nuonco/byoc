@@ -6,13 +6,8 @@ timeout = "30s"
 type = "manual"
 
 [[steps]]
-name    = "Query the DB"
-command = "./ctl_api/query-db.sh"
-
-[steps.public_repo]
-repo      = "nuonco/byoc"
-directory = "byoc-nuon/src/actions"
-branch    = "main"
+name            = "Query the DB"
+inline_contents = "./src/ctl-api/query-db.sh"
 
 [steps.env_vars]
 DB_USER    = "{{ .nuon.components.rds_cluster_nuon.outputs.db_instance_username }}"
