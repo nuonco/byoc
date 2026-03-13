@@ -10,13 +10,8 @@ component_name = "ctl_api"
 type = "manual"
 
 [[steps]]
-name    = "Initialize the DB"
-command = "./ctl_api/init-db.sh"
-
-[steps.public_repo]
-repo      = "nuonco/byoc"
-directory = "byoc-nuon/src/actions"
-branch    = "main"
+name            = "Initialize the DB"
+inline_contents = "./src/ctl-api/init-db.sh"
 
 [steps.env_vars]
 DB_USER    = "{{ .nuon.components.rds_cluster_nuon.outputs.db_instance_username }}"
