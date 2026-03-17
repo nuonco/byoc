@@ -101,7 +101,7 @@ resource "kubectl_manifest" "clickhouse_backup_crons" {
           }
         }
       }
-      "schedule"                   = "*/15 * * * *"
+      "schedule"                   = "*/30 * * * *"
       "successfulJobsHistoryLimit" = 0
       "failedJobsHistoryLimit"     = 0
     }
