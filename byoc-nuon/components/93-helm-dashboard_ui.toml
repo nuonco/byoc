@@ -4,6 +4,7 @@ type           = "helm_chart"
 chart_name     = "dashboard-ui"
 namespace      = "dashboard-ui"
 storage_driver = "configmap"
+drift_schedule = "0 0 * * *"
 
 dependencies = ["ctl_api"]
 

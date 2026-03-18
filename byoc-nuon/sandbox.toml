@@ -1,5 +1,6 @@
 #:schema https://api.nuon.co/v1/general/config-schema?type=sandbox
 terraform_version = "1.11.3"
+drift_schedule    = "0 0 * * *"
 
 [public_repo]
 directory = "."
