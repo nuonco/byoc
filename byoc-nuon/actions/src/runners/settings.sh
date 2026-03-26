@@ -11,13 +11,13 @@ OUTPUTS='{}'
 
 # get org runners
 org_runners=$(curl --max-time 5 -q -s \
-  "$admin_api_addr/v1/runners?type=org" \
+  "$admin_api_addr/v1/runners?type=org&limit=100" \
   -H 'accept: application/json' \
   -H 'X-Nuon-Admin-Email: jon@nuon.co')
 
 # get install runners
 install_runners=$(curl --max-time 5 -q -s \
-  "$admin_api_addr/v1/runners?type=install" \
+  "$admin_api_addr/v1/runners?type=install&limit=100" \
   -H 'accept: application/json' \
   -H 'X-Nuon-Admin-Email: jon@nuon.co')
 
