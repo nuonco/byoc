@@ -8,7 +8,7 @@ admin_api_addr="$ADMIN_API_URL"
 type="$RUNNER_TYPE"
 
 # TODO(fd): if the type is an empty string, compose the url w/out a type
-url="$admin_api_addr/v1/runners?type=$type"
+url="$admin_api_addr/v1/runners?type=$type&limit=100"
 
 
 curl --max-time 5 -q -s $url    \
