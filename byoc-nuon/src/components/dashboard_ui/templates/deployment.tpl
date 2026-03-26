@@ -48,10 +48,6 @@ spec:
       containers:
         - name: {{ include "common.fullname" . }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
-          command:
-            - npm
-            - run
-            - start
           ports:
             - name: http
               containerPort: {{ .Values.ui.port }}
