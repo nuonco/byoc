@@ -1,4 +1,6 @@
 ---
+environment: prod
+
 env:
   ENV: byoc
   LOG_LEVEL: INFO
