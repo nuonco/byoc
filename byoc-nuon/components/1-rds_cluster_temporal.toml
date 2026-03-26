@@ -19,6 +19,7 @@ subnet_group_id = "{{ .nuon.components.rds_subnet.outputs.id }}"
 
 allocated_storage = "500"
 apply_immediately = "true"
+storage_encrypted = "true"
 
 region     = "{{ .nuon.install_stack.outputs.region }}"
 vpc_id     = "{{ .nuon.install_stack.outputs.vpc_id }}"
