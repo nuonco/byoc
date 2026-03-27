@@ -2,7 +2,7 @@
 environment: prod
 
 env:
-  ENV: byoc
+  ENV: prod
   LOG_LEVEL: INFO
   MIDDLEWARES: tracer,public_metrics,error,public,size,global,auth,org,log,offset_pagination,invites,headers,cors,config,patcher,panicker
   RUNNER_MIDDLEWARES: tracer,runner_metrics,error,size,public,auth,runner_org,log,offset_pagination,headers,cors,config,patcher,panicker
