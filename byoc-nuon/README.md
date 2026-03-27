@@ -58,37 +58,9 @@ $public_domain }}/docs/index.html)</small>
 
 </div>
 
-- [Installing Nuon](#installingnuon)
-  - [Configure DNS](#configurednsoptional)
-  - [Configure Github App](#configuregithubapp)
-  - [Configure Google OAuth](#configure-google-oauth)
-    - [Create Google OAuth Credentials](#create-google-oauth-credentials)
-  - [Update Inputs](#updateinputs)
-    - [Nuon configuration (Optional)](#nuonconfigurationoptional)
-    - [Nuon database configuration (Optional)](#nuondatabaseconfiguration-optional)
-    - [Temporal database configuration](#temporaldatabaseconfiguration)
-    - [Clickhouse Cluster](#clickhousecluster)
-    - [Authentication Configuration](#authenticationconfiguration)
-    - [Github](#github)
-    - [DNS Configuration](#dnsconfiguration)
-  - [Update Secrets](#updatesecrets)
-- [Application Links](#applicationlinks)
-- [Accessing the EKS Cluster](#accessingtheekscluster)
-- [Secrets](#secrets)
-  - [Updating Secrets](#updatingsecrets)
-- [Components](#components)
-  - [RDS Clusters](#rdsclusters)
-- [CLI](#cli)
-- [State](#state)
-  - [Sandbox](#sandbox)
-  - [Install Stack](#installstack)
-  - [Actions](#actions)
-  - [Components](#components-1)
-  - [Inputs](#inputs)
-  - [Secrets](#secrets-1)
-  - [Full State](#fullstate)
 
-## Installing Nuon
+<details>
+<summary><strong>Installing Nuon</strong></summary>
 
 Nuon has a few dependencies you must configure ahead of time.
 
@@ -292,7 +264,10 @@ The following secrets are auto-generated and do not need to be provided:
 - `nuon_auth_session_key` - used for session nonce
 - `nuon_auth_jwt_secret` - used to sign JWT tokens
 
-## Application Links
+</details>
+
+<details>
+<summary><strong>Application Links</strong></summary>
 
 Once Nuon is successfully provisioned, you can inspect it at the following URLs.
 
@@ -313,7 +288,10 @@ Once Nuon is successfully provisioned, you can inspect it at the following URLs.
 
 {{ end }}
 
-## Accessing the EKS Cluster
+</details>
+
+<details>
+<summary><strong>Accessing the EKS Cluster</strong></summary>
 
 1. Add an access entry for the relevant role.
 2. Grant the following perms: AWSEKSAdmin, AWSClusterAdmin.gtg
@@ -326,7 +304,10 @@ aws --region {{ .nuon.install_stack.outputs.region }} \
     --alias {{ dig "outputs" "cluster" "name" "$cluster_name" .nuon.sandbox }}
 </pre>
 
-## Secrets
+</details>
+
+<details>
+<summary><strong>Secrets</strong></summary>
 
 The following secrets are created in the CloudFormation stack and then synced into the cluster.
 
@@ -367,14 +348,165 @@ Secrets can be updated by re-provisioning the stack and updating the secret valu
 15. After the sandbox reprovisions, your secrets will sync. At this point, you can accept the full reprovision or simply
     cancel the rest of the workflow.
 
-## Components
+</details>
+
+<details>
+<summary><strong>Runners</strong></summary>
+
+{{ with .nuon.actions.workflows.runners }}
+{{ if .populated }}
+{{ $runnerSettings := .outputs.steps.settings }}
+
+<style>
+.runner-tabs input[type="radio"] { display: none; }
+.runner-tabs label {
+    display: inline-block;
+    padding: 8px 16px;
+    cursor: pointer;
+    border: 1px solid #444;
+    border-bottom: none;
+    border-radius: 4px 4px 0 0;
+    margin-right: 4px;
+    background: transparent;
+}
+.runner-tabs input[type="radio"]:checked + label {
+    background: #2d2d2d;
+    font-weight: bold;
+    border-bottom: 2px solid #2d2d2d;
+}
+.runner-tab-content { display: none; border: 1px solid #444; padding: 16px; border-radius: 0 4px 4px 4px; }
+#runner-tab-org:checked ~ .runner-tab-content.tab-org,
+#runner-tab-install:checked ~ .runner-tab-content.tab-install,
+#runner-tab-settings:checked ~ .runner-tab-content.tab-settings { display: block; }
+</style>
+
+<div class="runner-tabs">
+
+<input type="radio" name="runner-tab" id="runner-tab-install" checked>
+<label for="runner-tab-install">Install Runners</label>
+<input type="radio" name="runner-tab" id="runner-tab-org">
+<label for="runner-tab-org">Org Runners</label>
+<input type="radio" name="runner-tab" id="runner-tab-settings">
+<label for="runner-tab-settings">More Info</label>
+
+<div class="runner-tab-content tab-install">
+
+{{ with .outputs.steps.install }}
+<table>
+    <thead>
+        <tr>
+            <th></th>
+            <th>ID</th>
+            <th>Org ID</th>
+            <th>Tag</th>
+            <th>Created At</th>
+            <th>Updated At</th>
+        </tr>
+    </thead>
+    <tbody>
+    {{range $id, $runner := .}}
+        {{ $settings := dig $id "settings" nil $runnerSettings }}
+        <tr>
+            <td>{{if eq $runner.status "active"}}🟢{{else if eq $runner.status "error"}}🔴{{else}}🟡{{end}}</td>
+            <td><code>{{$runner.id}}</code></td>
+            <td><code>{{$runner.org_id}}</code></td>
+            <td><code>{{if $settings}}{{dig "container_image_tag" "" $settings}}{{end}}</code></td>
+            <td>{{(printf "%sZ" (substr 0 19 $runner.created_at)) | toDate "2006-01-02T15:04:05Z" | date "2006-01-02 15:04"}}</td>
+            <td>{{(printf "%sZ" (substr 0 19 $runner.updated_at)) | toDate "2006-01-02T15:04:05Z" | date "2006-01-02 15:04"}}</td>
+        </tr>
+    {{end}}
+    </tbody>
+</table>
+{{ end }}
+
+</div>
+
+<div class="runner-tab-content tab-org">
+
+{{ with .outputs.steps.org }}
+<table>
+    <thead>
+        <tr>
+            <th></th>
+            <th>ID</th>
+            <th>Org ID</th>
+            <th>Tag</th>
+            <th>Created At</th>
+            <th>Updated At</th>
+        </tr>
+    </thead>
+    <tbody>
+    {{range $id, $runner := .}}
+        {{ $settings := dig $id "settings" nil $runnerSettings }}
+        <tr>
+            <td>{{if eq $runner.status "active"}}🟢{{else if eq $runner.status "error"}}🔴{{else}}🟡{{end}}</td>
+            <td><code>{{$runner.id}}</code></td>
+            <td><code>{{$runner.org_id}}</code></td>
+            <td><code>{{if $settings}}{{dig "container_image_tag" "" $settings}}{{end}}</code></td>
+            <td>{{(printf "%sZ" (substr 0 19 $runner.created_at)) | toDate "2006-01-02T15:04:05Z" | date "2006-01-02 15:04"}}</td>
+            <td>{{(printf "%sZ" (substr 0 19 $runner.updated_at)) | toDate "2006-01-02T15:04:05Z" | date "2006-01-02 15:04"}}</td>
+        </tr>
+    {{end}}
+    </tbody>
+</table>
+{{ end }}
+
+</div>
+
+<div class="runner-tab-content tab-settings">
+
+{{ with .outputs.steps.settings }}
+{{range $id, $runner := .}}
+<details>
+<summary><code>{{$id}}</code> — {{$runner.type}} ({{dig "metadata" "org.name" "unknown" $runner.settings}})</summary>
+
+<ul>
+<li><strong>Type:</strong> {{$runner.type}}</li>
+<li><strong>Org ID:</strong> <code>{{$runner.org_id}}</code></li>
+<li><strong>Platform:</strong> {{dig "metadata" "runner.platform" "unknown" $runner.settings}}</li>
+<li><strong>Image:</strong> <code>{{dig "container_image_url" "" $runner.settings}}:{{dig "container_image_tag" "" $runner.settings}}</code></li>
+<li><strong>Instance Type:</strong> {{dig "aws_instance_type" "" $runner.settings}}</li>
+<li><strong>Max Instance Lifetime:</strong> {{dig "aws_max_instance_lifetime" "" $runner.settings}}</li>
+<li><strong>Logging:</strong> {{dig "enable_logging" "" $runner.settings}} ({{dig "logging_level" "" $runner.settings}})</li>
+<li><strong>Sentry:</strong> {{dig "enable_sentry" "" $runner.settings}}</li>
+<li><strong>Metrics:</strong> {{dig "enable_metrics" "" $runner.settings}}</li>
+<li><strong>Heartbeat Timeout:</strong> {{dig "heart_beat_timeout" "" $runner.settings}}</li>
+<li><strong>Groups:</strong> {{dig "groups" "" $runner.settings}}</li>
+<li><strong>Runner API URL:</strong> {{dig "runner_api_url" "" $runner.settings}}</li>
+<li><strong>Runner Group ID:</strong> <code>{{dig "runner_group_id" "" $runner.settings}}</code></li>
+<li><strong>Created:</strong> {{dig "created_at" "" $runner.settings}}</li>
+<li><strong>Updated:</strong> {{dig "updated_at" "" $runner.settings}}</li>
+</ul>
+
+</details>
+{{end}}
+{{ end }}
+
+</div>
+
+</div>
+
+{{ else }}
+
+> [!WARNING] Waiting on runners action. Run the "runners" action to populate this section.
+
+{{ end }}
+{{ end }}
+
+</details>
+
+<details>
+<summary><strong>Components</strong></summary>
 
 ### RDS Clusters
 
 The nuon cluster is created w/ an admin user and a `nuon` db. This admin user is responsible for creating the `ctl_api`
 user and db. This is done in an [action](/actions/).
 
-## CLI
+</details>
+
+<details>
+<summary><strong>CLI</strong></summary>
 
 Install the latest version of the nuon cli ([docs](https://docs.nuon.co/cli#cli)).
 
@@ -395,3 +527,5 @@ Log in:
 ```yaml
 nuon -f ~/.nuon.byoc login
 ```
+
+</details>
