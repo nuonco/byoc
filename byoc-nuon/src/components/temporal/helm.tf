@@ -68,6 +68,16 @@ resource "helm_release" "temporal" {
           }
 
           frontend = {
+          resources = {
+            requests = {
+              cpu    = "250m"
+              memory = "256Mi"
+            }
+            limits = {
+              cpu    = "500m"
+              memory = "512Mi"
+            }
+          }
           service = {
             annotations = {
               "external-dns.alpha.kubernetes.io/internal-hostname" = local.temporal.frontend_url
@@ -112,6 +122,16 @@ resource "helm_release" "temporal" {
           }
 
           worker = {
+            resources = {
+              requests = {
+                cpu    = "250m"
+                memory = "256Mi"
+              }
+              limits = {
+                cpu    = "500m"
+                memory = "512Mi"
+              }
+            }
             topologySpreadConstraints = [
               {
                 maxSkew           = 1
@@ -150,6 +170,16 @@ resource "helm_release" "temporal" {
           }
 
           matching = {
+            resources = {
+              requests = {
+                cpu    = "250m"
+                memory = "256Mi"
+              }
+              limits = {
+                cpu    = "500m"
+                memory = "512Mi"
+              }
+            }
             topologySpreadConstraints = [
               {
                 maxSkew           = 1
@@ -188,6 +218,16 @@ resource "helm_release" "temporal" {
           }
 
           history = {
+            resources = {
+              requests = {
+                cpu    = "500m"
+                memory = "512Mi"
+              }
+              limits = {
+                cpu    = "1000m"
+                memory = "1024Mi"
+              }
+            }
             topologySpreadConstraints = [
               {
                 maxSkew           = 1
@@ -230,6 +270,16 @@ resource "helm_release" "temporal" {
           image = {
             repository = var.temporal_admin_tools_image_repository
             tag        = var.temporal_admin_tools_image_tag
+          }
+          resources = {
+            requests = {
+              cpu    = "100m"
+              memory = "128Mi"
+            }
+            limits = {
+              cpu    = "250m"
+              memory = "256Mi"
+            }
           }
           topologySpreadConstraints = [
             {
@@ -278,6 +328,16 @@ resource "helm_release" "temporal" {
           image = {
             repository = var.temporal_web_image_repository
             tag        = var.temporal_web_image_tag
+          }
+          resources = {
+            requests = {
+              cpu    = "100m"
+              memory = "128Mi"
+            }
+            limits = {
+              cpu    = "250m"
+              memory = "256Mi"
+            }
           }
           topologySpreadConstraints = [
             {
