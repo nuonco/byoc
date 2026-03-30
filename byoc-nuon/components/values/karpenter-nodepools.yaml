@@ -63,16 +63,6 @@ nodepools:
       memory: "500Gi"
     expireAfter: "72h"
     disruption:
-      budgets:
-        - nodes: "1" # allow empty nodes to be consolidated
-          reasons:
-          - "Empty"
-          - "Drifted"
-        - nodes: "1"
-          schedule: "0 6 * * 1,2,3,4,5" # https://crontab.guru/#0_6_*_*_1,2,3,4,5
-          duration: "22h"
-          reasons:
-          - "Underutilized"
       consolidationPolicy: "WhenEmptyOrUnderutilized"
       consolidateAfter: "30s"
 
@@ -84,16 +74,6 @@ nodepools:
       memory: "500Gi"
     expireAfter: "72h"
     disruption:
-      budgets:
-        - nodes: "1" # allow empty nodes to be consolidated
-          reasons:
-          - "Empty"
-          - "Drifted"
-        - nodes: "1"
-          schedule: "0 6 * * 1,2,3,4,5" # https://crontab.guru/#0_6_*_*_1,2,3,4,5
-          duration: "22h"
-          reasons:
-          - "Underutilized"
       consolidationPolicy: "WhenEmptyOrUnderutilized"
       consolidateAfter: "30s"
     zones:
