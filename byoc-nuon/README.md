@@ -20,43 +20,12 @@ $public_domain }}/docs/index.html)</small>
 
 </center>
 
-<div>
-    <table style="width:100%">
-        <thead>
-            <tr>
-                <th></th>
-                <th>Monitor</th>
-                <th>Status</th>
-                <th>Outputs</th>
-            </tr>
-        </thead>
-        <tbody>
-        {{ if .nuon.actions.populated }}
-            {{range $name, $action := .nuon.actions.workflows}}
-                {{if contains "healthcheck" $name}}
-                    <tr>
-                        <td style="width: 1rem">
-                        {{with $action.status}}
-                            {{if eq . "error"}}
-                                🔴
-                            {{else if eq . "finished"}}
-                                🟢
-                            {{else}}
-                                🟡
-                            {{end}}
-                        {{end}}
-                        </td>
-                        <td>{{$name}}</td>
-                        <td>{{$action.status}}</td>
-                        <td><pre style="margin-top: 0; margin-bottom: 0">{{$action.outputs}}</pre></td>
-                    </tr>
-                {{end}}
-            {{end}}
-        {{ end }}
-        </tbody>
-    </table>
-
-</div>
+| | Monitor | Status | Outputs |
+|---|---------|--------|---------|
+{{ if .nuon.actions.populated }}{{range $name, $action := .nuon.actions.workflows}}{{if contains "healthcheck" $name}}| {{with
+  $action.status}}{{if eq . "error"}}🔴{{else if eq . "finished"}}🟢{{else}}🟡{{end}}{{end}} | {{$name}} | {{$action.status}} |
+  `{{$action.outputs}}` |
+  {{end}}{{end}}{{ end }}
 
 
 <details>
