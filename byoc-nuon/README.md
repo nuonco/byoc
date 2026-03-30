@@ -20,43 +20,12 @@ $public_domain }}/docs/index.html)</small>
 
 </center>
 
-<div>
-    <table style="width:100%">
-        <thead>
-            <tr>
-                <th></th>
-                <th>Monitor</th>
-                <th>Status</th>
-                <th>Outputs</th>
-            </tr>
-        </thead>
-        <tbody>
-        {{ if .nuon.actions.populated }}
-            {{range $name, $action := .nuon.actions.workflows}}
-                {{if contains "healthcheck" $name}}
-                    <tr>
-                        <td style="width: 1rem">
-                        {{with $action.status}}
-                            {{if eq . "error"}}
-                                🔴
-                            {{else if eq . "finished"}}
-                                🟢
-                            {{else}}
-                                🟡
-                            {{end}}
-                        {{end}}
-                        </td>
-                        <td>{{$name}}</td>
-                        <td>{{$action.status}}</td>
-                        <td><pre style="margin-top: 0; margin-bottom: 0">{{$action.outputs}}</pre></td>
-                    </tr>
-                {{end}}
-            {{end}}
-        {{ end }}
-        </tbody>
-    </table>
-
-</div>
+| | Monitor | Status | Outputs |
+|---|---------|--------|---------|
+{{ if .nuon.actions.populated }}{{range $name, $action := .nuon.actions.workflows}}{{if contains "healthcheck" $name}}| {{with
+  $action.status}}{{if eq . "error"}}🔴{{else if eq . "finished"}}🟢{{else}}🟡{{end}}{{end}} | {{$name}} | {{$action.status}} |
+  `{{$action.outputs}}` |
+  {{end}}{{end}}{{ end }}
 
 
 <details>
@@ -363,18 +332,23 @@ Secrets can be updated by re-provisioning the stack and updating the secret valu
     display: inline-block;
     padding: 8px 16px;
     cursor: pointer;
-    border: 1px solid #444;
+    border: 1px solid #d0d0d0;
     border-bottom: none;
     border-radius: 4px 4px 0 0;
     margin-right: 4px;
     background: transparent;
 }
 .runner-tabs input[type="radio"]:checked + label {
-    background: #2d2d2d;
+    background: #f0f0f0;
     font-weight: bold;
-    border-bottom: 2px solid #2d2d2d;
+    border-bottom: 2px solid #f0f0f0;
 }
-.runner-tab-content { display: none; border: 1px solid #444; padding: 16px; border-radius: 0 4px 4px 4px; }
+.runner-tab-content { display: none; border: 1px solid #d0d0d0; padding: 16px; border-radius: 0 4px 4px 4px; }
+@media (prefers-color-scheme: dark) {
+    .runner-tabs label { border-color: #444; }
+    .runner-tabs input[type="radio"]:checked + label { background: #2d2d2d; border-bottom-color: #2d2d2d; }
+    .runner-tab-content { border-color: #444; }
+}
 #runner-tab-org:checked ~ .runner-tab-content.tab-org,
 #runner-tab-install:checked ~ .runner-tab-content.tab-install,
 #runner-tab-settings:checked ~ .runner-tab-content.tab-settings { display: block; }
@@ -392,31 +366,12 @@ Secrets can be updated by re-provisioning the stack and updating the secret valu
 <div class="runner-tab-content tab-install">
 
 {{ with .outputs.steps.install }}
-<table>
-    <thead>
-        <tr>
-            <th></th>
-            <th>ID</th>
-            <th>Org ID</th>
-            <th>Tag</th>
-            <th>Created At</th>
-            <th>Updated At</th>
-        </tr>
-    </thead>
-    <tbody>
-    {{range $id, $runner := .}}
-        {{ $settings := dig $id "settings" nil $runnerSettings }}
-        <tr>
-            <td>{{if eq $runner.status "active"}}🟢{{else if eq $runner.status "error"}}🔴{{else}}🟡{{end}}</td>
-            <td><code>{{$runner.id}}</code></td>
-            <td><code>{{$runner.org_id}}</code></td>
-            <td><code>{{if $settings}}{{dig "container_image_tag" "" $settings}}{{end}}</code></td>
-            <td>{{(printf "%sZ" (substr 0 19 $runner.created_at)) | toDate "2006-01-02T15:04:05Z" | date "2006-01-02 15:04"}}</td>
-            <td>{{(printf "%sZ" (substr 0 19 $runner.updated_at)) | toDate "2006-01-02T15:04:05Z" | date "2006-01-02 15:04"}}</td>
-        </tr>
-    {{end}}
-    </tbody>
-</table>
+
+| | ID | Org ID | Tag | Created At | Updated At |
+|---|---|---|---|---|---|
+{{range $id, $runner := .}}{{ $settings := dig $id "settings" nil $runnerSettings }}| {{if eq $runner.status "active"}}🟢{{else if eq $runner.status "error"}}🔴{{else}}🟡{{end}} | `{{$runner.id}}` | `{{$runner.org_id}}` | `{{if $settings}}{{dig "container_image_tag" "" $settings}}{{end}}` | {{(printf "%sZ" (substr 0 19 $runner.created_at)) | toDate "2006-01-02T15:04:05Z" | date "2006-01-02 15:04"}} | {{(printf "%sZ" (substr 0 19 $runner.updated_at)) | toDate "2006-01-02T15:04:05Z" | date "2006-01-02 15:04"}} |
+{{end}}
+
 {{ end }}
 
 </div>
@@ -424,31 +379,12 @@ Secrets can be updated by re-provisioning the stack and updating the secret valu
 <div class="runner-tab-content tab-org">
 
 {{ with .outputs.steps.org }}
-<table>
-    <thead>
-        <tr>
-            <th></th>
-            <th>ID</th>
-            <th>Org ID</th>
-            <th>Tag</th>
-            <th>Created At</th>
-            <th>Updated At</th>
-        </tr>
-    </thead>
-    <tbody>
-    {{range $id, $runner := .}}
-        {{ $settings := dig $id "settings" nil $runnerSettings }}
-        <tr>
-            <td>{{if eq $runner.status "active"}}🟢{{else if eq $runner.status "error"}}🔴{{else}}🟡{{end}}</td>
-            <td><code>{{$runner.id}}</code></td>
-            <td><code>{{$runner.org_id}}</code></td>
-            <td><code>{{if $settings}}{{dig "container_image_tag" "" $settings}}{{end}}</code></td>
-            <td>{{(printf "%sZ" (substr 0 19 $runner.created_at)) | toDate "2006-01-02T15:04:05Z" | date "2006-01-02 15:04"}}</td>
-            <td>{{(printf "%sZ" (substr 0 19 $runner.updated_at)) | toDate "2006-01-02T15:04:05Z" | date "2006-01-02 15:04"}}</td>
-        </tr>
-    {{end}}
-    </tbody>
-</table>
+
+| | ID | Org ID | Tag | Created At | Updated At |
+|---|---|---|---|---|---|
+{{range $id, $runner := .}}{{ $settings := dig $id "settings" nil $runnerSettings }}| {{if eq $runner.status "active"}}🟢{{else if eq $runner.status "error"}}🔴{{else}}🟡{{end}} | `{{$runner.id}}` | `{{$runner.org_id}}` | `{{if $settings}}{{dig "container_image_tag" "" $settings}}{{end}}` | {{(printf "%sZ" (substr 0 19 $runner.created_at)) | toDate "2006-01-02T15:04:05Z" | date "2006-01-02 15:04"}} | {{(printf "%sZ" (substr 0 19 $runner.updated_at)) | toDate "2006-01-02T15:04:05Z" | date "2006-01-02 15:04"}} |
+{{end}}
+
 {{ end }}
 
 </div>
