@@ -5,10 +5,10 @@ env:
 grantIAMAuth: true
 
 nodeSelector:
-  pool.nuon.co: "ctl-api-worker"
+  pool.nuon.co: "private"
 
 tolerations:
   - key: "pool.nuon.co"
     operator: "Equal"
-    value: "ctl-api-worker"
+    value: "private"
     effect: "NoSchedule"
