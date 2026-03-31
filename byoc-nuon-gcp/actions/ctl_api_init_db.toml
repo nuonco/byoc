@@ -1,0 +1,20 @@
+# action
+name    = "ctl_api_init_db"
+timeout = "5m"
+
+[[triggers]]
+type           = "pre-deploy-component"
+component_name = "ctl_api"
+
+[[triggers]]
+type = "manual"
+
+[[steps]]
+name            = "Initialize the DB"
+inline_contents = "./src/ctl-api/init-db.sh"
+
+[steps.env_vars]
+DB_USER = "{{ .nuon.components.cloudsql_nuon.outputs.db_instance_username }}"
+DB_NAME = "postgres"
+DB_ADDR = "{{ .nuon.components.cloudsql_nuon.outputs.address }}"
+DB_PORT = "5432"

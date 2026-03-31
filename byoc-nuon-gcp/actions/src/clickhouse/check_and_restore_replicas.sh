@@ -1,0 +1,1 @@
+../../../../shared/actions/src/clickhouse/check_and_restore_replicas.sh

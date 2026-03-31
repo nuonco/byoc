@@ -1,0 +1,15 @@
+#:schema https://api.nuon.co/v1/general/config-schema?type=terraform
+name              = "certificate_wildcard_public"
+type              = "terraform_module"
+terraform_version = "1.11.3"
+
+[public_repo]
+repo      = "nuonco/byoc"
+directory = "byoc-nuon-gcp/src/components/certificate"
+branch    = "main"
+
+[vars]
+install_id    = "{{ .nuon.install.id }}"
+project_id    = "{{ .nuon.install_stack.outputs.project_id }}"
+domain_name   = "*.{{ .nuon.sandbox.outputs.nuon_dns.public_domain.name }}"
+dns_zone_name = "{{ .nuon.sandbox.outputs.nuon_dns.public_domain.zone_id }}"

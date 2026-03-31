@@ -1,0 +1,5 @@
+name         = "datadog_enabled"
+description  = "Enable or disable the Datadog component"
+default      = "false"
+display_name = "Enable Datadog"
+group        = "datadog"

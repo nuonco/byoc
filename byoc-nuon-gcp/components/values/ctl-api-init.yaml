@@ -1,0 +1,5 @@
+---
+env:
+  ENV: prod
+
+grantIAMAuth: false

@@ -1,0 +1,1 @@
+../../../../shared/actions/src/ctl-api/promote.sh

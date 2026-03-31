@@ -1,0 +1,9 @@
+type           = "maintenance"
+name           = "{{.nuon.install.id}}-maintenance"
+description    = "Operate the running stack: upgrades, scaling, DNS, secrets rotation."
+display_name   = "maintenance"
+cloud_platform = "gcp"
+
+[[policies]]
+name                = "owner"
+gcp_predefined_role = "roles/owner"

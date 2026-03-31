@@ -1,0 +1,27 @@
+# action
+# description: creates k8s secret nuon-db in the ctl-api namespace from
+# the cloudsql_nuon Terraform outputs so ctl-api pods can authenticate
+# to Cloud SQL.
+name    = "nuon_cloudsql_creds"
+timeout = "1m"
+
+[[triggers]]
+type           = "post-deploy-component"
+component_name = "cloudsql_nuon"
+
+[[triggers]]
+type = "manual"
+
+[[steps]]
+name = "Copy Cloud SQL secret for CTL API deployment"
+inline_contents = """
+#!/usr/bin/env bash
+set -euo pipefail
+
+kubectl create -n ctl-api secret generic nuon-db \
+  --save-config    \
+  --dry-run=client \
+  --from-literal=username="{{ .nuon.components.cloudsql_nuon.outputs.db_instance_username }}" \
+  --from-literal=password="{{ .nuon.components.cloudsql_nuon.outputs.db_password }}" \
+  -o yaml | kubectl apply -f -
+"""

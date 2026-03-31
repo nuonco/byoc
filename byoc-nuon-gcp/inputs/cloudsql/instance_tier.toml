@@ -1,0 +1,7 @@
+name         = "nuon_db_instance_tier"
+description  = "Cloud SQL machine tier for the Nuon database (e.g. db-custom-2-8192)."
+display_name = "Nuon DB Instance Tier"
+default      = "db-custom-2-8192"
+group        = "cloudsql"
+
+user_configurable = false

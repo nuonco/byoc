@@ -1,0 +1,4 @@
+#:schema https://api.nuon.co/v1/general/config-schema?type=inputs
+name         = "cloudsql"
+description  = "Cloud SQL Configuration for the Nuon database"
+display_name = "Cloud SQL (Nuon)"

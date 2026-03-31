@@ -1,0 +1,237 @@
+---
+env:
+  ENV: byoc
+  LOG_LEVEL: INFO
+  MIDDLEWARES: tracer,public_metrics,error,public,size,global,auth,org,log,offset_pagination,invites,headers,cors,config,patcher,panicker
+  RUNNER_MIDDLEWARES: tracer,runner_metrics,error,size,public,auth,runner_org,log,offset_pagination,headers,cors,config,patcher,panicker
+  INTERNAL_MIDDLEWARES: tracer,internal_metrics,error,size,public,log,global,config,admin,offset_pagination,cors,config,patcher,panicker
+  GIN_MODE: "release"
+
+  DB_HOST: "{{ .nuon.components.cloudsql_nuon.outputs.address }}"
+  DB_NAME: "ctl_api"
+  DB_USER: "{{ .nuon.components.ctl_api_wi.outputs.db_user }}"
+  DB_USE_SSL: "true"
+  DB_SSL_MODE: require
+  DB_USE_ZAP: "true"
+  DB_USE_IAM: "true"
+  CLOUD_PROVIDER: gcp
+  DB_MIGRATIONS_PATH: /migrations
+  DB_REGION: "{{ .nuon.install_stack.outputs.region }}"
+  APP_REGION: "{{ .nuon.install_stack.outputs.region }}"
+
+  ROOT_DOMAIN: "{{ .nuon.sandbox.outputs.nuon_dns.public_domain.name }}"
+
+  # Auth0 config (legacy, non-empty placeholders)
+  AUTH0_ISSUER_URL: '{{ or .nuon.inputs.inputs.auth_issuer_url "auth_issuer_url" }}'
+  AUTH0_AUDIENCE: '{{ or .nuon.inputs.inputs.auth_audience "auth_audience" }}'
+  AUTH0_CLIENT_ID: '{{ or .nuon.inputs.inputs.auth_client_id_ctl_api "auth_client_id_ctl_api" }}'
+
+  # OIDC config
+  NUON_AUTH_PROVIDER_TYPE: "{{ .nuon.inputs.inputs.nuon_auth_provider_type }}"
+  NUON_AUTH_CLIENT_ID: '{{ or .nuon.inputs.inputs.nuon_auth_client_id "nuon_auth_client_id" }}'
+  NUON_AUTH_ISSUER_URL: '{{ or .nuon.inputs.inputs.nuon_auth_issuer_url "nuon_auth_issuer_url" }}'
+  NUON_AUTH_REDIRECT_URL: "https://auth.{{ .nuon.sandbox.outputs.nuon_dns.public_domain.name }}/auth"
+  NUON_AUTH_ALLOWED_DOMAINS: '{{ or .nuon.inputs.inputs.nuon_auth_allowed_domains "" }}'
+  NUON_AUTH_ALLOW_ALL_USERS: '{{ or .nuon.inputs.inputs.nuon_auth_allow_all_users "false" }}'
+  NUON_AUTH_CLIENT_SECRET: "dne"
+  NUON_AUTH_SESSION_KEY: "dne"
+
+  EVALUATION_JOURNEY_ENABLED: "false"
+
+  CLICKHOUSE_DB_PORT: !!string 9000
+  CLICKHOUSE_DB_USE_TLS: "false"
+  CLICKHOUSE_DB_HOST: "{{ .nuon.components.clickhouse_cluster.outputs.service }}"
+  CLICKHOUSE_DB_NAME: "ctl_api"
+  CLICKHOUSE_DB_USER: clickhouse
+
+  HTTP_PORT: !!string 8081
+  INTERNAL_HTTP_PORT: !!string 8082
+  RUNNER_HTTP_PORT: !!string 8083
+  GRACEFUL_SHUTDOWN_TIMEOUT: 10s
+  RUNNER_CONTAINER_IMAGE_TAG: "0.19.855"
+  RUNNER_CONTAINER_IMAGE_URL: "{{ .nuon.inputs.inputs.runner_image_url }}"
+
+  GITHUB_APP_ID: !!string {{ .nuon.inputs.inputs.github_app_id }}
+  INTEGRATION_GITHUB_INSTALL_ID: !!string 00000000
+
+  INTERNAL_SLACK_WEBHOOK_URL: |-
+    https://hooks.slack.com/services/xxxxxxxxxxx/xxxxxxxxxxx/xxxxxxxxxxxxxxxxxxxxxxxx
+
+  # GCP: install templates bucket
+  GCS_INSTALL_TEMPLATE_BUCKET: "{{ .nuon.components.gcs_buckets.outputs.install_template_bucket.name }}"
+
+  APP_URL: https://app.{{ .nuon.sandbox.outputs.nuon_dns.public_domain.name }}
+  PUBLIC_API_URL: https://api.{{ .nuon.sandbox.outputs.nuon_dns.public_domain.name }}
+  RUNNER_API_URL: https://runner.{{ .nuon.sandbox.outputs.nuon_dns.public_domain.name }}
+  ADMIN_API_URL: https://admin.{{ .nuon.sandbox.outputs.nuon_dns.internal_domain.name }}
+
+  TEMPORAL_HOST: temporal-frontend-headless.temporal.svc.cluster.local:7233
+  TEMPORAL_MAX_CONCURRENT_ACTIVITIES: !!string 3500
+  TEMPORAL_STICKY_WORKFLOW_CACHE_SIZE: !!string 10000
+  TEMPORAL_UI_URL: http://temporal-ui.temporal.svc.cluster.local:8080
+  SANDBOX_MODE_SLEEP: 1s
+
+  SEGMENT_WRITE_KEY: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+  LOOPS_API_KEY: "{{ .nuon.inputs.inputs.loops_api_key }}"
+
+  # GCP management
+  MANAGEMENT_GAR_REPOSITORY_URL: "{{ .nuon.components.management.outputs.gar.repository_url }}"
+  MANAGEMENT_ACCOUNT_ID: "{{ .nuon.install_stack.outputs.project_id }}"
+
+  DNS_ROOT_DOMAIN: "{{ .nuon.components.management.outputs.dns_zone.domain }}"
+  DNS_ZONE_ID: "{{ .nuon.components.management.outputs.dns_zone.name }}"
+
+  # Org runner cluster configuration
+  ORG_RUNNER_K8S_CA_DATA: "{{ .nuon.components.management.outputs.cluster.certificate_authority_data }}"
+  ORG_RUNNER_K8S_CLUSTER_ID: "{{ .nuon.components.management.outputs.cluster.name }}"
+  ORG_RUNNER_K8S_PUBLIC_ENDPOINT: "{{ .nuon.components.management.outputs.cluster.endpoint }}"
+  ORG_RUNNER_K8S_USE_DEFAULT_CREDS: !!string true
+  ORG_RUNNER_REGION: "{{ .nuon.install_stack.outputs.region }}"
+  ORG_RUNNER_HELM_CHART_DIR: /bundle/helm
+  ORG_RUNNER_INSTANCE_TYPE: e2-standard-4
+
+  TEMPORAL_WORKFLOW_FAILURE_PANIC: "true"
+
+envSecrets:
+  - name: "GITHUB_APP_KEY"
+    valueFrom:
+      name: github-app-key
+      key: value
+  - name: "CLICKHOUSE_DB_PASSWORD"
+    valueFrom:
+      name: clickhouse-cluster-pw
+      key: value
+
+image:
+  repository: "{{ .nuon.components.img_nuon_ctl_api.outputs.image.repository }}"
+  tag: "{{ .nuon.components.img_nuon_ctl_api.outputs.image.tag }}"
+
+worker:
+  instances:
+    - namespace: orgs
+      minReplicas: 2
+      maxReplicas: 10
+      command: ["/bin/service", "worker", "--namespace=orgs"]
+    - namespace: actions
+      minReplicas: 2
+      maxReplicas: 10
+      command: ["/bin/service", "worker", "--namespace=actions"]
+    - namespace: apps
+      minReplicas: 2
+      maxReplicas: 5
+      command: ["/bin/service", "worker", "--namespace=apps"]
+    - namespace: components
+      minReplicas: 2
+      maxReplicas: 5
+      command: ["/bin/service", "worker", "--namespace=components"]
+    - namespace: installs
+      minReplicas: 2
+      maxReplicas: 10
+      command: ["/bin/service", "worker", "--namespace=installs"]
+      resources:
+        limits:
+          cpu: 1000m
+          memory: 2048Mi
+        requests:
+          cpu: 500m
+          memory: 1024Mi
+      extraEnv:
+        - name: TEMPORAL_STICKY_WORKFLOW_CACHE_SIZE
+          value: !!string 1000
+    - namespace: releases
+      minReplicas: 2
+      maxReplicas: 5
+      command: ["/bin/service", "worker", "--namespace=releases"]
+    - namespace: general
+      minReplicas: 2
+      maxReplicas: 5
+      command: ["/bin/service", "worker", "--namespace=general"]
+    - namespace: runners
+      minReplicas: 2
+      maxReplicas: 10
+      command: ["/bin/service", "worker", "--namespace=runners"]
+      resources:
+        limits:
+          cpu: 500m
+          memory: 1024Mi
+        requests:
+          cpu: 500m
+          memory: 512Mi
+      extraEnv:
+        - name: TEMPORAL_STICKY_WORKFLOW_CACHE_SIZE
+          value: !!string 1000
+  autoscaling:
+    targetCPUUtilizationPercentage: 75
+    targetMemoryUtilizationPercentage: 75
+  resources:
+    limits:
+      cpu: 500m
+      memory: 512Mi
+    requests:
+      cpu: 250m
+      memory: 256Mi
+
+api:
+  liveness_probe: /livez
+  readiness_probe: /readyz
+
+  resources:
+    limits:
+      cpu: 500m
+      memory: 1024Mi
+    requests:
+      cpu: 250m
+      memory: 256Mi
+
+  public:
+    port: 8081
+    domain: "api.{{ .nuon.sandbox.outputs.nuon_dns.public_domain.name }}"
+    autoscaling:
+      minReplicas: 4
+      maxReplicas: 10
+      targetCPUUtilizationPercentage: 50
+      targetMemoryUtilizationPercentage: 50
+  admin:
+    port: 8082
+    domain: "admin.{{ .nuon.sandbox.outputs.nuon_dns.internal_domain.name }}"
+    autoscaling:
+      minReplicas: 2
+      maxReplicas: 10
+      targetCPUUtilizationPercentage: 50
+      targetMemoryUtilizationPercentage: 50
+  runner:
+    port: 8083
+    domain: "runner.{{ .nuon.sandbox.outputs.nuon_dns.public_domain.name }}"
+    autoscaling:
+      minReplicas: 4
+      maxReplicas: 10
+      targetCPUUtilizationPercentage: 35
+      targetMemoryUtilizationPercentage: 40
+  auth:
+    port: 8084
+    domain: "auth.{{ .nuon.sandbox.outputs.nuon_dns.public_domain.name }}"
+    autoscaling:
+      minReplicas: 2
+      maxReplicas: 4
+      targetCPUUtilizationPercentage: 80
+      targetMemoryUtilizationPercentage: 80
+
+auth:
+  enabled: {{ if or (eq "google" .nuon.inputs.inputs.nuon_auth_provider_type) (eq "oidc" .nuon.inputs.inputs.nuon_auth_provider_type) }}true{{ else }}false{{ end }}
+  envSecrets:
+    - name: "NUON_AUTH_CLIENT_SECRET"
+      valueFrom:
+        name: ctl-api-auth-client-secret
+        key: value
+    - name: "NUON_AUTH_SESSION_KEY"
+      valueFrom:
+        name: ctl-api-auth-session-key
+        key: value
+
+gcp:
+  certMap: "{{ .nuon.components.certificate_wildcard_public.outputs.cert_map_name }}"
+
+serviceAccount:
+  name: ctl-api
+  annotations:
+    iam.gke.io/gcp-service-account: "{{ .nuon.components.ctl_api_wi.outputs.service_account_email }}"

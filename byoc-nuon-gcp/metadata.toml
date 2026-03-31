@@ -1,0 +1,5 @@
+version = "v2"
+
+description  = "Nuon - Bring your own cloud (GCP)"
+display_name = "BYOC Nuon GCP"
+readme       = "./README.md"

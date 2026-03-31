@@ -1,0 +1,42 @@
+# action
+# description: grants the ctl_api PostgreSQL role to the Workload Identity
+# service account. Must run after ctl_api_init_db (which creates the role)
+# and ctl_api_wi (which creates the IAM user in Cloud SQL).
+name    = "ctl_api_grant_wi"
+timeout = "2m"
+
+[[triggers]]
+type           = "pre-deploy-component"
+component_name = "ctl_api"
+index          = 5
+
+[[triggers]]
+type = "manual"
+
+[[steps]]
+name = "Grant ctl_api role to WI user"
+inline_contents = """
+#!/usr/bin/env bash
+set -euo pipefail
+
+PGHOST="{{ .nuon.components.cloudsql_nuon.outputs.address }}"
+PGUSER=$(kubectl get -n ctl-api secret nuon-db -o jsonpath='{.data.username}' | base64 -d)
+PGPASSWORD=$(kubectl get -n ctl-api secret nuon-db -o jsonpath='{.data.password}' | base64 -d)
+WI_USER="{{ .nuon.components.ctl_api_wi.outputs.db_user }}"
+
+echo "[ctl-api-grant-wi] scale up ctl-api-init"
+kubectl scale -n ctl-api --replicas=1 deployment/ctl-api-init
+kubectl wait deployment -n ctl-api ctl-api-init --for condition=Available=True --timeout=300s
+
+pod=$(kubectl -n ctl-api get pods --selector app=ctl-api-init -o json | jq -r '.items[0].metadata.name')
+
+echo "[ctl-api-grant-wi] granting ctl_api role to $WI_USER"
+kubectl --namespace=ctl-api exec -i $pod -- \
+  env "PGHOST=$PGHOST" "PGPORT=5432" "PGUSER=$PGUSER" "PGPASSWORD=$PGPASSWORD" \
+  psql --no-psqlrc -d ctl_api -c "GRANT ctl_api TO \\\"${WI_USER}\\\";"
+
+echo "[ctl-api-grant-wi] scale down ctl-api-init"
+kubectl scale -n ctl-api --current-replicas=1 --replicas=0 deployment/ctl-api-init
+
+echo "[ctl-api-grant-wi] done"
+"""

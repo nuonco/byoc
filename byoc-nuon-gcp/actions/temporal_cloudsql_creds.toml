@@ -1,0 +1,27 @@
+# action
+# description: creates k8s secret temporal-db in the temporal namespace from
+# the cloudsql_temporal Terraform outputs so temporal-init and temporal pods
+# can authenticate to Cloud SQL.
+name    = "temporal_cloudsql_creds"
+timeout = "1m"
+
+[[triggers]]
+type           = "post-deploy-component"
+component_name = "cloudsql_temporal"
+
+[[triggers]]
+type = "manual"
+
+[[steps]]
+name = "Copy Cloud SQL secret for Temporal deployment"
+inline_contents = """
+#!/usr/bin/env bash
+set -euo pipefail
+
+kubectl create -n temporal secret generic temporal-db \
+  --save-config    \
+  --dry-run=client \
+  --from-literal=username="{{ .nuon.components.cloudsql_temporal.outputs.db_instance_username }}" \
+  --from-literal=password="{{ .nuon.components.cloudsql_temporal.outputs.db_password }}" \
+  -o yaml | kubectl apply -f -
+"""

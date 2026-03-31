@@ -1,0 +1,4 @@
+#:schema https://api.nuon.co/v1/general/config-schema?type=inputs
+name         = "dns"
+description  = "DNS Configurations"
+display_name = "Configurations for the root domain for Cloud DNS"

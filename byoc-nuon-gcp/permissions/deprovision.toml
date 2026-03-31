@@ -1,0 +1,9 @@
+type           = "deprovision"
+name           = "{{.nuon.install.id}}-deprovision"
+description    = "Tear down all BYOC Nuon infrastructure on GCP."
+display_name   = "deprovision"
+cloud_platform = "gcp"
+
+[[policies]]
+name                = "owner"
+gcp_predefined_role = "roles/owner"

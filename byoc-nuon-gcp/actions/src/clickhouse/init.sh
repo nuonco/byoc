@@ -1,0 +1,1 @@
+../../../../shared/actions/src/clickhouse/init.sh

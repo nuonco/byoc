@@ -1,0 +1,48 @@
+---
+fullnameOverride: temporal
+
+cassandra:
+  enabled: false
+elasticsearch:
+  enabled: false
+grafana:
+  enabled: false
+mysql:
+  enabled: false
+postgresql:
+  enabled: true
+prometheus:
+  enabled: false
+
+schema:
+  setup:
+    enabled: false
+  update:
+    enabled: false
+
+server:
+  replicaCount: 5
+  dynamicConfig:
+     limit.historySize.error:
+      - value: 209715200
+     limit.blobSize.error:
+      - value: 5242880
+  config:
+    prometheus:
+      framework: opentelemetry
+      listenAddress: "0.0.0.0:9090"
+    persistence:
+      default:
+        driver: sql
+        sql:
+          database: temporal
+          driver: postgres12
+          maxConnLifetime: 1h
+          maxConns: 2
+      visibility:
+        driver: sql
+        sql:
+          database: temporal_visibility
+          driver: postgres12
+          maxConnLifetime: 1h
+          maxConns: 2
