@@ -1,6 +1,1 @@
-name   = "img_temporal_server"
-type   = "container_image"
-
-[public]
-image_url = "temporalio/server"
-tag       = "1.26.2"
+../../shared/components/4-image-temporal_server.toml

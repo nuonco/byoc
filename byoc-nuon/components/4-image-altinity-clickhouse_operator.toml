@@ -1,6 +1,1 @@
-name   = "img_altinity_clickhouse_operator"
-type   = "container_image"
-
-[public]
-image_url = "altinity/clickhouse-operator"
-tag       = "0.24.5"
+../../shared/components/4-image-altinity-clickhouse_operator.toml

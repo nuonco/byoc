@@ -124,6 +124,13 @@ image:
   tag: "{{ .nuon.components.img_nuon_ctl_api.outputs.image.tag }}"
 
 worker:
+  nodeSelector:
+    pool.nuon.co: ctl-api-worker
+  tolerations:
+    - key: "pool.nuon.co"
+      operator: "Equal"
+      value: ctl-api-worker
+      effect: "NoSchedule"
   instances:
     - namespace: orgs
       minReplicas: 2
@@ -202,6 +209,13 @@ worker:
     - {{.nuon.install_stack.outputs.region}}b
 
 api:
+  nodeSelector:
+    pool.nuon.co: "public"
+  tolerations:
+    - key: "pool.nuon.co"
+      operator: "Equal"
+      value: "public"
+      effect: "NoSchedule"
   liveness_probe: /livez
   readiness_probe: /readyz
 

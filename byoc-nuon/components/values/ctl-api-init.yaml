@@ -1,3 +1,14 @@
 ---
 env:
   ENV: prod
+
+grantIAMAuth: true
+
+nodeSelector:
+  pool.nuon.co: "ctl-api-worker"
+
+tolerations:
+  - key: "pool.nuon.co"
+    operator: "Equal"
+    value: "ctl-api-worker"
+    effect: "NoSchedule"

@@ -79,6 +79,14 @@ ui:
       cpu: 1000m
       memory: 1024Mi
 
+  nodeSelector:
+    pool.nuon.co: "public"
+  tolerations:
+    - key: "pool.nuon.co"
+      operator: "Equal"
+      value: "public"
+      effect: "NoSchedule"
+
   alb:
     public_domain: "app.{{ .nuon.sandbox.outputs.nuon_dns.public_domain.name }}"
     public_domain_certificate:

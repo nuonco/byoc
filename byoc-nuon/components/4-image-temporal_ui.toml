@@ -1,6 +1,1 @@
-name   = "img_temporal_ui"
-type   = "container_image"
-
-[public]
-image_url = "temporalio/ui"
-tag       = "2.34.0"
+../../shared/components/4-image-temporal_ui.toml

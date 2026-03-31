@@ -1,6 +1,1 @@
-name   = "img_clickhouse_metrics_exporter"
-type   = "container_image"
-
-[public]
-image_url = "altinity/metrics-exporter"
-tag       = "0.24.5"
+../../shared/components/4-image-altinity-clickhouse_metrics_exporter.toml

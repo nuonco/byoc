@@ -1,6 +1,1 @@
-name   = "img_clickhouse_keeper"
-type   = "container_image"
-
-[public]
-image_url = "clickhouse/clickhouse-keeper"
-tag       = "24.3.7"
+../../shared/components/4-image-clickhouse_keeper.toml

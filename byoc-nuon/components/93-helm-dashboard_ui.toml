@@ -9,7 +9,7 @@ dependencies = ["ctl_api"]
 
 [public_repo]
 repo      = "nuonco/byoc"
-directory = "byoc-nuon/src/components/dashboard_ui"
+directory = "shared/src/components/dashboard_ui"
 branch    = "main"
 
 [[values_file]]

@@ -11,3 +11,12 @@ db:
 temporal:
   sql:
     plugin: "postgres12"
+
+nodeSelector:
+  pool.nuon.co: "temporal"
+
+tolerations:
+  - key: "pool.nuon.co"
+    operator: "Equal"
+    value: "temporal"
+    effect: "NoSchedule"
