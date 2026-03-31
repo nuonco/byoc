@@ -1,0 +1,23 @@
+# action
+# description: ensures all required Temporal namespaces exist after Temporal deploys.
+name    = "temporal_ensure_namespaces"
+timeout = "1m30s"
+
+[[triggers]]
+type           = "post-deploy-component"
+component_name = "temporal"
+
+[[triggers]]
+type = "manual"
+
+[[steps]]
+name    = "Ensuring Namespaces"
+command = "./temporal/ensure_namespaces.sh"
+
+[steps.public_repo]
+repo      = "nuonco/byoc"
+directory = "shared/src/actions"
+branch    = "main"
+
+[steps.env_vars]
+FOO = "BAR"

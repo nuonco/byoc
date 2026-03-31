@@ -8,7 +8,7 @@ dependencies   = ["rds_cluster_nuon", "karpenter_nodepools", "clickhouse_cluster
 
 [public_repo]
 repo      = "nuonco/byoc"
-directory = "byoc-nuon/src/components/ctl_api"
+directory = "shared/src/components/ctl_api"
 branch    = "main"
 
 [[values_file]]

@@ -8,7 +8,7 @@ dependencies   = ["rds_cluster_nuon", "karpenter_nodepools"]
 
 [public_repo]
 repo      = "nuonco/byoc"
-directory = "byoc-nuon/src/components/ctl_api_init_db"
+directory = "shared/src/components/ctl_api_init_db"
 branch    = "main"
 
 [[values_file]]

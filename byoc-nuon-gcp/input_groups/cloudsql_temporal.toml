@@ -1,0 +1,4 @@
+#:schema https://api.nuon.co/v1/general/config-schema?type=inputs
+name         = "cloudsql_temporal"
+description  = "Cloud SQL Configuration for the Temporal database"
+display_name = "Cloud SQL (Temporal)"

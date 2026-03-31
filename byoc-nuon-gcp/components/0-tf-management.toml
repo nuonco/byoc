@@ -1,0 +1,21 @@
+#:schema https://api.nuon.co/v1/general/config-schema?type=terraform
+name              = "management"
+type              = "terraform_module"
+terraform_version = "1.11.3"
+
+[public_repo]
+repo      = "nuonco/byoc"
+directory = "byoc-nuon-gcp/src/components/management"
+branch    = "main"
+
+[vars]
+install_id      = "{{ .nuon.install.id }}"
+project_id      = "{{ .nuon.install_stack.outputs.project_id }}"
+region          = "{{ .nuon.install_stack.outputs.region }}"
+nuon_dns_domain = "{{ .nuon.inputs.inputs.nuon_dns_domain }}"
+
+cluster_name                       = "{{ .nuon.sandbox.outputs.cluster.name }}"
+cluster_endpoint                   = "{{ .nuon.sandbox.outputs.cluster.endpoint }}"
+cluster_certificate_authority_data = "{{ .nuon.sandbox.outputs.cluster.certificate_authority_data }}"
+cluster_location                   = "{{ .nuon.sandbox.outputs.cluster.location }}"
+gar_repository_url                 = "{{ .nuon.sandbox.outputs.gar.repository_url }}"

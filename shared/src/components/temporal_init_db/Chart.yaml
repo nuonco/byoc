@@ -1,0 +1,9 @@
+---
+apiVersion: v2
+name: temporal-init
+description: A helm chart for initializing the database for temporal.
+type: application
+version: v0.0.2
+appVersion: "0.0.2"
+
+dependencies: []

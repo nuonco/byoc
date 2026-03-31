@@ -1,0 +1,21 @@
+# action
+# description: runs the ctl-api startup job which executes migrations and
+# seed data. Runs as the first post-deploy step (index 1).
+name    = "ctl_api_post_deploy_startup"
+timeout = "1m30s"
+
+[[triggers]]
+type           = "post-deploy-component"
+component_name = "ctl_api"
+index          = 1
+
+[[triggers]]
+type = "manual"
+
+[[steps]]
+name            = "startup"
+inline_contents = "./src/ctl-api/startup.sh"
+
+[steps.env_vars]
+DB_ADDR = "{{ .nuon.components.cloudsql_nuon.outputs.address }}"
+DB_PORT = "5432"

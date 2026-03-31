@@ -1,0 +1,41 @@
+# action
+# description: post-deploy orchestration for ctl-api. Restarts deployments,
+# runs the promote callback, fetches migrations, and updates runner versions.
+name    = "ctl_api_post_deploy"
+timeout = "1m30s"
+
+[[triggers]]
+type           = "post-deploy-component"
+component_name = "ctl_api"
+index          = 5
+
+[[triggers]]
+type = "manual"
+
+[[steps]]
+name            = "restart-deployments"
+inline_contents = "https://raw.githubusercontent.com/nuonco/actions/refs/heads/main/kube/deployments-restart"
+
+[steps.env_vars]
+NAMESPACE = "ctl-api"
+
+[[steps]]
+name            = "promote-callback"
+inline_contents = "./src/ctl-api/promote.sh"
+
+[steps.env_vars]
+ADMIN_API_URL = "http://admin.{{ .nuon.sandbox.outputs.nuon_dns.internal_domain.name }}"
+
+[[steps]]
+name            = "get-migrations-callback"
+inline_contents = "./src/ctl-api/get-migrations.sh"
+
+[steps.env_vars]
+ADMIN_API_URL = "http://admin.{{ .nuon.sandbox.outputs.nuon_dns.internal_domain.name }}"
+
+[[steps]]
+name            = "runners-update-version"
+inline_contents = "./src/runners/update-version.sh"
+
+[steps.env_vars]
+ADMIN_API_URL = "http://admin.{{ .nuon.sandbox.outputs.nuon_dns.internal_domain.name }}"

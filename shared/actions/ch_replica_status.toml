@@ -1,0 +1,18 @@
+# action
+# description: periodically checks ClickHouse replicas and restores any that are read-only.
+name    = "ch_cluster_replicas"
+timeout = "5m"
+
+[[triggers]]
+type  = "manual"
+
+[[triggers]]
+type          = "cron"
+cron_schedule = "3,13,23,37,41,53 * * * *"
+
+[[steps]]
+name            = "check_and_restore_replicas"
+inline_contents = "./src/clickhouse/check_and_restore_replicas.sh"
+
+[steps.env_vars]
+RESTART = "false"

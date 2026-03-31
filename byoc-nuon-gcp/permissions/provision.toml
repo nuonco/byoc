@@ -1,0 +1,9 @@
+type           = "provision"
+name           = "{{.nuon.install.id}}-provision"
+description    = "Create and configure BYOC Nuon infrastructure on GCP."
+display_name   = "provision"
+cloud_platform = "gcp"
+
+[[policies]]
+name                = "owner"
+gcp_predefined_role = "roles/owner"
