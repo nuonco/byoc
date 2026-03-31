@@ -1,0 +1,9 @@
+---
+apiVersion: v2
+name: ctl-api-init
+description: A helm chart for initializing the database for the ctl-api.
+type: application
+version: v0.0.2
+appVersion: "0.0.2"
+
+dependencies: []

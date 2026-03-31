@@ -1,0 +1,42 @@
+# action
+# description: checks Temporal cluster health every 15 minutes via tctl.
+name    = "healthcheck_temporal"
+timeout = "30s"
+
+[[triggers]]
+type          = "cron"
+cron_schedule = "*/15 */1 * * *"
+
+[[triggers]]
+type = "manual"
+
+[[steps]]
+name    = "tctl cluster health"
+inline_contents = """
+#!/usr/bin/env sh
+
+set +e
+set -o pipefail
+set -u
+
+echo >&2 "checking temporal cluster health..."
+kubectl config set-context --current --namespace=temporal
+POD_NAME=$(kubectl get pods -l app.kubernetes.io/component=admintools -o custom-columns=NAME:.metadata.name --no-headers)
+STATUS=$(kubectl exec -i $POD_NAME -- tctl cluster health)
+
+# determine status
+if [[ "$STATUS" == *"SERVING"* ]]; then
+    indicator="🟢"
+else
+    indicator="🔴"
+fi
+
+echo >&2 "saving status to outputs..."
+outputs=`jq --null-input --arg indicatorVar "$indicator" '{"indicator": $indicatorVar}'`
+echo $outputs >> $NUON_ACTIONS_OUTPUT_FILEPATH
+
+echo >&2 "status is $indicator"
+if [ "$indicator" = '"🔴"' ]; then
+    exit 1
+fi
+"""
