@@ -18,6 +18,13 @@ inline_contents = "https://raw.githubusercontent.com/nuonco/actions/refs/heads/m
 NAMESPACE = "ctl-api"
 
 [[steps]]
+name            = "runners-update-version"
+inline_contents = "./src/runners/update-version.sh"
+
+[steps.env_vars]
+ADMIN_API_URL = "http://admin.{{ .nuon.sandbox.outputs.nuon_dns.internal_domain.name }}"
+
+[[steps]]
 name            = "promote-callback"
 inline_contents = "./src/ctl-api/promote.sh"
 
@@ -54,10 +61,3 @@ inline_contents = "./src/alb/healthcheck.sh"
 [steps.env_vars]
 INGRESS_NAME      = "ctl-api-admin"
 INGRESS_NAMESPACE = "ctl-api"
-
-[[steps]]
-name            = "runners-update-version"
-inline_contents = "./src/runners/update-version.sh"
-
-[steps.env_vars]
-ADMIN_API_URL = "http://admin.{{ .nuon.sandbox.outputs.nuon_dns.internal_domain.name }}"
