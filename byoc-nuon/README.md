@@ -357,134 +357,102 @@ Secrets can be updated by re-provisioning the stack and updating the secret valu
 {{ if .populated }}
 {{ $runnerSettings := .outputs.steps.settings }}
 
-<style>
-.runner-tabs input[type="radio"] { display: none; }
-.runner-tabs label {
-    display: inline-block;
-    padding: 8px 16px;
-    cursor: pointer;
-    border: 1px solid #444;
-    border-bottom: none;
-    border-radius: 4px 4px 0 0;
-    margin-right: 4px;
-    background: transparent;
-}
-.runner-tabs input[type="radio"]:checked + label {
-    background: #2d2d2d;
-    font-weight: bold;
-    border-bottom: 2px solid #2d2d2d;
-}
-.runner-tab-content { display: none; border: 1px solid #444; padding: 16px; border-radius: 0 4px 4px 4px; }
-#runner-tab-org:checked ~ .runner-tab-content.tab-org,
-#runner-tab-install:checked ~ .runner-tab-content.tab-install,
-#runner-tab-settings:checked ~ .runner-tab-content.tab-settings { display: block; }
-</style>
+<nuon-tabs>                                                                                                                                
+  <nuon-tab name="install runners">
+                                                                                                                                             
+  {{ with .outputs.steps.install }}                                            
+  <table>                                                                                                                                    
+      <thead>                                                                  
+          <tr>
+              <th></th>
+              <th>ID</th>                                                                                                                    
+              <th>Org ID</th>
+              <th>Tag</th>                                                                                                                   
+              <th>Created At</th>                                              
+              <th>Updated At</th>
+          </tr>
+      </thead>
+      <tbody>
+      {{range $id, $runner := .}}                                                                                                            
+          {{ $settings := dig $id "settings" nil $runnerSettings }}
+          <tr>                                                                                                                               
+              <td>{{if eq $runner.status "active"}}🟢{{else if eq $runner.status "error"}}🔴{{else}}🟡{{end}}</td>
+              <td><code>{{$runner.id}}</code></td>                                                                                           
+              <td><code>{{$runner.org_id}}</code></td>
+              <td><code>{{if $settings}}{{dig "container_image_tag" "" $settings}}{{end}}</code></td>                                        
+              <td>{{(printf "%sZ" (substr 0 19 $runner.created_at)) | toDate "2006-01-02T15:04:05Z" | date "2006-01-02 15:04"}}</td>         
+              <td>{{(printf "%sZ" (substr 0 19 $runner.updated_at)) | toDate "2006-01-02T15:04:05Z" | date "2006-01-02 15:04"}}</td>         
+          </tr>                                                                                                                              
+      {{end}}                                                                                                                                
+      </tbody>                                                                                                                               
+  </table>                                                                     
+  {{ end }}
 
-<div class="runner-tabs">
+  </nuon-tab>
+  <nuon-tab name="org runners">
+                                                                                                                                             
+  {{ with .outputs.steps.org }}
+  <table>                                                                                                                                    
+      <thead>                                                                  
+          <tr>
+              <th></th>
+              <th>ID</th>
+              <th>Org ID</th>
+              <th>Tag</th>
+              <th>Created At</th>
+              <th>Updated At</th>                                                                                                            
+          </tr>
+      </thead>                                                                                                                               
+      <tbody>                                                                  
+      {{range $id, $runner := .}}
+          {{ $settings := dig $id "settings" nil $runnerSettings }}
+          <tr>                                                                                                                               
+              <td>{{if eq $runner.status "active"}}🟢{{else if eq $runner.status "error"}}🔴{{else}}🟡{{end}}</td>
+              <td><code>{{$runner.id}}</code></td>                                                                                           
+              <td><code>{{$runner.org_id}}</code></td>                                                                                       
+              <td><code>{{if $settings}}{{dig "container_image_tag" "" $settings}}{{end}}</code></td>
+              <td>{{(printf "%sZ" (substr 0 19 $runner.created_at)) | toDate "2006-01-02T15:04:05Z" | date "2006-01-02 15:04"}}</td>         
+              <td>{{(printf "%sZ" (substr 0 19 $runner.updated_at)) | toDate "2006-01-02T15:04:05Z" | date "2006-01-02 15:04"}}</td>         
+          </tr>                                                                                                                              
+      {{end}}                                                                                                                                
+      </tbody>                                                                                                                               
+  </table>                                                                                                                                   
+  {{ end }}
+                                                                                                                                             
+  </nuon-tab>                                                                  
+  <nuon-tab name="more info">
 
-<input type="radio" name="runner-tab" id="runner-tab-install" checked>
-<label for="runner-tab-install">Install Runners</label>
-<input type="radio" name="runner-tab" id="runner-tab-org">
-<label for="runner-tab-org">Org Runners</label>
-<input type="radio" name="runner-tab" id="runner-tab-settings">
-<label for="runner-tab-settings">More Info</label>
+  {{ with .outputs.steps.settings }}
+  {{range $id, $runner := .}}
+  <details>
+  <summary><code>{{$id}}</code> — {{$runner.type}} ({{dig "metadata" "org.name" "unknown" $runner.settings}})</summary>
+                                                                                                                                             
+  <ul>
+  <li><strong>Type:</strong> {{$runner.type}}</li>                                                                                           
+  <li><strong>Org ID:</strong> <code>{{$runner.org_id}}</code></li>                                                                          
+  <li><strong>Platform:</strong> {{dig "metadata" "runner.platform" "unknown" $runner.settings}}</li>
+  <li><strong>Image:</strong> <code>{{dig "container_image_url" "" $runner.settings}}:{{dig "container_image_tag" ""                         
+  $runner.settings}}</code></li>                                                                                                             
+  <li><strong>Instance Type:</strong> {{dig "aws_instance_type" "" $runner.settings}}</li>
+  <li><strong>Max Instance Lifetime:</strong> {{dig "aws_max_instance_lifetime" "" $runner.settings}}</li>                                   
+  <li><strong>Logging:</strong> {{dig "enable_logging" "" $runner.settings}} ({{dig "logging_level" "" $runner.settings}})</li>
+  <li><strong>Sentry:</strong> {{dig "enable_sentry" "" $runner.settings}}</li>                                                              
+  <li><strong>Metrics:</strong> {{dig "enable_metrics" "" $runner.settings}}</li>
+  <li><strong>Heartbeat Timeout:</strong> {{dig "heart_beat_timeout" "" $runner.settings}}</li>                                              
+  <li><strong>Groups:</strong> {{dig "groups" "" $runner.settings}}</li>       
+  <li><strong>Runner API URL:</strong> {{dig "runner_api_url" "" $runner.settings}}</li>                                                     
+  <li><strong>Runner Group ID:</strong> <code>{{dig "runner_group_id" "" $runner.settings}}</code></li>
+  <li><strong>Created:</strong> {{dig "created_at" "" $runner.settings}}</li>                                                                
+  <li><strong>Updated:</strong> {{dig "updated_at" "" $runner.settings}}</li>  
+  </ul>                                                                                                                                      
+                                                                               
+  </details>                                                                                                                                 
+  {{end}}
+  {{ end }}                                                                                                                                  
+                                                                               
+  </nuon-tab>
+  </nuon-tabs>
 
-<div class="runner-tab-content tab-install">
-
-{{ with .outputs.steps.install }}
-<table>
-    <thead>
-        <tr>
-            <th></th>
-            <th>ID</th>
-            <th>Org ID</th>
-            <th>Tag</th>
-            <th>Created At</th>
-            <th>Updated At</th>
-        </tr>
-    </thead>
-    <tbody>
-    {{range $id, $runner := .}}
-        {{ $settings := dig $id "settings" nil $runnerSettings }}
-        <tr>
-            <td>{{if eq $runner.status "active"}}🟢{{else if eq $runner.status "error"}}🔴{{else}}🟡{{end}}</td>
-            <td><code>{{$runner.id}}</code></td>
-            <td><code>{{$runner.org_id}}</code></td>
-            <td><code>{{if $settings}}{{dig "container_image_tag" "" $settings}}{{end}}</code></td>
-            <td>{{(printf "%sZ" (substr 0 19 $runner.created_at)) | toDate "2006-01-02T15:04:05Z" | date "2006-01-02 15:04"}}</td>
-            <td>{{(printf "%sZ" (substr 0 19 $runner.updated_at)) | toDate "2006-01-02T15:04:05Z" | date "2006-01-02 15:04"}}</td>
-        </tr>
-    {{end}}
-    </tbody>
-</table>
-{{ end }}
-
-</div>
-
-<div class="runner-tab-content tab-org">
-
-{{ with .outputs.steps.org }}
-<table>
-    <thead>
-        <tr>
-            <th></th>
-            <th>ID</th>
-            <th>Org ID</th>
-            <th>Tag</th>
-            <th>Created At</th>
-            <th>Updated At</th>
-        </tr>
-    </thead>
-    <tbody>
-    {{range $id, $runner := .}}
-        {{ $settings := dig $id "settings" nil $runnerSettings }}
-        <tr>
-            <td>{{if eq $runner.status "active"}}🟢{{else if eq $runner.status "error"}}🔴{{else}}🟡{{end}}</td>
-            <td><code>{{$runner.id}}</code></td>
-            <td><code>{{$runner.org_id}}</code></td>
-            <td><code>{{if $settings}}{{dig "container_image_tag" "" $settings}}{{end}}</code></td>
-            <td>{{(printf "%sZ" (substr 0 19 $runner.created_at)) | toDate "2006-01-02T15:04:05Z" | date "2006-01-02 15:04"}}</td>
-            <td>{{(printf "%sZ" (substr 0 19 $runner.updated_at)) | toDate "2006-01-02T15:04:05Z" | date "2006-01-02 15:04"}}</td>
-        </tr>
-    {{end}}
-    </tbody>
-</table>
-{{ end }}
-
-</div>
-
-<div class="runner-tab-content tab-settings">
-
-{{ with .outputs.steps.settings }}
-{{range $id, $runner := .}}
-<details>
-<summary><code>{{$id}}</code> — {{$runner.type}} ({{dig "metadata" "org.name" "unknown" $runner.settings}})</summary>
-
-<ul>
-<li><strong>Type:</strong> {{$runner.type}}</li>
-<li><strong>Org ID:</strong> <code>{{$runner.org_id}}</code></li>
-<li><strong>Platform:</strong> {{dig "metadata" "runner.platform" "unknown" $runner.settings}}</li>
-<li><strong>Image:</strong> <code>{{dig "container_image_url" "" $runner.settings}}:{{dig "container_image_tag" "" $runner.settings}}</code></li>
-<li><strong>Instance Type:</strong> {{dig "aws_instance_type" "" $runner.settings}}</li>
-<li><strong>Max Instance Lifetime:</strong> {{dig "aws_max_instance_lifetime" "" $runner.settings}}</li>
-<li><strong>Logging:</strong> {{dig "enable_logging" "" $runner.settings}} ({{dig "logging_level" "" $runner.settings}})</li>
-<li><strong>Sentry:</strong> {{dig "enable_sentry" "" $runner.settings}}</li>
-<li><strong>Metrics:</strong> {{dig "enable_metrics" "" $runner.settings}}</li>
-<li><strong>Heartbeat Timeout:</strong> {{dig "heart_beat_timeout" "" $runner.settings}}</li>
-<li><strong>Groups:</strong> {{dig "groups" "" $runner.settings}}</li>
-<li><strong>Runner API URL:</strong> {{dig "runner_api_url" "" $runner.settings}}</li>
-<li><strong>Runner Group ID:</strong> <code>{{dig "runner_group_id" "" $runner.settings}}</code></li>
-<li><strong>Created:</strong> {{dig "created_at" "" $runner.settings}}</li>
-<li><strong>Updated:</strong> {{dig "updated_at" "" $runner.settings}}</li>
-</ul>
-
-</details>
-{{end}}
-{{ end }}
-
-</div>
-
-</div>
 
 {{ else }}
 
