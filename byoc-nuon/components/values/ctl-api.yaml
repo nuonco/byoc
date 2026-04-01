@@ -125,11 +125,11 @@ image:
 
 worker:
   nodeSelector:
-    pool.nuon.co: ctl-api-worker
+    pool.nuon.co: private
   tolerations:
     - key: "pool.nuon.co"
       operator: "Equal"
-      value: ctl-api-worker
+      value: private
       effect: "NoSchedule"
   instances:
     - namespace: orgs
@@ -237,6 +237,13 @@ api:
       targetCPUUtilizationPercentage: 50
       targetMemoryUtilizationPercentage: 50
   admin:
+    nodeSelector:
+      pool.nuon.co: "private"
+    tolerations:
+      - key: "pool.nuon.co"
+        operator: "Equal"
+        value: "private"
+        effect: "NoSchedule"
     port: 8082
     domain: "admin.{{ .nuon.sandbox.outputs.nuon_dns.internal_domain.name }}"
     autoscaling:
@@ -262,6 +269,15 @@ api:
       maxReplicas: 4
       targetCPUUtilizationPercentage: 80
       targetMemoryUtilizationPercentage: 80
+
+  startup:
+    nodeSelector:
+      pool.nuon.co: "private"
+    tolerations:
+      - key: "pool.nuon.co"
+        operator: "Equal"
+        value: "private"
+        effect: "NoSchedule"
 
   # topology spread
   minDomains: 2

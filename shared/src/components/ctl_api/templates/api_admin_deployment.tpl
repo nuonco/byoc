@@ -25,11 +25,11 @@ spec:
       automountServiceAccountToken: true
 
       # start: NodePool Selection
-      {{- with .Values.api.nodeSelector }}
+      {{- with (.Values.api.admin.nodeSelector | default .Values.api.nodeSelector) }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      {{- with .Values.api.tolerations }}
+      {{- with (.Values.api.admin.tolerations | default .Values.api.tolerations) }}
       tolerations:
         {{- toYaml . | nindent 8 }}
       {{- end }}
