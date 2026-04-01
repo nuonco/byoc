@@ -28,7 +28,7 @@ for runner_id in $runners; do
 
   http_code=$(curl -s --max-time 5 -X PATCH "$url" \
     -H "Content-Type: application/json" \
-    -d "{\"container_imagjkjkjke_tag\": \"$RUNNER_CONTAINER_IMAGE_TAG\"}" \
+    -d "{\"container_image_tag\": \"$RUNNER_CONTAINER_IMAGE_TAG\"}" \
     -w "\n%{http_code}" \
     -o /tmp/response_body.json)
 
