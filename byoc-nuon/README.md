@@ -365,27 +365,29 @@ Secrets can be updated by re-provisioning the stack and updating the secret valu
       <thead>                                                                  
           <tr>
               <th></th>
-              <th>ID</th>                                                                                                                    
+              <th>ID</th>
               <th>Org ID</th>
-              <th>Tag</th>                                                                                                                   
-              <th>Created At</th>                                              
+              <th>Owner</th>
+              <th>Tag</th>
+              <th>Created At</th>
               <th>Updated At</th>
           </tr>
       </thead>
       <tbody>
-      {{range $id, $runner := .}}                                                                                                            
+      {{range $id, $runner := .}}
           {{ $settings := dig $id "settings" nil $runnerSettings }}
-          <tr>                                                                                                                               
+          <tr>
               <td>{{if eq $runner.status "active"}}🟢{{else if eq $runner.status "error"}}🔴{{else}}🟡{{end}}</td>
-              <td><code>{{$runner.id}}</code></td>                                                                                           
+              <td><code>{{$runner.id}}</code></td>
               <td><code>{{$runner.org_id}}</code></td>
-              <td><code>{{if $settings}}{{dig "container_image_tag" "" $settings}}{{end}}</code></td>                                        
-              <td>{{(printf "%sZ" (substr 0 19 $runner.created_at)) | toDate "2006-01-02T15:04:05Z" | date "2006-01-02 15:04"}}</td>         
-              <td>{{(printf "%sZ" (substr 0 19 $runner.updated_at)) | toDate "2006-01-02T15:04:05Z" | date "2006-01-02 15:04"}}</td>         
-          </tr>                                                                                                                              
-      {{end}}                                                                                                                                
-      </tbody>                                                                                                                               
-  </table>                                                                     
+              <td>{{if $settings}}{{dig "metadata" "owner_name" "" $settings}}{{end}}</td>
+              <td><code>{{if $settings}}{{dig "container_image_tag" "" $settings}}{{end}}</code></td>
+              <td>{{(printf "%sZ" (substr 0 19 $runner.created_at)) | toDate "2006-01-02T15:04:05Z" | date "2006-01-02 15:04"}}</td>
+              <td>{{(printf "%sZ" (substr 0 19 $runner.updated_at)) | toDate "2006-01-02T15:04:05Z" | date "2006-01-02 15:04"}}</td>
+          </tr>
+      {{end}}
+      </tbody>
+  </table>
   {{ end }}
 
   </nuon-tab>
@@ -398,24 +400,26 @@ Secrets can be updated by re-provisioning the stack and updating the secret valu
               <th></th>
               <th>ID</th>
               <th>Org ID</th>
+              <th>Owner</th>
               <th>Tag</th>
               <th>Created At</th>
-              <th>Updated At</th>                                                                                                            
+              <th>Updated At</th>
           </tr>
-      </thead>                                                                                                                               
-      <tbody>                                                                  
+      </thead>
+      <tbody>
       {{range $id, $runner := .}}
           {{ $settings := dig $id "settings" nil $runnerSettings }}
-          <tr>                                                                                                                               
+          <tr>
               <td>{{if eq $runner.status "active"}}🟢{{else if eq $runner.status "error"}}🔴{{else}}🟡{{end}}</td>
-              <td><code>{{$runner.id}}</code></td>                                                                                           
-              <td><code>{{$runner.org_id}}</code></td>                                                                                       
+              <td><code>{{$runner.id}}</code></td>
+              <td><code>{{$runner.org_id}}</code></td>
+              <td>{{if $settings}}{{dig "metadata" "owner_name" "" $settings}}{{end}}</td>
               <td><code>{{if $settings}}{{dig "container_image_tag" "" $settings}}{{end}}</code></td>
-              <td>{{(printf "%sZ" (substr 0 19 $runner.created_at)) | toDate "2006-01-02T15:04:05Z" | date "2006-01-02 15:04"}}</td>         
-              <td>{{(printf "%sZ" (substr 0 19 $runner.updated_at)) | toDate "2006-01-02T15:04:05Z" | date "2006-01-02 15:04"}}</td>         
-          </tr>                                                                                                                              
-      {{end}}                                                                                                                                
-      </tbody>                                                                                                                               
+              <td>{{(printf "%sZ" (substr 0 19 $runner.created_at)) | toDate "2006-01-02T15:04:05Z" | date "2006-01-02 15:04"}}</td>
+              <td>{{(printf "%sZ" (substr 0 19 $runner.updated_at)) | toDate "2006-01-02T15:04:05Z" | date "2006-01-02 15:04"}}</td>
+          </tr>
+      {{end}}
+      </tbody>
   </table>                                                                                                                                   
   {{ end }}
                                                                                                                                              
