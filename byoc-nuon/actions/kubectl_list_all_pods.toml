@@ -1,0 +1,15 @@
+#:schema https://api.nuon.co/v1/general/config-schema?type=action
+name    = "kubectl_get_all_pods"
+timeout = "30s"
+
+[[triggers]]
+type = "manual"
+
+
+[[steps]]
+name = "ownerless"
+inline_contents = "./src/kubectl/ownerless-pods.sh"
+
+[[steps]]
+name = "all"
+inline_contents = "./src/kubectl/all-pods.sh"
