@@ -6,7 +6,7 @@ terraform_version = "1.11.3"
 [public_repo]
 repo      = "nuonco/byoc"
 directory = "byoc-nuon-azure/src/components/azure_rbac_access"
-branch    = "main"
+branch    = "ht/azure"
 
 [vars]
 subscription_id = "{{ .nuon.cloud_account.azure.subscription_id }}"

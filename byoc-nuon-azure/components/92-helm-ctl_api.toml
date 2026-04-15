@@ -9,7 +9,7 @@ dependencies   = ["rds_cluster_nuon", "s3_buckets", "clickhouse_cluster", "tempo
 [public_repo]
 repo      = "nuonco/byoc"
 directory = "byoc-nuon-azure/src/components/ctl_api"
-branch    = "main"
+branch    = "ht/azure"
 
 [[values_file]]
 contents = "./values/ctl-api.yaml"

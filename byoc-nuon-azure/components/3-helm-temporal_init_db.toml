@@ -9,7 +9,7 @@ dependencies   = ["rds_cluster_temporal"]
 [public_repo]
 repo      = "nuonco/byoc"
 directory = "byoc-nuon-azure/src/components/temporal_init_db"
-branch    = "main"
+branch    = "ht/azure"
 
 [[values_file]]
 contents = "./values/temporal-init.yaml"

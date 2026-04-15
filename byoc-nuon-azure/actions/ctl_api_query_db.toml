@@ -12,7 +12,7 @@ command = "./ctl_api/query-db.sh"
 [steps.public_repo]
 repo      = "nuonco/byoc"
 directory = "byoc-nuon-azure/src/actions"
-branch    = "main"
+branch    = "ht/azure"
 
 [steps.env_vars]
 DB_USER           = "{{ .nuon.components.rds_cluster_nuon.outputs.db_instance_username }}"

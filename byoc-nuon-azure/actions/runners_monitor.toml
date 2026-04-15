@@ -14,7 +14,7 @@ command = "./check-org-runners-statuses.sh"
 [steps.public_repo]
 repo      = "nuonco/byoc"
 directory = "byoc-nuon-azure/src/actions/runners"
-branch    = "main"
+branch    = "ht/azure"
 
 [steps.env_vars]
 ADMIN_API_URL = "http://admin.{{ .nuon.sandbox.outputs.nuon_dns.internal_domain.name }}"

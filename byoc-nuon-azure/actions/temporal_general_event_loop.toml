@@ -12,7 +12,7 @@ command = "./temporal/general_event_loop.sh"
 [steps.public_repo]
 repo      = "nuonco/byoc"
 directory = "byoc-nuon-azure/src/actions"
-branch    = "main"
+branch    = "ht/azure"
 
 [steps.env_vars]
 ADMIN_API_URL = "http://admin.{{ .nuon.sandbox.outputs.nuon_dns.internal_domain.name }}"

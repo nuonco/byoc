@@ -8,4 +8,4 @@ storage_driver = "configmap"
 [public_repo]
 repo      = "nuonco/byoc"
 directory = "byoc-nuon-azure/src/components/empty-chart"
-branch    = "main"
+branch    = "ht/azure"

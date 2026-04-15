@@ -9,7 +9,7 @@ drift_schedule = "0 0 * * *"
 [public_repo]
 repo      = "nuonco/byoc"
 directory = "byoc-nuon-azure/src/components/rds_cluster_nuon"
-branch    = "main"
+branch    = "ht/azure"
 
 [vars]
 identifier      = "nuon-{{ .nuon.install.id }}"

@@ -9,7 +9,7 @@ dependencies   = ["rds_cluster_nuon"]
 [public_repo]
 repo      = "nuonco/byoc"
 directory = "byoc-nuon-azure/src/components/ctl_api_init_db"
-branch    = "main"
+branch    = "ht/azure"
 
 [[values_file]]
 contents = "./values/ctl-api-init.yaml"

@@ -8,7 +8,7 @@ dependencies = ["crd_clickhouse_operator", "s3_buckets"]
 [public_repo]
 repo      = "nuonco/byoc"
 directory = "byoc-nuon-azure/src/components/clickhouse_cluster"
-branch    = "main"
+branch    = "ht/azure"
 
 [vars]
 install_id = "{{ .nuon.install.id }}"

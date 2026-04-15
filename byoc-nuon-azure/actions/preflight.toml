@@ -15,7 +15,7 @@ command = "./preflight/ensure-secrets-access.sh"
 [steps.public_repo]
 repo      = "nuonco/byoc"
 directory = "byoc-nuon-azure/src/actions"
-branch    = "main"
+branch    = "ht/azure"
 
 [steps.env_vars]
 SECRET_NAMESPACE = "ctl-api"
@@ -28,7 +28,7 @@ command = "./preflight/ensure-secrets-access.sh"
 [steps.public_repo]
 repo      = "nuonco/byoc"
 directory = "byoc-nuon-azure/src/actions"
-branch    = "main"
+branch    = "ht/azure"
 
 [steps.env_vars]
 SECRET_NAMESPACE = "clickhouse"
@@ -41,7 +41,7 @@ command = "./preflight/ensure-secrets-access.sh"
 [steps.public_repo]
 repo      = "nuonco/byoc"
 directory = "byoc-nuon-azure/src/actions"
-branch    = "main"
+branch    = "ht/azure"
 
 [steps.env_vars]
 SECRET_NAMESPACE = "clickhouse"
