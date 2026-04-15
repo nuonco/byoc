@@ -6,7 +6,7 @@ dependencies      = ["temporal_init_db"]
 [public_repo]
 repo      = "nuonco/byoc"
 directory = "byoc-nuon-azure/src/components/temporal"
-branch    = "fd/chore/subnet-ip-depletion-fix"
+branch    = "ht/azure"
 
 [vars]
 env                                = "prod"
