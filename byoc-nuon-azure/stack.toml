@@ -1,3 +1,8 @@
 type        = "azure-bicep"
 name        = "byoc-nuon-azure-install-{{.nuon.install.id}}"
 description = "QuickLink to install runner for BYOC Nuon on Azure: Install {{.nuon.install.id}}"
+
+
+vpc_nested_template_url    = "https://raw.githubusercontent.com/nuonco/install-stacks/main/azure/vnet.json"
+runner_nested_template_url = "https://raw.githubusercontent.com/nuonco/install-stacks/main/azure/runner.json"
+
