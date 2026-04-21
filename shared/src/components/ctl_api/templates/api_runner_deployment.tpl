@@ -53,6 +53,10 @@ spec:
               {{- /* plucked from common.apiSelectorLabels */}}
               app.nuon.co/name: {{ include "common.fullname" . }}-runner
       # end: Topology Spread Constraints
+      volumes:
+        - name: iid-certs
+          configMap:
+            name: {{ include "common.fullname" . }}-iid-certs
       containers:
         - name: {{ include "common.fullname" . }}-runner
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
@@ -81,6 +85,10 @@ spec:
             requests:
               cpu: {{ .Values.api.resources.requests.cpu }}
               memory: {{ .Values.api.resources.requests.memory }}
+          volumeMounts:
+            - name: iid-certs
+              mountPath: /etc/nuon/iid-certs
+              readOnly: true
           envFrom:
             - configMapRef:
                 name: {{ include "common.fullname" . }}
@@ -92,6 +100,8 @@ spec:
                   name: {{ $envSecret.valueFrom.name }}
                   key: {{ $envSecret.valueFrom.key }}
           {{- end}}
+            - name: AWS_IID_CERTS_DIR
+              value: "/etc/nuon/iid-certs"
             - name: HOST_IP
               valueFrom:
                   fieldRef:
