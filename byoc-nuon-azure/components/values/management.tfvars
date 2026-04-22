@@ -3,8 +3,8 @@ management_account_id = "{{ .nuon.install_stack.outputs.subscription_id }}"
 
 cluster = {
   name                       = "{{ .nuon.sandbox.outputs.cluster.name }}"
-  endpoint                   = "{{ .nuon.sandbox.outputs.cluster.endpoint }}"
-  certificate_authority_data = "{{ .nuon.sandbox.outputs.cluster.certificate_authority_data }}"
+  endpoint                   = "{{ .nuon.sandbox.outputs.cluster.host }}"
+  certificate_authority_data = "{{ .nuon.sandbox.outputs.cluster.cluster_ca_certificate }}"
   oidc_provider              = "{{ .nuon.sandbox.outputs.cluster.oidc_issuer_url }}"
 }
 
