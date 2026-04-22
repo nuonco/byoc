@@ -10,6 +10,6 @@ branch    = "ht/azure"
 
 [vars]
 install_id                        = "{{ .nuon.install.id }}"
-region                            = "{{ .nuon.install_stack.outputs.region }}"
+region                            = "{{ .nuon.install_stack.outputs.resource_group_location }}"
 domain_name                       = "*.{{ .nuon.sandbox.outputs.nuon_dns.public_domain.name }}"
 app_gateway_ssl_certificate_name  = "{{ or .nuon.inputs.inputs.public_domain_certificate_name \"\" }}"

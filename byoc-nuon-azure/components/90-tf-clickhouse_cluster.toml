@@ -12,7 +12,7 @@ branch    = "ht/azure"
 
 [vars]
 install_id = "{{ .nuon.install.id }}"
-region     = "{{ .nuon.install_stack.outputs.region }}"
+region     = "{{ .nuon.install_stack.outputs.resource_group_location }}"
 zone       = "{{ .nuon.sandbox.outputs.nuon_dns.internal_domain.name }}"
 
 clickhouse_storage_account_name           = "{{ .nuon.components.s3_buckets.outputs.clickhouse_bucket.storage_account_name }}"

@@ -1,6 +1,6 @@
 cluster_name: "{{ .nuon.sandbox.outputs.cluster.name }}"
 
-region: "{{ .nuon.install_stack.outputs.region }}"
+region: "{{ .nuon.install_stack.outputs.resource_group_location }}"
 
 nodepools:
   - name: temporal

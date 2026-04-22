@@ -10,7 +10,7 @@ branch    = "ht/azure"
 
 [vars]
 env                                = "prod"
-region                             = "{{ .nuon.install_stack.outputs.region }}"
+region                             = "{{ .nuon.install_stack.outputs.resource_group_location }}"
 zone                               = "{{ .nuon.install.sandbox.outputs.nuon_dns.internal_domain.name }}"
 cluster_name                       = "{{ .nuon.install.sandbox.outputs.cluster.name }}"
 cluster_endpoint                   = "{{ .nuon.install.sandbox.outputs.cluster.endpoint }}"

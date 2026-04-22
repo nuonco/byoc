@@ -11,5 +11,5 @@ branch    = "ht/azure"
 
 [[values_file]]
 contents = """
-region: "{{ .nuon.install_stack.outputs.region }}"
+region: "{{ .nuon.install_stack.outputs.resource_group_location }}"
 """

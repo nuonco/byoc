@@ -14,11 +14,11 @@ name            = "Initialize the DB"
 inline_contents = "./src/temporal/init-db.sh"
 
 [steps.env_vars]
-REGION = "{{ .nuon.install_stack.outputs.region }}"
+REGION = "{{ .nuon.install_stack.outputs.resource_group_location }}"
 
 [[steps]]
 name            = "Create DB Users"
 inline_contents = "./src/temporal/create-db-users.sh"
 
 [steps.env_vars]
-REGION          = "{{ .nuon.install_stack.outputs.region }}"
+REGION          = "{{ .nuon.install_stack.outputs.resource_group_location }}"

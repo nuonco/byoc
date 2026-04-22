@@ -17,7 +17,7 @@ port            = "5432"
 db_name         = "nuonadmin"
 db_user         = "nuon"
 instance_class  = "{{ .nuon.install.inputs.nuon_db_instance_type }}"
-region          = "{{ .nuon.install_stack.outputs.region }}"
+region          = "{{ .nuon.install_stack.outputs.resource_group_location }}"
 location        = "{{ .nuon.cloud_account.azure.location }}"
 resource_group_name = "{{ .nuon.install_stack.outputs.resource_group_name }}"
 

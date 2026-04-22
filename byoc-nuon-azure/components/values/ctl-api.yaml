@@ -16,8 +16,8 @@ env:
   DB_USE_ZAP: "true"
   DB_USE_IAM: "false"
   DB_MIGRATIONS_PATH: /migrations
-  DB_REGION: "{{ .nuon.install_stack.outputs.region }}"  # NOTE(fd): this assumes the db and deployment are in the same region
-  APP_REGION: "{{ .nuon.install_stack.outputs.region }}" # NOTE(fd): can app region and db region ever be different?
+  DB_REGION: "{{ .nuon.install_stack.outputs.resource_group_location }}"  # NOTE(fd): this assumes the db and deployment are in the same region
+  APP_REGION: "{{ .nuon.install_stack.outputs.resource_group_location }}" # NOTE(fd): can app region and db region ever be different?
 
   ROOT_DOMAIN: "{{ .nuon.sandbox.outputs.nuon_dns.public_domain.name }}"
 
@@ -77,7 +77,7 @@ env:
   TEMPORAL_HOST: temporal-frontend-headless.temporal.svc.cluster.local:7233
   TEMPORAL_MAX_CONCURRENT_ACTIVITIES: !!string 3500
   TEMPORAL_STICKY_WORKFLOW_CACHE_SIZE: !!string 10000
-  TEMPORAL_UI_URL: http://temporal-ui.{{ .nuon.install_stack.outputs.region }}.{{ .nuon.sandbox.outputs.nuon_dns.internal_domain.name }}:8080
+  TEMPORAL_UI_URL: http://temporal-ui.{{ .nuon.install_stack.outputs.resource_group_location }}.{{ .nuon.sandbox.outputs.nuon_dns.internal_domain.name }}:8080
   SANDBOX_MODE_SLEEP: 1s
 
   # NOTE: deprecated or not in use in byoc
@@ -103,7 +103,7 @@ env:
   ORG_RUNNER_K8S_CA_DATA: "{{ .nuon.components.management.outputs.cluster.certificate_authority_data }}"
   ORG_RUNNER_K8S_CLUSTER_ID: "{{ .nuon.components.management.outputs.cluster.name }}"
   ORG_RUNNER_K8S_PUBLIC_ENDPOINT: "{{ .nuon.components.management.outputs.cluster.endpoint }}"
-  ORG_RUNNER_REGION: "{{ .nuon.install_stack.outputs.region }}"
+  ORG_RUNNER_REGION: "{{ .nuon.install_stack.outputs.resource_group_location }}"
 
   TEMPORAL_WORKFLOW_FAILURE_PANIC: "true"
 
@@ -196,8 +196,8 @@ worker:
       - Standard_D4s_v5
   zones:
     # TODO: Template / load this dynamically
-    - {{.nuon.install_stack.outputs.region}}a
-    - {{.nuon.install_stack.outputs.region}}b
+    - {{.nuon.install_stack.outputs.resource_group_location}}a
+    - {{.nuon.install_stack.outputs.resource_group_location}}b
 
 api:
   liveness_probe: /livez
@@ -252,9 +252,9 @@ api:
 
   # TODO: these should actually match the zones the Nuon RDS Cluster is in to reduce latencey
   zones:
-    - "{{ .nuon.install_stack.outputs.region }}a"
-    - "{{ .nuon.install_stack.outputs.region }}b"
-    - "{{ .nuon.install_stack.outputs.region }}c"
+    - "{{ .nuon.install_stack.outputs.resource_group_location }}a"
+    - "{{ .nuon.install_stack.outputs.resource_group_location }}b"
+    - "{{ .nuon.install_stack.outputs.resource_group_location }}c"
 
 # auth-specific secrets (in addition to the shared envSecrets)
 auth:
