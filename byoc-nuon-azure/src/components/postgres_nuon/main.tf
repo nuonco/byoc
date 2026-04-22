@@ -2,7 +2,9 @@ locals {
   normalized_identifier = replace(lower(var.identifier), "/[^a-z0-9-]/", "-")
   trimmed_identifier    = trim(local.normalized_identifier, "-")
   server_name           = substr("pg-${local.trimmed_identifier}", 0, 63)
-  storage_mb            = max(32768, tonumber(var.allocated_storage) * 1024)
+  allowed_storage_mb = [32768, 65536, 131072, 262144, 524288, 1048576, 2097152, 4193280, 4194304, 8388608, 16777216, 33553408]
+  requested_mb       = tonumber(var.allocated_storage) * 1024
+  storage_mb         = [for s in local.allowed_storage_mb : s if s >= local.requested_mb][0]
   tags = {
     "component.nuon.co/name" = "postgres-cluster"
     "install.nuon.co/id"     = var.nuon_id
