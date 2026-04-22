@@ -193,7 +193,7 @@ worker:
       - on-demand
     # Azure VM SKU used when ctl-api provisions org-runner node pools.
     instance_types:
-      - Standard_D4s_v5
+      - Standard_D4s_v3
   zones:
     - "1"
     - "2"
