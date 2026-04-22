@@ -6,4 +6,4 @@ metadata:
   labels:
     {{- include "common.labels" . | nindent 4 }}
 data:
-{{- merge .Values.env (fromYaml (include "common.config-map" .)) | toYaml | nindent 2 }}
+{{- merge (.Values.env | default dict) (fromYaml (include "common.config-map" .)) | toYaml | nindent 2 }}
