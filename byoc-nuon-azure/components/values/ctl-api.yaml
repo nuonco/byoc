@@ -8,7 +8,7 @@ env:
   INTERNAL_MIDDLEWARES: tracer,internal_metrics,error,size,public,log,global,config,admin,offset_pagination,cors,config,patcher,panicker
   GIN_MODE: "release"
 
-  DB_HOST: "{{ .nuon.components.rds_cluster_nuon.outputs.address }}"
+  DB_HOST: "{{ .nuon.components.postgres_nuon.outputs.address }}"
   DB_NAME: "ctl_api"      # hardcoded, for now - also, main db not the desired db we created
   DB_USER: "ctl_api"      # hardcoded, for now - also, main user, not the user we create
   DB_USE_SSL: "true"
@@ -64,9 +64,9 @@ env:
   INTERNAL_SLACK_WEBHOOK_URL: |-
     https://hooks.slack.com/services/xxxxxxxxxxx/xxxxxxxxxxx/xxxxxxxxxxxxxxxxxxxxxxxx
 
-  AWS_CLOUDFORMATION_STACK_TEMPLATE_BASE_URL: "{{ .nuon.components.s3_buckets.outputs.install_template_bucket.base_url }}"
-  AWS_CLOUDFORMATION_STACK_TEMPLATE_BUCKET: "{{ .nuon.components.s3_buckets.outputs.install_template_bucket.id }}"
-  AWS_CLOUDFORMATION_STACK_TEMPLATE_BUCKET_REGION: "{{ .nuon.components.s3_buckets.outputs.install_template_bucket.region }}"
+  AWS_CLOUDFORMATION_STACK_TEMPLATE_BASE_URL: "{{ .nuon.components.storage_buckets.outputs.install_template_bucket.base_url }}"
+  AWS_CLOUDFORMATION_STACK_TEMPLATE_BUCKET: "{{ .nuon.components.storage_buckets.outputs.install_template_bucket.id }}"
+  AWS_CLOUDFORMATION_STACK_TEMPLATE_BUCKET_REGION: "{{ .nuon.components.storage_buckets.outputs.install_template_bucket.region }}"
 
   APP_URL: https://app.{{ .nuon.sandbox.outputs.nuon_dns.public_domain.name }}
   PUBLIC_API_URL: https://api.{{ .nuon.sandbox.outputs.nuon_dns.public_domain.name }}
@@ -195,9 +195,8 @@ worker:
     instance_types:
       - Standard_D4s_v5
   zones:
-    # TODO: Template / load this dynamically
-    - {{.nuon.install_stack.outputs.resource_group_location}}a
-    - {{.nuon.install_stack.outputs.resource_group_location}}b
+    - "1"
+    - "2"
 
 api:
   liveness_probe: /livez
@@ -250,11 +249,11 @@ api:
   # topology spread
   minDomains: 2
 
-  # TODO: these should actually match the zones the Nuon RDS Cluster is in to reduce latencey
+  # TODO: these should actually match the zones the Nuon PostgreSQL server is in to reduce latency
   zones:
-    - "{{ .nuon.install_stack.outputs.resource_group_location }}a"
-    - "{{ .nuon.install_stack.outputs.resource_group_location }}b"
-    - "{{ .nuon.install_stack.outputs.resource_group_location }}c"
+    - "1"
+    - "2"
+    - "3"
 
 # auth-specific secrets (in addition to the shared envSecrets)
 auth:

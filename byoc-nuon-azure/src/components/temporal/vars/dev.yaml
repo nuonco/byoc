@@ -1,4 +1,4 @@
 ---
 rds:
   db_name: temporal
-  instance_class: "db.t4g.xlarge"
+  instance_class: "GP_Standard_D4ds_v5"

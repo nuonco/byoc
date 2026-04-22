@@ -1,7 +1,7 @@
 ---
 rds:
   db_name: temporal
-  instance_class: "db.m5.2xlarge"
+  instance_class: "GP_Standard_D8ds_v5"
   allocated_storage: "300"
   allocated_storage_alarm_threshold: "50"
   multi_az: true

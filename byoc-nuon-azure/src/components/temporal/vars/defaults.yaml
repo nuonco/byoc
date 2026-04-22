@@ -1,13 +1,13 @@
 ---
 image_tag: "1.26.2"
 root_domain: nuon.cloud
-region: us-west-2
+region: eastus2
 rds:
   engine: postgres
   engine_version: "15.8"
   family: "postgres15"
   major_engine_version: "15"
-  instance_class: "db.t4g.small"
+  instance_class: "B_Standard_B2s"
   allocated_storage: "100"
   allocated_storage_alarm_threshold: "10"
   db_name: temporal
@@ -18,9 +18,6 @@ rds:
   skip_final_snapshot: true
   deletion_protection: false
   storage_encrypted: true
-  enabled_cloudwatch_logs_exports:
-    - postgresql
-    - upgrade
   enable_replica: false
 
 elasticache:

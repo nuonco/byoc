@@ -1,18 +1,18 @@
 # action
 # description: copies the secret from Secrets Manager into the k8s cluster.
 # TODO: replace this with an external-secrets SecretStore
-name    = "nuon_rds_creds"
+name = "nuon_db_creds"
 timeout = "1m"
 
 [[triggers]]
 type           = "post-deploy-component"
-component_name = "rds_cluster_nuon"
+component_name = "postgres_nuon"
 
 [[triggers]]
 type = "manual"
 
 [[steps]]
-name    = "Copy RDS Secret for CTL API Deployment"
+name    = "Copy DB Secret for CTL API Deployment"
 command = "./rds_secrets/import.sh"
 
 [steps.public_repo]
@@ -21,7 +21,7 @@ directory = "byoc-nuon-azure/src/actions"
 branch    = "ht/azure"
 
 [steps.env_vars]
-DB_USERNAME      = "{{ .nuon.components.rds_cluster_nuon.outputs.db_instance_username }}"
-DB_PASSWORD      = "{{ .nuon.components.rds_cluster_nuon.outputs.db_instance_password }}"
+DB_USERNAME      = "{{ .nuon.components.postgres_nuon.outputs.db_instance_username }}"
+DB_PASSWORD      = "{{ .nuon.components.postgres_nuon.outputs.db_instance_password }}"
 TARGET_NAME      = "nuon-db"
 TARGET_NAMESPACE = "ctl-api"

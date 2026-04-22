@@ -3,7 +3,7 @@ name              = "clickhouse_cluster"
 type              = "terraform_module"
 terraform_version = "1.11.3"
 
-dependencies = ["crd_clickhouse_operator", "s3_buckets"]
+dependencies = ["crd_clickhouse_operator", "storage_buckets"]
 
 [public_repo]
 repo      = "nuonco/byoc"
@@ -15,8 +15,8 @@ install_id = "{{ .nuon.install.id }}"
 region     = "{{ .nuon.install_stack.outputs.resource_group_location }}"
 zone       = "{{ .nuon.sandbox.outputs.nuon_dns.internal_domain.name }}"
 
-clickhouse_storage_account_name           = "{{ .nuon.components.s3_buckets.outputs.clickhouse_bucket.storage_account_name }}"
-clickhouse_storage_container_name         = "{{ .nuon.components.s3_buckets.outputs.clickhouse_bucket.id }}"
+clickhouse_storage_account_name           = "{{ .nuon.components.storage_buckets.outputs.clickhouse_bucket.storage_account_name }}"
+clickhouse_storage_container_name         = "{{ .nuon.components.storage_buckets.outputs.clickhouse_bucket.id }}"
 clickhouse_storage_account_resource_group = "{{ .nuon.install_stack.outputs.resource_group_name }}"
 
 cluster_image_repository = "{{ .nuon.sandbox.outputs.acr.login_server }}/{{ .nuon.components.img_clickhouse_server.outputs.image.repository }}"

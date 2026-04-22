@@ -6,10 +6,6 @@ output "address" {
   value = azurerm_postgresql_flexible_server.this.fqdn
 }
 
-output "db_instance_master_user_secret_arn" {
-  value = "inline://${azurerm_postgresql_flexible_server.this.id}"
-}
-
 output "db_instance_resource_id" {
   value = azurerm_postgresql_flexible_server.this.id
 }
@@ -26,7 +22,7 @@ output "db_instance_username" {
   value = var.db_user
 }
 
-output "db_instance_availability_zone" {
+output "db_instance_zone" {
   value = azurerm_postgresql_flexible_server.this.zone
 }
 

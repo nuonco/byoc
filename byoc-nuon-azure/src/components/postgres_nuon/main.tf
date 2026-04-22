@@ -1,17 +1,10 @@
 locals {
-  normalized_identifier = regexreplace(lower(var.identifier), "[^a-z0-9-]", "-")
+  normalized_identifier = replace(lower(var.identifier), "/[^a-z0-9-]/", "-")
   trimmed_identifier    = trim(local.normalized_identifier, "-")
   server_name           = substr("pg-${local.trimmed_identifier}", 0, 63)
-  sku_map = {
-    "db.r6gd.large" = "GP_Standard_D4ds_v5"
-    "db.m5.2xlarge" = "GP_Standard_D8ds_v5"
-    "db.t4g.micro"  = "B_Standard_B1ms"
-    "db.t4g.small"  = "B_Standard_B2s"
-  }
-  sku_name   = lookup(local.sku_map, var.instance_class, var.instance_class)
-  storage_mb = max(32768, tonumber(var.allocated_storage) * 1024)
+  storage_mb            = max(32768, tonumber(var.allocated_storage) * 1024)
   tags = {
-    "component.nuon.co/name" = "rds-cluster"
+    "component.nuon.co/name" = "postgres-cluster"
     "install.nuon.co/id"     = var.nuon_id
   }
 }
@@ -28,7 +21,7 @@ resource "azurerm_postgresql_flexible_server" "this" {
   version                = "16"
   administrator_login    = var.db_user
   administrator_password = random_password.admin.result
-  sku_name               = local.sku_name
+  sku_name               = var.instance_class
   storage_mb             = local.storage_mb
   backup_retention_days  = tonumber(var.backup_retention_period)
   zone                   = var.zone

@@ -1,18 +1,18 @@
 # action
 # description: copies the secret from Secrets Manager into the k8s cluster.
 # TODO: replace this with an external-secrets SecretStore
-name    = "temporal_rds_creds"
+name = "temporal_db_creds"
 timeout = "1m"
 
 [[triggers]]
 type           = "post-deploy-component"
-component_name = "rds_cluster_temporal"
+component_name = "postgres_temporal"
 
 [[triggers]]
 type = "manual"
 
 [[steps]]
-name    = "Copy RDS Secret for Temporal deployment"
+name    = "Copy DB Secret for Temporal deployment"
 command = "./rds_secrets/import.sh"
 
 [steps.public_repo]
@@ -21,7 +21,7 @@ directory = "byoc-nuon-azure/src/actions"
 branch    = "ht/azure"
 
 [steps.env_vars]
-DB_USERNAME      = "{{ .nuon.components.rds_cluster_temporal.outputs.db_instance_username }}"
-DB_PASSWORD      = "{{ .nuon.components.rds_cluster_temporal.outputs.db_instance_password }}"
+DB_USERNAME      = "{{ .nuon.components.postgres_temporal.outputs.db_instance_username }}"
+DB_PASSWORD      = "{{ .nuon.components.postgres_temporal.outputs.db_instance_password }}"
 TARGET_NAME      = "temporal-db"
 TARGET_NAMESPACE = "temporal"

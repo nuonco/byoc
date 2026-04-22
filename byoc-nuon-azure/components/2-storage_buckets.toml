@@ -1,11 +1,11 @@
 #:schema https://api.nuon.co/v1/general/config-schema?type=terraform
-name              = "s3_buckets"
+name = "storage_buckets"
 type              = "terraform_module"
 terraform_version = "1.11.3"
 
 [public_repo]
 repo      = "nuonco/byoc"
-directory = "byoc-nuon-azure/src/components/s3_buckets_azure"
+directory = "byoc-nuon-azure/src/components/storage_buckets"
 branch    = "ht/azure"
 
 [vars]

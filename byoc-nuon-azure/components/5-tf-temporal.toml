@@ -19,10 +19,10 @@ cluster_certificate_authority_data = "{{ .nuon.install.sandbox.outputs.cluster.c
 codec_endpoint = "https://app.{{ .nuon.install.sandbox.outputs.nuon_dns.public_domain.name }}/admin/temporal-codec"
 ctl_api_host   = "api.{{ .nuon.install.sandbox.outputs.nuon_dns.public_domain.name }}"
 
-db_instance_address               = "{{ .nuon.components.rds_cluster_temporal.outputs.address }}"
-db_instance_port                  = "{{ .nuon.components.rds_cluster_temporal.outputs.db_instance_port }}"
-db_instance_username              = "{{ .nuon.components.rds_cluster_temporal.outputs.db_instance_username }}"
-db_instance_password              = "{{ .nuon.components.rds_cluster_temporal.outputs.db_instance_password }}"
+db_instance_address               = "{{ .nuon.components.postgres_temporal.outputs.address }}"
+db_instance_port                  = "{{ .nuon.components.postgres_temporal.outputs.db_instance_port }}"
+db_instance_username              = "{{ .nuon.components.postgres_temporal.outputs.db_instance_username }}"
+db_instance_password              = "{{ .nuon.components.postgres_temporal.outputs.db_instance_password }}"
 
 temporal_web_image_repository = '{{ .nuon.sandbox.outputs.acr.login_server }}/{{ .nuon.components.img_temporal_ui.outputs.image.repository }}'
 temporal_web_image_tag        = '{{ .nuon.components.img_temporal_ui.outputs.image.tag }}'

@@ -9,8 +9,6 @@ data:
     CREATE EXTENSION IF NOT EXISTS hstore;
   create_user.sql: |
     CREATE USER ctl_api WITH LOGIN;
-  grant_user_iam.sql: |
-    GRANT rds_iam TO ctl_api;
   alter_user_createdb.sql: |
     ALTER USER ctl_api CREATEDB;
   create_db.sql: |

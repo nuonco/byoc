@@ -1,25 +1,26 @@
 #:schema https://api.nuon.co/v1/general/config-schema?type=terraform
-name              = "rds_cluster_temporal"
+name = "postgres_nuon"
 type              = "terraform_module"
 terraform_version = "1.11.3"
+
 drift_schedule = "0 0 * * *"
+
 
 [public_repo]
 repo      = "nuonco/byoc"
-directory = "byoc-nuon-azure/src/components/rds_cluster_temporal"
+directory = "byoc-nuon-azure/src/components/postgres_nuon"
 branch    = "ht/azure"
 
 [vars]
-identifier      = "temporal-{{ .nuon.install.id }}"
+identifier      = "nuon-{{ .nuon.install.id }}"
 port            = "5432"
-db_name         = "temporaladmin"
-db_user         = "temporaladmin"
-instance_class  = "{{ .nuon.install.inputs.temporal_db_instance_type }}"
+db_name         = "nuonadmin"
+db_user         = "nuon"
+instance_class  = "{{ .nuon.install.inputs.nuon_db_instance_type }}"
 region          = "{{ .nuon.install_stack.outputs.resource_group_location }}"
 location        = "{{ .nuon.cloud_account.azure.location }}"
 resource_group_name = "{{ .nuon.install_stack.outputs.resource_group_name }}"
 
-allocated_storage = "500"
-apply_immediately = "true"
-
 nuon_id = "{{ .nuon.install.id }}"
+
+allocated_storage = "100"

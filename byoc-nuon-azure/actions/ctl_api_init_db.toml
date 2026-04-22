@@ -19,8 +19,8 @@ directory = "byoc-nuon-azure/src/actions"
 branch    = "ht/azure"
 
 [steps.env_vars]
-DB_USER           = "{{ .nuon.components.rds_cluster_nuon.outputs.db_instance_username }}"
-DB_NAME           = "{{ .nuon.components.rds_cluster_nuon.outputs.db_instance_name }}"
-DB_ADMIN_PASSWORD = "{{ .nuon.components.rds_cluster_nuon.outputs.db_instance_password }}"
-DB_ADDR           = "{{ .nuon.components.rds_cluster_nuon.outputs.address }}"
+DB_USER           = "{{ .nuon.components.postgres_nuon.outputs.db_instance_username }}"
+DB_NAME           = "{{ .nuon.components.postgres_nuon.outputs.db_instance_name }}"
+DB_ADMIN_PASSWORD = "{{ .nuon.components.postgres_nuon.outputs.db_instance_password }}"
+DB_ADDR           = "{{ .nuon.components.postgres_nuon.outputs.address }}"
 DB_PORT           = "5432"

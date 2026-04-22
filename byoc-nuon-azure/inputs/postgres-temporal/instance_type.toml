@@ -3,6 +3,6 @@ name         = "temporal_db_instance_type"
 description  = "What Azure PostgreSQL Flexible Server SKU should be used for Temporal DB?"
 default      = "GP_Standard_D8ds_v5"
 display_name = "PostgreSQL SKU"
-group        = "rds-temporal"
+group = "postgres-temporal"
 
 user_configurable = false

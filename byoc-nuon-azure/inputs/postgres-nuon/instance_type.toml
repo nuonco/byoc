@@ -3,7 +3,7 @@ name         = "nuon_db_instance_type"
 description  = "What Azure PostgreSQL Flexible Server SKU should be used for the Nuon DB?"
 default      = "GP_Standard_D4ds_v5"
 display_name = "PostgreSQL SKU"
-group        = "rds-nuon"
+group = "postgres-nuon"
 internal     = true
 
 user_configurable = false

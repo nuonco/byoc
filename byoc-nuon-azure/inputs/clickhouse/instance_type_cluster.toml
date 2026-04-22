@@ -1,6 +1,6 @@
 name         = "ch_instance_type_cluster"
-description  = "What EC2 instance type should each clickhouse cluster node deploy on?"
-default      = "t3a.large"
+description  = "What Azure VM SKU should each clickhouse cluster node deploy on?"
+default      = "Standard_D2s_v3"
 display_name = "Cluster Instance Type"
 group        = "clickhouse"
 

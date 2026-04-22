@@ -80,7 +80,7 @@ $public_domain }}/docs/index.html)</small>
 - [Secrets](#secrets)
   - [Updating Secrets](#updatingsecrets)
 - [Components](#components)
-  - [RDS Clusters](#rdsclusters)
+  - [Postgres Clusters](#postgresclusters)
 - [CLI](#cli)
 - [State](#state)
   - [Sandbox](#sandbox)
@@ -323,8 +323,8 @@ The following secrets are created in the install stack and then synced into the 
 | nuon_auth_client_secret  | value             | ctl-api    | ctl-api-auth-client-secret | secrets-sync              | OIDC client secret                          |
 | nuon_auth_session_key    | value             | ctl-api    | ctl-api-auth-session-key   | secrets-sync              | Auto-generated session key                  |
 | nuon_auth_jwt_secret     | value             | ctl-api    | ctl-api-auth-jwt-secret    | secrets-sync              | Auto-generated JWT signing secret           |
-| rds!rds-cluster-nuon     | username/password | ctl-api    | nuon-db                    | action:nuon_rds_creds     | nuon-db credentials for ctl-api             |
-| rds!rds-cluster-temporal | username/password | temporal   | temporal-db                | action:temporal_rds_creds | temporal-db credentials for temporal        |
+| postgres!postgres-nuon     | username/password | ctl-api    | nuon-db                    | action:nuon_db_creds     | nuon-db credentials for ctl-api             |
+| postgres!postgres-temporal | username/password | temporal   | temporal-db                | action:temporal_db_creds | temporal-db credentials for temporal        |
 
 ### Updating Secrets
 
@@ -351,7 +351,7 @@ Secrets can be updated by re-provisioning the stack and updating the secret valu
 
 ## Components
 
-### RDS Clusters
+### Postgres Clusters
 
 The nuon cluster is created w/ an admin user and a `nuon` db. This admin user is responsible for creating the `ctl_api`
 user and db. This is done in an [action](/actions/).

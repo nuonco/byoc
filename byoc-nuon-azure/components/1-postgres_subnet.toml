@@ -1,5 +1,5 @@
 #:schema https://api.nuon.co/v1/general/config-schema?type=helm
-name           = "rds_subnet"
+name = "postgres_subnet"
 type           = "helm_chart"
 chart_name     = "empty"
 namespace      = "default"
