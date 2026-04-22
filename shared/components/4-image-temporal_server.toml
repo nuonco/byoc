@@ -3,4 +3,4 @@ type   = "container_image"
 
 [public]
 image_url = "temporalio/server"
-tag       = "1.26.2"
+tag       = "1.27.4"
