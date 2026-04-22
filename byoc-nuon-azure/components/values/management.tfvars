@@ -1,5 +1,5 @@
 # Azure compatibility adapter values for the management component.
-management_account_id = "{{ .nuon.cloud_account.azure.subscription_id }}"
+management_account_id = "{{ .nuon.install_stack.outputs.subscription_id }}"
 
 cluster = {
   name                       = "{{ .nuon.sandbox.outputs.cluster.name }}"
@@ -18,7 +18,7 @@ dns_zone_id     = "{{ or .nuon.sandbox.outputs.nuon_dns.public_domain.zone_id .n
 dns_nameservers = []
 
 # Azure-specific values for org runner provisioning
-azure_tenant_id       = "{{ .nuon.cloud_account.azure.tenant_id }}"
-azure_subscription_id = "{{ .nuon.cloud_account.azure.subscription_id }}"
+azure_tenant_id       = "{{ .nuon.install_stack.outputs.subscription_tenant_id }}"
+azure_subscription_id = "{{ .nuon.install_stack.outputs.subscription_id }}"
 azure_resource_group  = "{{ .nuon.install_stack.outputs.resource_group_name }}"
 azure_oidc_issuer_url = "{{ .nuon.sandbox.outputs.cluster.oidc_issuer_url }}"
