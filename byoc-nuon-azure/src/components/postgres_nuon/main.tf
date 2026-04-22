@@ -6,7 +6,7 @@ locals {
   requested_mb       = tonumber(var.allocated_storage) * 1024
   storage_mb         = [for s in local.allowed_storage_mb : s if s >= local.requested_mb][0]
   tags = {
-    "component-nuon-co-name" = "postgres-cluster"
+    "component-nuon-co-name" = "postgres-nuon"
     "install-nuon-co-id"     = var.nuon_id
   }
 }
