@@ -41,7 +41,7 @@ resource "kubectl_manifest" "clickhouse_installation" {
               "serviceTemplate" = "clickhouse:${var.cluster_image_tag}"
             }
             "layout" = {
-              "replicasCount" = 2
+              "replicasCount" = 1
               "shardsCount"   = 1
             }
           },
@@ -61,8 +61,6 @@ resource "kubectl_manifest" "clickhouse_installation" {
         "zookeeper" = {
           "nodes" = [
             { "host" : "chk-clickhouse-keeper-chk-simple-0-0.clickhouse.svc.cluster.local" },
-            { "host" : "chk-clickhouse-keeper-chk-simple-0-1.clickhouse.svc.cluster.local" },
-            { "host" : "chk-clickhouse-keeper-chk-simple-0-2.clickhouse.svc.cluster.local" },
           ]
         }
         # keep logs disabled to reduce IO in single-cluster BYOC installs.
@@ -121,59 +119,17 @@ resource "kubectl_manifest" "clickhouse_installation" {
           "imagePullPolicy" : "IfNotPresent"
           "metadata" = {}
           "spec" = {
-            "affinity" = {
-              "podAntiAffinity" = {
-                "requiredDuringSchedulingIgnoredDuringExecution" = [
-                  {
-                    "labelSelector" = {
-                      "matchLabels" = {
-                        # NOTE(fd): this label is automatically applied by the CRD so we can assume it exists.
-                        #           that is, however, an assumption
-                        "clickhouse.altinity.com/chi" = "clickhouse-installation"
-                      }
-                    }
-                    "topologyKey" = "kubernetes.io/hostname"
-                  },
-                  {
-                    "labelSelector" = {
-                      "matchLabels" = {
-                        # NOTE(fd): this label is automatically applied by the CRD so we can assume it exists.
-                        #           that is, however, an assumption
-                        "clickhouse.altinity.com/chi" = "clickhouse-installation"
-                      }
-                    }
-                    "topologyKey" = "topology.kubernetes.io/zone"
-                  },
-                ]
-              }
-            }
             "topologySpreadConstraints" = [
-              # spread the pods across nodes.
               {
                 "maxSkew"           = 1
                 "topologyKey"       = "kubernetes.io/hostname"
                 "whenUnsatisfiable" = "ScheduleAnyway"
                 "labelSelector" = {
                   "matchLabels" = {
-                    # NOTE(fd): this label is automatically applied by the CRD so we can assume it exists.
-                    #           that is, however, an assumption
                     "clickhouse.altinity.com/chi" = "clickhouse-installation"
                   }
                 }
               },
-              # spread the pods across az:
-              {
-                "maxSkew"           = 1
-                "topologyKey"       = "topology.kubernetes.io/zone"
-                "whenUnsatisfiable" = "ScheduleAnyway"
-                "labelSelector" = {
-                  "matchLabels" = {
-                    # NOTE(fd): this label is automatically applied by the CRD so we can assume it exists.
-                    #           that is, however, an assumption
-                    "clickhouse.altinity.com/chi" = "clickhouse-installation"
-                  }
-                }
-              }
             ]
             "containers" = [
               {

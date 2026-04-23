@@ -9,4 +9,4 @@ rds:
   deletion_protection: true
 
 history:
-  replicaCount: 7
+  replicaCount: 1

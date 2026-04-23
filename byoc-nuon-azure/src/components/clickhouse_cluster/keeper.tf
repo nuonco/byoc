@@ -20,7 +20,7 @@ resource "kubectl_manifest" "clickhouse_keeper_installation" {
         "clusters" = [
           {
             "layout" = {
-              "replicasCount" = 3
+              "replicasCount" = 1
             }
             "name" = "chk-simple"
           },
@@ -67,16 +67,12 @@ resource "kubectl_manifest" "clickhouse_keeper_installation" {
                 "runAsUser" = 101
               }
               "topologySpreadConstraints" = [
-                # spread the pods across nodes.
                 {
                   "maxSkew"           = 1
                   "topologyKey"       = "kubernetes.io/hostname"
-                  "whenUnsatisfiable" = "DoNotSchedule"
-                  "minDomains"        = 3
+                  "whenUnsatisfiable" = "ScheduleAnyway"
                   "labelSelector" = {
                     "matchLabels" = {
-                      # NOTE(fd): this label is automatically applied by the CRD so we can assume it exists.
-                      #           that is, however, an assumption
                       "app" = "clickhouse-keeper"
                     }
                   }
@@ -89,11 +85,11 @@ resource "kubectl_manifest" "clickhouse_keeper_installation" {
                   "name"            = "clickhouse-keeper"
                   "resources" = {
                     "limits" = {
-                      "cpu"    = "2"
+                      "cpu"    = "1"
                       "memory" = "4Gi"
                     }
                     "requests" = {
-                      "cpu"    = "1"
+                      "cpu"    = "500m"
                       "memory" = "256M"
                     }
                   }

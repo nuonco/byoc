@@ -21,7 +21,7 @@ schema:
     enabled: false
 
 server:
-  replicaCount: 5
+  replicaCount: 1
   dynamicConfig:
      limit.historySize.error:
       - value: 209715200

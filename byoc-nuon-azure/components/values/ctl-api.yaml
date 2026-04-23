@@ -123,70 +123,22 @@ image:
 
 worker:
   instances:
-    - namespace: orgs
-      minReplicas: 2
-      maxReplicas: 10
-      command: ["/bin/service", "worker", "--namespace=orgs"]
-    - namespace: actions
-      minReplicas: 2
-      maxReplicas: 10
-      command: ["/bin/service", "worker", "--namespace=actions"]
-    - namespace: apps
-      minReplicas: 2
-      maxReplicas: 5
-      command: ["/bin/service", "worker", "--namespace=apps"]
-    - namespace: components
-      minReplicas: 2
-      maxReplicas: 5
-      command: ["/bin/service", "worker", "--namespace=components"]
-    - namespace: installs
-      minReplicas: 2
-      maxReplicas: 10
-      command: ["/bin/service", "worker", "--namespace=installs"]
-      resources:
-        limits:
-          cpu: 1000m
-          memory: 2048Mi
-        requests:
-          cpu: 500m
-          memory: 1024Mi
-      extraEnv:
-        - name: TEMPORAL_STICKY_WORKFLOW_CACHE_SIZE
-          value: !!string 1000
-    - namespace: releases
-      minReplicas: 2
-      maxReplicas: 5
-      command: ["/bin/service", "worker", "--namespace=releases"]
-    - namespace: general
-      minReplicas: 2
-      maxReplicas: 5
-      command: ["/bin/service", "worker", "--namespace=general"]
-    - namespace: runners
-      minReplicas: 2
-      maxReplicas: 10
-      command: ["/bin/service", "worker", "--namespace=runners"]
-      resources:
-        limits:
-          cpu: 500m
-          memory: 1024Mi
-        requests:
-          cpu: 500m
-          memory: 512Mi
-      extraEnv:
-        - name: TEMPORAL_STICKY_WORKFLOW_CACHE_SIZE
-          value: !!string 1000
+    - namespace: all
+      minReplicas: 1
+      maxReplicas: 1
+      command: ["/bin/service", "worker", "--namespace=all"]
   autoscaling:
     targetCPUUtilizationPercentage: 75
     targetMemoryUtilizationPercentage: 75
   resources:
     limits:
-      cpu: 500m
-      memory: 512Mi
+      cpu: 1000m
+      memory: 2048Mi
     requests:
-      cpu: 250m
-      memory: 256Mi
+      cpu: 500m
+      memory: 1024Mi
   # topology spread
-  minDomains: 2
+  minDomains: 1
   # default values for a nodepool. used by the api to create a custom nodepool
   nodepool:
     capacity_types:
@@ -215,7 +167,7 @@ api:
     domain: "api.{{ .nuon.sandbox.outputs.nuon_dns.public_domain.name }}"
     domain_certificate_name: "{{ .nuon.components.certificate_wildcard_public.outputs.public_domain_certificate_name }}"
     autoscaling:
-      minReplicas: 4
+      minReplicas: 1
       maxReplicas: 10
       targetCPUUtilizationPercentage: 50
       targetMemoryUtilizationPercentage: 50
@@ -223,7 +175,7 @@ api:
     port: 8082
     domain: "admin.{{ .nuon.sandbox.outputs.nuon_dns.internal_domain.name }}"
     autoscaling:
-      minReplicas: 2
+      minReplicas: 1
       maxReplicas: 10
       targetCPUUtilizationPercentage: 50
       targetMemoryUtilizationPercentage: 50
@@ -232,7 +184,7 @@ api:
     domain: "runner.{{ .nuon.sandbox.outputs.nuon_dns.public_domain.name }}"
     domain_certificate_name: "{{ .nuon.components.certificate_wildcard_public.outputs.public_domain_certificate_name }}"
     autoscaling:
-      minReplicas: 4
+      minReplicas: 1
       maxReplicas: 10
       targetCPUUtilizationPercentage: 35
       targetMemoryUtilizationPercentage: 40
@@ -241,13 +193,13 @@ api:
     domain: "auth.{{ .nuon.sandbox.outputs.nuon_dns.public_domain.name }}"
     domain_certificate_name: "{{ .nuon.components.certificate_wildcard_public.outputs.public_domain_certificate_name }}"
     autoscaling:
-      minReplicas: 2
+      minReplicas: 1
       maxReplicas: 4
       targetCPUUtilizationPercentage: 80
       targetMemoryUtilizationPercentage: 80
 
   # topology spread
-  minDomains: 2
+  minDomains: 1
 
   # TODO: these should actually match the zones the Nuon PostgreSQL server is in to reduce latency
   zones:

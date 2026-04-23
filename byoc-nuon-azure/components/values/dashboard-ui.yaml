@@ -72,19 +72,19 @@ ui:
 
   resources:
     limits:
-      cpu: 1000m
+      cpu: 500m
       memory: 1024Mi
     requests:
-      cpu: 1000m
-      memory: 1024Mi
+      cpu: 250m
+      memory: 512Mi
 
   ingress:
     public_domain: "app.{{ .nuon.sandbox.outputs.nuon_dns.public_domain.name }}"
     public_domain_certificate_name: "{{ .nuon.components.certificate_wildcard_public.outputs.public_domain_certificate_name }}"
 
   autoscaling:
-    minReplicas: 2
-    maxReplicas: 5
+    minReplicas: 1
+    maxReplicas: 2
     targetCPUUtilizationPercentage: 50
     targetMemoryUtilizationPercentage: 50
 

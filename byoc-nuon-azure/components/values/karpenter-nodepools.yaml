@@ -7,8 +7,8 @@ nodepools:
     instance_types:
       - Standard_D4s_v3
     limits:
-      cpu: 50
-      memory: "100Gi"
+      cpu: 10
+      memory: "20Gi"
     expireAfter: "168h"
     disruption:
       consolidationPolicy: "WhenEmptyOrUnderutilized"
@@ -28,8 +28,8 @@ nodepools:
     instance_types:
       - Standard_D2s_v3
     limits:
-      cpu: 14
-      memory: "32Gi"
+      cpu: 4
+      memory: "8Gi"
     expireAfter: "Never"
     disruption:
       budgets:
@@ -41,8 +41,8 @@ nodepools:
     instance_types:
       - Standard_D2s_v3
     limits:
-      cpu: 14
-      memory: "1000Gi"
+      cpu: 4
+      memory: "100Gi"
     expireAfter: "2160h"
     disruption:
       budgets:
@@ -54,8 +54,8 @@ nodepools:
     instance_types:
       - Standard_D2s_v3
     limits:
-      cpu: 1000
-      memory: "500Gi"
+      cpu: 10
+      memory: "20Gi"
     expireAfter: "72h"
     disruption:
       budgets:
@@ -75,8 +75,8 @@ nodepools:
     instance_types:
       - Standard_D4s_v3
     limits:
-      cpu: 1000
-      memory: "500Gi"
+      cpu: 10
+      memory: "20Gi"
     expireAfter: "72h"
     disruption:
       budgets:
@@ -99,8 +99,8 @@ nodepools:
     instance_types:
       - Standard_D4s_v3
     limits:
-      cpu: 500
-      memory: "1000Gi"
+      cpu: 10
+      memory: "20Gi"
     expireAfter: "732h"
     disruption:
       consolidationPolicy: "WhenEmptyOrUnderutilized"
