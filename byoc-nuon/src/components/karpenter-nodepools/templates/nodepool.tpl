@@ -62,7 +62,10 @@ spec:
         - on-demand
       - key: node.kubernetes.io/instance-type
         operator: In
-        values: {{ .instance_types }}
+        values:
+        {{- range .instance_types }}
+        - {{ . }}
+        {{- end }}
       - key: topology.kubernetes.io/zone
         operator: In
         values:
