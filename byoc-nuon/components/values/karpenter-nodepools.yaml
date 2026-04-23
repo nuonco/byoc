@@ -123,3 +123,56 @@ nodepools:
           duration: "20h"
           reasons:
           - "Underutilized"
+
+  # temporal worker nodepools by namespace
+  - name: ctl-api-workers-apps
+    instance_types:
+      - t3a.2xlarge  # 8 cpu, 32 gb ram
+      - t3a.xlarge   # 4 cpu, 16 gb ram
+    limits:  # supports 5 t3a.2xlarge
+      cpu: 40
+      memory: "160Gi"
+    expireAfter: "732h"
+    disruption:
+      consolidateAfter: "5m"
+      budgets:
+        - nodes: "25%"
+
+  - name: ctl-api-workers-installs
+    instance_types:
+      - t3a.2xlarge  # 8 cpu, 32 gb ram
+      - t3a.xlarge   # 4 cpu, 16 gb ram
+    limits:  # supports 5 t3a.2xlarge
+      cpu: 40
+      memory: "160Gi"
+    expireAfter: "732h"
+    disruption:
+      consolidateAfter: "5m"
+      budgets:
+        - nodes: "25%"
+
+  - name: ctl-api-workers-runners
+    instance_types:
+      - t3a.2xlarge  # 8 cpu, 32 gb ram
+      - t3a.xlarge   # 4 cpu, 16 gb ram
+    limits:  # supports 5 t3a.2xlarge
+      cpu: 40
+      memory: "160Gi"
+    expireAfter: "732h"
+    disruption:
+      consolidateAfter: "5m"
+      budgets:
+        - nodes: "25%"
+
+  - name: ctl-api-workers-general
+    instance_types:
+      - t3a.2xlarge  # 8 cpu, 32 gb ram
+      - t3a.xlarge   # 4 cpu, 16 gb ram
+    limits:  # supports 5 t3a.2xlarge
+      cpu: 40
+      memory: "160Gi"
+    expireAfter: "732h"
+    disruption:
+      consolidateAfter: "5m"
+      budgets:
+        - nodes: "25%"
