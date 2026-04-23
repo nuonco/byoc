@@ -84,7 +84,7 @@ spec:
         operator: In
         values:
         {{- range .zones }}
-        - {{ . }}
+        - {{ . | quote }}
         {{- end }}
       {{- end }}
       - key: pool.nuon.co
