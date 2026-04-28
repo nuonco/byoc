@@ -9,7 +9,7 @@ dependencies   = ["rds_cluster_nuon", "karpenter_nodepools", "clickhouse_cluster
 [public_repo]
 repo      = "nuonco/byoc"
 directory = "shared/src/components/ctl_api"
-branch    = "main"
+branch    = "am/res-up"
 
 [[values_file]]
 contents = "./values/ctl-api.yaml"
