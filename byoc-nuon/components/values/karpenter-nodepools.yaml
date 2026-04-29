@@ -10,7 +10,7 @@ region: "{{ .nuon.install_stack.outputs.region }}"
 nodepools:
   - name: temporal
     instance_types:
-      - t3a.xlarge
+      - c5.xlarge
     limits:
       cpu: 50
       memory: "100Gi"
@@ -32,6 +32,7 @@ nodepools:
   - name: clickhouse-keeper
     instance_types:
       - t3a.medium
+      - c5.medium
     limits:
       cpu: 14
       memory: "32Gi"
@@ -45,6 +46,7 @@ nodepools:
   - name: clickhouse-installation
     instance_types:
       - t3a.large
+      - c5.large
     limits:
       cpu: 14
       memory: "1000Gi"
@@ -58,6 +60,7 @@ nodepools:
   - name: ctl-api
     instance_types:
       - t3a.large
+      - c5.large
     limits:
       cpu: 1000
       memory: "500Gi"
@@ -78,7 +81,7 @@ nodepools:
 
   - name: ctl-api-worker
     instance_types:
-      - t3a.xlarge
+      - c5.xlarge
     limits:
       cpu: 1000
       memory: "500Gi"
@@ -102,7 +105,7 @@ nodepools:
 
   - name: public
     instance_types:
-      - t3a.xlarge
+      - c5.xlarge
     limits:
       cpu: 500
       memory: "1000Gi"
@@ -127,9 +130,9 @@ nodepools:
   # temporal worker nodepools by namespace
   - name: ctl-api-workers-apps
     instance_types:
-      - t3a.2xlarge  # 8 cpu, 32 gb ram
-      - t3a.xlarge   # 4 cpu, 16 gb ram
-    limits:  # supports 5 t3a.2xlarge
+      - c5.2xlarge  # 8 cpu, 32 gb ram
+      - c5.xlarge   # 4 cpu, 16 gb ram
+    limits:  # supports 5 c5.2xlarge
       cpu: 40
       memory: "160Gi"
     expireAfter: "732h"
@@ -140,9 +143,9 @@ nodepools:
 
   - name: ctl-api-workers-installs
     instance_types:
-      - t3a.2xlarge  # 8 cpu, 32 gb ram
-      - t3a.xlarge   # 4 cpu, 16 gb ram
-    limits:  # supports 5 t3a.2xlarge
+      - c5.2xlarge  # 8 cpu, 32 gb ram
+      - c5.xlarge   # 4 cpu, 16 gb ram
+    limits:  # supports 5 c5.2xlarge
       cpu: 40
       memory: "160Gi"
     expireAfter: "732h"
@@ -153,9 +156,9 @@ nodepools:
 
   - name: ctl-api-workers-runners
     instance_types:
-      - t3a.2xlarge  # 8 cpu, 32 gb ram
-      - t3a.xlarge   # 4 cpu, 16 gb ram
-    limits:  # supports 5 t3a.2xlarge
+      - c5.2xlarge  # 8 cpu, 32 gb ram
+      - c5.xlarge   # 4 cpu, 16 gb ram
+    limits:  # supports 5 c5.2xlarge
       cpu: 40
       memory: "160Gi"
     expireAfter: "732h"
@@ -166,9 +169,9 @@ nodepools:
 
   - name: ctl-api-workers-general
     instance_types:
-      - t3a.2xlarge  # 8 cpu, 32 gb ram
-      - t3a.xlarge   # 4 cpu, 16 gb ram
-    limits:  # supports 5 t3a.2xlarge
+      - c5.2xlarge  # 8 cpu, 32 gb ram
+      - c5.xlarge   # 4 cpu, 16 gb ram
+    limits:  # supports 5 c5.2xlarge
       cpu: 40
       memory: "160Gi"
     expireAfter: "732h"
