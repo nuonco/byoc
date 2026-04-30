@@ -29,6 +29,8 @@ nodepools:
           - "Empty"
           - "Drifted"
 
+  # clickhouse nodes are not being forcefully moved to c5 because we don't want
+  # all of the nodes rotating at once.
   - name: clickhouse-keeper
     instance_types:
       - t3a.medium
@@ -59,7 +61,6 @@ nodepools:
 
   - name: ctl-api
     instance_types:
-      - t3a.large
       - c5.large
     limits:
       cpu: 1000

@@ -171,16 +171,16 @@ worker:
       maxReplicas: 5
       command: ["/bin/service", "worker", "--namespace=general"]
     - namespace: runners
-      minReplicas: 2
-      maxReplicas: 10
+      minReplicas: 3
+      maxReplicas: 12
       command: ["/bin/service", "worker", "--namespace=runners"]
       resources:
         limits:
-          cpu: 500m
-          memory: 1024Mi
+          cpu: 2000m
+          memory: 4Gi
         requests:
-          cpu: 500m
-          memory: 512Mi
+          cpu: 2000m
+          memory: 2Gi
       extraEnv:
         - name: TEMPORAL_STICKY_WORKFLOW_CACHE_SIZE
           value: !!string 1000
