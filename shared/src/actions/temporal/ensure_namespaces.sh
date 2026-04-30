@@ -4,7 +4,7 @@ set -e
 set -o pipefail
 set -u
 
-RETENTION="30d"
+RETENTION="7d"
 
 echo >&2 "ensuring namespaces"
 echo >&2 " > retention: $RETENTION"
@@ -23,7 +23,7 @@ function create_namespace() {
          --retention   "$retention"
 }
 
-declare -a namespaces=("orgs" "apps" "installs" "components" "releases" "installers" "runners" "general" "actions")
+declare -a namespaces=("general" "orgs" "apps" "installs" "runners" "actions" "components" "releases" "app-branches" "onboardings" "vcs")
 echo >&2 "using $RETENTION day retention"
 
 set +e
