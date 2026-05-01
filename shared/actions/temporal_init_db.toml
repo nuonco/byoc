@@ -3,7 +3,7 @@
 # create/migrate the temporal and temporal_visibility schemas, then creates
 # dedicated db users for each database.
 name    = "temporal_init_db"
-timeout = "5m"
+timeout = "60m"
 
 [[triggers]]
 type           = "post-deploy-component"
