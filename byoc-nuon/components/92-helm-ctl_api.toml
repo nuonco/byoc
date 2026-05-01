@@ -1,4 +1,4 @@
-#:schema https://api.nuon.co/v1/general/config-schema?type=helm
+# helm
 name           = "ctl_api"
 type           = "helm_chart"
 chart_name     = "ctl-api"
@@ -7,8 +7,8 @@ storage_driver = "configmap"
 dependencies   = ["rds_cluster_nuon", "karpenter_nodepools", "clickhouse_cluster", "temporal", "management", "ctl_api_init_db"]
 
 [public_repo]
-repo      = "nuonco/byoc"
-directory = "shared/src/components/ctl_api"
+repo      = "nuonco/charts"
+directory = "charts/ctl-api"
 branch    = "main"
 
 [[values_file]]

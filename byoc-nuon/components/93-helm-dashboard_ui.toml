@@ -1,4 +1,4 @@
-#:schema https://api.nuon.co/v1/general/config-schema?type=helm
+# helm
 name           = "dashboard_ui"
 type           = "helm_chart"
 chart_name     = "dashboard-ui"
@@ -8,8 +8,8 @@ storage_driver = "configmap"
 dependencies = ["ctl_api"]
 
 [public_repo]
-repo      = "nuonco/byoc"
-directory = "shared/src/components/dashboard_ui"
+repo      = "nuonco/charts"
+directory = "charts/dashboard-ui"
 branch    = "main"
 
 [[values_file]]
