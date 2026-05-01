@@ -1,5 +1,7 @@
 ---
 environment: prod
+gcp:
+  enabled: false
 
 env:
   ENV: prod
