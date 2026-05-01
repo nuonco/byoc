@@ -144,24 +144,57 @@ worker:
       minReplicas: 2
       maxReplicas: 5
       command: ["/bin/service", "worker", "--namespace=apps"]
+      resources:
+        limits:
+          cpu: 2000m
+          memory: 4Gi
+        requests:
+          cpu: 1750m
+          memory: 3Gi
+      extraEnv:
+        - name: TEMPORAL_MAX_CONCURRENT_WORKFLOW_TASK_EXECUTION_SIZE
+          value: "1000"
+        - name: TEMPORAL_MAX_CONCURRENT_ACTIVITY_TASK_POLLERS
+          value: "100"
+        - name: TEMPORAL_MAX_CONCURRENT_WORKFLOW_TASK_POLLERS
+          value: "100"
+        - name: DB_MAX_CONNECTIONS
+          value: "10"
+        - name: TEMPORAL_STICKY_WORKFLOW_CACHE_SIZE
+          value: "1000000"
     - namespace: components
       minReplicas: 2
       maxReplicas: 5
       command: ["/bin/service", "worker", "--namespace=components"]
+      resources:
+        limits:
+          cpu: 1000m
+          memory: 1Gi
+        requests:
+          cpu: 1000m
+          memory: 1Gi
     - namespace: installs
       minReplicas: 2
       maxReplicas: 10
       command: ["/bin/service", "worker", "--namespace=installs"]
       resources:
         limits:
-          cpu: 1000m
-          memory: 2048Mi
+          cpu: 2000m
+          memory: 4Gi
         requests:
-          cpu: 500m
-          memory: 1024Mi
+          cpu: 1750m
+          memory: 3Gi
       extraEnv:
+        - name: TEMPORAL_MAX_CONCURRENT_WORKFLOW_TASK_EXECUTION_SIZE
+          value: "10000"
+        - name: TEMPORAL_MAX_CONCURRENT_ACTIVITY_TASK_POLLERS
+          value: "500"
+        - name: TEMPORAL_MAX_CONCURRENT_WORKFLOW_TASK_POLLERS
+          value: "500"
+        - name: DB_MAX_CONNECTIONS
+          value: "10"
         - name: TEMPORAL_STICKY_WORKFLOW_CACHE_SIZE
-          value: !!string 1000
+          value: "1000000"
     - namespace: releases
       minReplicas: 2
       maxReplicas: 5
@@ -180,10 +213,18 @@ worker:
           memory: 4Gi
         requests:
           cpu: 2000m
-          memory: 2Gi
+          memory: 4Gi
       extraEnv:
+        - name: TEMPORAL_MAX_CONCURRENT_WORKFLOW_TASK_EXECUTION_SIZE
+          value: "1000"
+        - name: TEMPORAL_MAX_CONCURRENT_ACTIVITY_TASK_POLLERS
+          value: "100"
+        - name: TEMPORAL_MAX_CONCURRENT_WORKFLOW_TASK_POLLERS
+          value: "100"
+        - name: DB_MAX_CONNECTIONS
+          value: "15"
         - name: TEMPORAL_STICKY_WORKFLOW_CACHE_SIZE
-          value: !!string 1000
+          value: "1000000"
   autoscaling:
     targetCPUUtilizationPercentage: 75
     targetMemoryUtilizationPercentage: 75
