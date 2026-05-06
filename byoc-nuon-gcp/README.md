@@ -48,8 +48,8 @@ $public_domain }}/docs/index.html)</small>
                         {{end}}
                         </td>
                         <td>{{$name}}</td>
-                        <td>{{$action.status}}</td>
-                        <td><pre style="margin-top: 0; margin-bottom: 0">{{$action.outputs}}</pre></td>
+                        <td>{{ if or (eq $action.status "") (eq $action.status "unknown") }}pending{{ else }}{{ $action.status }}{{ end }}</td>
+                        <td>{{ dig "indicator" "—" $action.outputs }}</td>
                     </tr>
                 {{end}}
             {{end}}
@@ -59,64 +59,110 @@ $public_domain }}/docs/index.html)</small>
 
 </div>
 
-- [Installing Nuon](#installingnuon)
-  - [Configure DNS](#configuredns)
-  - [Configure Github App](#configuregithubapp)
-  - [Configure Google OAuth](#configure-google-oauth)
-  - [Update Inputs](#updateinputs)
-  - [Update Secrets](#updatesecrets)
-- [Application Links](#applicationlinks)
-- [Accessing the GKE Cluster](#accessingthegkecluster)
+- [Installing Nuon](#installing-nuon)
+  - [1. Prerequisites](#1-prerequisites)
+  - [2. Sync the App](#2-sync-the-app)
+  - [3. Create the Install](#3-create-the-install)
+  - [4. Delegate DNS](#4-delegate-dns)
+- [Application Links](#application-links)
+- [Accessing the GKE Cluster](#accessing-the-gke-cluster)
 - [Secrets](#secrets)
 - [Components](#components)
 - [CLI](#cli)
 
 ## Installing Nuon
 
-Nuon has a few dependencies you must configure ahead of time.
+Installing BYOC Nuon on GCP is a simple 4 step flow:
 
-- Custom DNS (Optional)
-- Github App
-- Google OAuth
+1. Set up a GitHub App and a Google OAuth client (one-time prerequisites).
+2. Sync the app into your Nuon org.
+3. Create an install — fill in the inputs and provide two secrets when prompted.
+4. After provisioning, add an `NS` record in your public domain to delegate to the Cloud DNS zone Nuon created.
 
-You will need an install ID to configure these. For this reason, the first step in the installation process is to create
-your Nuon install -- don't bother updating any of the inputs -- and then cancel the provision. You will use the install
-ID to configure the dependencies as detailed below. Once the dependencies are ready, update your install's inputs, then
-click on "Reprovision Install" in the "Manage" menu.
+Everything else (databases, session keys, JWT secrets, internal DNS, TLS certs) is wired up automatically.
 
-### Configure DNS
+### 1. Prerequisites
 
-There are two domains at play with a BYOC Nuon deployment. The first is the `root_domain` under which all of the
-services (e.g. APIs & Frontend) are served. The second, `nuon_dns_domain`, is a domain which you can use to
-automate the provisioning of Cloud DNS zones for installs.
+You need two things before creating the install: a **GitHub App** (so Nuon can clone component repos) and a **Google
+OAuth client** (so users can sign in to the dashboard).
 
-|                 | Input             | Description                                                                          |
-| --------------- | ----------------- | ------------------------------------------------------------------------------------ |
-| Root Domain     | `root_domain`     | The root domain from which the nuon services are served.                             |
-| Nuon DNS Domain | `nuon_dns_domain` | The domain used to provision domains for installs managed by this BYOC Nuon Install. |
+#### GitHub App
 
-BYOC Nuon should be hosted under a custom domain of your choice, for example:
+Create a new app at https://github.com/settings/apps with the following settings:
 
-- `byoc.organization.com`
+- **Name**: anything you like
+- **Homepage URL**: `https://app.{{ $public_domain }}`
+- **Setup URL** (under *Post Installation*): `https://app.{{ $public_domain }}/connect`, and check **Redirect on Update**
+- **Webhook**: uncheck *Active*
+- **Permissions** → *Repository permissions* → **Contents: Read-only**
+- **Where can this GitHub App be installed?**: *Only on this account*
 
-Nuon DNS should be hosted under a separate domain or a dedicated subdomain, such as:
+Once created:
 
-- `installs.organization.com`
-- `hosted.organization.io`
+- Note the **App ID**, **App Name**, and **Client ID** — you'll paste them into the install inputs.
+- Scroll to the bottom and **generate a private key**. Base64-encode the downloaded `.pem` file — you'll provide that as
+  a secret.
 
-<!-- prettier-ignore-start -->
-> [!NOTE]
-> We strongly suggest you choose your domains so there is NO overlap between the two.
-<!-- prettier-ignore-end -->
+```bash
+base64 -i your-app.private-key.pem | pbcopy
+```
 
-#### Current DNS Configurations
+#### Google OAuth Client
 
-When an install is created, Cloud DNS zones will be created for each of the domains. When these are ready, you can
-configure your domain registrar to use the GCP nameservers.
+1. Open [Google Cloud Console → Credentials](https://console.cloud.google.com/apis/credentials).
+2. **Create Credentials → OAuth client ID → Web application**.
+3. Configure:
+
+   | Setting                       | Value                                    |
+   | ----------------------------- | ---------------------------------------- |
+   | Authorized JavaScript origins | `https://auth.{{ $public_domain }}`      |
+   | Authorized redirect URIs      | `https://auth.{{ $public_domain }}/auth` |
+
+4. Note the **Client ID** (goes into inputs) and **Client Secret** (goes into secrets).
+
+### 2. Sync the App
+
+From this repo, sync the app config into your Nuon org:
+
+```bash
+nuon apps sync
+```
+
+### 3. Create the Install
+
+Create the install from the Nuon dashboard. You'll be asked for:
+
+**Inputs** (filled in on the create install screen):
+
+| Input                  | Value                                                                                                  |
+| ---------------------- | ------------------------------------------------------------------------------------------------------ |
+| `root_domain`          | The domain Nuon services will be served from (e.g. `byoc.yourcompany.com`).                            |
+| `nuon_dns_domain`      | A separate domain used to provision DNS zones for installs (e.g. `installs.yourcompany.com`). Must not overlap with `root_domain`. |
+| `github_app_name`      | Name of the GitHub App you created.                                                                    |
+| `github_app_id`        | App ID from the GitHub App.                                                                            |
+| `github_app_client_id` | Client ID from the GitHub App.                                                                         |
+| `nuon_auth_client_id`  | Client ID from your Google OAuth client.                                                               |
+
+**Secrets** (entered alongside the install — Nuon prompts for these):
+
+| Secret                    | Value                                                |
+| ------------------------- | ---------------------------------------------------- |
+| `github_app_key`          | Base64-encoded PEM private key from your GitHub App. |
+| `nuon_auth_client_secret` | Client secret from your Google OAuth client.         |
+
+That's it. All other secrets (session keys, JWT signing key, Cloud SQL passwords, ClickHouse passwords, Temporal passwords)
+are auto-generated by Nuon during provisioning — no action needed.
+
+Provision the install. The sandbox will create the GKE cluster, networking, Cloud SQL, and the Cloud DNS zones for both
+your root domain and your nuon DNS domain.
+
+### 4. Delegate DNS
+
+Once the sandbox finishes, Nuon creates a public Cloud DNS zone for your `root_domain`. To make the install reachable on
+the public internet, add an `NS` record at your domain registrar pointing your `root_domain` (or the appropriate
+subdomain) at the Cloud DNS nameservers shown below.
 
 {{ if (and .nuon.sandbox.populated .nuon.sandbox.outputs) }}
-
-##### Root Domain
 
 | Attribute   | Value                                                                                    |
 | ----------- | ---------------------------------------------------------------------------------------- |
@@ -124,21 +170,22 @@ configure your domain registrar to use the GCP nameservers.
 | Zone ID     | {{ dig "outputs" "nuon_dns" "public_domain" "zone_id" "zone-xxxxxxxxxx" .nuon.sandbox }} |
 
 <!-- prettier-ignore-start -->
-| Value     | Record Type | priority |
-| --------- | ----------- | -------- |
+| Nameserver | Record Type | priority |
+| ---------- | ----------- | -------- |
 {{ range $i, $ns := .nuon.sandbox.outputs.nuon_dns.public_domain.nameservers }}| {{ $ns }} | NS          | {{$i}}   |
 {{ end }}
 <!-- prettier-ignore-end -->
 
 {{ else }}
 
-> [!WARNING] Waiting on Sandbox Provision. Once the Sandbox is ready, results will be visible here.
+> [!WARNING] Waiting on sandbox provision. Once the sandbox is ready, the nameservers to delegate to will appear here.
 
 {{ end }}
 
 {{ if (and .nuon.components .nuon.components.management) }}
 
-##### Nuon DNS Root Domain
+A second zone is created for `nuon_dns_domain` — used to issue subdomains to installs managed by this BYOC Nuon. If you
+plan to use that, delegate it the same way:
 
 | Attribute   | Value                                                      |
 | ----------- | ---------------------------------------------------------- |
@@ -146,94 +193,15 @@ configure your domain registrar to use the GCP nameservers.
 | Zone Name   | {{ .nuon.components.management.outputs.dns_zone.name }}    |
 
 <!-- prettier-ignore-start -->
-| Value     | Record Type | priority |
-| --------- | ----------- | -------- |
+| Nameserver | Record Type | priority |
+| ---------- | ----------- | -------- |
 {{ range $i, $ns := .nuon.components.management.outputs.dns_zone.nameservers }}| {{ $ns }} | NS          | {{$i}}   |
 {{ end }}
 <!-- prettier-ignore-end -->
 
-{{ else }}
-
-> [!WARNING] Waiting on Management Component. Once deployed, results will be visible here.
-
 {{ end }}
 
-### Configure Github App
-
-Create a github app so BYOC Nuon can clone code for components from private repos. (To configure a new App:
-https://github.com/settings/apps) Configure it thusly:
-
-- Github app name: (pick any name)
-- Homepage URL: [https://app.{{ $public_domain }}](https://app.{{ $public_domain }})
-- Post Installation:
-  - Setup URL: [https://app.{{ $public_domain }}/connect](https://app.{{ $public_domain }}/connect)
-  - Redirect on Update: check
-- Webhook:
-  - Webhook: un-check
-- Permissions:
-  - Contents: Read-only
-  - Where can this GitHub app be installed?: Only on this account.
-
-Once the app has been created, scroll to the bottom and generate a PEM key. You will need to provide this as a secret
-later.
-
-### Configure Google OAuth
-
-Nuon uses Google OAuth for authentication. Users will sign in with their Google account.
-
-#### Create Google OAuth Credentials
-
-1. Go to [Google Cloud Console](https://console.cloud.google.com/)
-2. Create or select a project
-3. Navigate to **APIs & Services** > **Credentials**
-4. Click **Create Credentials** > **OAuth client ID**
-5. Select **Web application** as the application type
-6. Configure the OAuth client (see table below)
-7. Note the **Client ID** and **Client Secret** - you'll need these for the install inputs and secrets
-
-| Setting                       | Value                                    |
-| ----------------------------- | ---------------------------------------- |
-| Name                          | `BYOC Nuon` (or any name)                |
-| Authorized JavaScript origins | `https://auth.{{ $public_domain }}`      |
-| Authorized redirect URIs      | `https://auth.{{ $public_domain }}/auth` |
-
-### Update Inputs
-
-Once the dependencies have been configured, you can update your install inputs.
-
-#### Authentication Configuration
-
-| Input              | Value                              |
-| ------------------ | ---------------------------------- |
-| Auth Provider Type | `google` (default)                 |
-| Auth Client ID     | Client ID from Google OAuth        |
-
-#### Github
-
-| Input                | Value                              |
-| -------------------- | ---------------------------------- |
-| Github App Name      | name of your github app            |
-| Github App ID        | ID of your github app              |
-| Github App client ID | the client ID from your Github app |
-
-#### DNS Configuration
-
-|                 | Input                                                           | Description                                                                          |
-| --------------- | --------------------------------------------------------------- | ------------------------------------------------------------------------------------ |
-| Root Domain     | `{{.nuon.sandbox.outputs.nuon_dns.public_domain.name}}`         | The root domain from which the nuon services are served.                             |
-| Nuon DNS Domain | `{{.nuon.components.management.outputs.dns_zone.domain}}`       | The domain used to provision domains for installs managed by this BYOC Nuon Install. |
-
-### Update Secrets
-
-| Secret                    | Value                               |
-| ------------------------- | ----------------------------------- |
-| `github_app_key`          | your base64 encoded PEM key         |
-| `nuon_auth_client_secret` | the client secret from Google OAuth |
-
-The following secrets are auto-generated and do not need to be provided:
-
-- `nuon_auth_session_key` - used for session nonce
-- `nuon_auth_jwt_secret` - used to sign JWT tokens
+After the NS records propagate, the dashboard will be reachable at the URLs below.
 
 ## Application Links
 
@@ -254,7 +222,7 @@ The following secrets are auto-generated and do not need to be provided:
 ## Accessing the GKE Cluster
 
 1. Ensure you have `gcloud` CLI installed and authenticated.
-2. Run the following command to get cluster credentials:
+2. Run:
 
 <pre>
 gcloud container clusters get-credentials {{ dig "outputs" "cluster" "name" "$cluster_name" .nuon.sandbox }} \
@@ -295,13 +263,13 @@ action (pre-deploy).
 
 ## CLI
 
-Install the latest version of the nuon cli ([docs](https://docs.nuon.co/cli#cli)).
+Install the latest version of the nuon cli ([docs](https://docs.nuon.co/cli#cli)):
 
 ```bash
 brew install nuonco/tap/nuon
 ```
 
-Configure as follows:
+Configure:
 
 ```yaml
 api_url: https://api.{{ $public_domain }}
