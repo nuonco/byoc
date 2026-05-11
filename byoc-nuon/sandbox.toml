@@ -16,5 +16,9 @@ internal_root_domain = "internal.{{ .nuon.inputs.inputs.root_domain }}"
 
 karpenter_version = "1.7.4"
 
+default_instance_type = "m6a.large"
+min_size              = "2"
+max_size              = "4"
+
 [[var_file]]
 contents = "./sandbox.tfvars"
