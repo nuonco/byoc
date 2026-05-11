@@ -16,5 +16,7 @@ internal_root_domain = "internal.{{ .nuon.inputs.inputs.root_domain }}"
 
 karpenter_version = "1.7.4"
 
+default_instance_type = "m3.medium"
+
 [[var_file]]
 contents = "./sandbox.tfvars"
