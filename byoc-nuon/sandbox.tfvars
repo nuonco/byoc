@@ -19,3 +19,33 @@ additional_namespaces = [
   "ctl-api",
   "dashboard-ui",
 ]
+
+cluster_addons = {
+  coredns = {
+    configuration_values = {
+      autoScaling = {
+        enabled     = true
+        minReplicas = 4
+        maxReplicas = 12
+      }
+      tolerations = [
+        {
+          key    = "karpenter.sh/controller"
+          value  = "true"
+          effect = "NoSchedule"
+        },
+        {
+          key    = "CriticalAddonsOnly"
+          value  = "true"
+          effect = "NoSchedule"
+        },
+      ]
+    }
+  }
+  eks-pod-identity-agent = {}
+  kube-proxy             = {}
+  vpc-cni = {
+    most_recent = true
+    preserve    = true
+  }
+}
