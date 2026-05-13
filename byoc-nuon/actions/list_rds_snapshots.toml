@@ -1,0 +1,15 @@
+# action
+name    = "list_rds_snapshots"
+timeout = "5m"
+
+[[triggers]]
+type = "manual"
+
+[[steps]]
+name    = "list_snapshots"
+command = "./list-snapshots.sh"
+
+[steps.public_repo]
+repo      = "nuonco/byoc"
+directory = "byoc-nuon/src/actions/rds"
+branch    = "main"
