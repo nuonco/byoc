@@ -354,7 +354,7 @@ Secrets can be updated by re-provisioning the stack and updating the secret valu
 <summary><strong>Runners</strong></summary>
 
 {{ with .nuon.actions.workflows.runners }}
-{{ if .populated }}
+{{ if and .populated (eq .status "finished") }}
 {{ $runnerSettings := .outputs.steps.settings }}
 
 <nuon-tabs>                                                                                                                                
