@@ -14,4 +14,4 @@ url="$admin_api_addr/v1/runners?type=$type&limit=100"
 curl --max-time 5 -q -s $url    \
   -H 'accept: application/json' \
   -H 'X-Nuon-Admin-Email: jon@nuon.co' \
-  | jq -c 'map({(.id): .}) | add // {}' >> $NUON_ACTIONS_OUTPUT_FILEPATH
+  | jq -c '.[] | {(.id): .}' >> $NUON_ACTIONS_OUTPUT_FILEPATH

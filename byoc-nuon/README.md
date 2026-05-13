@@ -439,7 +439,6 @@ Secrets can be updated by re-provisioning the stack and updating the secret valu
   <li><strong>Sentry:</strong> {{dig "enable_sentry" "" $runner.settings}}</li>                                                              
   <li><strong>Metrics:</strong> {{dig "enable_metrics" "" $runner.settings}}</li>
   <li><strong>Heartbeat Timeout:</strong> {{dig "heart_beat_timeout" "" $runner.settings}}</li>                                              
-  <li><strong>Groups:</strong> {{dig "groups" "" $runner.settings}}</li>       
   <li><strong>Runner API URL:</strong> {{dig "runner_api_url" "" $runner.settings}}</li>                                                     
   <li><strong>Runner Group ID:</strong> <code>{{dig "runner_group_id" "" $runner.settings}}</code></li>
   <li><strong>Created:</strong> {{dig "created_at" "" $runner.settings}}</li>                                                                
