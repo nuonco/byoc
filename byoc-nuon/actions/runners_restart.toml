@@ -3,6 +3,11 @@ name    = "runners_restart"
 timeout = "2m"
 
 [[triggers]]
+type           = "post-deploy-component"
+component_name = "ctl_api"
+index          = 6
+
+[[triggers]]
 type = "manual"
 
 [[steps]]
