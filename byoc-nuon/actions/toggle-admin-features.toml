@@ -1,0 +1,20 @@
+# action
+name    = "toggle-admin-features"
+timeout = "1m30s"
+
+[[triggers]]
+type           = "manual"
+
+[[triggers]]
+type = "manual"
+
+[[steps]]
+name            = "toggle"
+inline_contents = "./src/admin/toggle-org-features.sh"
+
+[steps.env_vars]
+ADMIN_API_URL = "http://admin.{{ .nuon.sandbox.outputs.nuon_dns.internal_domain.name }}"
+ENABLE_PAYLOAD = "{\"features\": {\"stratus-layout\": true}"
+DISABLE_PAYLOAD = "{\"features\": {\"stratus-layout\": false}"
+MODE = "enable"
+ADMIN_EMAIL = ""
