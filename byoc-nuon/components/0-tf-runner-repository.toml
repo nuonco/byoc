@@ -1,0 +1,17 @@
+# terraform
+name              = "runner_repository"
+type              = "terraform_module"
+terraform_version = "1.11.3"
+
+[public_repo]
+repo      = "nuonco/byoc"
+directory = "byoc-nuon/src/components/runner-repository"
+branch    = "main"
+
+[vars]
+install_id = "{{ .nuon.install.id }}"
+org_id     = "{{ .nuon.org.id }}"
+region     = "{{ .nuon.install_stack.outputs.region }}"
+
+[[var_file]]
+contents = "./values/runner-repository.tfvars"

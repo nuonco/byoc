@@ -10,6 +10,7 @@
         "cloudwatch:*",
         "ec2:*",
         "ecr:*",
+        "ecr-public:*",
         "eks:*",
         "iam:*",
         "kms:*",
@@ -17,7 +18,8 @@
         "rds:*",
         "s3:*",
         "secretsmanager:*",
-        "sqs:*"
+        "sqs:*",
+        "sts:GetServiceBearerToken"
       ],
       "Resource": "*"
     },
