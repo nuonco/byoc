@@ -5,7 +5,9 @@ timeout = "5m"
 [[triggers]]
 type = "manual"
 
-# TODO(fd): add cron trigger
+[[triggers]]
+type          = "cron"
+cron_schedule = "0 */1 * * *"  # https://crontab.guru/#0_*/1_*_*_*
 
 [[steps]]
 name            = "org"
