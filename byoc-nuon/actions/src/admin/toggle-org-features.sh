@@ -6,6 +6,7 @@ set -u
 
 admin_api_url="$ADMIN_API_URL" # from env vars
 mode="$MODE" # enable or diable
+admin_email="$ADMIN_EMAIL"
 
 
 ENABLE_PAYLOAD='{"features": {"stratus-layout": true, "stratus-workflow": true, "dashboard-sse": true}}'
@@ -23,7 +24,7 @@ curl -s \
   -q \
   -X 'PATCH' \
   "$admin_api_url/v1/orgs/admin-features" \
-  -H "Authorization:jatin@retool.com" \
+  -H "Authorization:$admin_email" \
   --data "$payload"
 
-curl -s --max-time 5 -q -X 'GET' -H "Authorization:jatin@retool.com" "$admin_api_url/v1/orgs/admin-features"
+curl -s --max-time 5 -q -X 'GET' -H "Authorization:$admin_email" "$admin_api_url/v1/orgs/admin-features"
