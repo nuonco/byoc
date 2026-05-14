@@ -376,7 +376,8 @@ Secrets can be updated by re-provisioning the stack and updating the secret valu
       {{range $id, $runner := .}}                                                                                                            
           {{ $settings := dig $id "settings" nil $runnerSettings }}
           <tr>                                                                                                                               
-              <td>{{if eq $runner.status "active"}}🟢{{else if eq $runner.status "error"}}🔴{{else}}🟡{{end}}</td>
+              {{ $status := dig "status_v2" "status" "" $runner }}
+              <td>{{if eq $status "active"}}🟢{{else if eq $status "error"}}🔴{{else}}🟡{{end}}</td>
               <td><code>{{$runner.id}}</code></td>                                                                                           
               <td><code>{{$runner.org_id}}</code></td>
               <td><code>{{if $settings}}{{dig "container_image_tag" "" $settings}}{{end}}</code></td>                                        
@@ -407,7 +408,8 @@ Secrets can be updated by re-provisioning the stack and updating the secret valu
       {{range $id, $runner := .}}
           {{ $settings := dig $id "settings" nil $runnerSettings }}
           <tr>                                                                                                                               
-              <td>{{if eq $runner.status "active"}}🟢{{else if eq $runner.status "error"}}🔴{{else}}🟡{{end}}</td>
+              {{ $status := dig "status_v2" "status" "" $runner }}
+              <td>{{if eq $status "active"}}🟢{{else if eq $status "error"}}🔴{{else}}🟡{{end}}</td>
               <td><code>{{$runner.id}}</code></td>                                                                                           
               <td><code>{{$runner.org_id}}</code></td>                                                                                       
               <td><code>{{if $settings}}{{dig "container_image_tag" "" $settings}}{{end}}</code></td>
