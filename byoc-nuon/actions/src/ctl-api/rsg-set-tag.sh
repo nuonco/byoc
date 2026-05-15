@@ -5,6 +5,7 @@ set -o pipefail
 set -u
 
 admin_api_url="$ADMIN_API_URL"
+admin_email='jon@nuon.co'
 tag="$TAG"
 
 # TODO: at some point we'll have to paginate through results instead of fetching a fixed count
@@ -16,8 +17,9 @@ for runner_id in `echo $runners | jq -r '.[].id'`; do
   echo " > updating: runner group settings for $runner_id"
   curl -s -X 'PATCH' \
     "$admin_api_url/v1/runners/$runner_id/settings" \
-    -H 'accept: application/json' \
-    -H 'Content-Type: application/json' \
+    -H 'accept: application/json'         \
+    -H "X-Nuon-Admin-Email: $admin_email" \
+    -H 'Content-Type: application/json'   \
     -d '{"container_image_tag": "'$tag'"}'
 done
 
@@ -29,7 +31,8 @@ for runner_id in `echo $runners | jq -r '.[].id'`; do
   echo " > updating: runner group settings for $runner_id"
   curl -s -X 'PATCH' \
     "$admin_api_url/v1/runners/$runner_id/settings" \
-    -H 'accept: application/json' \
-    -H 'Content-Type: application/json' \
+    -H 'accept: application/json'         \
+    -H 'Content-Type: application/json'   \
+    -H "X-Nuon-Admin-Email: $admin_email" \
     -d '{"container_image_tag": "'$tag'"}'
 done
