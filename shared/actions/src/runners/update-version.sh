@@ -15,6 +15,11 @@ RUNNER_CONTAINER_IMAGE_TAG=$(kubectl get -n ctl-api configmaps ctl-api -o yaml |
   cut -d ':' -f 2 |\
   sed 's/ //g')
 
+RUNNER_CONTAINER_IMAGE_URL=$(kubectl get -n ctl-api configmaps ctl-api -o yaml |\
+  grep RUNNER_CONTAINER_IMAGE_URL |\
+  cut -d ':' -f 2 |\
+  sed 's/ //g')
+
 # update_runners iterates a list of runner ids and PATCHes each runner's
 # settings to the current RUNNER_CONTAINER_IMAGE_TAG. Per-runner-type results
 # accumulate into RESPONSE_COUNTS.[$type_key] as {<http_code>: N, errors: [..]}.
@@ -35,7 +40,7 @@ update_runners() {
     curl_rc=0
     http_code=$(curl -s --max-time 10 -X PATCH "$url" \
       -H "Content-Type: application/json" \
-      -d "{\"container_image_tag\": \"$RUNNER_CONTAINER_IMAGE_TAG\", \"binary_version\": \"$RUNNER_CONTAINER_IMAGE_TAG\"}" \
+      -d "{\"container_image_tag\": \"$RUNNER_CONTAINER_IMAGE_TAG\", \"binary_version\": \"$RUNNER_CONTAINER_IMAGE_TAG\", \"container_image_url\":\"$RUNNER_CONTAINER_IMAGE_URL\"}" \
       -w "\n%{http_code}" \
       -o /tmp/response_body.json) || curl_rc=$?
 
