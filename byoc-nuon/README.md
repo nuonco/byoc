@@ -1,6 +1,8 @@
 {{ $region := .nuon.cloud_account.aws.region }}
-{{ $public_domain  := (dig "outputs" "nuon_dns" "public_domain"  "name" .nuon.inputs.inputs.root_domain .nuon.sandbox) }}
-{{ $private_domain := (dig "outputs" "nuon_dns" "private_domain" "name" .nuon.inputs.inputs.root_domain .nuon.sandbox) }}
+{{ $inputs := (default dict (index (default dict .nuon.inputs) "inputs")) }}
+{{ $root_domain := (dig "root_domain" "" $inputs) }}
+{{ $public_domain  := (dig "outputs" "nuon_dns" "public_domain"  "name" $root_domain .nuon.sandbox) }}
+{{ $private_domain := (dig "outputs" "nuon_dns" "private_domain" "name" $root_domain .nuon.sandbox) }}
 
 <center>
   <img class="mt-0 block dark:hidden" src="https://mintlify.s3-us-west-1.amazonaws.com/nuoninc/logo/light.svg"/>
@@ -51,6 +53,7 @@ nuon -f ~/.nuon.byoc login
 <nuon-action-card name="api_status"></nuon-action-card>
 
 </details>
+
 
 <details>
 <summary><nuon-group gap="2" align="center" justify="start"><strong>Dashboard</strong>{{ $indicator := dig "alb-healthcheck-dashboard-ui" "indicator" "" $dashSteps }}{{ if eq $indicator "🟢" }}<nuon-status status="active" variant="badge"></nuon-status>{{ else if eq $indicator "🔴" }}<nuon-status status="error" variant="badge"></nuon-status>{{ else }}<nuon-status status="pending" variant="badge"></nuon-status>{{ end }}<nuon-label-badge label="version:{{ dig "dashboard_ui_version" "unknown" $dash }}"></nuon-label-badge><nuon-label-badge label="git:{{ dig "dashboard_ui_git_ref" "unknown" $dash }}"></nuon-label-badge><a href="https://app.{{ $public_domain }}">Open ↗</a></nuon-group></summary>
@@ -140,117 +143,201 @@ aws --region {{ .nuon.install_stack.outputs.region }} \
 
 
 <details>
-<summary><strong>Runners</strong></summary>
+<summary><strong>Status</strong></summary>
 
-{{ with .nuon.actions.workflows.runners }}
+{{ with (index (default dict .nuon.actions.workflows) "status_report") }}
 {{ if and .populated (eq .status "finished") }}
-{{ $runnerSettings := .outputs.steps.settings }}
 
-<nuon-tabs>                                                                                                                                
-  <nuon-tab name="install runners">
-                                                                                                                                             
-  {{ with .outputs.steps.install }}                                            
-  <table>                                                                                                                                    
-      <thead>                                                                  
+<nuon-tabs>
+  <nuon-tab name="runners">
+
+{{ $runners := default dict .outputs.steps.runners }}
+{{ $ownerNames := dict }}
+{{ range $_, $i := (default dict .outputs.steps.installs) }}{{ $ownerNames = set $ownerNames (dig "id" "" $i) (dig "name" "" $i) }}{{ end }}
+{{ range $_, $o := (default dict .outputs.steps.orgs) }}{{ $ownerNames = set $ownerNames (dig "id" "" $o) (dig "name" "" $o) }}{{ end }}
+{{ range $_, $a := (default dict .outputs.steps.apps) }}{{ $ownerNames = set $ownerNames (dig "id" "" $a) (dig "name" "" $a) }}{{ end }}
+{{ if gt (len $runners) 0 }}
+
+  <table>
+      <thead>
           <tr>
               <th></th>
-              <th>ID</th>                                                                                                                    
-              <th>Org ID</th>
-              <th>Tag</th>                                                                                                                   
-              <th>Created At</th>                                              
+              <th>Owner</th>
+              <th>Type</th>
+              <th>Latest Heartbeat</th>
+              <th>Latest Healthcheck</th>
+              <th>Details</th>
+          </tr>
+      </thead>
+      <tbody>
+      {{range $id, $runner := $runners}}
+          {{ $status := dig "status" "" $runner }}
+          {{ $ownerID := dig "owner_id" "" $runner }}
+          {{ $ownerName := dig $ownerID "" $ownerNames }}
+          {{ $ownerLabel := $ownerName }}{{ if not $ownerLabel }}{{ $ownerLabel = default "—" $ownerID }}{{ end }}
+          {{ $runnerID := dig "id" "—" $runner }}
+          <tr>
+              <td><nuon-status status="{{ $status }}"></nuon-status></td>
+              <td style="white-space:nowrap;">{{ $ownerLabel }}</td>
+              <td>{{ dig "type" "—" $runner }}</td>
+              <td>{{ with dig "latest_heart_beat_created_at" "" $runner }}{{ (printf "%sZ" (substr 0 19 .)) | toDate "2006-01-02T15:04:05Z" | date "Jan 2 15:04 UTC" }}{{ else }}—{{ end }}</td>
+              <td>{{ with dig "latest_health_check_status" "" $runner }}<nuon-status status="{{ . }}" variant="badge"></nuon-status>{{ else }}—{{ end }}</td>
+              <td>
+
+<nuon-panel heading="Runner: {{ $ownerLabel }}" trigger="View" size="large">
+
+| Field | Value |
+| --- | --- |
+| Status | <nuon-status status="{{ $status }}" variant="badge"></nuon-status> |
+| Owner | {{ $ownerLabel }} |
+| Owner ID | `{{ $ownerID }}` |
+| Type | {{ dig "type" "—" $runner }} |
+| Platform | {{ dig "platform" "—" $runner }} |
+| Image | `{{ dig "image" "—" $runner }}:{{ dig "tag" "—" $runner }}` |
+| Runner ID | `{{ $runnerID }}` |
+| Latest Heartbeat | {{ with dig "latest_heart_beat_created_at" "" $runner }}{{ (printf "%sZ" (substr 0 19 .)) | toDate "2006-01-02T15:04:05Z" | date "Jan 2 15:04 UTC" }}{{ else }}—{{ end }} |
+| Latest Heartbeat Version | {{ with dig "latest_heart_beat_version" "" $runner }}<nuon-badge theme="info" size="sm" variant="code">{{ . }}</nuon-badge>{{ else }}—{{ end }} |
+| Latest Healthcheck | {{ with dig "latest_health_check_created_at" "" $runner }}{{ (printf "%sZ" (substr 0 19 .)) | toDate "2006-01-02T15:04:05Z" | date "Jan 2 15:04 UTC" }}{{ else }}—{{ end }} |
+| Latest Healthcheck Status | {{ with dig "latest_health_check_status" "" $runner }}<nuon-status status="{{ . }}" variant="badge"></nuon-status>{{ else }}—{{ end }} |
+
+</nuon-panel>
+
+              </td>
+          </tr>
+      {{end}}
+      </tbody>
+  </table>
+  {{ else }}
+
+<nuon-banner theme="info">No runners reported.</nuon-banner>
+
+{{ end }}
+
+  </nuon-tab>
+  <nuon-tab name="orgs">
+
+{{ $orgs := default dict .outputs.steps.orgs }}
+{{ if gt (len $orgs) 0 }}
+
+  <table>
+      <thead>
+          <tr>
+              <th>Name</th>
+              <th>ID</th>
+              <th>Created At</th>
               <th>Updated At</th>
           </tr>
       </thead>
       <tbody>
-      {{range $id, $runner := .}}                                                                                                            
-          {{ $settings := dig $id "settings" nil $runnerSettings }}
-          <tr>                                                                                                                               
-              {{ $status := dig "status_v2" "status" "" $runner }}
-              <td>{{if eq $status "active"}}🟢{{else if eq $status "error"}}🔴{{else}}🟡{{end}}</td>
-              <td><code>{{$runner.id}}</code></td>                                                                                           
-              <td><code>{{$runner.org_id}}</code></td>
-              <td><code>{{if $settings}}{{dig "container_image_tag" "" $settings}}{{end}}</code></td>                                        
-              <td>{{(printf "%sZ" (substr 0 19 $runner.created_at)) | toDate "2006-01-02T15:04:05Z" | date "2006-01-02 15:04"}}</td>         
-              <td>{{(printf "%sZ" (substr 0 19 $runner.updated_at)) | toDate "2006-01-02T15:04:05Z" | date "2006-01-02 15:04"}}</td>         
-          </tr>                                                                                                                              
-      {{end}}                                                                                                                                
-      </tbody>                                                                                                                               
-  </table>                                                                     
-  {{ end }}
+      {{range $id, $org := $orgs}}
+          <tr>
+              <td>{{ dig "name" "—" $org }}</td>
+              <td><code>{{ dig "id" "—" $org }}</code></td>
+              <td>{{ with dig "created_at" "" $org }}{{ (printf "%sZ" (substr 0 19 .)) | toDate "2006-01-02T15:04:05Z" | date "Jan 2 15:04 UTC" }}{{ else }}—{{ end }}</td>
+              <td>{{ with dig "updated_at" "" $org }}{{ (printf "%sZ" (substr 0 19 .)) | toDate "2006-01-02T15:04:05Z" | date "Jan 2 15:04 UTC" }}{{ else }}—{{ end }}</td>
+          </tr>
+      {{end}}
+      </tbody>
+  </table>
+  {{ else }}
+
+<nuon-banner theme="info">No orgs reported.</nuon-banner>
+
+{{ end }}
 
   </nuon-tab>
-  <nuon-tab name="org runners">
-                                                                                                                                             
-  {{ with .outputs.steps.org }}
-  <table>                                                                                                                                    
-      <thead>                                                                  
+  <nuon-tab name="apps">
+
+{{ $apps := default dict .outputs.steps.apps }}
+{{ $orgsByID := dict }}
+{{ range $_, $o := (default dict .outputs.steps.orgs) }}{{ $orgsByID = set $orgsByID (dig "id" "" $o) (dig "name" "" $o) }}{{ end }}
+{{ if gt (len $apps) 0 }}
+
+  <table>
+      <thead>
+          <tr>
+              <th>Name</th>
+              <th>Org</th>
+              <th>ID</th>
+              <th>Created At</th>
+              <th>Updated At</th>
+          </tr>
+      </thead>
+      <tbody>
+      {{range $id, $app := $apps}}
+          {{ $orgID := dig "org_id" "" $app }}
+          {{ $orgName := dig $orgID "" $orgsByID }}
+          <tr>
+              <td>{{ dig "name" "—" $app }}</td>
+              <td style="white-space:nowrap;">{{ if $orgName }}{{ $orgName }}{{ else }}<code>{{ default "—" $orgID }}</code>{{ end }}</td>
+              <td><code>{{ dig "id" "—" $app }}</code></td>
+              <td>{{ with dig "created_at" "" $app }}{{ (printf "%sZ" (substr 0 19 .)) | toDate "2006-01-02T15:04:05Z" | date "Jan 2 15:04 UTC" }}{{ else }}—{{ end }}</td>
+              <td>{{ with dig "updated_at" "" $app }}{{ (printf "%sZ" (substr 0 19 .)) | toDate "2006-01-02T15:04:05Z" | date "Jan 2 15:04 UTC" }}{{ else }}—{{ end }}</td>
+          </tr>
+      {{end}}
+      </tbody>
+  </table>
+  {{ else }}
+
+<nuon-banner theme="info">No apps reported.</nuon-banner>
+
+{{ end }}
+
+  </nuon-tab>
+  <nuon-tab name="installs">
+
+{{ $installs := default dict .outputs.steps.installs }}
+{{ $appsByID := dict }}
+{{ range $_, $a := (default dict .outputs.steps.apps) }}{{ $appsByID = set $appsByID (dig "id" "" $a) (dig "name" "" $a) }}{{ end }}
+{{ $installOrgsByID := dict }}
+{{ range $_, $o := (default dict .outputs.steps.orgs) }}{{ $installOrgsByID = set $installOrgsByID (dig "id" "" $o) (dig "name" "" $o) }}{{ end }}
+{{ if gt (len $installs) 0 }}
+
+  <table>
+      <thead>
           <tr>
               <th></th>
+              <th>Name</th>
+              <th>App</th>
+              <th>Org</th>
               <th>ID</th>
-              <th>Org ID</th>
-              <th>Tag</th>
               <th>Created At</th>
-              <th>Updated At</th>                                                                                                            
+              <th>Updated At</th>
           </tr>
-      </thead>                                                                                                                               
-      <tbody>                                                                  
-      {{range $id, $runner := .}}
-          {{ $settings := dig $id "settings" nil $runnerSettings }}
-          <tr>                                                                                                                               
-              {{ $status := dig "status_v2" "status" "" $runner }}
-              <td>{{if eq $status "active"}}🟢{{else if eq $status "error"}}🔴{{else}}🟡{{end}}</td>
-              <td><code>{{$runner.id}}</code></td>                                                                                           
-              <td><code>{{$runner.org_id}}</code></td>                                                                                       
-              <td><code>{{if $settings}}{{dig "container_image_tag" "" $settings}}{{end}}</code></td>
-              <td>{{(printf "%sZ" (substr 0 19 $runner.created_at)) | toDate "2006-01-02T15:04:05Z" | date "2006-01-02 15:04"}}</td>         
-              <td>{{(printf "%sZ" (substr 0 19 $runner.updated_at)) | toDate "2006-01-02T15:04:05Z" | date "2006-01-02 15:04"}}</td>         
-          </tr>                                                                                                                              
-      {{end}}                                                                                                                                
-      </tbody>                                                                                                                               
-  </table>                                                                                                                                   
-  {{ end }}
-                                                                                                                                             
-  </nuon-tab>                                                                  
-  <nuon-tab name="more info">
+      </thead>
+      <tbody>
+      {{range $id, $install := $installs}}
+          {{ $status := dig "status" "" $install }}
+          {{ $appID := dig "app_id" "" $install }}
+          {{ $appName := dig $appID "" $appsByID }}
+          {{ $orgID := dig "org_id" "" $install }}
+          {{ $orgName := dig $orgID "" $installOrgsByID }}
+          <tr>
+              <td><nuon-status status="{{ $status }}"></nuon-status></td>
+              <td>{{ dig "name" "—" $install }}</td>
+              <td style="white-space:nowrap;">{{ if $appName }}{{ $appName }}{{ else }}<code>{{ default "—" $appID }}</code>{{ end }}</td>
+              <td style="white-space:nowrap;">{{ if $orgName }}{{ $orgName }}{{ else }}<code>{{ default "—" $orgID }}</code>{{ end }}</td>
+              <td><code>{{ dig "id" "—" $install }}</code></td>
+              <td>{{ with dig "created_at" "" $install }}{{ (printf "%sZ" (substr 0 19 .)) | toDate "2006-01-02T15:04:05Z" | date "Jan 2 15:04 UTC" }}{{ else }}—{{ end }}</td>
+              <td>{{ with dig "updated_at" "" $install }}{{ (printf "%sZ" (substr 0 19 .)) | toDate "2006-01-02T15:04:05Z" | date "Jan 2 15:04 UTC" }}{{ else }}—{{ end }}</td>
+          </tr>
+      {{end}}
+      </tbody>
+  </table>
+  {{ else }}
 
-  {{ with .outputs.steps.settings }}
-  {{range $id, $runner := .}}
-  <details>
-  <summary><code>{{$id}}</code> — {{$runner.type}} ({{dig "metadata" "org.name" "unknown" $runner.settings}})</summary>
-                                                                                                                                             
-  <ul>
-  <li><strong>Type:</strong> {{$runner.type}}</li>                                                                                           
-  <li><strong>Org ID:</strong> <code>{{$runner.org_id}}</code></li>                                                                          
-  <li><strong>Platform:</strong> {{dig "metadata" "runner.platform" "unknown" $runner.settings}}</li>
-  <li><strong>Image:</strong> <code>{{dig "container_image_url" "" $runner.settings}}:{{dig "container_image_tag" ""                         
-  $runner.settings}}</code></li>                                                                                                             
-  <li><strong>Instance Type:</strong> {{dig "aws_instance_type" "" $runner.settings}}</li>
-  <li><strong>Max Instance Lifetime:</strong> {{dig "aws_max_instance_lifetime" "" $runner.settings}}</li>                                   
-  <li><strong>Logging:</strong> {{dig "enable_logging" "" $runner.settings}} ({{dig "logging_level" "" $runner.settings}})</li>
-  <li><strong>Sentry:</strong> {{dig "enable_sentry" "" $runner.settings}}</li>                                                              
-  <li><strong>Metrics:</strong> {{dig "enable_metrics" "" $runner.settings}}</li>
-  <li><strong>Heartbeat Timeout:</strong> {{dig "heart_beat_timeout" "" $runner.settings}}</li>                                              
-  <li><strong>Runner API URL:</strong> {{dig "runner_api_url" "" $runner.settings}}</li>                                                     
-  <li><strong>Runner Group ID:</strong> <code>{{dig "runner_group_id" "" $runner.settings}}</code></li>
-  <li><strong>Created:</strong> {{dig "created_at" "" $runner.settings}}</li>                                                                
-  <li><strong>Updated:</strong> {{dig "updated_at" "" $runner.settings}}</li>  
-  </ul>                                                                                                                                      
-                                                                               
-  </details>                                                                                                                                 
-  {{end}}
-  {{ end }}                                                                                                                                  
-                                                                               
+<nuon-banner theme="info">No installs reported.</nuon-banner>
+
+{{ end }}
+
   </nuon-tab>
-  </nuon-tabs>
-
+</nuon-tabs>
 
 {{ else }}
 
-> [!WARNING] Waiting on runners action. Run the "runners" action to populate this section.
+<nuon-banner theme="warn">Waiting on status_report action. Run the "status_report" action to populate this section.</nuon-banner>
 
 {{ end }}
 {{ end }}
 
 </details>
-
-
