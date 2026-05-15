@@ -9,6 +9,7 @@ dry_run="$DRY_RUN"
 version="$VERSION"
 admin_api_url="$ADMIN_API_URL"
 runner_type="$RUNNER_TYPE"
+admin_email='jon@nuon.co'
 
 # prepare var for outputs
 OUTPUTS='{}'
@@ -32,6 +33,7 @@ for runner_id in $runners; do
   else
     response=$(curl -s --max-time 5 -X PATCH "$url" \
       -H "Content-Type: application/json" \
+       -H "X-Nuon-Admin-Email: $admin_email" \
       -d '{"container_image_tag": "'$version'", "aws_max_instance_lifetime": 604800}')
     echo $response
 
@@ -40,6 +42,7 @@ for runner_id in $runners; do
     curl -s -X 'POST' \
       "$admin_api_url/v1/runners/$runner_id/graceful-shutdown" \
       -H 'accept: application/json' \
+      -H "X-Nuon-Admin-Email: $admin_email" \
       -H 'Content-Type: application/json' \
       -d '{}'
   fi
