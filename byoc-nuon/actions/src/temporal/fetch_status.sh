@@ -61,7 +61,6 @@ for ns in "${namespaces[@]}"; do
     map({
       workflow_id:   .execution.workflowId,
       workflow_type: .type.name,
-      status:        (.status | ascii_downcase | sub("^workflow_execution_status_"; "")),
       start_time:    .startTime,
     })
   ')
