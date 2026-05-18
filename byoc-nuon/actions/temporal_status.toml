@@ -1,0 +1,16 @@
+# action
+# description: lists active Temporal workflows per namespace for the
+# "Temporal Status" README section.
+name    = "temporal_status"
+timeout = "5m"
+
+[[triggers]]
+type          = "cron"
+cron_schedule = "0 * * * *"
+
+[[triggers]]
+type = "manual"
+
+[[steps]]
+name            = "fetch temporal status"
+inline_contents = "./src/temporal/fetch_status.sh"
