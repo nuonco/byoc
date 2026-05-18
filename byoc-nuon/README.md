@@ -63,25 +63,23 @@ $public_domain }}/docs/index.html)</small>
 <details>
 <summary><nuon-group gap="8" align="center" justify="start"><strong>Temporal Status</strong>{{ with index $.nuon.actions.workflows "healthcheck_temporal" }}{{ if eq .status "error" }}<nuon-status status="error" variant="badge"></nuon-status>{{ else if eq .status "finished" }}<nuon-status status="active" variant="badge"></nuon-status>{{ else }}<nuon-status status="pending" variant="badge"></nuon-status>{{ end }}{{ end }}</nuon-group></summary>
 
+### Active workflows
+
 <nuon-tabs>
 {{ range (dig "namespace_names" (list) $data) }}
 {{ $ns := . }}
 {{ $count := index $data (printf "ns_%s_count" $ns) | default 0 | int }}
-{{ $total := 0 }}{{ $running := 0 }}{{ $failed := 0 }}{{ $completed := 0 }}{{ $other := 0 }}
-{{ range $i, $_ := until $count }}{{ $chunk := index $data (printf "ns_%s_chunk_%d" $ns $i) }}{{ range $chunk }}{{ $total = add $total 1 }}{{ if eq .status "running" }}{{ $running = add $running 1 }}{{ else if or (eq .status "failed") (eq .status "terminated") (eq .status "timedout") }}{{ $failed = add $failed 1 }}{{ else if eq .status "completed" }}{{ $completed = add $completed 1 }}{{ else }}{{ $other = add $other 1 }}{{ end }}{{ end }}{{ end }}
+{{ $total := 0 }}
+{{ range $i, $_ := until $count }}{{ $chunk := index $data (printf "ns_%s_chunk_%d" $ns $i) }}{{ range $chunk }}{{ $total = add $total 1 }}{{ end }}{{ end }}
 <nuon-tab name="{{ $ns }}">
 
 <div style="padding-top: 1rem;"><nuon-group gap="8" align="center" justify="start">
 <nuon-label-badge label="total:{{ $total }}"></nuon-label-badge>
-{{ if gt $running 0 }}<nuon-label-badge label="running:{{ $running }}" theme="success"></nuon-label-badge>{{ end }}
-{{ if gt $failed 0 }}<nuon-label-badge label="failed:{{ $failed }}" theme="error"></nuon-label-badge>{{ end }}
-{{ if gt $completed 0 }}<nuon-label-badge label="completed:{{ $completed }}"></nuon-label-badge>{{ end }}
-{{ if gt $other 0 }}<nuon-label-badge label="other:{{ $other }}" theme="warn"></nuon-label-badge>{{ end }}
 </nuon-group></div>
 
-| Status | Workflow ID | Workflow Type | Started |
-|---|---|---|---|
-{{ range $i, $_ := until $count }}{{ $chunk := index $data (printf "ns_%s_chunk_%d" $ns $i) }}{{ range $chunk }}| {{ if eq .status "running" }}<nuon-status status="active" variant="badge"></nuon-status>{{ else if or (eq .status "failed") (eq .status "terminated") (eq .status "timedout") }}<nuon-status status="error" variant="badge"></nuon-status>{{ else if eq .status "completed" }}<nuon-status status="inactive" variant="badge"></nuon-status>{{ else }}<nuon-status status="pending" variant="badge"></nuon-status>{{ end }} | {{ .workflow_id }} | {{ .workflow_type }} | {{ date "Jan 2, 2006 15:04 UTC" (toDate "2006-01-02T15:04:05.999999999Z07:00" .start_time) }} |
+| Workflow ID | Workflow Type | Started |
+|---|---|---|
+{{ range $i, $_ := until $count }}{{ $chunk := index $data (printf "ns_%s_chunk_%d" $ns $i) }}{{ range $chunk }}| {{ .workflow_id }} | {{ .workflow_type }} | {{ date "Jan 2, 2006 15:04 UTC" (toDate "2006-01-02T15:04:05.999999999Z07:00" .start_time) }} |
 {{ end }}{{ end }}
 
 </nuon-tab>
