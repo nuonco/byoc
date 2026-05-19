@@ -12,22 +12,12 @@ nodepools:
     instance_types:
       - c5.xlarge
     limits:
-      cpu: 50
-      memory: "100Gi"
-    expireAfter: "168h"
+      cpu: 100
+      memory: "200Gi"
+    expireAfter: "2160h"
     disruption:
       consolidationPolicy: "WhenEmptyOrUnderutilized"
-      consolidateAfter: "1m"
-      budgets:
-        - nodes: "1"
-          schedule: "0 10 * * 1,2,3,4,5"
-          duration: "23h"
-          reasons:
-          - "Underutilized"
-        - nodes: "1"
-          reasons:
-          - "Empty"
-          - "Drifted"
+      consolidateAfter: "5m"
 
   # clickhouse nodes are not being forcefully moved to c5 because we don't want
   # all of the nodes rotating at once.
@@ -86,20 +76,10 @@ nodepools:
     limits:
       cpu: 1000
       memory: "500Gi"
-    expireAfter: "72h"
+    expireAfter: "732h"
     disruption:
-      budgets:
-        - nodes: "1" # allow empty nodes to be consolidated
-          reasons:
-          - "Empty"
-          - "Drifted"
-        - nodes: "1"
-          schedule: "0 6 * * 1,2,3,4,5" # https://crontab.guru/#0_6_*_*_1,2,3,4,5
-          duration: "22h"
-          reasons:
-          - "Underutilized"
       consolidationPolicy: "WhenEmptyOrUnderutilized"
-      consolidateAfter: "30s"
+      consolidateAfter: "5m"
 
   - name: public
     instance_types:
