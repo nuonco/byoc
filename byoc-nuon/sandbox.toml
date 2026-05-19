@@ -4,7 +4,7 @@ terraform_version = "1.11.3"
 [public_repo]
 directory = "."
 repo      = "nuonco/aws-eks-karpenter-sandbox"
-branch    = "main"
+branch    = "fd/chore/easier-addon-overrides-with-defaults"
 
 [vars]
 cluster_version = "1.33"
