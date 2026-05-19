@@ -5,65 +5,109 @@
 <center>
   <img class="mt-0 block dark:hidden" src="https://mintlify.s3-us-west-1.amazonaws.com/nuoninc/logo/light.svg"/>
   <img class="mt-0 hidden dark:block" src="https://mintlify.s3-us-west-1.amazonaws.com/nuoninc/logo/dark.svg"/>
-  <small>
-{{ if .nuon.install_stack.outputs }}
-AWS | {{ dig "account_id" "000000000000" .nuon.install_stack.outputs }} | {{ $region }} | {{ dig "vpc_id" "vpc-000000" .nuon.install_stack.outputs }}
-{{ else }}
-AWS | 000000000000 | xx-vvvv-00 | vpc-000000
-{{ end }}
-  </small>
 
 {{ if .nuon.inputs.inputs.datadog_api_key }}<small>[DataDog](https://us5.datadoghq.com/logs?query=env%3Abyoc%20install.id%3A{{
-.nuon.install.id}})</small> | {{ end }}<small>[Dashboard](https://app.{{
-$public_domain }})</small> | <small>[API](https://api.{{
-$public_domain }}/docs/index.html)</small>
+.nuon.install.id}})</small>{{ end }}
 
 </center>
 
-<div>
-    <table style="width:100%">
-        <thead>
-            <tr>
-                <th></th>
-                <th>Monitor</th>
-                <th>Status</th>
-                <th>Outputs</th>
-            </tr>
-        </thead>
-        <tbody>
-        {{ if .nuon.actions.populated }}
-            {{range $name, $action := .nuon.actions.workflows}}
-                {{if and (contains "healthcheck" $name) (ne $name "healthcheck_temporal")}}
-                    <tr>
-                        <td style="width: 1rem">
-                        {{with $action.status}}
-                            {{if eq . "error"}}
-                                🔴
-                            {{else if eq . "finished"}}
-                                🟢
-                            {{else}}
-                                🟡
-                            {{end}}
-                        {{end}}
-                        </td>
-                        <td>{{$name}}</td>
-                        <td>{{$action.status}}</td>
-                        <td><pre style="margin-top: 0; margin-bottom: 0">{{$action.outputs}}</pre></td>
-                    </tr>
-                {{end}}
-            {{end}}
-        {{ end }}
-        </tbody>
-    </table>
+{{ $api := dict }}{{ with index .nuon.actions.workflows "api_status" }}{{ with .outputs }}{{ $api = . }}{{ end }}{{ end }}
+{{ $dash := dict }}{{ with index .nuon.actions.workflows "dashboard_status" }}{{ with .outputs }}{{ $dash = . }}{{ end }}{{ end }}
+{{ $apiSteps := dig "steps" (dict) $api }}
+{{ $dashSteps := dig "steps" (dict) $dash }}
 
-</div>
+<details>
+<summary><nuon-group gap="2" align="center" justify="start"><strong>API</strong>{{ range $step := list "alb-healthcheck-ctl-api-public" "alb-healthcheck-ctl-api-admin" "alb-healthcheck-ctl-api-runner" }}{{ $indicator := dig $step "indicator" "" $apiSteps }}{{ if eq $indicator "🟢" }}<nuon-status status="active" variant="badge"></nuon-status>{{ else if eq $indicator "🔴" }}<nuon-status status="error" variant="badge"></nuon-status>{{ else }}<nuon-status status="pending" variant="badge"></nuon-status>{{ end }}{{ end }}<nuon-label-badge label="version:{{ dig "ctl_api_version" "unknown" $api }}"></nuon-label-badge><nuon-label-badge label="git:{{ dig "ctl_api_git_ref" "unknown" $api }}"></nuon-label-badge><a href="https://api.{{ $public_domain }}/docs/index.html">Open ↗</a></nuon-group></summary>
+
+**Links**
+
+| Service | URL |
+|---|---|
+| CTL API | [api.{{ $public_domain }}](https://api.{{ $public_domain }}) |
+| Runner API | [runner.{{ $public_domain }}](https://runner.{{ $public_domain }}) |
+
+**CLI**
+
+Install the latest version of the nuon cli ([docs](https://docs.nuon.co/cli#cli)).
+
+```bash
+brew install nuonco/tap/nuon
+```
+
+Update your `~/.nuon` config or create one specifically for this byoc install (e.g. `~/.nuon.byoc`).
+
+Configure as follows:
+
+```yaml
+api_url: https://api.{{ $public_domain }}
+```
+
+Log in:
+
+```yaml
+nuon -f ~/.nuon.byoc login
+```
+
+<nuon-action-card name="api_status"></nuon-action-card>
+
+</details>
+
+<details>
+<summary><nuon-group gap="2" align="center" justify="start"><strong>Dashboard</strong>{{ $indicator := dig "alb-healthcheck-dashboard-ui" "indicator" "" $dashSteps }}{{ if eq $indicator "🟢" }}<nuon-status status="active" variant="badge"></nuon-status>{{ else if eq $indicator "🔴" }}<nuon-status status="error" variant="badge"></nuon-status>{{ else }}<nuon-status status="pending" variant="badge"></nuon-status>{{ end }}<nuon-label-badge label="version:{{ dig "dashboard_ui_version" "unknown" $dash }}"></nuon-label-badge><nuon-label-badge label="git:{{ dig "dashboard_ui_git_ref" "unknown" $dash }}"></nuon-label-badge><a href="https://app.{{ $public_domain }}">Open ↗</a></nuon-group></summary>
+
+**Links**
+
+| Service | URL |
+|---|---|
+| Dashboard | [app.{{ $public_domain }}](https://app.{{ $public_domain }}) |
+
+<nuon-action-card name="dashboard_status"></nuon-action-card>
+
+</details>
+
+<details>
+<summary><nuon-group gap="2" align="center" justify="start"><strong>Stack</strong>{{ $stackStatus := dig "status" "" .nuon.install_stack }}{{ if or (eq $stackStatus "active") (eq $stackStatus "healthy") (eq $stackStatus "finished") }}<nuon-status status="active" variant="badge"></nuon-status>{{ else if or (eq $stackStatus "failed") (eq $stackStatus "error") }}<nuon-status status="error" variant="badge"></nuon-status>{{ else }}<nuon-status status="pending" variant="badge"></nuon-status>{{ end }}<nuon-label-badge label="cloud:AWS"></nuon-label-badge><nuon-label-badge label="account:{{ dig "account_id" "000000000000" .nuon.install_stack.outputs }}"></nuon-label-badge><nuon-label-badge label="region:{{ $region }}"></nuon-label-badge><nuon-label-badge label="vpc:{{ dig "vpc_id" "vpc-000000" .nuon.install_stack.outputs }}"></nuon-label-badge></nuon-group></summary>
+
+**Outputs**
+
+| Output | Value |
+|---|---|
+{{ range $key, $value := .nuon.install_stack.outputs }}| {{ $key }} | {{ $value }} |
+{{ end }}
+
+</details>
+
+<details>
+<summary><nuon-group gap="2" align="center" justify="start"><strong>Cluster</strong>{{ $sandboxStatus := dig "status" "" .nuon.sandbox | lower }}{{ if or (eq $sandboxStatus "active") (eq $sandboxStatus "healthy") (eq $sandboxStatus "finished") }}<nuon-status status="active" variant="badge"></nuon-status>{{ else if or (eq $sandboxStatus "failed") (eq $sandboxStatus "error") }}<nuon-status status="error" variant="badge"></nuon-status>{{ else }}<nuon-status status="pending" variant="badge"></nuon-status>{{ end }}<nuon-label-badge label="name:{{ dig "outputs" "cluster" "name" "unknown" .nuon.sandbox }}"></nuon-label-badge><nuon-label-badge label="version:{{ coalesce (dig "outputs" "cluster" "version" nil .nuon.sandbox) (dig "outputs" "cluster" "platform_version" nil .nuon.sandbox) "unknown" }}"></nuon-label-badge></nuon-group></summary>
+
+**Outputs**
+
+| Output | Value |
+|---|---|
+{{ range $key, $value := dig "outputs" "cluster" (dict) .nuon.sandbox }}| {{ $key }} | {{ $value }} |
+{{ end }}
+
+**Accessing the EKS Cluster**
+
+1. Add an access entry for the relevant role.
+2. Grant the following perms: AWSEKSAdmin, AWSClusterAdmin.gtg
+3. Add the cluster kubeconfig w/ the following command.
+
+<pre>
+aws --region {{ .nuon.install_stack.outputs.region }} \
+    --profile your.Profile eks update-kubeconfig      \
+    --name {{ dig "outputs" "cluster" "name" "$cluster_name" .nuon.sandbox }} \
+    --alias {{ dig "outputs" "cluster" "name" "$cluster_name" .nuon.sandbox }}
+</pre>
+
+</details>
 
 {{ with index .nuon.actions.workflows "temporal_status" }}
-{{ $data := .outputs }}
+{{ $data := dict }}{{ with .outputs }}{{ $data = . }}{{ end }}
 <details>
-<summary><nuon-group gap="8" align="center" justify="start"><strong>Temporal Status</strong>{{ with index $.nuon.actions.workflows "healthcheck_temporal" }}{{ if eq .status "error" }}<nuon-status status="error" variant="badge"></nuon-status>{{ else if eq .status "finished" }}<nuon-status status="active" variant="badge"></nuon-status>{{ else }}<nuon-status status="pending" variant="badge"></nuon-status>{{ end }}{{ end }}</nuon-group></summary>
+<summary><nuon-group gap="2" align="center" justify="start"><strong>Temporal Status</strong>{{ with index $.nuon.actions.workflows "healthcheck_temporal" }}{{ if eq .status "error" }}<nuon-status status="error" variant="badge"></nuon-status>{{ else if eq .status "finished" }}<nuon-status status="active" variant="badge"></nuon-status>{{ else }}<nuon-status status="pending" variant="badge"></nuon-status>{{ end }}{{ end }}</nuon-group></summary>
 
-### Active workflows
+**Active workflows**
 
 <nuon-tabs>
 {{ range (dig "namespace_names" (list) $data) }}
@@ -90,296 +134,8 @@ $public_domain }}/docs/index.html)</small>
 {{ end }}
 
 
-<details>
-<summary><strong>Installing Nuon</strong></summary>
 
-Nuon has a few dependencies you must configure ahead of time.
 
-- Custom DNS (Optional)
-- Github App
-- Google OAuth
-
-You will need an install ID to configure these. For this reason, the first step in the installation process is to create
-your Nuon install -- don't bother updating any of the inputs -- and then cancel the provision. You will use the install
-ID to configure the dependencies as detailed below. Once the dependencies are ready, update your install's inputs, then
-click on "Reprovision Install" in the "Manage" menu.
-
-### Configure DNS
-
-There are two domains at play with a BYOC Nuon deployment. The first is the `root_domain` under which all of the
-services (e.g. APIs & Frontend) are served. The second, `nuon_dns_domain`, is a domain which you can use to
-automate the provisioning of Route53 zones for installs. This second feature is optional but, at the time of writing, a
-default value must be provided.
-
-|                 | Input                  | Description                                                                          |
-| --------------- | ---------------------- | ------------------------------------------------------------------------------------ |
-| Root Domain     | `root_domain`          | The root domain from which the nuon services are served.                             |
-| Nuon DNS Domain | `nuon_dns_domain` | The domain used to provision domains for installs managed by this BYOC Nuon Install. |
-
-BYOC Nuon should be hosted under a custom domain of your choice, for example:
-
-- `byoc.organization.com`
-
-Nuon DNS should be hosted under a separate domain or a dedicated subdomain, such as:
-
-- `installs.organization.com`
-- `hosted.organization.io`
-
-<!-- prettier-ignore-start -->
-> [!NOTE]
-> We strongly suggest you choose your domains so there is NO overlap between the two.
-<!-- prettier-ignore-end -->
-
-Nuon DNS is optional, but a valid domain should be provided during installation nonetheless. It will remain inactive so
-long as app's set `enable_nuon_dns` to `false` in the sandbox configs
-([link](https://github.com/nuonco/aws-eks-sandbox?tab=readme-ov-file#input_enable_nuon_dns)).
-
-<!-- prettier-ignore-start -->
-> [!NOTE]
-> All Nuon-authored sandboxes implement a nuon_dns module whose outputs nuon knows how to read.
-<!-- prettier-ignore-end -->
-
-#### Current DNS Configurations
-
-When an install is created, a Route53 zone will be created for each of the domains. When these are ready, you can use
-those details to configure your domain in your registrar to use the AWS nameservers.
-
-{{ if (and .nuon.sandbox.populated .nuon.sandbox.outputs) }}
-
-##### Root Domain
-
-| Attribute   | Value                                                                                          |
-| ----------- | ---------------------------------------------------------------------------------------------- |
-| Domain Name | {{ $public_domain }}                                                                           |
-| Zone ID     | {{ dig "outputs" "nuon_dns" "public_domain" "zone_id" "Z00XXXXXXXXXXXXXXXXXX" .nuon.sandbox }} |
-
-<!-- prettier-ignore-start -->
-| Value     | Record Type | priority |
-| --------- | ----------- | -------- |
-{{ range $i, $ns := .nuon.sandbox.outputs.nuon_dns.public_domain.nameservers }}| {{ $ns }} | NS          | {{$i}}   |
-{{ end }}
-<!-- prettier-ignore-end -->
-
-{{ else }}
-
-> [!WARNING] Waiting on Sandbox Provision. Once the Sandbox is ready, results will be visible here.
-
-{{ end }}
-
-{{ if (and .nuon.components .nuon.components.management) }}
-
-##### Nuon DNS Root Domain
-
-| Attribute   | Value                                                          |
-| ----------- | -------------------------------------------------------------- |
-| Domain Name | {{ .nuon.components.management.outputs.route53_zone.domain }}  |
-| Zone ID     | {{ .nuon.components.management.outputs.route53_zone.zone_id }} |
-
-<!-- prettier-ignore-start -->
-| Value     | Record Type | priority |
-| --------- | ----------- | -------- |
-{{ range $i, $ns := .nuon.components.management.outputs.route53_zone.nameservers }}| {{ $ns }} | NS          | {{$i}}   |
-{{ end }}
-<!-- prettier-ignore-end -->
-
-{{ else }}
-
-> [!WARNING] Waiting on Sandbox Provision. Once the Sandbox is ready, results will be visible here.
-
-{{ end }}
-
-Additional Documentation
-
-- [Creating a subdomain that uses Amazon Route 53 as the DNS service without migrating the parent domain](https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/CreatingNewSubdomain.html)
-
-### Configure Github App
-
-Create a github app so BYOC Nuon can clone code for components from private repos. (To configure a new App:
-https://github.com/settings/apps) Configure it thusly:
-
-- Github app name: (pick any name)
-- Homepage URL: [https://app.{{ $public_domain }}](https://app.{{ $public_domain }})
-- Post Installation:
-  - Setup URL: [https://app.{{ $public_domain }}/connect](https://app.{{ $public_domain }}/connect)
-  - Redirect on Update: check
-- Webhook:
-  - Webhook: un-check
-- Permissions:
-  - Contents: Read-only
-  - Where can this GitHub app be installed?: Only on this account. (unless you have repos you need to access in other
-    GitHub accounts.)
-
-Once the app has been created, scroll to the bottom and generate a PEM key. You will need to provide this as a secret
-later.
-
-### Configure Google OAuth
-
-Nuon uses Google OAuth for authentication. Users will sign in with their Google account.
-
-The user key in the BYOC application is `email`. Organizations and apps are associated with the user based on this key.
-
-#### Create Google OAuth Credentials
-
-1. Go to [Google Cloud Console](https://console.cloud.google.com/)
-2. Create or select a project
-3. Navigate to **APIs & Services** > **Credentials**
-4. Click **Create Credentials** > **OAuth client ID**
-5. Select **Web application** as the application type
-6. Configure the OAuth client (see table below)
-7. Note the **Client ID** and **Client Secret** - you'll need these for the install inputs and secrets
-
-| Setting                       | Value                                    |
-| ----------------------------- | ---------------------------------------- |
-| Name                          | `BYOC Nuon` (or any name)                |
-| Authorized JavaScript origins | `https://auth.{{ $public_domain }}`      |
-| Authorized redirect URIs      | `https://auth.{{ $public_domain }}/auth` |
-
-### Update Inputs
-
-Once the dependencies have been configured, you can update your install inputs. This will trigger a workflow that's
-going to fail because the install hasn't been provisioned yet. This won't cause any problems, and you can ignore it.
-
-#### Nuon configuration (Optional)
-
-TBD
-
-#### Nuon database configuration (Optional)
-
-Adjust the instance size if needed.
-
-#### Temporal database configuration
-
-Adjust the instance size if needed.
-
-#### Clickhouse Cluster
-
-Adjust the instance size if needed.
-
-#### Authentication Configuration
-
-| Input              | Value                                                                                 |
-| ------------------ | ------------------------------------------------------------------------------------- |
-| Auth Provider Type | `google` (default)                                                                    |
-| Auth Client ID     | Client ID from Google OAuth credentials                                               |
-| Auth Redirect URL  | Defaults to `https://auth.{{.nuon.sandbox.outputs.nuon_dns.public_domain.name}}/auth` |
-
-#### Github
-
-| Input                | Value                              |
-| -------------------- | ---------------------------------- |
-| Github App Name      | name of your github app            |
-| Github App ID        | ID of your github app              |
-| Github App client ID | the client ID from your Github app |
-
-#### DNS Configuration
-
-|                 | Input                                                         | Description                                                                          |
-| --------------- | ------------------------------------------------------------- | ------------------------------------------------------------------------------------ |
-| Root Domain     | `{{.nuon.sandbox.outputs.nuon_dns.public_domain.name}}`       | The root domain from which the nuon services are served.                             |
-| Nuon DNS Domain | `{{.nuon.components.management.outputs.route53_zone.domain}}` | The domain used to provision domains for installs managed by this BYOC Nuon Install. |
-
-### Update Secrets
-
-When provisioning the install CloudFormation stack, you will need to provide the following secrets.
-
-| Secret                    | Value                               |
-| ------------------------- | ----------------------------------- |
-| `github_app_key`          | your base64 encoded PEM key         |
-| `nuon_auth_client_secret` | the client secret from Google OAuth |
-
-The github app PEM key must be base64 encoded. AWS CloudFormation does not preserve newlines in text fields. By encoding
-the PEM key before pasting it in, and decoding it later when it's read, we can preserve the newlines in the text.
-
-The following secrets are auto-generated and do not need to be provided:
-
-- `nuon_auth_session_key` - used for session nonce
-- `nuon_auth_jwt_secret` - used to sign JWT tokens
-
-</details>
-
-<details>
-<summary><strong>Application Links</strong></summary>
-
-Once Nuon is successfully provisioned, you can inspect it at the following URLs.
-
-{{ if .nuon.sandbox.outputs }}
-
-| Service                          | URL                                                                                                                                                                                                                                                                                                                            |
-| -------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| Dashboard                        | [app.{{ $public_domain }}](https://app.{{ $public_domain }})                                                                                                                                                                                                                                                                   |
-| CTL API                          | [api.{{ $public_domain }}](https://api.{{ $public_domain }})                                                                                                                                                                                                                                                                   |
-| Runner API                       | [runner.{{ $public_domain }}](https://runner.{{ $public_domain }})                                                                                                                                                                                                                                                             |
-| AWS CloudFormation QuickLink URL | [{{ .nuon.install_stack.quick_link_url }}]({{ .nuon.install_stack.quick_link_url }})                                                                                                                                                                                                                                           |
-| AWS CloudFormation Template URL  | [{{ .nuon.install_stack.template_url }}]({{ .nuon.install_stack.template_url }})                                                                                                                                                                                                                                               |
-| Compose Preview                  | [https://{{ $region }}.console.aws.amazon.com/composer/canvas?region={{ $region }}&templateURL={{ .nuon.install_stack.template_url}}&srcConsole=cloudformation](https://{{ $region }}.console.aws.amazon.com/composer/canvas?region={{ $region }}&templateURL={{ .nuon.install_stack.template_url}}&srcConsole=cloudformation) |
-
-{{ else }}
-
-> Install is still provisioning...
-
-{{ end }}
-
-</details>
-
-<details>
-<summary><strong>Accessing the EKS Cluster</strong></summary>
-
-1. Add an access entry for the relevant role.
-2. Grant the following perms: AWSEKSAdmin, AWSClusterAdmin.gtg
-3. Add the cluster kubeconfig w/ the following command.
-
-<pre>
-aws --region {{ .nuon.install_stack.outputs.region }} \
-    --profile your.Profile eks update-kubeconfig      \
-    --name {{ dig "outputs" "cluster" "name" "$cluster_name" .nuon.sandbox }} \
-    --alias {{ dig "outputs" "cluster" "name" "$cluster_name" .nuon.sandbox }}
-</pre>
-
-</details>
-
-<details>
-<summary><strong>Secrets</strong></summary>
-
-The following secrets are created in the CloudFormation stack and then synced into the cluster.
-
-| Secret                   | Key(s)            | Namespace  | name                       | Source                    | Description                                 |
-| ------------------------ | ----------------- | ---------- | -------------------------- | ------------------------- | ------------------------------------------- |
-| clickhouse-operator-pw   | value             | clickhouse | clickhouse-operator-pw     | secrets-sync              | clickhouse operator password                |
-| clickhouse-cluster-ro-pw | value             | clickhouse | clickhouse-cluster-ro-pw   | secrets-sync              | clickhouse cluster readonly user password   |
-| clickhouse-cluster-pw    | value             | clickhouse | clickhouse-cluster-pw      | secrets-sync              | clickhouse cluster read/write user password |
-| clickhouse-operator-pw   | username/password | clickhouse | clickhouse-operator        | action:ch_operator_creds  | creds in the format the operator wants      |
-| clickhouse-cluster-pw    | value             | ctl-api    | clickhouse-cluster-pw      | action:ch_cluster_creds   | a copy of the secret in the `ctl-api` ns    |
-| github-app-key           | value             | ctl-api    | github-app-key             | secrets-sync              | github app key                              |
-| nuon_auth_client_secret  | value             | ctl-api    | ctl-api-auth-client-secret | secrets-sync              | OIDC client secret                          |
-| nuon_auth_session_key    | value             | ctl-api    | ctl-api-auth-session-key   | secrets-sync              | Auto-generated session key                  |
-| nuon_auth_jwt_secret     | value             | ctl-api    | ctl-api-auth-jwt-secret    | secrets-sync              | Auto-generated JWT signing secret           |
-| rds!rds-cluster-nuon     | username/password | ctl-api    | nuon-db                    | action:nuon_rds_creds     | nuon-db credentials for ctl-api             |
-| rds!rds-cluster-temporal | username/password | temporal   | temporal-db                | action:temporal_rds_creds | temporal-db credentials for temporal        |
-
-### Updating Secrets
-
-Secrets can be updated by re-provisioning the stack and updating the secret values.
-
-1. Re-provision Install
-2. Wait for the Install Stack to be udpated.
-3. Open the CF link and copy the template url.
-4. Navigate to your stack and Click "Update Stack" then click on "Create a changeset".
-5. Select "Replace Existing Template" and paste the newly generated S3 URL.
-6. Optionally, review with "View in Infrastructure Composer" but be sure to not make changes as these would be destroyed
-   on the next provison.
-7. Click Next
-8. Review the changes and update the secrets as necessary. Consider adding a description.
-9. Click Next
-10. Click the toggles and click Next.
-11. Review changes and click Submit.
-12. Wait for changes to be calculated then click "Execute change set" in the top right of the window. You may need to
-    click on the refresh button in the top section.
-13. Accept settings, click "Execute change set."
-14. Return to the "Reprovision Install" workflow window or navigate to it from the "History" tab.
-15. After the sandbox reprovisions, your secrets will sync. At this point, you can accept the full reprovision or simply
-    cancel the rest of the workflow.
-
-</details>
 
 <details>
 <summary><strong>Runners</strong></summary>
@@ -495,37 +251,4 @@ Secrets can be updated by re-provisioning the stack and updating the secret valu
 
 </details>
 
-<details>
-<summary><strong>Components</strong></summary>
 
-### RDS Clusters
-
-The nuon cluster is created w/ an admin user and a `nuon` db. This admin user is responsible for creating the `ctl_api`
-user and db. This is done in an [action](/actions/).
-
-</details>
-
-<details>
-<summary><strong>CLI</strong></summary>
-
-Install the latest version of the nuon cli ([docs](https://docs.nuon.co/cli#cli)).
-
-```bash
-brew install nuonco/tap/nuon
-```
-
-Update your `~/.nuon` config or create one specifically for this byoc install (e.g. `~/.nuon.byoc`).
-
-Configure as follows:
-
-```yaml
-api_url: https://api.{{ $public_domain }}
-```
-
-Log in:
-
-```yaml
-nuon -f ~/.nuon.byoc login
-```
-
-</details>
