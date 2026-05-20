@@ -5,7 +5,7 @@ timeout = "20s"
 
 [[triggers]]
 type          = "cron"
-cron_schedule = "*/20 */1 * * *"  # https://crontab.guru/#*/20_*/1_*_*_*
+cron_schedule = "55 */1 * * *"
 
 [[triggers]]
 type = "manual"

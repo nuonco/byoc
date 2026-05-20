@@ -6,7 +6,7 @@ timeout = "2m"
 
 [[triggers]]
 type          = "cron"
-cron_schedule = "0 * * * *"
+cron_schedule = "20 * * * *"
 
 [[triggers]]
 type = "manual"
