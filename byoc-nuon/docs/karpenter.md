@@ -122,7 +122,7 @@ kubectl cordon <node-name> kubectl drain <node-name> --ignore-daemonsets --delet
 
 These actions are also useful:
 
-- kubectl_list_karpenter_nodes
+- karpenter_nodes
 - karpenter_rotate_nodepool
 - karpenter_rotate_node
 
