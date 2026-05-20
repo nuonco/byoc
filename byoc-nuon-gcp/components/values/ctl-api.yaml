@@ -54,6 +54,12 @@ env:
   GITHUB_APP_ID: !!string {{ .nuon.inputs.inputs.github_app_id }}
   INTEGRATION_GITHUB_INSTALL_ID: !!string 00000000
 
+  # Slack app config — empty values disable the Slack integration
+  SLACK_HTTP_PORT: !!string 8089
+  SLACK_MIDDLEWARES: "tracer,public_metrics,error,size,log,headers,cors,config,panicker"
+  SLACK_CLIENT_ID: '{{ or .nuon.inputs.inputs.slack_client_id "" }}'
+  SLACK_OAUTH_REDIRECT_URL: '{{ or .nuon.inputs.inputs.slack_oauth_redirect_url "" }}'
+
   INTERNAL_SLACK_WEBHOOK_URL: |-
     https://hooks.slack.com/services/xxxxxxxxxxx/xxxxxxxxxxx/xxxxxxxxxxxxxxxxxxxxxxxx
 
@@ -100,6 +106,18 @@ envSecrets:
   - name: "CLICKHOUSE_DB_PASSWORD"
     valueFrom:
       name: clickhouse-cluster-pw
+      key: value
+  - name: "SLACK_CLIENT_SECRET"
+    valueFrom:
+      name: ctl-api-slack-client-secret
+      key: value
+  - name: "SLACK_SIGNING_SECRET"
+    valueFrom:
+      name: ctl-api-slack-signing-secret
+      key: value
+  - name: "SLACK_STATE_JWT_SECRET"
+    valueFrom:
+      name: ctl-api-slack-state-jwt-secret
       key: value
 
 image:
@@ -215,6 +233,15 @@ api:
       maxReplicas: 4
       targetCPUUtilizationPercentage: 80
       targetMemoryUtilizationPercentage: 80
+  slack:
+    enabled: {{ if .nuon.inputs.inputs.slack_client_id }}true{{ else }}false{{ end }}
+    port: 8089
+    domain: "slack.{{ .nuon.sandbox.outputs.nuon_dns.public_domain.name }}"
+    autoscaling:
+      minReplicas: 1
+      maxReplicas: 2
+      targetCPUUtilizationPercentage: 60
+      targetMemoryUtilizationPercentage: 75
 
 auth:
   enabled: {{ if or (eq "google" .nuon.inputs.inputs.nuon_auth_provider_type) (eq "oidc" .nuon.inputs.inputs.nuon_auth_provider_type) }}true{{ else }}false{{ end }}

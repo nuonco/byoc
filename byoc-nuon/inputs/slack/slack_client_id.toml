@@ -1,0 +1,8 @@
+name         = "slack_client_id"
+description  = "The Slack app's OAuth Client ID. Found on the Slack app's Basic Information page. Leave empty to disable the Slack integration."
+default      = ""
+display_name = "Slack Client ID"
+required     = false
+group        = "slack"
+
+user_configurable = false
