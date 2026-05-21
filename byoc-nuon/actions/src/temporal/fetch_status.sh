@@ -8,6 +8,11 @@ set -e
 set -o pipefail
 set -u
 
+# Temporarily disabled: this action's outputs were inflating install state size.
+# Skip all kubectl/temporal calls and write no outputs.
+echo >&2 "temporal_status outputs temporarily disabled to reduce install state size"
+exit 0
+
 # Namespaces mirror temporalWorkerNamespaces in ctl-api:
 # internal/app/admin-dashboard/service/temporal_workers.go.
 namespaces=(
