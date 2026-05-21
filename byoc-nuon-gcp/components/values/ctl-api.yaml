@@ -234,14 +234,9 @@ api:
       targetCPUUtilizationPercentage: 80
       targetMemoryUtilizationPercentage: 80
   slack:
-    enabled: {{ if .nuon.inputs.inputs.slack_client_id }}true{{ else }}false{{ end }}
+    enabled: true
     port: 8089
     domain: "slack.{{ .nuon.sandbox.outputs.nuon_dns.public_domain.name }}"
-    autoscaling:
-      minReplicas: 1
-      maxReplicas: 2
-      targetCPUUtilizationPercentage: 60
-      targetMemoryUtilizationPercentage: 75
 
 auth:
   enabled: {{ if or (eq "google" .nuon.inputs.inputs.nuon_auth_provider_type) (eq "oidc" .nuon.inputs.inputs.nuon_auth_provider_type) }}true{{ else }}false{{ end }}
