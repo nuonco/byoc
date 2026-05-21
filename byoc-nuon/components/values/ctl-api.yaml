@@ -136,7 +136,7 @@ worker:
   instances:
     - namespace: orgs
       minReplicas: 2
-      maxReplicas: 10
+      maxReplicas: 2
       command: ["/bin/service", "worker", "--namespace=orgs"]
     - namespace: actions
       minReplicas: 2
@@ -144,7 +144,7 @@ worker:
       command: ["/bin/service", "worker", "--namespace=actions"]
     - namespace: apps
       minReplicas: 2
-      maxReplicas: 5
+      maxReplicas: 2
       command: ["/bin/service", "worker", "--namespace=apps"]
       resources:
         limits:
@@ -166,7 +166,7 @@ worker:
           value: "1000000"
     - namespace: components
       minReplicas: 2
-      maxReplicas: 5
+      maxReplicas: 2
       command: ["/bin/service", "worker", "--namespace=components"]
       resources:
         limits:
@@ -176,8 +176,8 @@ worker:
           cpu: 1000m
           memory: 1Gi
     - namespace: installs
-      minReplicas: 2
-      maxReplicas: 10
+      minReplicas: 4
+      maxReplicas: 4
       command: ["/bin/service", "worker", "--namespace=installs"]
       resources:
         limits:
@@ -199,15 +199,15 @@ worker:
           value: "1000000"
     - namespace: releases
       minReplicas: 2
-      maxReplicas: 5
+      maxReplicas: 2
       command: ["/bin/service", "worker", "--namespace=releases"]
     - namespace: general
       minReplicas: 2
       maxReplicas: 5
       command: ["/bin/service", "worker", "--namespace=general"]
     - namespace: runners
-      minReplicas: 3
-      maxReplicas: 12
+      minReplicas: 4
+      maxReplicas: 4
       command: ["/bin/service", "worker", "--namespace=runners"]
       resources:
         limits:
@@ -220,13 +220,13 @@ worker:
         - name: TEMPORAL_MAX_CONCURRENT_WORKFLOW_TASK_EXECUTION_SIZE
           value: "1000"
         - name: TEMPORAL_MAX_CONCURRENT_ACTIVITY_TASK_POLLERS
-          value: "100"
+          value: "300"
         - name: TEMPORAL_MAX_CONCURRENT_WORKFLOW_TASK_POLLERS
-          value: "100"
+          value: "350"
         - name: DB_MAX_CONNECTIONS
           value: "15"
         - name: TEMPORAL_STICKY_WORKFLOW_CACHE_SIZE
-          value: "1000000"
+          value: "1000"
   autoscaling:
     targetCPUUtilizationPercentage: 75
     targetMemoryUtilizationPercentage: 75

@@ -27,6 +27,14 @@ server:
       - value: 209715200
      limit.blobSize.error:
       - value: 5242880
+     frontend.namespaceRPS:
+      - value: 4000
+     history.rps:
+      - value: 6000
+     matching.numTaskqueueReadPartitions:
+      - value: 1
+     matching.numTaskqueueWritePartitions:
+      - value: 1
   config:
     prometheus:
       framework: opentelemetry
