@@ -104,6 +104,7 @@ aws --region {{ .nuon.install_stack.outputs.region }} \
 
 {{ with index .nuon.actions.workflows "temporal_status" }}
 {{ $data := dict }}{{ with .outputs }}{{ $data = . }}{{ end }}
+{{ if false }}
 <details>
 <summary><nuon-group gap="2" align="center" justify="start"><strong>Temporal Status</strong>{{ with index $.nuon.actions.workflows "healthcheck_temporal" }}{{ if eq .status "error" }}<nuon-status status="error" variant="badge"></nuon-status>{{ else if eq .status "finished" }}<nuon-status status="active" variant="badge"></nuon-status>{{ else }}<nuon-status status="pending" variant="badge"></nuon-status>{{ end }}{{ end }}</nuon-group></summary>
 
@@ -131,6 +132,7 @@ aws --region {{ .nuon.install_stack.outputs.region }} \
 </nuon-tabs>
 
 </details>
+{{ end }}
 {{ end }}
 
 
