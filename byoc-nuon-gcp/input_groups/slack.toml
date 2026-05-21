@@ -1,0 +1,3 @@
+name         = "slack"
+description  = "Configure the Slack App for this BYOC Nuon install. Optional — only required if you plan to enable the Slack integration."
+display_name = "Slack | Nuon configuration"
