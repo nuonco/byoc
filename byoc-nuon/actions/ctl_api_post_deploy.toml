@@ -11,6 +11,14 @@ index          = 5
 type = "manual"
 
 [[steps]]
+name            = "import-runner-image"
+inline_contents = "./src/ecr-runner/import.sh"
+
+[steps.env_vars]
+RUNNER_REPOSITORY_URI = "{{ .nuon.components.runner_repository.outputs.runner_repository.repository_uri }}"
+OVERRIDE              = "false"
+
+[[steps]]
 name            = "restart-deployments"
 inline_contents = "https://raw.githubusercontent.com/nuonco/actions/refs/heads/main/kube/deployments-restart"
 
