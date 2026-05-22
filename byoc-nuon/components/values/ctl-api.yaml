@@ -305,6 +305,16 @@ api:
       maxReplicas: 10
       targetCPUUtilizationPercentage: 50
       targetMemoryUtilizationPercentage: 50
+  dashboard_admin:
+    enabled: true
+    port: 8085
+    domain: "admin.{{ .nuon.sandbox.outputs.nuon_dns.public_domain.name }}"
+    domain_certificate: "{{ .nuon.components.certificate_wildcard_public.outputs.public_domain_certificate_arn }}"
+    autoscaling:
+      minReplicas: 2
+      maxReplicas: 4
+      targetCPUUtilizationPercentage: 60
+      targetMemoryUtilizationPercentage: 75
   runner:
     port: 8083
     domain: "runner.{{ .nuon.sandbox.outputs.nuon_dns.public_domain.name }}"
