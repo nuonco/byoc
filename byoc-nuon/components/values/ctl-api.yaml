@@ -12,6 +12,7 @@ env:
   GIN_MODE: "release"
 
   DB_HOST: "{{ .nuon.components.rds_cluster_nuon.outputs.address }}"
+  DB_REPLICA_HOST: "{{ .nuon.components.rds_cluster_nuon.outputs.address }}"
   DB_NAME: "ctl_api"      # hardcoded, for now - also, main db not the desired db we created
   DB_USER: "ctl_api"      # hardcoded, for now - also, main user, not the user we create
   DB_USE_SSL: "true"
@@ -125,18 +126,6 @@ envSecrets:
   - name: "CLICKHOUSE_DB_PASSWORD"
     valueFrom:
       name: clickhouse-cluster-pw
-      key: value
-  - name: "SLACK_CLIENT_SECRET"
-    valueFrom:
-      name: ctl-api-slack-client-secret
-      key: value
-  - name: "SLACK_SIGNING_SECRET"
-    valueFrom:
-      name: ctl-api-slack-signing-secret
-      key: value
-  - name: "SLACK_STATE_JWT_SECRET"
-    valueFrom:
-      name: ctl-api-slack-state-jwt-secret
       key: value
 
 image:
@@ -307,8 +296,8 @@ api:
       targetMemoryUtilizationPercentage: 50
   dashboard_admin:
     enabled: true
-    port: 8085
-    domain: "admin.{{ .nuon.sandbox.outputs.nuon_dns.public_domain.name }}"
+    port: 8087
+    domain: "admin.app.{{ .nuon.sandbox.outputs.nuon_dns.public_domain.name }}"
     domain_certificate: "{{ .nuon.components.certificate_wildcard_public.outputs.public_domain_certificate_arn }}"
     autoscaling:
       minReplicas: 2
