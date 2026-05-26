@@ -1,0 +1,7 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(curl -s http://localhost:8082/oapi/v2)"
+    ]
+  }
+}
