@@ -323,10 +323,23 @@ api:
       targetCPUUtilizationPercentage: 80
       targetMemoryUtilizationPercentage: 80
   slack:
-    enabled: true
+    enabled: false
     port: 8089
     domain: "slack.{{ .nuon.sandbox.outputs.nuon_dns.public_domain.name }}"
     domain_certificate: "{{ .nuon.components.certificate_wildcard_public.outputs.public_domain_certificate_arn }}"
+    envSecrets:
+      - name: "SLACK_CLIENT_SECRET"
+        valueFrom:
+          name: ctl-api-slack-client-secret
+          key: value
+      - name: "SLACK_SIGNING_SECRET"
+        valueFrom:
+          name: ctl-api-slack-signing-secret
+          key: value
+      - name: "SLACK_STATE_JWT_SECRET"
+        valueFrom:
+          name: ctl-api-slack-state-jwt-secret
+          key: value
 
   # topology spread
   minDomains: 2
