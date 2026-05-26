@@ -1,0 +1,20 @@
+# action
+# description: deletes and recreates Temporal namespaces. DESTRUCTIVE - workflow history is lost.
+# if the NAMESPACE env var is set, only that namespace is reset; otherwise all namespaces are reset.
+name    = "temporal_reset_namespaces"
+timeout = "5m"
+
+[[triggers]]
+type = "manual"
+
+[[steps]]
+name    = "Resetting Namespaces"
+command = "./temporal/reset_namespaces.sh"
+
+[steps.public_repo]
+repo      = "nuonco/byoc"
+directory = "shared/src/actions"
+branch    = "main"
+
+[steps.env_vars]
+NAMESPACE = ""
