@@ -227,13 +227,13 @@ worker:
         - name: TEMPORAL_MAX_CONCURRENT_WORKFLOW_TASK_EXECUTION_SIZE
           value: "1000"
         - name: TEMPORAL_MAX_CONCURRENT_ACTIVITY_TASK_POLLERS
-          value: "300"
+          value: "250"
         - name: TEMPORAL_MAX_CONCURRENT_WORKFLOW_TASK_POLLERS
-          value: "350"
+          value: "500"
         - name: DB_MAX_CONNECTIONS
           value: "15"
         - name: TEMPORAL_STICKY_WORKFLOW_CACHE_SIZE
-          value: "1000"
+          value: "1000000"
   autoscaling:
     targetCPUUtilizationPercentage: 75
     targetMemoryUtilizationPercentage: 75
