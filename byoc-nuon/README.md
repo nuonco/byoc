@@ -166,6 +166,7 @@ aws --region {{ .nuon.install_stack.outputs.region }} \
               <th>Type</th>
               <th>Latest Heartbeat</th>
               <th>Latest Healthcheck</th>
+              <th>Process Uptime</th>
               <th>Details</th>
           </tr>
       </thead>
@@ -176,12 +177,15 @@ aws --region {{ .nuon.install_stack.outputs.region }} \
           {{ $ownerName := dig $ownerID "" $ownerNames }}
           {{ $ownerLabel := $ownerName }}{{ if not $ownerLabel }}{{ $ownerLabel = default "—" $ownerID }}{{ end }}
           {{ $runnerID := dig "id" "—" $runner }}
+          {{ $processes := default (list) (dig "process_uptimes" nil $runner) }}
+          {{ $ownerProc := dict }}{{ range $p := $processes }}{{ $t := dig "type" "" $p }}{{ if or (eq $t "install") (eq $t "org") }}{{ $ownerProc = $p }}{{ end }}{{ end }}
           <tr>
               <td><nuon-status status="{{ $status }}"></nuon-status></td>
               <td style="white-space:nowrap;">{{ $ownerLabel }}</td>
               <td>{{ dig "type" "—" $runner }}</td>
               <td>{{ with dig "latest_heart_beat_created_at" "" $runner }}{{ (printf "%sZ" (substr 0 19 .)) | toDate "2006-01-02T15:04:05Z" | date "Jan 2 15:04 UTC" }}{{ else }}—{{ end }}</td>
               <td>{{ with dig "latest_health_check_status" "" $runner }}<nuon-status status="{{ . }}" variant="badge"></nuon-status>{{ else }}—{{ end }}</td>
+              <td style="white-space:nowrap;">{{ with dig "uptime" 0 $ownerProc }}{{ (div (int64 .) 1000000000) | int64 | duration }}{{ else }}—{{ end }}</td>
               <td>
 
 <nuon-panel heading="Runner: {{ $ownerLabel }}" trigger="View" size="large">
@@ -199,6 +203,35 @@ aws --region {{ .nuon.install_stack.outputs.region }} \
 | Latest Heartbeat Version | {{ with dig "latest_heart_beat_version" "" $runner }}<nuon-badge theme="info" size="sm" variant="code">{{ . }}</nuon-badge>{{ else }}—{{ end }} |
 | Latest Healthcheck | {{ with dig "latest_health_check_created_at" "" $runner }}{{ (printf "%sZ" (substr 0 19 .)) | toDate "2006-01-02T15:04:05Z" | date "Jan 2 15:04 UTC" }}{{ else }}—{{ end }} |
 | Latest Healthcheck Status | {{ with dig "latest_health_check_status" "" $runner }}<nuon-status status="{{ . }}" variant="badge"></nuon-status>{{ else }}—{{ end }} |
+
+{{ if gt (len $processes) 0 }}
+
+**Processes**
+
+<table>
+  <thead>
+    <tr>
+      <th>Type</th>
+      <th>Status</th>
+      <th>Started At</th>
+      <th>Uptime</th>
+      <th>ID</th>
+    </tr>
+  </thead>
+  <tbody>
+  {{ range $p := $processes }}
+    <tr>
+      <td>{{ dig "type" "—" $p }}</td>
+      <td>{{ with dig "status" "" $p }}<nuon-status status="{{ . }}" variant="badge"></nuon-status>{{ else }}—{{ end }}</td>
+      <td>{{ with dig "started_at" "" $p }}{{ (printf "%sZ" (substr 0 19 .)) | toDate "2006-01-02T15:04:05Z" | date "Jan 2 15:04 UTC" }}{{ else }}—{{ end }}</td>
+      <td>{{ with dig "uptime" 0 $p }}{{ (div (int64 .) 1000000000) | int64 | duration }}{{ else }}—{{ end }}</td>
+      <td><code>{{ dig "id" "—" $p }}</code></td>
+    </tr>
+  {{ end }}
+  </tbody>
+</table>
+
+{{ end }}
 
 </nuon-panel>
 
