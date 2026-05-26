@@ -85,7 +85,33 @@ while :; do
     .[]
     | (.status_v2.status // "unknown") as $status
     | ({"error":"0","active":"1"}[$status] // "2") as $prio
-    | {("\($prio)_\(.id)"): .}' >> $NUON_ACTIONS_OUTPUT_FILEPATH
+    | {("\($prio)_\(.id)"): {
+        id:         .id,
+        image:      .runner_group.settings.container_image_url,
+        tag:        .runner_group.settings.container_image_tag,
+        status:     $status,
+        type:       .runner_group.type,
+        owner_id:   .runner_group.owner_id,
+        owner_type: .runner_group.owner_type,
+        platform:   .runner_group.platform,
+        latest_health_check_created_at: .latest_health_check.created_at,
+        latest_health_check_status: .latest_health_check.status,
+        latest_heart_beat_created_at: .latest_heart_beat.created_at,
+        latest_heart_beat_version: .latest_heart_beat.version,
+        uptime: .uptime,
+        process_uptimes: [
+          .recent_processes // []
+          | group_by(.type)[]
+          | sort_by(.started_at // .created_at) | last
+          | {
+              id:         .id,
+              type:       .type,
+              status:     .composite_status.status,
+              started_at: .started_at,
+              uptime:     .uptime
+            }
+        ]
+      }}' >> $NUON_ACTIONS_OUTPUT_FILEPATH
 
   if [ "$count" -lt "$limit" ]; then
     break
