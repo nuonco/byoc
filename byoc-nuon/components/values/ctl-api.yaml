@@ -64,12 +64,6 @@ env:
 
   INTEGRATION_GITHUB_INSTALL_ID: !!string 00000000
 
-  # Slack app config — empty values disable the Slack integration
-  SLACK_HTTP_PORT: !!string 8089
-  SLACK_MIDDLEWARES: "tracer,public_metrics,error,size,log,headers,cors,config,panicker"
-  SLACK_CLIENT_ID: '{{ or .nuon.inputs.inputs.slack_client_id "" }}'
-  SLACK_OAUTH_REDIRECT_URL: '{{ or .nuon.inputs.inputs.slack_oauth_redirect_url "" }}'
-
 
   INTERNAL_SLACK_WEBHOOK_URL: |-
     https://hooks.slack.com/services/xxxxxxxxxxx/xxxxxxxxxxx/xxxxxxxxxxxxxxxxxxxxxxxx
@@ -322,11 +316,6 @@ api:
       maxReplicas: 4
       targetCPUUtilizationPercentage: 80
       targetMemoryUtilizationPercentage: 80
-  slack:
-    enabled: true
-    port: 8089
-    domain: "slack.{{ .nuon.sandbox.outputs.nuon_dns.public_domain.name }}"
-    domain_certificate: "{{ .nuon.components.certificate_wildcard_public.outputs.public_domain_certificate_arn }}"
 
   # topology spread
   minDomains: 2
