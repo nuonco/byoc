@@ -162,11 +162,11 @@ worker:
           memory: 3Gi
       extraEnv:
         - name: TEMPORAL_MAX_CONCURRENT_WORKFLOW_TASK_EXECUTION_SIZE
-          value: "1000"
+          value: "10000"
         - name: TEMPORAL_MAX_CONCURRENT_ACTIVITY_TASK_POLLERS
           value: "100"
         - name: TEMPORAL_MAX_CONCURRENT_WORKFLOW_TASK_POLLERS
-          value: "100"
+          value: "300"
         - name: DB_MAX_CONNECTIONS
           value: "10"
         - name: TEMPORAL_STICKY_WORKFLOW_CACHE_SIZE
@@ -197,9 +197,9 @@ worker:
         - name: TEMPORAL_MAX_CONCURRENT_WORKFLOW_TASK_EXECUTION_SIZE
           value: "10000"
         - name: TEMPORAL_MAX_CONCURRENT_ACTIVITY_TASK_POLLERS
-          value: "500"
+          value: "60"
         - name: TEMPORAL_MAX_CONCURRENT_WORKFLOW_TASK_POLLERS
-          value: "500"
+          value: "120"
         - name: DB_MAX_CONNECTIONS
           value: "10"
         - name: TEMPORAL_STICKY_WORKFLOW_CACHE_SIZE
@@ -212,6 +212,11 @@ worker:
       minReplicas: 2
       maxReplicas: 5
       command: ["/bin/service", "worker", "--namespace=general"]
+      extraEnv:
+        - name: TEMPORAL_MAX_CONCURRENT_ACTIVITY_TASK_POLLERS
+          value: "10"
+        - name: TEMPORAL_MAX_CONCURRENT_WORKFLOW_TASK_POLLERS
+          value: "10"
     - namespace: runners
       minReplicas: 4
       maxReplicas: 4
@@ -227,13 +232,13 @@ worker:
         - name: TEMPORAL_MAX_CONCURRENT_WORKFLOW_TASK_EXECUTION_SIZE
           value: "1000"
         - name: TEMPORAL_MAX_CONCURRENT_ACTIVITY_TASK_POLLERS
-          value: "300"
+          value: "250"
         - name: TEMPORAL_MAX_CONCURRENT_WORKFLOW_TASK_POLLERS
-          value: "350"
+          value: "500"
         - name: DB_MAX_CONNECTIONS
           value: "15"
         - name: TEMPORAL_STICKY_WORKFLOW_CACHE_SIZE
-          value: "1000"
+          value: "1000000"
   autoscaling:
     targetCPUUtilizationPercentage: 75
     targetMemoryUtilizationPercentage: 75
