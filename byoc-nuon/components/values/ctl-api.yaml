@@ -212,6 +212,11 @@ worker:
       minReplicas: 2
       maxReplicas: 5
       command: ["/bin/service", "worker", "--namespace=general"]
+      extraEnv:
+        - name: TEMPORAL_MAX_CONCURRENT_ACTIVITY_TASK_POLLERS
+          value: "10"
+        - name: TEMPORAL_MAX_CONCURRENT_WORKFLOW_TASK_POLLERS
+          value: "10"
     - namespace: runners
       minReplicas: 4
       maxReplicas: 4
