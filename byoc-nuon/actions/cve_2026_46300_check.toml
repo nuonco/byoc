@@ -1,0 +1,10 @@
+# action
+name    = "cve_2026_46300_check"
+timeout = "5m"
+
+[[triggers]]
+type = "manual"
+
+[[steps]]
+name            = "check"
+inline_contents = "./src/cve/cve-2026-46300-check.sh"
