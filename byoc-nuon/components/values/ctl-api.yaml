@@ -162,11 +162,11 @@ worker:
           memory: 3Gi
       extraEnv:
         - name: TEMPORAL_MAX_CONCURRENT_WORKFLOW_TASK_EXECUTION_SIZE
-          value: "1000"
+          value: "10000"
         - name: TEMPORAL_MAX_CONCURRENT_ACTIVITY_TASK_POLLERS
           value: "100"
         - name: TEMPORAL_MAX_CONCURRENT_WORKFLOW_TASK_POLLERS
-          value: "100"
+          value: "300"
         - name: DB_MAX_CONNECTIONS
           value: "10"
         - name: TEMPORAL_STICKY_WORKFLOW_CACHE_SIZE
