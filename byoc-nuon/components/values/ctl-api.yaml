@@ -295,7 +295,7 @@ api:
       targetCPUUtilizationPercentage: 50
       targetMemoryUtilizationPercentage: 50
   dashboard_admin:
-    enabled: true
+    enabled: {{ or .nuon.inputs.inputs.admin_dashboard_enabled "false" }}
     port: 8087
     domain: "admin.{{ .nuon.sandbox.outputs.nuon_dns.public_domain.name }}"
     domain_certificate: "{{ .nuon.components.certificate_wildcard_public.outputs.public_domain_certificate_arn }}"
