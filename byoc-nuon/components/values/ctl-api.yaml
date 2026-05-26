@@ -127,6 +127,18 @@ envSecrets:
     valueFrom:
       name: clickhouse-cluster-pw
       key: value
+  - name: "SLACK_CLIENT_SECRET"
+    valueFrom:
+      name: ctl-api-slack-client-secret
+      key: value
+  - name: "SLACK_SIGNING_SECRET"
+    valueFrom:
+      name: ctl-api-slack-signing-secret
+      key: value
+  - name: "SLACK_STATE_JWT_SECRET"
+    valueFrom:
+      name: ctl-api-slack-state-jwt-secret
+      key: value
 
 image:
   repository: "{{ .nuon.components.img_nuon_ctl_api.outputs.image.repository }}"
