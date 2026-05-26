@@ -1,0 +1,9 @@
+name         = "admin_dashboard_enabled"
+description  = "Enable the Nuon admin dashboard. When true, the admin dashboard service is deployed and exposed on admin.<root_domain>."
+default      = "false"
+display_name = "Admin Dashboard Enabled"
+required     = false
+group        = "nuon"
+type         = "bool"
+
+user_configurable = false
