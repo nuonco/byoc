@@ -144,6 +144,13 @@ worker:
       operator: "Equal"
       value: ctl-api-worker
       effect: "NoSchedule"
+  topologySpreadConstraints:
+    - maxSkew: 1
+      topologyKey: "topology.kubernetes.io/zone"
+      whenUnsatisfiable: DoNotSchedule
+    - maxSkew: 2
+      topologyKey: "kubernetes.io/hostname"
+      whenUnsatisfiable: ScheduleAnyway
   instances:
     - namespace: orgs
       minReplicas: 2
@@ -264,6 +271,14 @@ api:
       operator: "Equal"
       value: "public"
       effect: "NoSchedule"
+  topologySpreadConstraints:
+    - maxSkew: 1
+      topologyKey: "topology.kubernetes.io/zone"
+      whenUnsatisfiable: ScheduleAnyway
+    - maxSkew: 2
+      minDomains: 3
+      topologyKey: "kubernetes.io/hostname"
+      whenUnsatisfiable: DoNotSchedule
   liveness_probe: /livez
   readiness_probe: /readyz
 
