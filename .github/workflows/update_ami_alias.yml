@@ -1,0 +1,87 @@
+---
+name: Update Karpenter AMI Alias
+on:
+  schedule:
+    # Daily at 14:00 UTC
+    - cron: "0 14 * * *"
+  workflow_dispatch:
+env:
+  GH_TOKEN: ${{ secrets.NUON_BOT_GITHUB_TOKEN }}
+  NODECLASS_FILE: byoc-nuon/src/components/karpenter-nodepools/templates/nodeclass.tpl
+jobs:
+  update_ami_alias:
+    name: Update AMI Alias to N-1
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+      - name: Enable commit signing
+        uses: crazy-max/ghaction-import-gpg@v6
+        with:
+          gpg_private_key: ${{ secrets.NUON_BOT_PRIVATE_KEY }}
+          passphrase: ${{ secrets.NUON_BOT_PASSPHRASE }}
+          git_user_signingkey: true
+          git_commit_gpgsign: true
+      - name: Resolve N-1 AL2023 release
+        id: resolve
+        run: |
+          # awslabs/amazon-eks-ami release tags (e.g. v20260520) map 1:1 to the
+          # Karpenter al2023 alias version. Skip drafts/prereleases, pick N-1.
+          releases=$(gh api repos/awslabs/amazon-eks-ami/releases \
+            --jq '[.[] | select(.draft == false and .prerelease == false) | .tag_name] | map(select(test("^v[0-9]{8}$")))')
+
+          latest=$(echo "$releases" | jq -r '.[0] // empty')
+          n_minus_one=$(echo "$releases" | jq -r '.[1] // empty')
+
+          if [ -z "$n_minus_one" ]; then
+            echo "Could not resolve N-1 release from awslabs/amazon-eks-ami"
+            exit 1
+          fi
+
+          current=$(grep -oE 'al2023@v[0-9]{8}' "$NODECLASS_FILE" | head -1 | cut -d'@' -f2)
+
+          echo "latest=$latest"
+          echo "n_minus_one=$n_minus_one"
+          echo "current=$current"
+
+          echo "latest=$latest" >> "$GITHUB_OUTPUT"
+          echo "n_minus_one=$n_minus_one" >> "$GITHUB_OUTPUT"
+          echo "current=$current" >> "$GITHUB_OUTPUT"
+
+          if [ "$current" = "$n_minus_one" ]; then
+            echo "already_current=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "already_current=false" >> "$GITHUB_OUTPUT"
+          fi
+      - name: Check for existing PR
+        if: steps.resolve.outputs.already_current == 'false'
+        id: existing
+        run: |
+          branch="nuonbot/bump-ami-alias-${{ steps.resolve.outputs.n_minus_one }}"
+          existing=$(gh pr list --head "$branch" --state open --json number --jq 'length')
+          echo "branch=$branch" >> "$GITHUB_OUTPUT"
+          echo "existing=$existing" >> "$GITHUB_OUTPUT"
+      - name: Update AMI alias
+        if: steps.resolve.outputs.already_current == 'false' && steps.existing.outputs.existing == '0'
+        run: |
+          ./scripts/update_ami_alias.sh "$NODECLASS_FILE" "${{ steps.resolve.outputs.n_minus_one }}"
+      - name: Commit changes
+        if: steps.resolve.outputs.already_current == 'false' && steps.existing.outputs.existing == '0'
+        run: |
+          branch="${{ steps.existing.outputs.branch }}"
+          git checkout -b "$branch"
+          git add "$NODECLASS_FILE"
+          git commit -m "chore: bump amazon linux alias to ${{ steps.resolve.outputs.n_minus_one }}"
+          git push -u origin "$branch"
+      - name: Open PR
+        if: steps.resolve.outputs.already_current == 'false' && steps.existing.outputs.existing == '0'
+        run: |
+          gh pr create \
+            --title "chore: bump amazon linux alias to ${{ steps.resolve.outputs.n_minus_one }}" \
+            --body "Auto-bump of the Karpenter AL2023 AMI alias to N-1.
+
+          - Latest release: \`${{ steps.resolve.outputs.latest }}\`
+          - N-1 (this PR):  \`${{ steps.resolve.outputs.n_minus_one }}\`
+          - Previous:       \`${{ steps.resolve.outputs.current }}\`
+
+          Source: https://github.com/awslabs/amazon-eks-ami/releases"
