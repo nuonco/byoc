@@ -28,10 +28,8 @@ SOURCE_IMAGE_URL="public.ecr.aws/p7e3r5y0/runner"
 OVERRIDE="${OVERRIDE:-false}"
 
 echo "ecr-runner-import: reading RUNNER_CONTAINER_IMAGE_TAG from ctl-api configmap"
-RUNNER_VERSION=$(kubectl get -n ctl-api configmaps ctl-api -o yaml \
-  | grep RUNNER_CONTAINER_IMAGE_TAG \
-  | cut -d ':' -f 2 \
-  | sed 's/ //g')
+RUNNER_VERSION=$(kubectl get -n ctl-api configmaps ctl-api \
+  -o jsonpath='{.data.RUNNER_CONTAINER_IMAGE_TAG}')
 if [ -z "$RUNNER_VERSION" ]; then
   echo "ecr-runner-import: RUNNER_CONTAINER_IMAGE_TAG not found in ctl-api configmap" >&2
   exit 1
