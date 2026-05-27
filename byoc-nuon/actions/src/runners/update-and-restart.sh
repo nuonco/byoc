@@ -48,6 +48,6 @@ curl -s -X 'POST' \
   -H 'accept: application/json' \
   -H "X-Nuon-Admin-Email: $admin_email" \
   -H 'Content-Type: application/json' \
-  -d '{"shutdown_type": "graceful"}'
+  -d '{"shutdown_type": "force"}'
 
 echo $OUTPUTS | jq -c  >> $NUON_ACTIONS_OUTPUT_FILEPATH
