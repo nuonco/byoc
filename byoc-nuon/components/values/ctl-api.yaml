@@ -251,17 +251,6 @@ worker:
       memory: 256Mi
   # topology spread
   minDomains: 2
-  # default values for a nodepool. used by the api to create a custom nodepool
-  nodepool:
-    capacity_types:
-      - on-demand
-    # docs: https://karpenter.sh/docs/reference/instance-types/#t3axlarge
-    instance_types:
-      - t3a.xlarge
-  zones:
-    # TODO: Template / load this dynamically
-    - {{.nuon.install_stack.outputs.region}}a
-    - {{.nuon.install_stack.outputs.region}}b
 
 api:
   nodeSelector:
