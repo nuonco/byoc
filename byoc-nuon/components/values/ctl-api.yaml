@@ -257,7 +257,7 @@ worker:
       - on-demand
     # docs: https://karpenter.sh/docs/reference/instance-types/#t3axlarge
     instance_types:
-      - t3a.xlarge
+      - m6a.xlarge
   zones:
     # TODO: Template / load this dynamically
     - {{.nuon.install_stack.outputs.region}}a
