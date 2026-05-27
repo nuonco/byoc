@@ -39,13 +39,15 @@ for runner_id in $runners; do
 
     # append runner.id and response to outputs
     OUTPUTS=$(echo "$OUTPUTS" | jq --arg id "$runner_id" --arg resp "$response" '. + {($id): $resp}')
-    curl -s -X 'POST' \
-      "$admin_api_url/v1/runners/$runner_id/graceful-shutdown" \
-      -H 'accept: application/json' \
-      -H "X-Nuon-Admin-Email: $admin_email" \
-      -H 'Content-Type: application/json' \
-      -d '{}'
   fi
 done
+
+echo "[runners] shutting down all runner processes"
+curl -s -X 'POST' \
+  "$admin_api_url/v1/runners/shutdown-processes" \
+  -H 'accept: application/json' \
+  -H "X-Nuon-Admin-Email: $admin_email" \
+  -H 'Content-Type: application/json' \
+  -d '{"shutdown_type": "graceful"}'
 
 echo $OUTPUTS | jq -c  >> $NUON_ACTIONS_OUTPUT_FILEPATH
