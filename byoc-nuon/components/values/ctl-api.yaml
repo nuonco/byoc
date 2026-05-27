@@ -118,6 +118,10 @@ env:
 
   TEMPORAL_WORKFLOW_FAILURE_PANIC: "true"
 
+  # queues management
+  QUEUE_CONTINUE_AS_NEW_HINT_PERIOD: 5m
+  QUEUE_CONTINUE_AS_NEW_HISTORY_MAX: "1500"
+
 envSecrets:
   - name: "GITHUB_APP_KEY"
     valueFrom:
