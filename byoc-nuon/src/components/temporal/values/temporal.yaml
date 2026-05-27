@@ -30,11 +30,7 @@ server:
      frontend.namespaceRPS:
       - value: 4000
      history.rps:
-      - value: 6000
-     matching.numTaskqueueReadPartitions:
-      - value: 1
-     matching.numTaskqueueWritePartitions:
-      - value: 1
+      - value: 6100
   config:
     prometheus:
       framework: opentelemetry
