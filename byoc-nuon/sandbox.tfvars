@@ -39,8 +39,7 @@ cluster_addons = {
 provision_iam_role_arn   = "{{ .nuon.install_stack.outputs.provision_iam_role_arn }}"
 deprovision_iam_role_arn = "{{ .nuon.install_stack.outputs.deprovision_iam_role_arn }}"
 maintenance_iam_role_arn = "{{ .nuon.install_stack.outputs.maintenance_iam_role_arn }}"
-# will look for {{ print "byoc-nuon-break-glass-" .nuon.install.id }}
-break_glass_iam_role_arn = `{{ dig "break_glass_role_arns" (print "byoc-nuon-break-glass-" .nuon.install.id ) "" .nuon.install_stack.outputs }}`
+break_glass_iam_role_arn = "{{ dig `break_glass_role_arns` (print `byoc-nuon-break-glass-` .nuon.install.id ) `` .nuon.install_stack.outputs }}"
 
 maintenance_role_eks_access_entry_policy_associations = {
   eks_admin = {

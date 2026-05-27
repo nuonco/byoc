@@ -7,8 +7,9 @@ repo      = "nuonco/aws-eks-karpenter-sandbox"
 branch    = "v1.6.2"
 
 [vars]
-cluster_version = "1.33"
-cluster_name    = "n-{{.nuon.install.id}}"
+cluster_version                = "1.33"
+cluster_name                   = "n-{{.nuon.install.id}}"
+cluster_endpoint_public_access = "false"
 
 enable_nuon_dns      = "true"
 public_root_domain   = "{{ .nuon.inputs.inputs.root_domain }}"

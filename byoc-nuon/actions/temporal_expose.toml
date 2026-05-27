@@ -10,7 +10,7 @@ type = "manual"
 name            = "port-forward"
 inline_contents = "./src/temporal/port-forward.sh"
 
-[[steps.env_vars]]
+[steps.env_vars]
 NAMESPACE   ="temporal"
 SERVICE     ="temporal-frontend-headless"
 REMOTE_PORT ="7233"
