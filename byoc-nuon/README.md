@@ -375,3 +375,67 @@ aws --region {{ .nuon.install_stack.outputs.region }} \
 {{ end }}
 
 </details>
+
+<details>
+<summary><strong>Workflows</strong></summary>
+
+{{ with (index (default dict .nuon.actions.workflows) "ctl_api_query_workflows_by_type") }}
+{{ $wfData := dict }}{{ with .outputs }}{{ $wfData = . }}{{ end }}
+{{ $wfRows := dig "workflows" (list) $wfData }}
+{{ if and .populated (eq .status "finished") (gt (len $wfRows) 0) }}
+
+<div style="padding-top: 1rem;"><nuon-group gap="8" align="center" justify="start">
+<nuon-label-badge label="count:{{ len $wfRows }}"></nuon-label-badge>
+</nuon-group></div>
+
+<table>
+  <thead>
+    <tr>
+      <th>Status</th>
+      <th>Type</th>
+      <th>Workflow ID</th>
+      <th>Created By</th>
+      <th>Org ID</th>
+      <th>Owner</th>
+      <th>Created At</th>
+      <th>Finished At</th>
+    </tr>
+  </thead>
+  <tbody>
+  {{ range $wfRows }}
+    {{ $status := dig "workflow_status" "" . }}
+    {{ $email := dig "created_by_email" "" . }}
+    {{ $createdByID := dig "created_by_id" "" . }}
+    {{ $createdByLabel := $email }}{{ if not $createdByLabel }}{{ $createdByLabel = default "—" $createdByID }}{{ end }}
+    {{ $ownerID := dig "owner_id" "" . }}
+    {{ $ownerType := dig "owner_type" "" . }}
+    <tr>
+      <td>{{ if $status }}<nuon-status status="{{ $status }}" variant="badge"></nuon-status>{{ else }}—{{ end }}</td>
+      <td>{{ dig "workflow_type" "—" . }}</td>
+      <td><code>{{ dig "workflow_id" "—" . }}</code></td>
+      <td style="white-space:nowrap;">{{ $createdByLabel }}</td>
+      <td><code>{{ default "—" (dig "org_id" "" .) }}</code></td>
+      <td style="white-space:nowrap;">{{ if $ownerID }}<code>{{ $ownerID }}</code>{{ if $ownerType }} ({{ $ownerType }}){{ end }}{{ else }}—{{ end }}</td>
+      <td>{{ with dig "workflow_created_at" "" . }}{{ (printf "%sZ" (substr 0 19 .)) | toDate "2006-01-02T15:04:05Z" | date "Jan 2 15:04 UTC" }}{{ else }}—{{ end }}</td>
+      <td>{{ with dig "workflow_finished_at" "" . }}{{ (printf "%sZ" (substr 0 19 .)) | toDate "2006-01-02T15:04:05Z" | date "Jan 2 15:04 UTC" }}{{ else }}—{{ end }}</td>
+    </tr>
+  {{ end }}
+  </tbody>
+</table>
+
+{{ else if and .populated (eq .status "finished") }}
+
+<nuon-banner theme="info">No workflows returned by the last run of ctl_api_query_workflows_by_type.</nuon-banner>
+
+{{ else }}
+
+<nuon-banner theme="warn">Waiting on ctl_api_query_workflows_by_type action. Run it to populate this section.</nuon-banner>
+
+{{ end }}
+{{ else }}
+
+<nuon-banner theme="warn">Waiting on ctl_api_query_workflows_by_type action. Run it to populate this section.</nuon-banner>
+
+{{ end }}
+
+</details>
