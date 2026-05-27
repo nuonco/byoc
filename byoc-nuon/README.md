@@ -146,16 +146,17 @@ aws --region {{ .nuon.install_stack.outputs.region }} \
 <summary><strong>Status</strong></summary>
 
 {{ with (index (default dict .nuon.actions.workflows) "status_report") }}
+{{ $steps := dict }}{{ with .outputs }}{{ with .steps }}{{ $steps = . }}{{ end }}{{ end }}
 {{ if and .populated (eq .status "finished") }}
 
 <nuon-tabs>
   <nuon-tab name="runners">
 
-{{ $runners := default dict .outputs.steps.runners }}
+{{ $runners := dig "runners" (dict) $steps }}
 {{ $ownerNames := dict }}
-{{ range $_, $i := (default dict .outputs.steps.installs) }}{{ $ownerNames = set $ownerNames (dig "id" "" $i) (dig "name" "" $i) }}{{ end }}
-{{ range $_, $o := (default dict .outputs.steps.orgs) }}{{ $ownerNames = set $ownerNames (dig "id" "" $o) (dig "name" "" $o) }}{{ end }}
-{{ range $_, $a := (default dict .outputs.steps.apps) }}{{ $ownerNames = set $ownerNames (dig "id" "" $a) (dig "name" "" $a) }}{{ end }}
+{{ range $_, $i := (dig "installs" (dict) $steps) }}{{ $ownerNames = set $ownerNames (dig "id" "" $i) (dig "name" "" $i) }}{{ end }}
+{{ range $_, $o := (dig "orgs" (dict) $steps) }}{{ $ownerNames = set $ownerNames (dig "id" "" $o) (dig "name" "" $o) }}{{ end }}
+{{ range $_, $a := (dig "apps" (dict) $steps) }}{{ $ownerNames = set $ownerNames (dig "id" "" $a) (dig "name" "" $a) }}{{ end }}
 {{ if gt (len $runners) 0 }}
 
   <table>
@@ -242,14 +243,14 @@ aws --region {{ .nuon.install_stack.outputs.region }} \
   </table>
   {{ else }}
 
-<nuon-banner theme="info">No runners reported.</nuon-banner>
+<div style="padding-top: 1rem;"><nuon-banner theme="info">No runners reported.</nuon-banner></div>
 
 {{ end }}
 
   </nuon-tab>
   <nuon-tab name="orgs">
 
-{{ $orgs := default dict .outputs.steps.orgs }}
+{{ $orgs := dig "orgs" (dict) $steps }}
 {{ if gt (len $orgs) 0 }}
 
   <table>
@@ -274,16 +275,16 @@ aws --region {{ .nuon.install_stack.outputs.region }} \
   </table>
   {{ else }}
 
-<nuon-banner theme="info">No orgs reported.</nuon-banner>
+<div style="padding-top: 1rem;"><nuon-banner theme="info">No orgs reported.</nuon-banner></div>
 
 {{ end }}
 
   </nuon-tab>
   <nuon-tab name="apps">
 
-{{ $apps := default dict .outputs.steps.apps }}
+{{ $apps := dig "apps" (dict) $steps }}
 {{ $orgsByID := dict }}
-{{ range $_, $o := (default dict .outputs.steps.orgs) }}{{ $orgsByID = set $orgsByID (dig "id" "" $o) (dig "name" "" $o) }}{{ end }}
+{{ range $_, $o := (dig "orgs" (dict) $steps) }}{{ $orgsByID = set $orgsByID (dig "id" "" $o) (dig "name" "" $o) }}{{ end }}
 {{ if gt (len $apps) 0 }}
 
   <table>
@@ -312,18 +313,18 @@ aws --region {{ .nuon.install_stack.outputs.region }} \
   </table>
   {{ else }}
 
-<nuon-banner theme="info">No apps reported.</nuon-banner>
+<div style="padding-top: 1rem;"><nuon-banner theme="info">No apps reported.</nuon-banner></div>
 
 {{ end }}
 
   </nuon-tab>
   <nuon-tab name="installs">
 
-{{ $installs := default dict .outputs.steps.installs }}
+{{ $installs := dig "installs" (dict) $steps }}
 {{ $appsByID := dict }}
-{{ range $_, $a := (default dict .outputs.steps.apps) }}{{ $appsByID = set $appsByID (dig "id" "" $a) (dig "name" "" $a) }}{{ end }}
+{{ range $_, $a := (dig "apps" (dict) $steps) }}{{ $appsByID = set $appsByID (dig "id" "" $a) (dig "name" "" $a) }}{{ end }}
 {{ $installOrgsByID := dict }}
-{{ range $_, $o := (default dict .outputs.steps.orgs) }}{{ $installOrgsByID = set $installOrgsByID (dig "id" "" $o) (dig "name" "" $o) }}{{ end }}
+{{ range $_, $o := (dig "orgs" (dict) $steps) }}{{ $installOrgsByID = set $installOrgsByID (dig "id" "" $o) (dig "name" "" $o) }}{{ end }}
 {{ if gt (len $installs) 0 }}
 
   <table>
@@ -359,7 +360,7 @@ aws --region {{ .nuon.install_stack.outputs.region }} \
   </table>
   {{ else }}
 
-<nuon-banner theme="info">No installs reported.</nuon-banner>
+<div style="padding-top: 1rem;"><nuon-banner theme="info">No installs reported.</nuon-banner></div>
 
 {{ end }}
 
