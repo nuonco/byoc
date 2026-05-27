@@ -1,7 +1,7 @@
-type = "provision"
-name = "{{.nuon.install.id}}-provision"
-description = "maintenance"
-display_name = "maintenance"
+type                 = "provision"
+name                 = "{{.nuon.install.id}}-provision"
+description          = "Provision role for BYOC Nuon Install {{ .nuon.install.id }}"
+display_name         = "Provision Role {{.nuon.install.id}}"
 permissions_boundary = "./provision_boundary.json"
 
 [[policies]]
