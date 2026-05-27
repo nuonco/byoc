@@ -2,6 +2,7 @@ locals {
   org_id = data.aws_organizations_organization.orgs.id
   public_prefixes = [
     "templates/*",
+    "stacks/*",
   ]
 }
 
