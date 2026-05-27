@@ -392,13 +392,14 @@ aws --region {{ .nuon.install_stack.outputs.region }} \
   <thead>
     <tr>
       <th>Status</th>
+      <th>Name</th>
       <th>Type</th>
-      <th>Workflow ID</th>
       <th>Created By</th>
-      <th>Org ID</th>
+      <th>Org</th>
       <th>Owner</th>
       <th>Created At</th>
       <th>Finished At</th>
+      <th>Details</th>
     </tr>
   </thead>
   <tbody>
@@ -409,15 +410,44 @@ aws --region {{ .nuon.install_stack.outputs.region }} \
     {{ $createdByLabel := $email }}{{ if not $createdByLabel }}{{ $createdByLabel = default "—" $createdByID }}{{ end }}
     {{ $ownerID := dig "owner_id" "" . }}
     {{ $ownerType := dig "owner_type" "" . }}
+    {{ $ownerName := dig "owner_name" "" . }}
     <tr>
       <td>{{ if $status }}<nuon-status status="{{ $status }}" variant="badge"></nuon-status>{{ else }}—{{ end }}</td>
+      <td>{{ dig "workflow_name" "—" . }}</td>
       <td>{{ dig "workflow_type" "—" . }}</td>
-      <td><code>{{ dig "workflow_id" "—" . }}</code></td>
       <td style="white-space:nowrap;">{{ $createdByLabel }}</td>
-      <td><code>{{ default "—" (dig "org_id" "" .) }}</code></td>
-      <td style="white-space:nowrap;">{{ if $ownerID }}<code>{{ $ownerID }}</code>{{ if $ownerType }} ({{ $ownerType }}){{ end }}{{ else }}—{{ end }}</td>
+      {{ $orgName := dig "org_name" "" . }}{{ $orgID := dig "org_id" "" . }}
+      <td style="white-space:nowrap;">{{ if $orgName }}{{ $orgName }}{{ else if $orgID }}<code>{{ $orgID }}</code>{{ else }}—{{ end }}</td>
+      <td style="white-space:nowrap;">{{ if $ownerName }}{{ $ownerName }}{{ else if $ownerID }}<code>{{ $ownerID }}</code>{{ else }}—{{ end }}</td>
       <td>{{ with dig "workflow_created_at" "" . }}{{ (printf "%sZ" (substr 0 19 .)) | toDate "2006-01-02T15:04:05Z" | date "Jan 2 15:04 UTC" }}{{ else }}—{{ end }}</td>
       <td>{{ with dig "workflow_finished_at" "" . }}{{ (printf "%sZ" (substr 0 19 .)) | toDate "2006-01-02T15:04:05Z" | date "Jan 2 15:04 UTC" }}{{ else }}—{{ end }}</td>
+      <td>
+
+<nuon-panel heading="Workflow: {{ dig "workflow_name" (dig "workflow_id" "—" .) . }}" trigger="View" size="large">
+
+| Field | Value |
+| --- | --- |
+| Status | {{ if $status }}<nuon-status status="{{ $status }}" variant="badge"></nuon-status>{{ else }}—{{ end }} |
+| Name | {{ dig "workflow_name" "—" . }} |
+| Type | {{ dig "workflow_type" "—" . }} |
+| Workflow ID | `{{ dig "workflow_id" "—" . }}` |
+| Created By | {{ if $email }}{{ $email }}{{ else }}—{{ end }} |
+| Created By ID | {{ if $createdByID }}`{{ $createdByID }}`{{ else }}—{{ end }} |
+| Created By Subject | {{ default "—" (dig "created_by_subject" "" .) }} |
+| Created By Account Type | {{ default "—" (dig "created_by_account_type" "" .) }} |
+| Org | {{ if $orgName }}{{ $orgName }}{{ else }}—{{ end }} |
+| Org ID | {{ if $orgID }}`{{ $orgID }}`{{ else }}—{{ end }} |
+| Owner | {{ if $ownerName }}{{ $ownerName }}{{ else }}—{{ end }} |
+| Owner ID | {{ if $ownerID }}`{{ $ownerID }}`{{ else }}—{{ end }} |
+| Owner Type | {{ default "—" $ownerType }} |
+| Created At | {{ with dig "workflow_created_at" "" . }}{{ (printf "%sZ" (substr 0 19 .)) | toDate "2006-01-02T15:04:05Z" | date "Jan 2 15:04 UTC" }}{{ else }}—{{ end }} |
+| Updated At | {{ with dig "workflow_updated_at" "" . }}{{ (printf "%sZ" (substr 0 19 .)) | toDate "2006-01-02T15:04:05Z" | date "Jan 2 15:04 UTC" }}{{ else }}—{{ end }} |
+| Started At | {{ with dig "workflow_started_at" "" . }}{{ (printf "%sZ" (substr 0 19 .)) | toDate "2006-01-02T15:04:05Z" | date "Jan 2 15:04 UTC" }}{{ else }}—{{ end }} |
+| Finished At | {{ with dig "workflow_finished_at" "" . }}{{ (printf "%sZ" (substr 0 19 .)) | toDate "2006-01-02T15:04:05Z" | date "Jan 2 15:04 UTC" }}{{ else }}—{{ end }} |
+
+</nuon-panel>
+
+      </td>
     </tr>
   {{ end }}
   </tbody>

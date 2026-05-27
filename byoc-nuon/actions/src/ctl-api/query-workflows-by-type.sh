@@ -77,20 +77,70 @@ SELECT COALESCE(json_agg(row_to_json(t) ORDER BY t.workflow_created_at DESC), '[
 FROM (
   SELECT w.id                AS workflow_id,
          w.type              AS workflow_type,
+         -- Mirrors Workflow.Name composition in ctl-api workflow.go:
+         --   <type label> [ (workflow-name-suffix) ] [ (install_action_workflow_name) ]
+         -- Uses past-tense labels when finished, present-tense otherwise.
+         (
+           CASE
+             WHEN w.finished_at IS NOT NULL THEN
+               CASE w.type
+                 WHEN 'provision'                     THEN 'Provisioned install'
+                 WHEN 'reprovision'                   THEN 'Reprovisioned install'
+                 WHEN 'reprovision_sandbox'           THEN 'Reprovisioned sandbox'
+                 WHEN 'drift_run_reprovision_sandbox' THEN 'Reprovisioned sandbox'
+                 WHEN 'deprovision'                   THEN 'Deprovisioned install'
+                 WHEN 'manual_deploy'                 THEN 'Deployed to install'
+                 WHEN 'drift_run'                     THEN 'Deployed to install'
+                 WHEN 'input_update'                  THEN 'Updated Input'
+                 WHEN 'teardown_components'           THEN 'Tore down all components'
+                 WHEN 'deploy_components'             THEN 'Deployed all components'
+                 WHEN 'sync_secrets'                  THEN 'Synced secrets'
+                 WHEN 'action_workflow_run'           THEN 'Action run'
+                 WHEN 'app_config_build'              THEN 'Built app config components'
+                 ELSE w.type::text
+               END
+             ELSE
+               CASE w.type
+                 WHEN 'provision'                     THEN 'Provisioning install'
+                 WHEN 'reprovision'                   THEN 'Reprovisioning install'
+                 WHEN 'reprovision_sandbox'           THEN 'Reprovisioning sandbox'
+                 WHEN 'drift_run_reprovision_sandbox' THEN 'Reprovisioning sandbox'
+                 WHEN 'deprovision'                   THEN 'Deprovisioning install'
+                 WHEN 'manual_deploy'                 THEN 'Deploying to install'
+                 WHEN 'drift_run'                     THEN 'Deploying to install'
+                 WHEN 'input_update'                  THEN 'Input Update'
+                 WHEN 'teardown_components'           THEN 'Tearing down all components'
+                 WHEN 'deploy_components'             THEN 'Deploying all components'
+                 WHEN 'sync_secrets'                  THEN 'Syncing secrets'
+                 WHEN 'action_workflow_run'           THEN 'Action run'
+                 WHEN 'app_config_build'              THEN 'Building app config components'
+                 ELSE w.type::text
+               END
+           END
+           || COALESCE(' (' || (w.metadata -> 'workflow-name-suffix') || ')', '')
+           || CASE
+                WHEN w.type = 'action_workflow_run' AND (w.metadata -> 'install_action_workflow_name') IS NOT NULL
+                  THEN ' (' || (w.metadata -> 'install_action_workflow_name') || ')'
+                ELSE ''
+              END
+         ) AS workflow_name,
          w.status->>'status' AS workflow_status,
          w.created_at        AS workflow_created_at,
          w.updated_at        AS workflow_updated_at,
          w.started_at        AS workflow_started_at,
          w.finished_at       AS workflow_finished_at,
          w.org_id            AS org_id,
+         o.name              AS org_name,
          w.owner_id          AS owner_id,
          w.owner_type        AS owner_type,
+         (w.metadata -> 'owner_name') AS owner_name,
          w.created_by_id     AS created_by_id,
          a.email             AS created_by_email,
          a.subject           AS created_by_subject,
          a.account_type      AS created_by_account_type
   FROM install_workflows w
   LEFT JOIN accounts a ON a.id = w.created_by_id
+  LEFT JOIN orgs     o ON o.id = w.org_id
   WHERE w.deleted_at = 0
   ORDER BY w.created_at DESC
   LIMIT $limit
