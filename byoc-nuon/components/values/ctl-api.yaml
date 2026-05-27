@@ -283,30 +283,31 @@ api:
   readiness_probe: /readyz
 
   resources:
-    limits:
-      cpu: 1000m
-      memory: 2048Mi
     requests:
-      cpu: 1000m
-      memory: 2048Mi
+      cpu: 500m
+      memory: 512Mi
 
   public:
     port: 8081
     domain: "api.{{ .nuon.sandbox.outputs.nuon_dns.public_domain.name }}"
     domain_certificate: "{{ .nuon.components.certificate_wildcard_public.outputs.public_domain_certificate_arn }}"
+    resources:
+      requests:
+        cpu: 1000m
+        memory: 2048Mi
     autoscaling:
-      minReplicas: 4
+      minReplicas: 3
       maxReplicas: 10
-      targetCPUUtilizationPercentage: 50
-      targetMemoryUtilizationPercentage: 50
+      targetCPUUtilizationPercentage: 75
+      targetMemoryUtilizationPercentage: 75
   admin:
     port: 8082
     domain: "admin.{{ .nuon.sandbox.outputs.nuon_dns.internal_domain.name }}"
     autoscaling:
       minReplicas: 2
       maxReplicas: 10
-      targetCPUUtilizationPercentage: 50
-      targetMemoryUtilizationPercentage: 50
+      targetCPUUtilizationPercentage: 75
+      targetMemoryUtilizationPercentage: 75
   dashboard_admin:
     enabled: {{ or .nuon.inputs.inputs.admin_dashboard_enabled "false" }}
     port: 8087
@@ -315,7 +316,7 @@ api:
     autoscaling:
       minReplicas: 2
       maxReplicas: 4
-      targetCPUUtilizationPercentage: 60
+      targetCPUUtilizationPercentage: 75
       targetMemoryUtilizationPercentage: 75
   runner:
     port: 8083
@@ -324,8 +325,8 @@ api:
     autoscaling:
       minReplicas: 4
       maxReplicas: 10
-      targetCPUUtilizationPercentage: 35
-      targetMemoryUtilizationPercentage: 40
+      targetCPUUtilizationPercentage: 75
+      targetMemoryUtilizationPercentage: 75
   auth:
     port: 8084
     domain: "auth.{{ .nuon.sandbox.outputs.nuon_dns.public_domain.name }}"
