@@ -23,14 +23,52 @@ schema:
 server:
   replicaCount: 5
   dynamicConfig:
-     limit.historySize.error:
+    limit.historySize.error:
       - value: 209715200
-     limit.blobSize.error:
+    limit.blobSize.error:
       - value: 5242880
-     frontend.namespaceRPS:
-      - value: 4000
-     history.rps:
-      - value: 6100
+      
+    matching.numTaskqueueWritePartitions:
+      - value: 6
+        constraints:
+          namespace: "runners"
+    matching.numTaskqueueReadPartitions:
+      - value: 6
+        constraints:
+          namespace: "runners"
+   
+    frontend.namespaceRPS:
+      - value: 15000
+        constraints: {}
+    frontend.maxNamespaceRPSPerInstance:
+      - value: 5000
+        constraints: {}
+    
+    matching.rps:
+      - value: 15000
+        constraints: {}
+    matching.persistenceMaxQPS:
+      - value: 5000
+        constraints: {}
+    matching.persistenceNamespaceMaxQPS:
+      - value: 5000
+        constraints: {}
+    matching.persistenceMaxQPSPerInstance:
+      - value: 10000
+        constraints: {}
+    
+    history.persistenceMaxQPS:
+      - value: 10000
+        constraints: {}
+    history.rps:
+      - value: 25000
+        constraints: {}
+    history.namespaceRPS:
+      - value: 25000
+        constraints: {}
+    history.maxNamespaceRPSPerInstance:
+      - value: 20000
+        constraints: {}
   config:
     prometheus:
       framework: opentelemetry
