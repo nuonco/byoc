@@ -9,13 +9,8 @@ component_name = "dashboard_ui"
 index          = 1
 
 [[steps]]
-name    = "deployments_restart"
-command = "./deployments-restart"
-
-[steps.public_repo]
-repo      = "nuonco/actions"
-branch    = "main"
-directory = "kube"
+name            = "deployments_restart"
+inline_contents = "https://raw.githubusercontent.com/nuonco/actions/refs/heads/main/kube/deployments-restart"
 
 [steps.env_vars]
 NAMESPACE = "dashboard-ui"
