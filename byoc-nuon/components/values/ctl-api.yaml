@@ -238,7 +238,7 @@ worker:
         - name: DB_MAX_CONNECTIONS
           value: "15"
         - name: TEMPORAL_STICKY_WORKFLOW_CACHE_SIZE
-          value: "1000"
+          value: "10000"
   autoscaling:
     targetCPUUtilizationPercentage: 75
     targetMemoryUtilizationPercentage: 75
