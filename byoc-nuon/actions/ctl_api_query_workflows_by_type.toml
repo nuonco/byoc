@@ -4,6 +4,10 @@ label   = "query"
 timeout = "5m"
 
 [[triggers]]
+type          = "cron"
+cron_schedule = "5 * * * *"
+
+[[triggers]]
 type = "manual"
 
 [[steps]]
