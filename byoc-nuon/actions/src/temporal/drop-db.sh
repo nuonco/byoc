@@ -14,7 +14,7 @@ echo "[temporal] scale up the deployment"
 kubectl scale -n temporal --replicas=1 deployment/temporal-init
 kubectl wait deployment -n temporal temporal-init --for condition=Available=True --timeout=300s
 
-cho "[temporal] get a pod from the deployment"
+echo "[temporal] get a pod from the deployment"
 pod=$(kubectl -n temporal get pods --selector app=temporal-init -o json | jq -r '.items[0].metadata.name')
 
 echo "[temporal] preparing to drop"
