@@ -71,10 +71,9 @@ nuon -f ~/.nuon.byoc login
 
 **Outputs**
 
-| Output                                                  | Value      |
-| ------------------------------------------------------- | ---------- | ------------ |
-| {{ range $key, $value := .nuon.install_stack.outputs }} | {{ $key }} | {{ $value }} |
-
+| Output | Value |
+| ------ | ----- |
+{{ range $key, $value := .nuon.install_stack.outputs }}| {{ $key }} | {{ $value }} |
 {{ end }}
 
 </details>
@@ -84,10 +83,9 @@ nuon -f ~/.nuon.byoc login
 
 **Outputs**
 
-| Output                                                                   | Value      |
-| ------------------------------------------------------------------------ | ---------- | ------------ |
-| {{ range $key, $value := dig "outputs" "cluster" (dict) .nuon.sandbox }} | {{ $key }} | {{ $value }} |
-
+| Output | Value |
+| ------ | ----- |
+{{ range $key, $value := dig "outputs" "cluster" (dict) .nuon.sandbox }}| {{ $key }} | {{ $value }} |
 {{ end }}
 
 **Accessing the EKS Cluster**
