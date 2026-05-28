@@ -1,0 +1,24 @@
+# policies
+
+[[policy]]
+type       = "terraform_module"
+engine     = "opa"
+components = ["rds_cluster_nuon", "rds_cluster_temporal"]
+contents   = "./policies/warn-db-destructive.rego"
+
+[[policy]]
+type     = "sandbox"
+engine   = "opa"
+contents = "./policies/warn-public-eks-endpoint.rego"
+
+[[policy]]
+type       = "helm_chart"
+engine     = "opa"
+components = ["*"]
+contents   = "./policies/warn-public-ingress.rego"
+
+[[policy]]
+type       = "helm_chart"
+engine     = "opa"
+components = ["*"]
+contents   = "./policies/warn-loadbalancer-service.rego"
