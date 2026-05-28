@@ -1,0 +1,23 @@
+name        = "deploy_control_plane"
+description = "Deploys the Nuon control plane: syncs and rolls the CTL API, then the dashboard UI."
+readme      = "./runbooks/deploy_control_plane.md"
+
+[[steps]]
+name           = "Sync image"
+type           = "deploy"
+component_name = "img_nuon_ctl_api"
+
+[[steps]]
+name           = "Deploy helm chart"
+type           = "deploy"
+component_name = "ctl_api"
+
+[[steps]]
+name           = "Sync dashboard image"
+type           = "deploy"
+component_name = "img_nuon_dashboard_ui"
+
+[[steps]]
+name           = "Deploy dashboard helm chart"
+type           = "deploy"
+component_name = "dashboard_ui"
