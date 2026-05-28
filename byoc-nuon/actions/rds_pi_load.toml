@@ -1,0 +1,23 @@
+# action
+# description: fetches RDS Performance Insights db.load.avg and renders an ASCII graph.
+# Set DB_TARGET to "ctl-api" or "temporal" to switch databases.
+name    = "rds_pi_load"
+label   = "aws"
+timeout = "2m"
+
+[[triggers]]
+type = "manual"
+
+[[steps]]
+name    = "pi load graph"
+command = "./rds/pi_load.py"
+
+[steps.public_repo]
+repo      = "nuonco/byoc"
+directory = "byoc-nuon/actions/src"
+branch    = "jm/rds"
+
+[steps.env_vars]
+DB_TARGET = "temporal"
+DB_RESOURCE_ID_CTL_API = "{{ .nuon.components.rds_cluster_nuon.outputs.db_instance_resource_id }}"
+DB_RESOURCE_ID_TEMPORAL = "{{ .nuon.components.rds_cluster_temporal.outputs.db_instance_resource_id }}"
