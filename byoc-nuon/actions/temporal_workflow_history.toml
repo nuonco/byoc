@@ -16,7 +16,7 @@ set -u
 
 kubectl config set-context --current --namespace=temporal >/dev/null
 
-# describe the workflow
+# describe the workflow (current run)
 echo >&2 "describing workflow ${WORKFLOW_ID} in namespace ${NAMESPACE}..."
 kubectl -n temporal exec -i deployment/temporal-admintools -- \
   temporal workflow describe \
@@ -24,40 +24,101 @@ kubectl -n temporal exec -i deployment/temporal-admintools -- \
     --workflow-id "$WORKFLOW_ID" \
     --output json
 
-# show full event history, paginating to capture all events
-echo >&2 "fetching history for workflow ${WORKFLOW_ID} in namespace ${NAMESPACE}..."
-all_events="[]"
-next_token=""
+# function: fetch full history for a single run
+fetch_run_history() {
+  local wf_id="$1"
+  local run_id="$2"
+  local run_events="[]"
+  local next_token=""
 
-while true; do
-  args=(
-    temporal workflow show
-    --namespace "$NAMESPACE"
-    --workflow-id "$WORKFLOW_ID"
-    --output json
-    --max-field-length 0
-  )
-  if [ -n "$next_token" ]; then
-    args+=(--next-page-token "$next_token")
-  fi
+  while true; do
+    args=(
+      temporal workflow show
+      --namespace "$NAMESPACE"
+      --workflow-id "$wf_id"
+      --run-id "$run_id"
+      --output json
+      --max-field-length 0
+    )
+    if [ -n "$next_token" ]; then
+      args+=(--next-page-token "$next_token")
+    fi
 
-  page=$(kubectl -n temporal exec -i deployment/temporal-admintools -- "${args[@]}" 2>/dev/null)
+    page=$(kubectl -n temporal exec -i deployment/temporal-admintools -- "${args[@]}" 2>/dev/null)
 
-  # merge events into accumulator
-  page_events=$(echo "$page" | jq -c '.events // []')
-  count=$(echo "$page_events" | jq 'length')
-  all_events=$(echo "$all_events" "$page_events" | jq -s '.[0] + .[1]')
-  total=$(echo "$all_events" | jq 'length')
-  echo >&2 "fetched ${count} events (total: ${total})"
+    page_events=$(echo "$page" | jq -c '.events // []')
+    count=$(echo "$page_events" | jq 'length')
+    run_events=$(echo "$run_events" "$page_events" | jq -s '.[0] + .[1]')
+    total=$(echo "$run_events" | jq 'length')
+    echo >&2 "  fetched ${count} events (run total: ${total})"
 
-  # check for next page token
-  next_token=$(echo "$page" | jq -r '.nextPageToken // empty')
-  if [ -z "$next_token" ]; then
+    next_token=$(echo "$page" | jq -r '.nextPageToken // empty')
+    if [ -z "$next_token" ]; then
+      break
+    fi
+  done
+
+  echo "$run_events"
+}
+
+# walk the ContinueAsNew chain starting from firstRunId
+echo >&2 "resolving run chain for workflow ${WORKFLOW_ID}..."
+describe=$(kubectl -n temporal exec -i deployment/temporal-admintools -- \
+  temporal workflow describe \
+    --namespace "$NAMESPACE" \
+    --workflow-id "$WORKFLOW_ID" \
+    --output json 2>/dev/null)
+
+first_run_id=$(echo "$describe" | jq -r '.workflowExecutionInfo.firstRunId // empty')
+current_run_id=$(echo "$describe" | jq -r '.workflowExecutionInfo.execution.runId // empty')
+
+if [ -z "$first_run_id" ]; then
+  first_run_id="$current_run_id"
+fi
+
+# collect all run IDs by walking forward from firstRunId
+run_ids=()
+walk_run_id="$first_run_id"
+
+while [ -n "$walk_run_id" ]; do
+  run_ids+=("$walk_run_id")
+  echo >&2 "found run: ${walk_run_id}"
+
+  # get the last event to check for ContinueAsNew
+  last_event=$(kubectl -n temporal exec -i deployment/temporal-admintools -- \
+    temporal workflow show \
+      --namespace "$NAMESPACE" \
+      --workflow-id "$WORKFLOW_ID" \
+      --run-id "$walk_run_id" \
+      --output json \
+      --max-field-length 0 2>/dev/null \
+    | jq -c '.events[-1] // empty')
+
+  event_type=$(echo "$last_event" | jq -r '.eventType // empty')
+  if [ "$event_type" = "EVENT_TYPE_WORKFLOW_EXECUTION_CONTINUED_AS_NEW" ]; then
+    walk_run_id=$(echo "$last_event" | jq -r '.workflowExecutionContinuedAsNewEventAttributes.newExecutionRunId // empty')
+  else
     break
   fi
 done
 
-echo "$all_events" | jq '{ events: ., total: length }'
+echo >&2 "found ${#run_ids[@]} run(s) in CAN chain"
+
+# fetch full history for each run
+all_runs="[]"
+for run_id in "${run_ids[@]}"; do
+  echo >&2 "fetching history for run ${run_id}..."
+  run_events=$(fetch_run_history "$WORKFLOW_ID" "$run_id")
+  run_count=$(echo "$run_events" | jq 'length')
+  run_obj=$(jq -cn --arg rid "$run_id" --argjson events "$run_events" --argjson count "$run_count" \
+    '{ run_id: $rid, event_count: $count, events: $events }')
+  all_runs=$(echo "$all_runs" | jq --argjson r "$run_obj" '. + [$r]')
+done
+
+total_events=$(echo "$all_runs" | jq '[.[].event_count] | add // 0')
+echo >&2 "done: ${#run_ids[@]} run(s), ${total_events} total events"
+
+echo "$all_runs" | jq '{ runs: ., run_count: length, total_events: ([.[].event_count] | add // 0) }'
 """
 
 [steps.env_vars]
