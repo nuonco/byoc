@@ -1,0 +1,43 @@
+# action
+# description: fetches ctl-api version and runs ALB healthchecks for the
+# public, admin (private), and runner ingresses.
+name    = "api_status"
+timeout = "2m"
+
+[[triggers]]
+type          = "cron"
+cron_schedule = "10 * * * *"
+
+[[triggers]]
+type = "manual"
+
+[[steps]]
+name            = "fetch ctl-api version"
+inline_contents = "./ctl_api/api_status/version.sh"
+
+[steps.env_vars]
+API_URL = "https://api.{{ .nuon.sandbox.outputs.nuon_dns.public_domain.name }}"
+
+[[steps]]
+name            = "alb-healthcheck-ctl-api-public"
+inline_contents = "./ctl_api/api_status/healthcheck.sh"
+
+[steps.env_vars]
+INGRESS_NAME      = "ctl-api-public"
+INGRESS_NAMESPACE = "ctl-api"
+
+[[steps]]
+name            = "alb-healthcheck-ctl-api-admin"
+inline_contents = "./ctl_api/api_status/healthcheck.sh"
+
+[steps.env_vars]
+INGRESS_NAME      = "ctl-api-admin"
+INGRESS_NAMESPACE = "ctl-api"
+
+[[steps]]
+name            = "alb-healthcheck-ctl-api-runner"
+inline_contents = "./ctl_api/api_status/healthcheck.sh"
+
+[steps.env_vars]
+INGRESS_NAME      = "ctl-api-runner"
+INGRESS_NAMESPACE = "ctl-api"

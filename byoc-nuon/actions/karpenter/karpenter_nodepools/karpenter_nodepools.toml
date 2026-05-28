@@ -1,0 +1,15 @@
+# action
+name    = "karpenter_nodepools"
+timeout = "20s"
+
+
+[[triggers]]
+type          = "cron"
+cron_schedule = "*/20 */1 * * *"  # https://crontab.guru/#*/20_*/1_*_*_*
+
+[[triggers]]
+type = "manual"
+
+[[steps]]
+name            = "list"
+inline_contents = "./karpenter/karpenter_nodepools/nodepools.sh"

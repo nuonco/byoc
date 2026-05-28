@@ -1,0 +1,10 @@
+# action
+name    = "temporal_drop_db"
+timeout = "1m30s"
+
+[[triggers]]
+type = "manual"
+
+[[steps]]
+name            = "exec"
+inline_contents = "./temporal/temporal_drop_db/drop-db.sh"

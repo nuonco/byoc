@@ -1,0 +1,14 @@
+# action
+name    = "helm_list"
+timeout = "30s"
+
+[[triggers]]
+type = "manual"
+
+[[steps]]
+name = "helm"
+inline_contents = "./kubectl/helm_history/helm.sh"
+
+[steps.env_vars]
+NAMESPACE = ""
+CHART_NAME = ""

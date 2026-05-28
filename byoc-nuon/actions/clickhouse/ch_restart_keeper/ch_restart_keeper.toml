@@ -1,0 +1,10 @@
+# action
+name    = "ch_restart_keeper"
+timeout = "3m"
+
+[[triggers]]
+type = "manual"
+
+[[steps]]
+name            = "restart"
+inline_contents = "./clickhouse/ch_restart_keeper/restart.sh"

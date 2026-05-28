@@ -1,0 +1,15 @@
+# action
+name    = "ctl_api_create_or_refresh_sa_token"
+timeout = "10s"
+
+[[triggers]]
+type = "manual"
+
+[[steps]]
+name            = "create_or_refresh_sa_token"
+inline_contents = "./ctl_api/ctl_api_create_or_refresh_sa_token/create_or_refresh_sa_token.sh"
+
+[steps.env_vars]
+ADMIN_API_URL = "http://admin.{{ .nuon.sandbox.outputs.nuon_dns.internal_domain.name }}"
+ORG_ID        = ""
+REFRESH       = "false"

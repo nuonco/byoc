@@ -1,0 +1,7 @@
+#!/usr/bin/env sh
+
+kubectl scale statefulsets -n clickhouse chi-clickhouse-installation-simple-0-0 --replicas=0
+kubectl scale statefulsets -n clickhouse chi-clickhouse-installation-simple-0-1 --replicas=0
+sleep 5
+kubectl scale statefulsets -n clickhouse chi-clickhouse-installation-simple-0-0 --replicas=1
+kubectl scale statefulsets -n clickhouse chi-clickhouse-installation-simple-0-1 --replicas=1

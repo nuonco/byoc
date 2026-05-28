@@ -1,0 +1,14 @@
+# action
+name    = "org_admin_restart"
+timeout = "30s"
+
+[[triggers]]
+type = "manual"
+
+[[steps]]
+name    = "admin_restart"
+inline_contents = "./orgs/org_admin_restart/admin_restart.sh"
+
+[steps.env_vars]
+ADMIN_API_URL = "http://admin.{{ .nuon.sandbox.outputs.nuon_dns.internal_domain.name }}"
+ORG_ID        = "dne"

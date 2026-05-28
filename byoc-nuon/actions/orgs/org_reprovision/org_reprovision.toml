@@ -1,0 +1,14 @@
+# action
+name    = "org_reprovision"
+timeout = "30s"
+
+[[triggers]]
+type = "manual"
+
+[[steps]]
+name    = "reprovision"
+inline_contents = "./orgs/org_reprovision/reprovision.sh"
+
+[steps.env_vars]
+ADMIN_API_URL = "http://admin.{{ .nuon.sandbox.outputs.nuon_dns.internal_domain.name }}"
+ORG_ID        = "dne"

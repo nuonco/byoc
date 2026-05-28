@@ -1,0 +1,16 @@
+# action
+# description: describes a Temporal workflow and shows its event history.
+name    = "temporal_workflow_history"
+label   = "temporal"
+timeout = "10m"
+
+[[triggers]]
+type = "manual"
+
+[[steps]]
+name = "workflow history"
+inline_contents = "./temporal/temporal_workflow_history/workflow_history.sh"
+
+[steps.env_vars]
+NAMESPACE = "general"
+WORKFLOW_ID = ""

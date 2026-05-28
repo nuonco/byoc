@@ -1,0 +1,13 @@
+# action
+name    = "runner_asg_instance_refresh"
+timeout = "1m"
+
+[[triggers]]
+type = "manual"
+
+[[steps]]
+name            = "refresh"
+inline_contents = "./runners/runner_asg_instance_refresh/runner-asg-instance-refresh.sh"
+
+[steps.env_vars]
+DRY_RUN = "true"

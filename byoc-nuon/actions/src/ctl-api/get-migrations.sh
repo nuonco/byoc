@@ -1,1 +1,0 @@
-../../../../shared/actions/src/ctl-api/get-migrations.sh
