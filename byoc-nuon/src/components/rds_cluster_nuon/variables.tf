@@ -6,6 +6,8 @@ locals {
   skip_final_snapshot                 = contains(["true", "1"], var.skip_final_snapshot)
   storage_encrypted                   = contains(["true", "1"], var.storage_encrypted)
   apply_immediately                   = contains(["true", "1"], var.apply_immediately)
+  read_replica_enabled                = contains(["true", "1"], var.read_replica_enabled)
+  replica_instance_class              = var.replica_instance_class != "" ? var.replica_instance_class : var.instance_class
   tags = {
     "component.nuon.co/name" = "rds-cluster"
     "install.nuon.co/id"     = var.nuon_id
@@ -91,6 +93,18 @@ variable "multi_az" {
   type        = string
   description = "Enable multi-az."
   default     = "false"
+}
+
+variable "read_replica_enabled" {
+  type        = string
+  description = "Whether to provision a single in-region read replica of the primary instance."
+  default     = "false"
+}
+
+variable "replica_instance_class" {
+  type        = string
+  description = "Instance class for the read replica. Defaults to the primary's instance_class when empty."
+  default     = ""
 }
 
 variable "backup_retention_period" {

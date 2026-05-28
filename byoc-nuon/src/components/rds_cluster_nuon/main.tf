@@ -59,3 +59,37 @@ module "db" {
   depends_on = [resource.aws_security_group.allow_psql]
 }
 
+module "db_replica" {
+  count  = local.read_replica_enabled ? 1 : 0
+  source = "terraform-aws-modules/rds/aws"
+
+  identifier          = "${var.identifier}-replica"
+  replicate_source_db = module.db.db_instance_identifier
+
+  engine         = "postgres"
+  family         = "postgres15"
+  engine_version = "15"
+  instance_class = local.replica_instance_class
+
+  port = var.port
+
+  iam_database_authentication_enabled = local.iam_database_authentication_enabled
+  apply_immediately                   = local.apply_immediately
+
+  create_db_subnet_group = false
+  db_subnet_group_name   = var.subnet_group_id
+  vpc_security_group_ids = [resource.aws_security_group.allow_psql.id]
+
+  maintenance_window = var.maintenance_window
+
+  performance_insights_enabled    = true
+  enabled_cloudwatch_logs_exports = ["postgresql", "upgrade"]
+
+  skip_final_snapshot = true
+  deletion_protection = var.deletion_protection
+  storage_encrypted   = var.storage_encrypted
+
+  create_db_parameter_group = false
+
+  depends_on = [resource.aws_security_group.allow_psql]
+}
