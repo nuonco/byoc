@@ -15,17 +15,16 @@
 
 {{ $api := dict }}{{ with index .nuon.actions.workflows "api_status" }}{{ with .outputs }}{{ $api = . }}{{ end }}{{ end }}
 {{ $dash := dict }}{{ with index .nuon.actions.workflows "dashboard_status" }}{{ with .outputs }}{{ $dash = . }}{{ end }}{{ end }}
-{{ $apiSteps := dig "steps" (dict) $api }}
-{{ $dashSteps := dig "steps" (dict) $dash }}
+{{ $apiSteps := dig "steps" (dict) $api }} {{ $dashSteps := dig "steps" (dict) $dash }}
 
 <details>
 <summary><nuon-group gap="2" align="center" justify="start"><strong>API</strong>{{ range $step := list "alb-healthcheck-ctl-api-public" "alb-healthcheck-ctl-api-admin" "alb-healthcheck-ctl-api-runner" }}{{ $indicator := dig $step "indicator" "" $apiSteps }}{{ if eq $indicator "🟢" }}<nuon-status status="active" variant="badge"></nuon-status>{{ else if eq $indicator "🔴" }}<nuon-status status="error" variant="badge"></nuon-status>{{ else }}<nuon-status status="pending" variant="badge"></nuon-status>{{ end }}{{ end }}<nuon-label-badge label="version:{{ dig "ctl_api_version" "unknown" $api }}"></nuon-label-badge><nuon-label-badge label="git:{{ dig "ctl_api_git_ref" "unknown" $api }}"></nuon-label-badge><a href="https://api.{{ $public_domain }}/docs/index.html">Open ↗</a></nuon-group></summary>
 
 **Links**
 
-| Service | URL |
-|---|---|
-| CTL API | [api.{{ $public_domain }}](https://api.{{ $public_domain }}) |
+| Service    | URL                                                                |
+| ---------- | ------------------------------------------------------------------ |
+| CTL API    | [api.{{ $public_domain }}](https://api.{{ $public_domain }})       |
 | Runner API | [runner.{{ $public_domain }}](https://runner.{{ $public_domain }}) |
 
 **CLI**
@@ -54,14 +53,13 @@ nuon -f ~/.nuon.byoc login
 
 </details>
 
-
 <details>
 <summary><nuon-group gap="2" align="center" justify="start"><strong>Dashboard</strong>{{ $indicator := dig "alb-healthcheck-dashboard-ui" "indicator" "" $dashSteps }}{{ if eq $indicator "🟢" }}<nuon-status status="active" variant="badge"></nuon-status>{{ else if eq $indicator "🔴" }}<nuon-status status="error" variant="badge"></nuon-status>{{ else }}<nuon-status status="pending" variant="badge"></nuon-status>{{ end }}<nuon-label-badge label="version:{{ dig "dashboard_ui_version" "unknown" $dash }}"></nuon-label-badge><nuon-label-badge label="git:{{ dig "dashboard_ui_git_ref" "unknown" $dash }}"></nuon-label-badge><a href="https://app.{{ $public_domain }}">Open ↗</a></nuon-group></summary>
 
 **Links**
 
-| Service | URL |
-|---|---|
+| Service   | URL                                                          |
+| --------- | ------------------------------------------------------------ |
 | Dashboard | [app.{{ $public_domain }}](https://app.{{ $public_domain }}) |
 
 <nuon-action-card name="dashboard_status"></nuon-action-card>
@@ -73,9 +71,10 @@ nuon -f ~/.nuon.byoc login
 
 **Outputs**
 
-| Output | Value |
-|---|---|
-{{ range $key, $value := .nuon.install_stack.outputs }}| {{ $key }} | {{ $value }} |
+| Output                                                  | Value      |
+| ------------------------------------------------------- | ---------- | ------------ |
+| {{ range $key, $value := .nuon.install_stack.outputs }} | {{ $key }} | {{ $value }} |
+
 {{ end }}
 
 </details>
@@ -85,9 +84,10 @@ nuon -f ~/.nuon.byoc login
 
 **Outputs**
 
-| Output | Value |
-|---|---|
-{{ range $key, $value := dig "outputs" "cluster" (dict) .nuon.sandbox }}| {{ $key }} | {{ $value }} |
+| Output                                                                   | Value      |
+| ------------------------------------------------------------------------ | ---------- | ------------ |
+| {{ range $key, $value := dig "outputs" "cluster" (dict) .nuon.sandbox }} | {{ $key }} | {{ $value }} |
+
 {{ end }}
 
 **Accessing the EKS Cluster**
@@ -106,8 +106,8 @@ aws --region {{ .nuon.install_stack.outputs.region }} \
 </details>
 
 {{ with index .nuon.actions.workflows "temporal_status" }}
-{{ $data := dict }}{{ with .outputs }}{{ $data = . }}{{ end }}
-{{ if false }}
+{{ $data := dict }}{{ with .outputs }}{{ $data = . }}{{ end }} {{ if false }}
+
 <details>
 <summary><nuon-group gap="2" align="center" justify="start"><strong>Temporal Status</strong>{{ with index $.nuon.actions.workflows "healthcheck_temporal" }}{{ if eq .status "error" }}<nuon-status status="error" variant="badge"></nuon-status>{{ else if eq .status "finished" }}<nuon-status status="active" variant="badge"></nuon-status>{{ else }}<nuon-status status="pending" variant="badge"></nuon-status>{{ end }}{{ end }}</nuon-group></summary>
 
@@ -125,9 +125,10 @@ aws --region {{ .nuon.install_stack.outputs.region }} \
 <nuon-label-badge label="total:{{ $total }}"></nuon-label-badge>
 </nuon-group></div>
 
-| Workflow ID | Workflow Type | Started |
-|---|---|---|
-{{ range $i, $_ := until $count }}{{ $chunk := index $data (printf "ns_%s_chunk_%d" $ns $i) }}{{ range $chunk }}| {{ .workflow_id }} | {{ .workflow_type }} | {{ date "Jan 2, 2006 15:04 UTC" (toDate "2006-01-02T15:04:05.999999999Z07:00" .start_time) }} |
+| Workflow ID                                                                                                      | Workflow Type      | Started              |
+| ---------------------------------------------------------------------------------------------------------------- | ------------------ | -------------------- | --------------------------------------------------------------------------------------------- |
+| {{ range $i, $_ := until $count }}{{ $chunk := index $data (printf "ns_%s_chunk_%d" $ns $i) }}{{ range $chunk }} | {{ .workflow_id }} | {{ .workflow_type }} | {{ date "Jan 2, 2006 15:04 UTC" (toDate "2006-01-02T15:04:05.999999999Z07:00" .start_time) }} |
+
 {{ end }}{{ end }}
 
 </nuon-tab>
@@ -137,10 +138,6 @@ aws --region {{ .nuon.install_stack.outputs.region }} \
 </details>
 {{ end }}
 {{ end }}
-
-
-
-
 
 <details>
 <summary><strong>Status</strong></summary>
@@ -152,8 +149,7 @@ aws --region {{ .nuon.install_stack.outputs.region }} \
 <nuon-tabs>
   <nuon-tab name="runners">
 
-{{ $runners := dig "runners" (dict) $steps }}
-{{ $ownerNames := dict }}
+{{ $runners := dig "runners" (dict) $steps }} {{ $ownerNames := dict }}
 {{ range $_, $i := (dig "installs" (dict) $steps) }}{{ $ownerNames = set $ownerNames (dig "id" "" $i) (dig "name" "" $i) }}{{ end }}
 {{ range $_, $o := (dig "orgs" (dict) $steps) }}{{ $ownerNames = set $ownerNames (dig "id" "" $o) (dig "name" "" $o) }}{{ end }}
 {{ range $_, $a := (dig "apps" (dict) $steps) }}{{ $ownerNames = set $ownerNames (dig "id" "" $a) (dig "name" "" $a) }}{{ end }}
@@ -179,7 +175,7 @@ aws --region {{ .nuon.install_stack.outputs.region }} \
           {{ $ownerLabel := $ownerName }}{{ if not $ownerLabel }}{{ $ownerLabel = default "—" $ownerID }}{{ end }}
           {{ $runnerID := dig "id" "—" $runner }}
           {{ $processes := default (list) (dig "process_uptimes" nil $runner) }}
-          {{ $ownerProc := dict }}{{ range $p := $processes }}{{ $t := dig "type" "" $p }}{{ if or (eq $t "install") (eq $t "org") }}{{ $ownerProc = $p }}{{ end }}{{ end }}
+          {{ $ownerProc := dict }}{{ range $p := $processes }}{{ $t := dig "type" "" $p }}{{ if or (eq $t "install") (eq $t "build") }}{{ $ownerProc = $p }}{{ end }}{{ end }}
           <tr>
               <td><nuon-status status="{{ $status }}"></nuon-status></td>
               <td style="white-space:nowrap;">{{ $ownerLabel }}</td>
@@ -191,19 +187,19 @@ aws --region {{ .nuon.install_stack.outputs.region }} \
 
 <nuon-panel heading="Runner: {{ $ownerLabel }}" trigger="View" size="large">
 
-| Field | Value |
-| --- | --- |
-| Status | <nuon-status status="{{ $status }}" variant="badge"></nuon-status> |
-| Owner | {{ $ownerLabel }} |
-| Owner ID | `{{ $ownerID }}` |
-| Type | {{ dig "type" "—" $runner }} |
-| Platform | {{ dig "platform" "—" $runner }} |
-| Image | `{{ dig "image" "—" $runner }}:{{ dig "tag" "—" $runner }}` |
-| Runner ID | `{{ $runnerID }}` |
-| Latest Heartbeat | {{ with dig "latest_heart_beat_created_at" "" $runner }}{{ (printf "%sZ" (substr 0 19 .)) | toDate "2006-01-02T15:04:05Z" | date "Jan 2 15:04 UTC" }}{{ else }}—{{ end }} |
-| Latest Heartbeat Version | {{ with dig "latest_heart_beat_version" "" $runner }}<nuon-badge theme="info" size="sm" variant="code">{{ . }}</nuon-badge>{{ else }}—{{ end }} |
-| Latest Healthcheck | {{ with dig "latest_health_check_created_at" "" $runner }}{{ (printf "%sZ" (substr 0 19 .)) | toDate "2006-01-02T15:04:05Z" | date "Jan 2 15:04 UTC" }}{{ else }}—{{ end }} |
-| Latest Healthcheck Status | {{ with dig "latest_health_check_status" "" $runner }}<nuon-status status="{{ . }}" variant="badge"></nuon-status>{{ else }}—{{ end }} |
+| Field                     | Value                                                                                                                                           |
+| ------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------- | --------------------------------------------- |
+| Status                    | <nuon-status status="{{ $status }}" variant="badge"></nuon-status>                                                                              |
+| Owner                     | {{ $ownerLabel }}                                                                                                                               |
+| Owner ID                  | `{{ $ownerID }}`                                                                                                                                |
+| Type                      | {{ dig "type" "—" $runner }}                                                                                                                    |
+| Platform                  | {{ dig "platform" "—" $runner }}                                                                                                                |
+| Image                     | `{{ dig "image" "—" $runner }}:{{ dig "tag" "—" $runner }}`                                                                                     |
+| Runner ID                 | `{{ $runnerID }}`                                                                                                                               |
+| Latest Heartbeat          | {{ with dig "latest_heart_beat_created_at" "" $runner }}{{ (printf "%sZ" (substr 0 19 .))                                                       | toDate "2006-01-02T15:04:05Z" | date "Jan 2 15:04 UTC" }}{{ else }}—{{ end }} |
+| Latest Heartbeat Version  | {{ with dig "latest_heart_beat_version" "" $runner }}<nuon-badge theme="info" size="sm" variant="code">{{ . }}</nuon-badge>{{ else }}—{{ end }} |
+| Latest Healthcheck        | {{ with dig "latest_health_check_created_at" "" $runner }}{{ (printf "%sZ" (substr 0 19 .))                                                     | toDate "2006-01-02T15:04:05Z" | date "Jan 2 15:04 UTC" }}{{ else }}—{{ end }} |
+| Latest Healthcheck Status | {{ with dig "latest_health_check_status" "" $runner }}<nuon-status status="{{ . }}" variant="badge"></nuon-status>{{ else }}—{{ end }}          |
 
 {{ if gt (len $processes) 0 }}
 
@@ -240,6 +236,7 @@ aws --region {{ .nuon.install_stack.outputs.region }} \
           </tr>
       {{end}}
       </tbody>
+
   </table>
   {{ else }}
 
@@ -250,8 +247,7 @@ aws --region {{ .nuon.install_stack.outputs.region }} \
   </nuon-tab>
   <nuon-tab name="orgs">
 
-{{ $orgs := dig "orgs" (dict) $steps }}
-{{ if gt (len $orgs) 0 }}
+{{ $orgs := dig "orgs" (dict) $steps }} {{ if gt (len $orgs) 0 }}
 
   <table>
       <thead>
@@ -282,8 +278,7 @@ aws --region {{ .nuon.install_stack.outputs.region }} \
   </nuon-tab>
   <nuon-tab name="apps">
 
-{{ $apps := dig "apps" (dict) $steps }}
-{{ $orgsByID := dict }}
+{{ $apps := dig "apps" (dict) $steps }} {{ $orgsByID := dict }}
 {{ range $_, $o := (dig "orgs" (dict) $steps) }}{{ $orgsByID = set $orgsByID (dig "id" "" $o) (dig "name" "" $o) }}{{ end }}
 {{ if gt (len $apps) 0 }}
 
@@ -320,8 +315,7 @@ aws --region {{ .nuon.install_stack.outputs.region }} \
   </nuon-tab>
   <nuon-tab name="installs">
 
-{{ $installs := dig "installs" (dict) $steps }}
-{{ $appsByID := dict }}
+{{ $installs := dig "installs" (dict) $steps }} {{ $appsByID := dict }}
 {{ range $_, $a := (dig "apps" (dict) $steps) }}{{ $appsByID = set $appsByID (dig "id" "" $a) (dig "name" "" $a) }}{{ end }}
 {{ $installOrgsByID := dict }}
 {{ range $_, $o := (dig "orgs" (dict) $steps) }}{{ $installOrgsByID = set $installOrgsByID (dig "id" "" $o) (dig "name" "" $o) }}{{ end }}
@@ -369,10 +363,10 @@ aws --region {{ .nuon.install_stack.outputs.region }} \
 
 {{ else }}
 
-<nuon-banner theme="warn">Waiting on status_report action. Run the "status_report" action to populate this section.</nuon-banner>
+<nuon-banner theme="warn">Waiting on status_report action. Run the "status_report" action to populate this
+section.</nuon-banner>
 
-{{ end }}
-{{ end }}
+{{ end }} {{ end }}
 
 </details>
 
@@ -380,8 +374,7 @@ aws --region {{ .nuon.install_stack.outputs.region }} \
 <summary><strong>Workflows</strong></summary>
 
 {{ with (index (default dict .nuon.actions.workflows) "ctl_api_query_workflows_by_type") }}
-{{ $wfData := dict }}{{ with .outputs }}{{ $wfData = . }}{{ end }}
-{{ $wfRows := dig "workflows" (list) $wfData }}
+{{ $wfData := dict }}{{ with .outputs }}{{ $wfData = . }}{{ end }} {{ $wfRows := dig "workflows" (list) $wfData }}
 {{ if and .populated (eq .status "finished") (gt (len $wfRows) 0) }}
 
 <div style="padding-top: 1rem;"><nuon-group gap="8" align="center" justify="start">
@@ -425,31 +418,33 @@ aws --region {{ .nuon.install_stack.outputs.region }} \
 
 <nuon-panel heading="Workflow: {{ dig "workflow_name" (dig "workflow_id" "—" .) . }}" trigger="View" size="large">
 
-| Field | Value |
-| --- | --- |
-| Status | {{ if $status }}<nuon-status status="{{ $status }}" variant="badge"></nuon-status>{{ else }}—{{ end }} |
-| Name | {{ dig "workflow_name" "—" . }} |
-| Type | {{ dig "workflow_type" "—" . }} |
-| Workflow ID | `{{ dig "workflow_id" "—" . }}` |
-| Created By | {{ if $email }}{{ $email }}{{ else }}—{{ end }} |
-| Created By ID | {{ if $createdByID }}`{{ $createdByID }}`{{ else }}—{{ end }} |
-| Created By Subject | {{ default "—" (dig "created_by_subject" "" .) }} |
-| Created By Account Type | {{ default "—" (dig "created_by_account_type" "" .) }} |
-| Org | {{ if $orgName }}{{ $orgName }}{{ else }}—{{ end }} |
-| Org ID | {{ if $orgID }}`{{ $orgID }}`{{ else }}—{{ end }} |
-| Owner | {{ if $ownerName }}{{ $ownerName }}{{ else }}—{{ end }} |
-| Owner ID | {{ if $ownerID }}`{{ $ownerID }}`{{ else }}—{{ end }} |
-| Owner Type | {{ default "—" $ownerType }} |
-| Created At | {{ with dig "workflow_created_at" "" . }}{{ (printf "%sZ" (substr 0 19 .)) | toDate "2006-01-02T15:04:05Z" | date "Jan 2 15:04 UTC" }}{{ else }}—{{ end }} |
-| Updated At | {{ with dig "workflow_updated_at" "" . }}{{ (printf "%sZ" (substr 0 19 .)) | toDate "2006-01-02T15:04:05Z" | date "Jan 2 15:04 UTC" }}{{ else }}—{{ end }} |
-| Started At | {{ with dig "workflow_started_at" "" . }}{{ (printf "%sZ" (substr 0 19 .)) | toDate "2006-01-02T15:04:05Z" | date "Jan 2 15:04 UTC" }}{{ else }}—{{ end }} |
-| Finished At | {{ with dig "workflow_finished_at" "" . }}{{ (printf "%sZ" (substr 0 19 .)) | toDate "2006-01-02T15:04:05Z" | date "Jan 2 15:04 UTC" }}{{ else }}—{{ end }} |
+| Field                   | Value                                                                                                  |
+| ----------------------- | ------------------------------------------------------------------------------------------------------ | ----------------------------- | --------------------------------------------- |
+| Status                  | {{ if $status }}<nuon-status status="{{ $status }}" variant="badge"></nuon-status>{{ else }}—{{ end }} |
+| Name                    | {{ dig "workflow_name" "—" . }}                                                                        |
+| Type                    | {{ dig "workflow_type" "—" . }}                                                                        |
+| Workflow ID             | `{{ dig "workflow_id" "—" . }}`                                                                        |
+| Created By              | {{ if $email }}{{ $email }}{{ else }}—{{ end }}                                                        |
+| Created By ID           | {{ if $createdByID }}`{{ $createdByID }}`{{ else }}—{{ end }}                                          |
+| Created By Subject      | {{ default "—" (dig "created_by_subject" "" .) }}                                                      |
+| Created By Account Type | {{ default "—" (dig "created_by_account_type" "" .) }}                                                 |
+| Org                     | {{ if $orgName }}{{ $orgName }}{{ else }}—{{ end }}                                                    |
+| Org ID                  | {{ if $orgID }}`{{ $orgID }}`{{ else }}—{{ end }}                                                      |
+| Owner                   | {{ if $ownerName }}{{ $ownerName }}{{ else }}—{{ end }}                                                |
+| Owner ID                | {{ if $ownerID }}`{{ $ownerID }}`{{ else }}—{{ end }}                                                  |
+| Owner Type              | {{ default "—" $ownerType }}                                                                           |
+| Created At              | {{ with dig "workflow_created_at" "" . }}{{ (printf "%sZ" (substr 0 19 .))                             | toDate "2006-01-02T15:04:05Z" | date "Jan 2 15:04 UTC" }}{{ else }}—{{ end }} |
+| Updated At              | {{ with dig "workflow_updated_at" "" . }}{{ (printf "%sZ" (substr 0 19 .))                             | toDate "2006-01-02T15:04:05Z" | date "Jan 2 15:04 UTC" }}{{ else }}—{{ end }} |
+| Started At              | {{ with dig "workflow_started_at" "" . }}{{ (printf "%sZ" (substr 0 19 .))                             | toDate "2006-01-02T15:04:05Z" | date "Jan 2 15:04 UTC" }}{{ else }}—{{ end }} |
+| Finished At             | {{ with dig "workflow_finished_at" "" . }}{{ (printf "%sZ" (substr 0 19 .))                            | toDate "2006-01-02T15:04:05Z" | date "Jan 2 15:04 UTC" }}{{ else }}—{{ end }} |
 
 </nuon-panel>
 
       </td>
     </tr>
-  {{ end }}
+
+{{ end }}
+
   </tbody>
 </table>
 
@@ -459,12 +454,13 @@ aws --region {{ .nuon.install_stack.outputs.region }} \
 
 {{ else }}
 
-<nuon-banner theme="warn">Waiting on ctl_api_query_workflows_by_type action. Run it to populate this section.</nuon-banner>
+<nuon-banner theme="warn">Waiting on ctl_api_query_workflows_by_type action. Run it to populate this
+section.</nuon-banner>
 
-{{ end }}
-{{ else }}
+{{ end }} {{ else }}
 
-<nuon-banner theme="warn">Waiting on ctl_api_query_workflows_by_type action. Run it to populate this section.</nuon-banner>
+<nuon-banner theme="warn">Waiting on ctl_api_query_workflows_by_type action. Run it to populate this
+section.</nuon-banner>
 
 {{ end }}
 
