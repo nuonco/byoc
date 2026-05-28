@@ -1,0 +1,20 @@
+# action
+# description: scales deployments in a namespace to a target replica count.
+# Set REPLICAS to control target replicas (default 1).
+# Set NAMESPACE to target a namespace (default ctl-api).
+# Set FILTER to grep deployment names (optional).
+name    = "kubectl_scale_deployments"
+label   = "kubectl"
+timeout = "2m"
+
+[[triggers]]
+type = "manual"
+
+[[steps]]
+name            = "exec"
+inline_contents = "./src/kubectl/scale-deployments.sh"
+
+[steps.env_vars]
+REPLICAS  = "1"
+NAMESPACE = "ctl-api"
+FILTER    = ""

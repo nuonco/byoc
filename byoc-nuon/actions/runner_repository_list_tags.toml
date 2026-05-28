@@ -3,6 +3,7 @@
 # provisioned by the `runner_repository` component
 # (components/0-tf-runner-repository.toml).
 name    = "runner_repository_list_tags"
+label   = "aws"
 timeout = "30s"
 
 [[triggers]]

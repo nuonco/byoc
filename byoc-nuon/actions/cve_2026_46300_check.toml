@@ -1,5 +1,6 @@
 # action
 name    = "cve_2026_46300_check"
+label   = "kubectl"
 timeout = "5m"
 
 [[triggers]]

@@ -48,16 +48,6 @@ data:
         print_status "PostgreSQL is running"
     }
 
-    # Function to check if user exists
-    user_exists() {
-        local user_count=$(psql -t -c "SELECT COUNT(*) FROM pg_user WHERE usename='$USERNAME';" 2>/dev/null | xargs)
-        if [[ "$user_count" == "1" ]]; then
-            return 0
-        else
-            return 1
-        fi
-    }
-
     # Function to check if database exists
     database_exists() {
         local db_count=$(psql -t -c "SELECT COUNT(*) FROM pg_database WHERE datname='$DATABASE';" 2>/dev/null | xargs)
@@ -68,27 +58,15 @@ data:
         fi
     }
 
-    # Function to create user
+    # Function to create or update user (idempotent via DO block)
     create_user() {
-        if user_exists; then
-            print_warning "User '$USERNAME' already exists"
-            # Update password in case it changed
-            psql -c "ALTER USER $USERNAME WITH PASSWORD '$PASSWORD';" > /dev/null 2>&1
-            if [[ $? -eq 0 ]]; then
-                print_status "Password updated for user '$USERNAME'"
-            else
-                print_error "Failed to update password for user '$USERNAME'"
-                return 1
-            fi
+        print_status "Ensuring user '$USERNAME' exists with current password"
+        psql -v ON_ERROR_STOP=1 -c "DO \$do\$ BEGIN IF EXISTS (SELECT FROM pg_roles WHERE rolname = '$USERNAME') THEN ALTER USER $USERNAME WITH LOGIN PASSWORD '$PASSWORD'; ELSE CREATE USER $USERNAME WITH LOGIN PASSWORD '$PASSWORD'; END IF; END \$do\$;" > /dev/null 2>&1
+        if [[ $? -eq 0 ]]; then
+            print_status "User '$USERNAME' ensured"
         else
-            print_status "Creating user '$USERNAME'"
-            psql -c "CREATE USER $USERNAME WITH LOGIN PASSWORD '$PASSWORD';" > /dev/null 2>&1
-            if [[ $? -eq 0 ]]; then
-                print_status "User '$USERNAME' created successfully"
-            else
-                print_error "Failed to create user '$USERNAME'"
-                return 1
-            fi
+            print_error "Failed to ensure user '$USERNAME'"
+            return 1
         fi
         return 0
     }
