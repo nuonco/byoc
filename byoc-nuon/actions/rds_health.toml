@@ -16,21 +16,45 @@ set -e
 set -o pipefail
 set -u
 
-# map DB_TARGET to the right component outputs
+# map DB_TARGET to identifier prefix
 case "$DB_TARGET" in
-  ctl-api)
-    db_identifier="$DB_ID_CTL_API"
-    db_resource_id="$DB_RESOURCE_ID_CTL_API"
-    ;;
-  temporal)
-    db_identifier="$DB_ID_TEMPORAL"
-    db_resource_id="$DB_RESOURCE_ID_TEMPORAL"
-    ;;
+  ctl-api)  prefix="nuon-" ;;
+  temporal) prefix="temporal-" ;;
   *)
     echo >&2 "error: DB_TARGET must be 'ctl-api' or 'temporal', got '${DB_TARGET}'"
     exit 1
     ;;
 esac
+
+# use env vars if set (Nuon-deployed path), otherwise discover via AWS CLI
+if [ "$DB_TARGET" = "ctl-api" ] && [ -n "${DB_ID_CTL_API:-}" ]; then
+  db_identifier="$DB_ID_CTL_API"
+  db_resource_id="${DB_RESOURCE_ID_CTL_API:-}"
+elif [ "$DB_TARGET" = "temporal" ] && [ -n "${DB_ID_TEMPORAL:-}" ]; then
+  db_identifier="$DB_ID_TEMPORAL"
+  db_resource_id="${DB_RESOURCE_ID_TEMPORAL:-}"
+else
+  echo >&2 "discovering RDS instance via AWS CLI (prefix=${prefix}, install_id=${INSTALL_ID:-any})..."
+  discover_json=$(aws rds describe-db-instances --output json \
+    --query 'DBInstances[*].{id:DBInstanceIdentifier,rid:DbiResourceId}')
+
+  if [ -n "${INSTALL_ID:-}" ]; then
+    match=$(echo "$discover_json" | jq -r --arg exact "${prefix}${INSTALL_ID}" \
+      '.[] | select(.id == $exact) | @json' | head -1)
+  else
+    match=$(echo "$discover_json" | jq -r --arg pfx "$prefix" \
+      '.[] | select(.id | startswith($pfx)) | @json' | head -1)
+  fi
+
+  if [ -z "$match" ]; then
+    echo >&2 "error: no RDS instance found with prefix '${prefix}'"
+    [ -n "${INSTALL_ID:-}" ] && echo >&2 "  (filtered by INSTALL_ID=${INSTALL_ID})"
+    exit 1
+  fi
+
+  db_identifier=$(echo "$match" | jq -r '.id')
+  db_resource_id=$(echo "$match" | jq -r '.rid')
+fi
 
 echo >&2 "fetching RDS health for ${DB_TARGET} (instance: ${db_identifier})"
 
@@ -155,6 +179,7 @@ echo "$results" >> "$NUON_ACTIONS_OUTPUT_FILEPATH"
 
 [steps.env_vars]
 DB_TARGET = "temporal"
+INSTALL_ID = "{{ .nuon.install.id }}"
 DB_ID_CTL_API = "{{ .nuon.components.rds_cluster_nuon.outputs.db_instance_name }}"
 DB_RESOURCE_ID_CTL_API = "{{ .nuon.components.rds_cluster_nuon.outputs.db_instance_resource_id }}"
 DB_ID_TEMPORAL = "{{ .nuon.components.rds_cluster_temporal.outputs.db_instance_name }}"
