@@ -1,0 +1,246 @@
+Description: >-
+  Cross-account read-only access for BYOC Nuon installs. When InstallReadOnlyRoleArn
+  is provided, creates a scoped role assumable by that ARN with full access to the
+  install's RDS clusters and snapshots, AWS-managed CloudWatch read-only, and an
+  explicit deny on SecretsManager. When InstallReadOnlyEnableClusterAccess is true
+  and the EKS cluster exists, also creates an AccessEntry granting the role
+  ClusterAdmin and EKSAdmin on the cluster (cluster name is derived as
+  "n-{NuonInstallID}" per the byoc-nuon convention). Omit InstallReadOnlyRoleArn
+  to disable the whole stack.
+
+  Parameter names match the auto-hoisted install input names exactly
+  ("Install" + camelCase(input name)) so ctl-api wires them via Ref to the
+  parent stack's hoisted parameters instead of baking the resolved values in
+  as literals. That lets console edits to the parent params propagate.
+
+Parameters:
+  InstallReadOnlyRoleArn:
+    Description: The customer-owned role ARN to grant cross-account access to. Leave empty to disable this stack.
+    Type: String
+    Default: ""
+
+  InstallReadOnlyEnableClusterAccess:
+    # "" is accepted because the ctl-api resolves a missing install input to ""
+    # instead of falling back to the input's toml-level default. The
+    # EnableEKSAccess condition treats anything other than "true" as disabled,
+    # so "" behaves the same as "false".
+    Description: If "true", create EKS access entries on the cluster. Only enable after the cluster exists.
+    Type: String
+    Default: "false"
+    AllowedValues:
+      - ""
+      - "true"
+      - "false"
+
+  NuonInstallID:
+    Description: The Nuon Install ID; prefixed to resource names.
+    Type: String
+
+  NuonOrgID:
+    Description: The Nuon Org ID. Used in tags.
+    Type: String
+
+  NuonAppID:
+    Description: The Nuon App ID. Used in tags.
+    Type: String
+
+Conditions:
+  EnableStack: !Not [!Equals [!Ref InstallReadOnlyRoleArn, ""]]
+  EnableEKSAccess: !And
+    - !Condition EnableStack
+    - !Equals [!Ref InstallReadOnlyEnableClusterAccess, "true"]
+
+Resources:
+  # Anchor resource so the stack is valid even when disabled (no other resources created).
+  StackEnabledMarker:
+    Type: AWS::CloudFormation::WaitConditionHandle
+
+  PermissionBoundary:
+    Type: AWS::IAM::ManagedPolicy
+    Condition: EnableStack
+    Properties:
+      ManagedPolicyName: !Sub ${NuonInstallID}-ReadOnlyAccess-boundary
+      Description: !Sub "Permission boundary for ${NuonInstallID}-ReadOnlyAccess breakglass role."
+      PolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Sid: RDSDescribeAll
+            Effect: Allow
+            Action:
+              - rds:Describe*
+              - rds:List*
+            Resource: "*"
+          - Sid: RDSFullOnInstallTagged
+            Effect: Allow
+            Action: rds:*
+            Resource:
+              - !Sub arn:aws:rds:*:${AWS::AccountId}:cluster:*
+              - !Sub arn:aws:rds:*:${AWS::AccountId}:cluster-snapshot:*
+              - !Sub arn:aws:rds:*:${AWS::AccountId}:snapshot:*
+              - !Sub arn:aws:rds:*:${AWS::AccountId}:db:*
+            Condition:
+              StringEquals:
+                aws:ResourceTag/install.nuon.co/id: !Ref NuonInstallID
+          - Sid: EKSDescribeList
+            Effect: Allow
+            Action:
+              - eks:Describe*
+              - eks:List*
+            Resource: "*"
+          - Sid: EKSAccessKubernetesApi
+            Effect: Allow
+            Action: eks:AccessKubernetesApi
+            # Cluster name follows the byoc-nuon convention "n-{install_id}". The
+            # ClusterName CFN param can't be passed in from the parent stack today
+            # (ctl-api doesn't auto-inject it into custom nested stacks).
+            Resource: !Sub arn:aws:eks:*:${AWS::AccountId}:cluster/n-${NuonInstallID}
+          - Sid: CloudWatchReadOnly
+            Effect: Allow
+            Action:
+              - cloudwatch:Describe*
+              - cloudwatch:Get*
+              - cloudwatch:List*
+              - logs:Describe*
+              - logs:Get*
+              - logs:List*
+              - logs:FilterLogEvents
+              - logs:StartQuery
+              - logs:StopQuery
+              - logs:TestMetricFilter
+            Resource: "*"
+          - Sid: DenySecretsManager
+            Effect: Deny
+            Action: secretsmanager:*
+            Resource: "*"
+
+  RDSAccessPolicy:
+    Type: AWS::IAM::ManagedPolicy
+    Condition: EnableStack
+    Properties:
+      ManagedPolicyName: !Sub ${NuonInstallID}-ReadOnlyAccess-rds
+      Description: !Sub "Grants ${NuonInstallID}-ReadOnlyAccess full RDS access on install-tagged clusters and snapshots."
+      PolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Sid: RDSDescribeAll
+            Effect: Allow
+            Action:
+              - rds:Describe*
+              - rds:List*
+            Resource: "*"
+          - Sid: RDSFullOnInstallTagged
+            Effect: Allow
+            Action: rds:*
+            Resource:
+              - !Sub arn:aws:rds:*:${AWS::AccountId}:cluster:*
+              - !Sub arn:aws:rds:*:${AWS::AccountId}:cluster-snapshot:*
+              - !Sub arn:aws:rds:*:${AWS::AccountId}:snapshot:*
+              - !Sub arn:aws:rds:*:${AWS::AccountId}:db:*
+            Condition:
+              StringEquals:
+                aws:ResourceTag/install.nuon.co/id: !Ref NuonInstallID
+
+  DenySecretsManagerPolicy:
+    Type: AWS::IAM::ManagedPolicy
+    Condition: EnableStack
+    Properties:
+      ManagedPolicyName: !Sub ${NuonInstallID}-ReadOnlyAccess-deny-secrets
+      Description: !Sub "Defense-in-depth deny on secretsmanager:* for ${NuonInstallID}-ReadOnlyAccess."
+      PolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Sid: DenySecretsManager
+            Effect: Deny
+            Action: secretsmanager:*
+            Resource: "*"
+
+  EKSAccessPolicy:
+    Type: AWS::IAM::ManagedPolicy
+    Condition: EnableEKSAccess
+    Properties:
+      ManagedPolicyName: !Sub ${NuonInstallID}-ReadOnlyAccess-eks
+      Description: !Sub "EKS describe + kube-API access on cluster n-${NuonInstallID} for ${NuonInstallID}-ReadOnlyAccess."
+      PolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Sid: EKSDescribeOnInstallCluster
+            Effect: Allow
+            # Describe* covers DescribeCluster (needed by `aws eks update-kubeconfig`),
+            # DescribeAccessEntry / DescribeAccessPolicy (diagnostics), etc.
+            Action: eks:Describe*
+            Resource: !Sub arn:aws:eks:*:${AWS::AccountId}:cluster/n-${NuonInstallID}
+          - Sid: EKSListAll
+            Effect: Allow
+            # List actions don't support resource-level conditions; they apply to the account.
+            Action: eks:List*
+            Resource: "*"
+          - Sid: EKSAccessKubernetesApi
+            Effect: Allow
+            # IAM-side auth check used by the EKS Authenticator. Kubernetes-side RBAC
+            # is controlled separately by the EKSAccessEntry resource below.
+            Action: eks:AccessKubernetesApi
+            Resource: !Sub arn:aws:eks:*:${AWS::AccountId}:cluster/n-${NuonInstallID}
+
+  ReadOnlyRole:
+    Type: AWS::IAM::Role
+    Condition: EnableStack
+    Properties:
+      RoleName: !Sub ${NuonInstallID}-ReadOnlyAccess
+      Description: !Sub "Cross-account read-only breakglass role for ${NuonInstallID}."
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal:
+              AWS: !Ref InstallReadOnlyRoleArn
+            Action: sts:AssumeRole
+      PermissionsBoundary: !Ref PermissionBoundary
+      ManagedPolicyArns:
+        - !Ref RDSAccessPolicy
+        - !Ref DenySecretsManagerPolicy
+        - arn:aws:iam::aws:policy/CloudWatchReadOnlyAccess
+        # EKSAccessPolicy is conditional — only attached when EnableEKSAccess is true,
+        # matching the EKSAccessEntry resource's gating.
+        - !If [EnableEKSAccess, !Ref EKSAccessPolicy, !Ref "AWS::NoValue"]
+      Tags:
+        - Key: Name
+          Value: !Sub ${NuonInstallID}-ReadOnlyAccess
+        - Key: install.nuon.co/id
+          Value: !Ref NuonInstallID
+        - Key: org.nuon.co/id
+          Value: !Ref NuonOrgID
+        - Key: app.nuon.co/id
+          Value: !Ref NuonAppID
+        - Key: role
+          Value: breakglass
+
+  EKSAccessEntry:
+    Type: AWS::EKS::AccessEntry
+    Condition: EnableEKSAccess
+    Properties:
+      ClusterName: !Sub n-${NuonInstallID}
+      PrincipalArn: !GetAtt ReadOnlyRole.Arn
+      Type: STANDARD
+      AccessPolicies:
+        - PolicyArn: arn:aws:eks::aws:cluster-access-policy/AmazonEKSClusterAdminPolicy
+          AccessScope:
+            Type: cluster
+        - PolicyArn: arn:aws:eks::aws:cluster-access-policy/AmazonEKSAdminPolicy
+          AccessScope:
+            Type: cluster
+      Tags:
+        - Key: install.nuon.co/id
+          Value: !Ref NuonInstallID
+        - Key: org.nuon.co/id
+          Value: !Ref NuonOrgID
+        - Key: app.nuon.co/id
+          Value: !Ref NuonAppID
+        - Key: role
+          Value: breakglass
+
+Outputs:
+  # Unconditional so the parent stack's PhoneHomeProps custom resource can always
+  # Fn::GetAtt this output. Returns "" when the stack is disabled.
+  RoleARN:
+    Description: The ARN of the read-only role. Empty string when the stack is disabled.
+    Value: !If [EnableStack, !GetAtt ReadOnlyRole.Arn, ""]

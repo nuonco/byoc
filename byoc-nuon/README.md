@@ -71,9 +71,10 @@ nuon -f ~/.nuon.byoc login
 
 **Outputs**
 
-| Output | Value |
-| ------ | ----- |
-{{ range $key, $value := .nuon.install_stack.outputs }}| {{ $key }} | {{ $value }} |
+| Output                                                  | Value      |
+| ------------------------------------------------------- | ---------- | ------------ |
+| {{ range $key, $value := .nuon.install_stack.outputs }} | {{ $key }} | {{ $value }} |
+
 {{ end }}
 
 </details>
@@ -83,9 +84,10 @@ nuon -f ~/.nuon.byoc login
 
 **Outputs**
 
-| Output | Value |
-| ------ | ----- |
-{{ range $key, $value := dig "outputs" "cluster" (dict) .nuon.sandbox }}| {{ $key }} | {{ $value }} |
+| Output                                                                   | Value      |
+| ------------------------------------------------------------------------ | ---------- | ------------ |
+| {{ range $key, $value := dig "outputs" "cluster" (dict) .nuon.sandbox }} | {{ $key }} | {{ $value }} |
+
 {{ end }}
 
 **Accessing the EKS Cluster**
@@ -102,6 +104,118 @@ aws --region {{ .nuon.install_stack.outputs.region }} \
 </pre>
 
 </details>
+
+{{ $roRoleArn := dig "custom_nested_stacks" "byoc_nuon_read_only_access" "outputs" "RoleARN" "" .nuon.install_stack.outputs }}
+{{ if $roRoleArn }} {{ $vendorRoleArn := dig "read_only_role_arn" "&lt;your-vendor-role-arn&gt;" $inputs }}
+{{ $clusterName := dig "outputs" "cluster" "name" (printf "n-%s" .nuon.install.id) .nuon.sandbox }}
+{{ $rdsNuon := printf "nuon-%s" .nuon.install.id }} {{ $rdsTemporal := printf "temporal-%s" .nuon.install.id }}
+
+<details>
+<summary><nuon-group gap="2" align="center" justify="start"><strong>BreakGlass-ReadOnly</strong><nuon-status status="active" variant="badge"></nuon-status><nuon-label-badge label="region:{{ $region }}"></nuon-label-badge></nuon-group></summary>
+
+This install has a cross-account read-only break-glass role provisioned. A vendor-owned role can assume it for RDS
+metrics inspection, CloudWatch read access, and (when EKS access is enabled) cluster admin via the EKS access entry.
+
+<!-- prettier-ignore-start -->
+> [!WARNING]
+> SecretsManager is explicitly denied.
+<!-- prettier-ignore-end -->
+
+**Outputs**
+
+| Output  | Value              |
+| ------- | ------------------ |
+| RoleARN | `{{ $roRoleArn }}` |
+
+**Assume the role**
+
+The read-only role trusts the vendor role. Assume the vendor role first, then chain into this install role:
+
+<pre>
+./scripts/install-shell.sh \
+  {{ $vendorRoleArn }} \
+  {{ $roRoleArn }}
+</pre>
+
+All commands below assume you are in that role's session.
+
+**Cluster kubeconfig (EKS admin)**
+
+Generate a kubeconfig for the cluster. This requires `read_only_enable_cluster_access=true` so the EKS access entry
+(AmazonEKSClusterAdminPolicy + AmazonEKSAdminPolicy) exists:
+
+<pre>
+aws --region {{ $region }} eks update-kubeconfig \
+    --name {{ $clusterName }} \
+    --alias {{ $clusterName }}-readonly
+
+kubectl --context {{ $clusterName }}-readonly get nodes
+kubectl --context {{ $clusterName }}-readonly top nodes
+</pre>
+
+**RDS diagnostics**
+
+Two Aurora PostgreSQL clusters back this install:
+
+| Purpose  | Cluster Identifier   |
+| -------- | -------------------- |
+| ctl-api  | `{{ $rdsNuon }}`     |
+| temporal | `{{ $rdsTemporal }}` |
+
+Describe the clusters and their instances, and surface recent failure/maintenance events:
+
+<pre>
+for CLUSTER in {{ $rdsNuon }} {{ $rdsTemporal }}; do
+  echo "=== $CLUSTER ==="
+  aws --region {{ $region }} rds describe-db-clusters \
+      --db-cluster-identifier "$CLUSTER" \
+      --query 'DBClusters[0].{Status:Status,Engine:EngineVersion,Members:DBClusterMembers[].DBInstanceIdentifier,AllocatedStorage:AllocatedStorage}'
+
+  aws --region {{ $region }} rds describe-events \
+      --source-identifier "$CLUSTER" --source-type db-cluster --duration 1440 \
+      --query 'Events[].{Date:Date,Message:Message}'
+done
+</pre>
+
+Pull the key disk/memory/CPU pressure metrics from CloudWatch. `VolumeBytesUsed` is cluster-level (the shared Aurora
+volume); `FreeLocalStorage`, `FreeableMemory`, `CPUUtilization`, and `DatabaseConnections` are per-instance:
+
+<pre>
+# portable: macOS (-v) or GNU (-d) date
+START=$(date -u -v-3H +%FT%TZ 2>/dev/null || date -u -d '3 hours ago' +%FT%TZ)
+END=$(date -u +%FT%TZ)
+
+for CLUSTER in {{ $rdsNuon }} {{ $rdsTemporal }}; do
+  echo "=== $CLUSTER : cluster volume ==="
+  aws --region {{ $region }} cloudwatch get-metric-statistics \
+      --namespace AWS/RDS --metric-name VolumeBytesUsed \
+      --dimensions Name=DBClusterIdentifier,Value="$CLUSTER" \
+      --start-time "$START" --end-time "$END" --period 300 --statistics Maximum \
+      --query 'sort_by(Datapoints,&Timestamp)[-1]'
+
+  for INSTANCE in $(aws --region {{ $region }} rds describe-db-clusters \
+      --db-cluster-identifier "$CLUSTER" \
+      --query 'DBClusters[0].DBClusterMembers[].DBInstanceIdentifier' --output text); do
+    echo "=== $CLUSTER / $INSTANCE : instance pressure ==="
+    for METRIC in FreeLocalStorage FreeableMemory CPUUtilization DatabaseConnections ReadIOPS WriteIOPS; do
+      printf '%-22s ' "$METRIC"
+      aws --region {{ $region }} cloudwatch get-metric-statistics \
+          --namespace AWS/RDS --metric-name "$METRIC" \
+          --dimensions Name=DBInstanceIdentifier,Value="$INSTANCE" \
+          --start-time "$START" --end-time "$END" --period 300 \
+          --statistics Average Minimum Maximum \
+          --query 'sort_by(Datapoints,&Timestamp)[-1].{Avg:Average,Min:Minimum,Max:Maximum}' --output text
+    done
+  done
+done
+</pre>
+
+<nuon-banner theme="info">`FreeLocalStorage` and `FreeableMemory` are reported in bytes. A sustained drop in
+`FreeLocalStorage` toward zero is the clearest disk-pressure signal for an Aurora instance; the shared cluster volume
+(`VolumeBytesUsed`) auto-scales and rarely pressures.</nuon-banner>
+
+</details>
+{{ end }}
 
 {{ with index .nuon.actions.workflows "temporal_status" }}
 {{ $data := dict }}{{ with .outputs }}{{ $data = . }}{{ end }} {{ if false }}

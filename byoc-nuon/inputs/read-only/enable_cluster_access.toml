@@ -1,0 +1,8 @@
+name              = "read_only_enable_cluster_access"
+description       = "If true, grant the read-only role ClusterAdmin and EKSAdmin on the install's EKS cluster. Only enable after the cluster exists — leave false on initial install."
+default           = "false"
+display_name      = "Enable EKS Cluster Access"
+group             = "read-only"
+type              = "bool"
+required          = false
+user_configurable = true
