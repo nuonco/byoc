@@ -187,8 +187,11 @@ aws --region {{ .nuon.install_stack.outputs.region }} \
 
 <nuon-panel heading="Runner: {{ $ownerLabel }}" trigger="View" size="large">
 
+{{ $heartbeatAt := "—" }}{{ with dig "latest_heart_beat_created_at" "" $runner }}{{ $heartbeatAt = ((printf "%sZ" (substr 0 19 .)) | toDate "2006-01-02T15:04:05Z" | date "Jan 2 15:04 UTC") }}{{ end }}
+{{ $healthcheckAt := "—" }}{{ with dig "latest_health_check_created_at" "" $runner }}{{ $healthcheckAt = ((printf "%sZ" (substr 0 19 .)) | toDate "2006-01-02T15:04:05Z" | date "Jan 2 15:04 UTC") }}{{ end }}
+
 | Field                     | Value                                                                                                                                           |
-| ------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------- | --------------------------------------------- |
+| ------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------- |
 | Status                    | <nuon-status status="{{ $status }}" variant="badge"></nuon-status>                                                                              |
 | Owner                     | {{ $ownerLabel }}                                                                                                                               |
 | Owner ID                  | `{{ $ownerID }}`                                                                                                                                |
@@ -196,9 +199,9 @@ aws --region {{ .nuon.install_stack.outputs.region }} \
 | Platform                  | {{ dig "platform" "—" $runner }}                                                                                                                |
 | Image                     | `{{ dig "image" "—" $runner }}:{{ dig "tag" "—" $runner }}`                                                                                     |
 | Runner ID                 | `{{ $runnerID }}`                                                                                                                               |
-| Latest Heartbeat          | {{ with dig "latest_heart_beat_created_at" "" $runner }}{{ (printf "%sZ" (substr 0 19 .))                                                       | toDate "2006-01-02T15:04:05Z" | date "Jan 2 15:04 UTC" }}{{ else }}—{{ end }} |
+| Latest Heartbeat          | {{ $heartbeatAt }}                                                                                                                              |
 | Latest Heartbeat Version  | {{ with dig "latest_heart_beat_version" "" $runner }}<nuon-badge theme="info" size="sm" variant="code">{{ . }}</nuon-badge>{{ else }}—{{ end }} |
-| Latest Healthcheck        | {{ with dig "latest_health_check_created_at" "" $runner }}{{ (printf "%sZ" (substr 0 19 .))                                                     | toDate "2006-01-02T15:04:05Z" | date "Jan 2 15:04 UTC" }}{{ else }}—{{ end }} |
+| Latest Healthcheck        | {{ $healthcheckAt }}                                                                                                                            |
 | Latest Healthcheck Status | {{ with dig "latest_health_check_status" "" $runner }}<nuon-status status="{{ . }}" variant="badge"></nuon-status>{{ else }}—{{ end }}          |
 
 {{ if gt (len $processes) 0 }}
@@ -418,8 +421,13 @@ section.</nuon-banner>
 
 <nuon-panel heading="Workflow: {{ dig "workflow_name" (dig "workflow_id" "—" .) . }}" trigger="View" size="large">
 
+{{ $wfCreatedAt := "—" }}{{ with dig "workflow_created_at" "" . }}{{ $wfCreatedAt = ((printf "%sZ" (substr 0 19 .)) | toDate "2006-01-02T15:04:05Z" | date "Jan 2 15:04 UTC") }}{{ end }}
+{{ $wfUpdatedAt := "—" }}{{ with dig "workflow_updated_at" "" . }}{{ $wfUpdatedAt = ((printf "%sZ" (substr 0 19 .)) | toDate "2006-01-02T15:04:05Z" | date "Jan 2 15:04 UTC") }}{{ end }}
+{{ $wfStartedAt := "—" }}{{ with dig "workflow_started_at" "" . }}{{ $wfStartedAt = ((printf "%sZ" (substr 0 19 .)) | toDate "2006-01-02T15:04:05Z" | date "Jan 2 15:04 UTC") }}{{ end }}
+{{ $wfFinishedAt := "—" }}{{ with dig "workflow_finished_at" "" . }}{{ $wfFinishedAt = ((printf "%sZ" (substr 0 19 .)) | toDate "2006-01-02T15:04:05Z" | date "Jan 2 15:04 UTC") }}{{ end }}
+
 | Field                   | Value                                                                                                  |
-| ----------------------- | ------------------------------------------------------------------------------------------------------ | ----------------------------- | --------------------------------------------- |
+| ----------------------- | ------------------------------------------------------------------------------------------------------ |
 | Status                  | {{ if $status }}<nuon-status status="{{ $status }}" variant="badge"></nuon-status>{{ else }}—{{ end }} |
 | Name                    | {{ dig "workflow_name" "—" . }}                                                                        |
 | Type                    | {{ dig "workflow_type" "—" . }}                                                                        |
@@ -433,10 +441,10 @@ section.</nuon-banner>
 | Owner                   | {{ if $ownerName }}{{ $ownerName }}{{ else }}—{{ end }}                                                |
 | Owner ID                | {{ if $ownerID }}`{{ $ownerID }}`{{ else }}—{{ end }}                                                  |
 | Owner Type              | {{ default "—" $ownerType }}                                                                           |
-| Created At              | {{ with dig "workflow_created_at" "" . }}{{ (printf "%sZ" (substr 0 19 .))                             | toDate "2006-01-02T15:04:05Z" | date "Jan 2 15:04 UTC" }}{{ else }}—{{ end }} |
-| Updated At              | {{ with dig "workflow_updated_at" "" . }}{{ (printf "%sZ" (substr 0 19 .))                             | toDate "2006-01-02T15:04:05Z" | date "Jan 2 15:04 UTC" }}{{ else }}—{{ end }} |
-| Started At              | {{ with dig "workflow_started_at" "" . }}{{ (printf "%sZ" (substr 0 19 .))                             | toDate "2006-01-02T15:04:05Z" | date "Jan 2 15:04 UTC" }}{{ else }}—{{ end }} |
-| Finished At             | {{ with dig "workflow_finished_at" "" . }}{{ (printf "%sZ" (substr 0 19 .))                            | toDate "2006-01-02T15:04:05Z" | date "Jan 2 15:04 UTC" }}{{ else }}—{{ end }} |
+| Created At              | {{ $wfCreatedAt }}                                                                                     |
+| Updated At              | {{ $wfUpdatedAt }}                                                                                     |
+| Started At              | {{ $wfStartedAt }}                                                                                     |
+| Finished At             | {{ $wfFinishedAt }}                                                                                    |
 
 </nuon-panel>
 
