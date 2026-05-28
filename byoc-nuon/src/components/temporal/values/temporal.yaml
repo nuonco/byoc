@@ -61,10 +61,10 @@ server:
       - value: 10000
         constraints: {}
     history.rps:
-      - value: 25000
+      - value: 40000
         constraints: {}
     history.namespaceRPS:
-      - value: 25000
+      - value: 40000
         constraints: {}
     history.maxNamespaceRPSPerInstance:
       - value: 20000
