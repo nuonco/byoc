@@ -1,0 +1,20 @@
+# action
+# description: temporal hard-reset step 10 — cancels still-active runner_jobs rows
+# whose type is shut-down / mng-shut-down / mng-vm-shut-down.
+name    = "temporal_hard_reset_cancel_shutdown_runner_jobs"
+timeout = "5m"
+
+[[triggers]]
+type = "manual"
+
+[[steps]]
+name            = "Cancel shutdown runner jobs"
+inline_contents = "./src/ctl-api/cancel-shutdown-runner-jobs.sh"
+
+[steps.env_vars]
+DB_USER    = "{{ .nuon.components.rds_cluster_nuon.outputs.db_instance_username }}"
+DB_NAME    = "ctl_api"
+SECRET_ARN = "{{ .nuon.components.rds_cluster_nuon.outputs.db_instance_master_user_secret_arn }}"
+DB_ADDR    = "{{ .nuon.components.rds_cluster_nuon.outputs.address }}"
+DB_PORT    = "5432"
+REGION     = "{{ .nuon.install_stack.outputs.region }}"
