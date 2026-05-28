@@ -243,9 +243,9 @@ worker:
         - name: TEMPORAL_MAX_CONCURRENT_WORKFLOW_TASK_EXECUTION_SIZE
           value: "10000"
         - name: TEMPORAL_MAX_CONCURRENT_ACTIVITY_TASK_POLLERS
-          value: "500"
+          value: "100"
         - name: TEMPORAL_MAX_CONCURRENT_WORKFLOW_TASK_POLLERS
-          value: "250"
+          value: "100"
         - name: DB_MAX_CONNECTIONS
           value: "15"
         - name: TEMPORAL_STICKY_WORKFLOW_CACHE_SIZE
