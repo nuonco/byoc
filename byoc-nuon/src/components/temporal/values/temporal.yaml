@@ -81,7 +81,7 @@ server:
           driver: postgres12
           maxConnLifetime: 1h
           maxConns: 100
-          maxIdleConns: 20
+          maxIdleConns: 30
           maxQPS: 50000
       visibility:
         driver: sql
@@ -90,5 +90,5 @@ server:
           driver: postgres12
           maxConnLifetime: 1h
           maxConns: 100
-          maxIdleConns: 20
+          maxIdleConns: 30
           maxQPS: 50000
