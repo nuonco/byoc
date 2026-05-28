@@ -58,16 +58,16 @@ server:
         constraints: {}
     
     history.persistenceMaxQPS:
-      - value: 10000
+      - value: 40000
         constraints: {}
     history.rps:
-      - value: 40000
+      - value: 80000
         constraints: {}
     history.namespaceRPS:
-      - value: 40000
+      - value: 80000
         constraints: {}
     history.maxNamespaceRPSPerInstance:
-      - value: 20000
+      - value: 80000
         constraints: {}
   config:
     prometheus:
@@ -80,15 +80,15 @@ server:
           database: temporal
           driver: postgres12
           maxConnLifetime: 1h
-          maxConns: 40
+          maxConns: 100
           maxIdleConns: 20
-          maxQPS: 10000
+          maxQPS: 50000
       visibility:
         driver: sql
         sql:
           database: temporal_visibility
           driver: postgres12
           maxConnLifetime: 1h
-          maxConns: 40
+          maxConns: 100
           maxIdleConns: 20
-          maxQPS: 10000
+          maxQPS: 50000
