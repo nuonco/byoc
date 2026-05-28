@@ -1,5 +1,6 @@
 # action
 name    = "ctl_api_query_workflows_by_type"
+label   = "query"
 timeout = "5m"
 
 [[triggers]]

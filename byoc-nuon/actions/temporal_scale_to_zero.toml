@@ -1,0 +1,30 @@
+# action
+# description: scales all Temporal server deployments to zero replicas.
+# Set SCALE_TARGET to control replicas (0 to scale down, or a number to scale back up).
+name    = "temporal-scale-down"
+label   = "kubectl"
+timeout = "1m"
+
+[[triggers]]
+type = "manual"
+
+[[steps]]
+name = "scale temporal"
+inline_contents = """
+#!/usr/bin/env bash
+set -euo pipefail
+
+SERVICES="temporal-frontend temporal-history temporal-matching temporal-worker"
+
+for svc in $SERVICES; do
+  echo "scaling ${svc} to ${SCALE_TARGET} replicas"
+  kubectl -n temporal scale deployment "${svc}" --replicas="${SCALE_TARGET}" || echo "warning: failed to scale ${svc}"
+done
+
+echo ""
+echo "current state:"
+kubectl -n temporal get deployments -o wide
+"""
+
+[steps.env_vars]
+SCALE_TARGET = "0"

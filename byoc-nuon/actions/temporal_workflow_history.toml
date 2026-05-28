@@ -1,6 +1,7 @@
 # action
 # description: describes a Temporal workflow and shows its event history.
 name    = "temporal_workflow_history"
+label   = "temporal"
 timeout = "10m"
 
 [[triggers]]
@@ -44,25 +45,30 @@ fetch_run_history() {
       args+=(--next-page-token "$next_token")
     fi
 
-    page=$(kubectl -n temporal exec -i deployment/temporal-admintools -- "${args[@]}" 2>/dev/null)
+    page=$(kubectl -n temporal exec -i deployment/temporal-admintools -- "${args[@]}")
 
-    page_events=$(echo "$page" | jq -c '.events // []')
+    # debug: show first 500 chars of raw output
+    echo >&2 "  raw output (first 500 chars): $(echo "$page" | head -c 500)"
+    echo >&2 "  raw output lines: $(echo "$page" | wc -l)"
+
+    # temporal workflow show --output json outputs one JSON event per line (ndjson)
+    # slurp all lines into an array
+    page_events=$(echo "$page" | jq -cs '[.[] | select(type == "object")]')
+
     count=$(echo "$page_events" | jq 'length')
     run_events=$(echo "$run_events" "$page_events" | jq -s '.[0] + .[1]')
     total=$(echo "$run_events" | jq 'length')
     echo >&2 "  fetched ${count} events (run total: ${total})"
 
-    next_token=$(echo "$page" | jq -r '.nextPageToken // empty')
-    if [ -z "$next_token" ]; then
-      break
-    fi
+    # ndjson format has no pagination token, fetch is complete in one call
+    break
   done
 
   echo "$run_events"
 }
 
-# walk the ContinueAsNew chain starting from firstRunId
-echo >&2 "resolving run chain for workflow ${WORKFLOW_ID}..."
+# resolve firstRunId and fetch its full history
+echo >&2 "resolving first run for workflow ${WORKFLOW_ID}..."
 describe=$(kubectl -n temporal exec -i deployment/temporal-admintools -- \
   temporal workflow describe \
     --namespace "$NAMESPACE" \
@@ -76,49 +82,14 @@ if [ -z "$first_run_id" ]; then
   first_run_id="$current_run_id"
 fi
 
-# collect all run IDs by walking forward from firstRunId
-run_ids=()
-walk_run_id="$first_run_id"
+echo >&2 "first run: ${first_run_id} (current: ${current_run_id})"
+echo >&2 "fetching history for first run..."
+run_events=$(fetch_run_history "$WORKFLOW_ID" "$first_run_id")
+run_count=$(echo "$run_events" | jq 'length')
+echo >&2 "done: ${run_count} events"
 
-while [ -n "$walk_run_id" ]; do
-  run_ids+=("$walk_run_id")
-  echo >&2 "found run: ${walk_run_id}"
-
-  # get the last event to check for ContinueAsNew
-  last_event=$(kubectl -n temporal exec -i deployment/temporal-admintools -- \
-    temporal workflow show \
-      --namespace "$NAMESPACE" \
-      --workflow-id "$WORKFLOW_ID" \
-      --run-id "$walk_run_id" \
-      --output json \
-      --max-field-length 0 2>/dev/null \
-    | jq -c '.events[-1] // empty')
-
-  event_type=$(echo "$last_event" | jq -r '.eventType // empty')
-  if [ "$event_type" = "EVENT_TYPE_WORKFLOW_EXECUTION_CONTINUED_AS_NEW" ]; then
-    walk_run_id=$(echo "$last_event" | jq -r '.workflowExecutionContinuedAsNewEventAttributes.newExecutionRunId // empty')
-  else
-    break
-  fi
-done
-
-echo >&2 "found ${#run_ids[@]} run(s) in CAN chain"
-
-# fetch full history for each run
-all_runs="[]"
-for run_id in "${run_ids[@]}"; do
-  echo >&2 "fetching history for run ${run_id}..."
-  run_events=$(fetch_run_history "$WORKFLOW_ID" "$run_id")
-  run_count=$(echo "$run_events" | jq 'length')
-  run_obj=$(jq -cn --arg rid "$run_id" --argjson events "$run_events" --argjson count "$run_count" \
-    '{ run_id: $rid, event_count: $count, events: $events }')
-  all_runs=$(echo "$all_runs" | jq --argjson r "$run_obj" '. + [$r]')
-done
-
-total_events=$(echo "$all_runs" | jq '[.[].event_count] | add // 0')
-echo >&2 "done: ${#run_ids[@]} run(s), ${total_events} total events"
-
-echo "$all_runs" | jq '{ runs: ., run_count: length, total_events: ([.[].event_count] | add // 0) }'
+jq -cn --arg rid "$first_run_id" --arg crid "$current_run_id" --argjson events "$run_events" --argjson count "$run_count" \
+  '{ first_run_id: $rid, current_run_id: $crid, is_same_run: ($rid == $crid), event_count: $count, events: $events }'
 """
 
 [steps.env_vars]

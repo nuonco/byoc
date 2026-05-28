@@ -1,0 +1,161 @@
+# action
+# description: fetches RDS CPU, IOPS, burst balance, and storage metrics from CloudWatch.
+# Set DB_TARGET to "ctl-api" or "temporal" to switch databases.
+name    = "rds_health"
+label   = "aws"
+timeout = "1m"
+
+[[triggers]]
+type = "manual"
+
+[[steps]]
+name = "rds health"
+inline_contents = """
+#!/usr/bin/env bash
+set -e
+set -o pipefail
+set -u
+
+# map DB_TARGET to the right component outputs
+case "$DB_TARGET" in
+  ctl-api)
+    db_identifier="$DB_ID_CTL_API"
+    db_resource_id="$DB_RESOURCE_ID_CTL_API"
+    ;;
+  temporal)
+    db_identifier="$DB_ID_TEMPORAL"
+    db_resource_id="$DB_RESOURCE_ID_TEMPORAL"
+    ;;
+  *)
+    echo >&2 "error: DB_TARGET must be 'ctl-api' or 'temporal', got '${DB_TARGET}'"
+    exit 1
+    ;;
+esac
+
+echo >&2 "fetching RDS health for ${DB_TARGET} (instance: ${db_identifier})"
+
+now=$(date -u +%Y-%m-%dT%H:%M:%SZ)
+one_hour_ago=$(date -u -v-1H +%Y-%m-%dT%H:%M:%SZ 2>/dev/null || date -u -d '1 hour ago' +%Y-%m-%dT%H:%M:%SZ)
+
+# helper: fetch a CloudWatch metric (last hour, 5m period, returns most recent datapoint)
+get_metric() {
+  local metric="$1"
+  local stat="${2:-Average}"
+  local raw
+  raw=$(aws cloudwatch get-metric-statistics \
+    --namespace AWS/RDS \
+    --metric-name "$metric" \
+    --dimensions Name=DBInstanceIdentifier,Value="$db_identifier" \
+    --start-time "$one_hour_ago" \
+    --end-time "$now" \
+    --period 300 \
+    --statistics "$stat" \
+    --output json 2>&1) || { echo >&2 "error fetching $metric: $raw"; echo ""; return 0; }
+  local count
+  count=$(echo "$raw" | jq '.Datapoints | length')
+  if [ "$count" = "0" ]; then
+    echo >&2 "warning: $metric returned 0 datapoints (dimension=DBInstanceIdentifier, value=$db_identifier)"
+  fi
+  echo "$raw" | jq -r ".Datapoints | sort_by(.Timestamp) | last | .${stat} // empty"
+}
+
+# --- CPU ---
+echo >&2 "fetching CPU metrics..."
+cpu_util=$(get_metric CPUUtilization)
+cpu_credit_balance=$(get_metric CPUCreditBalance)
+cpu_credit_usage=$(get_metric CPUCreditUsage)
+
+# --- IOPS ---
+echo >&2 "fetching IOPS metrics..."
+read_iops=$(get_metric ReadIOPS)
+write_iops=$(get_metric WriteIOPS)
+read_latency=$(get_metric ReadLatency)
+write_latency=$(get_metric WriteLatency)
+
+# --- Burst / credits ---
+echo >&2 "fetching burst metrics..."
+burst_balance=$(get_metric BurstBalance)
+ebs_io_balance=$(get_metric EBSIOBalance%)
+ebs_byte_balance=$(get_metric EBSByteBalance%)
+
+# --- Storage ---
+echo >&2 "fetching storage metrics..."
+free_storage_bytes=$(get_metric FreeStorageSpace)
+
+instance_info=$(aws rds describe-db-instances \
+  --filters Name=dbi-resource-id,Values="$db_resource_id" \
+  --query 'DBInstances[0]' \
+  --output json)
+
+allocated_gb=$(echo "$instance_info" | jq -r '.AllocatedStorage // empty')
+max_allocated_gb=$(echo "$instance_info" | jq -r '.MaxAllocatedStorage // empty')
+instance_class=$(echo "$instance_info" | jq -r '.DBInstanceClass // empty')
+storage_type=$(echo "$instance_info" | jq -r '.StorageType // empty')
+engine=$(echo "$instance_info" | jq -r '.Engine + "/" + .EngineVersion')
+status=$(echo "$instance_info" | jq -r '.DBInstanceStatus // empty')
+
+# --- Build output ---
+results=$(jq -nc \
+  --arg target "$DB_TARGET" \
+  --arg db_id "$db_identifier" \
+  --arg resource_id "$db_resource_id" \
+  --arg status "$status" \
+  --arg engine "$engine" \
+  --arg instance_class "$instance_class" \
+  --arg storage_type "$storage_type" \
+  --arg cpu_util "$cpu_util" \
+  --arg cpu_credit_balance "$cpu_credit_balance" \
+  --arg cpu_credit_usage "$cpu_credit_usage" \
+  --arg read_iops "$read_iops" \
+  --arg write_iops "$write_iops" \
+  --arg read_latency "$read_latency" \
+  --arg write_latency "$write_latency" \
+  --arg burst_balance "$burst_balance" \
+  --arg ebs_io_balance "$ebs_io_balance" \
+  --arg ebs_byte_balance "$ebs_byte_balance" \
+  --arg free_bytes "$free_storage_bytes" \
+  --arg alloc "$allocated_gb" \
+  --arg max_alloc "$max_allocated_gb" \
+  '{
+    target: $target,
+    instance: $db_id,
+    resource_id: $resource_id,
+    status: $status,
+    engine: $engine,
+    instance_class: $instance_class,
+    storage_type: $storage_type,
+    cpu: {
+      utilization_pct: (if $cpu_util != "" then ($cpu_util | tonumber * 10 | round / 10) else null end),
+      credit_balance: (if $cpu_credit_balance != "" then ($cpu_credit_balance | tonumber * 10 | round / 10) else null end),
+      credit_usage: (if $cpu_credit_usage != "" then ($cpu_credit_usage | tonumber * 100 | round / 100) else null end)
+    },
+    iops: {
+      read: (if $read_iops != "" then ($read_iops | tonumber * 10 | round / 10) else null end),
+      write: (if $write_iops != "" then ($write_iops | tonumber * 10 | round / 10) else null end),
+      read_latency_ms: (if $read_latency != "" then ($read_latency | tonumber * 1000 * 100 | round / 100) else null end),
+      write_latency_ms: (if $write_latency != "" then ($write_latency | tonumber * 1000 * 100 | round / 100) else null end)
+    },
+    burst: {
+      burst_balance_pct: (if $burst_balance != "" then ($burst_balance | tonumber * 10 | round / 10) else null end),
+      ebs_io_balance_pct: (if $ebs_io_balance != "" then ($ebs_io_balance | tonumber * 10 | round / 10) else null end),
+      ebs_byte_balance_pct: (if $ebs_byte_balance != "" then ($ebs_byte_balance | tonumber * 10 | round / 10) else null end)
+    },
+    storage: {
+      allocated_gb: (if $alloc != "" then ($alloc | tonumber) else null end),
+      max_allocated_gb: (if $max_alloc != "" then ($max_alloc | tonumber) else null end),
+      free_gb: (if $free_bytes != "" then ($free_bytes | tonumber / 1073741824 * 100 | round / 100) else null end),
+      used_gb: (if ($alloc != "" and $free_bytes != "") then (($alloc | tonumber) - ($free_bytes | tonumber / 1073741824 * 100 | round / 100)) else null end),
+      used_pct: (if ($alloc != "" and $free_bytes != "") then ((($alloc | tonumber) - ($free_bytes | tonumber / 1073741824 * 100 | round / 100)) / ($alloc | tonumber) * 100 * 10 | round / 10) else null end)
+    }
+  }')
+
+echo "$results"
+echo "$results" >> "$NUON_ACTIONS_OUTPUT_FILEPATH"
+"""
+
+[steps.env_vars]
+DB_TARGET = "temporal"
+DB_ID_CTL_API = "{{ .nuon.components.rds_cluster_nuon.outputs.db_instance_name }}"
+DB_RESOURCE_ID_CTL_API = "{{ .nuon.components.rds_cluster_nuon.outputs.db_instance_resource_id }}"
+DB_ID_TEMPORAL = "{{ .nuon.components.rds_cluster_temporal.outputs.db_instance_name }}"
+DB_RESOURCE_ID_TEMPORAL = "{{ .nuon.components.rds_cluster_temporal.outputs.db_instance_resource_id }}"
