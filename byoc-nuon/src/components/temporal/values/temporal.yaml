@@ -30,7 +30,10 @@ server:
      frontend.namespaceRPS:
       - value: 4000
      history.rps:
-      - value: 6100
+      - value: 10000
+     history.namespaceRPS:
+        - value: 10000
+          constraints: {}
   config:
     prometheus:
       framework: opentelemetry
