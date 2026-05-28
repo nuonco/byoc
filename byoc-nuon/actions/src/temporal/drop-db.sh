@@ -24,3 +24,5 @@ function run_cmd() {
 }
 
 echo "[temporal] sql tools - temporal db"
+run_cmd "temporal-sql-tool --database visibility drop-database"
+run_cmd "temporal-sql-tool --database temporal drop-database"
