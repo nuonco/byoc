@@ -1,5 +1,6 @@
 # action
 name    = "kubectl_get_pods"
+label   = "kubectl"
 timeout = "30s"
 
 [[triggers]]
