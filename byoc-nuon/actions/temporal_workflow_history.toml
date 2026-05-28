@@ -1,0 +1,65 @@
+# action
+# description: describes a Temporal workflow and shows its event history.
+name    = "temporal_workflow_history"
+timeout = "10m"
+
+[[triggers]]
+type = "manual"
+
+[[steps]]
+name = "workflow history"
+inline_contents = """
+#!/usr/bin/env bash
+set -e
+set -o pipefail
+set -u
+
+kubectl config set-context --current --namespace=temporal >/dev/null
+
+# describe the workflow
+echo >&2 "describing workflow ${WORKFLOW_ID} in namespace ${NAMESPACE}..."
+kubectl -n temporal exec -i deployment/temporal-admintools -- \
+  temporal workflow describe \
+    --namespace "$NAMESPACE" \
+    --workflow-id "$WORKFLOW_ID" \
+    --output json
+
+# show full event history, paginating to capture all events
+echo >&2 "fetching history for workflow ${WORKFLOW_ID} in namespace ${NAMESPACE}..."
+all_events="[]"
+next_token=""
+
+while true; do
+  args=(
+    temporal workflow show
+    --namespace "$NAMESPACE"
+    --workflow-id "$WORKFLOW_ID"
+    --output json
+    --max-field-length 0
+  )
+  if [ -n "$next_token" ]; then
+    args+=(--next-page-token "$next_token")
+  fi
+
+  page=$(kubectl -n temporal exec -i deployment/temporal-admintools -- "${args[@]}" 2>/dev/null)
+
+  # merge events into accumulator
+  page_events=$(echo "$page" | jq -c '.events // []')
+  count=$(echo "$page_events" | jq 'length')
+  all_events=$(echo "$all_events" "$page_events" | jq -s '.[0] + .[1]')
+  total=$(echo "$all_events" | jq 'length')
+  echo >&2 "fetched ${count} events (total: ${total})"
+
+  # check for next page token
+  next_token=$(echo "$page" | jq -r '.nextPageToken // empty')
+  if [ -z "$next_token" ]; then
+    break
+  fi
+done
+
+echo "$all_events" | jq '{ events: ., total: length }'
+"""
+
+[steps.env_vars]
+NAMESPACE = "general"
+WORKFLOW_ID = ""
