@@ -1,0 +1,20 @@
+# action
+# description: fetches RDS CPU, IOPS, burst balance, and storage metrics from CloudWatch.
+# Set DB_TARGET to "ctl-api" or "temporal" to switch databases.
+name    = "rds_health"
+label   = "aws"
+timeout = "1m"
+
+[[triggers]]
+type = "manual"
+
+[[steps]]
+name = "rds health"
+inline_contents = "./aws/rds_health/rds_health.sh"
+
+[steps.env_vars]
+DB_TARGET = "temporal"
+DB_ID_CTL_API = "{{ .nuon.components.rds_cluster_nuon.outputs.db_instance_name }}"
+DB_RESOURCE_ID_CTL_API = "{{ .nuon.components.rds_cluster_nuon.outputs.db_instance_resource_id }}"
+DB_ID_TEMPORAL = "{{ .nuon.components.rds_cluster_temporal.outputs.db_instance_name }}"
+DB_RESOURCE_ID_TEMPORAL = "{{ .nuon.components.rds_cluster_temporal.outputs.db_instance_resource_id }}"

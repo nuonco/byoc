@@ -1,0 +1,33 @@
+name        = "refresh_readme"
+description = "Runs all actions that populate data shown in the install README."
+readme      = "./runbooks/refresh_readme.md"
+
+[[steps]]
+name        = "API status"
+type        = "action"
+action_name = "api_status"
+
+[[steps]]
+name        = "Dashboard status"
+type        = "action"
+action_name = "dashboard_status"
+
+[[steps]]
+name        = "Status report"
+type        = "action"
+action_name = "status_report"
+
+[[steps]]
+name        = "Healthcheck temporal"
+type        = "action"
+action_name = "healthcheck_temporal"
+
+[[steps]]
+name        = "Temporal status"
+type        = "action"
+action_name = "temporal_status"
+
+[[steps]]
+name        = "Query workflows by type"
+type        = "action"
+action_name = "ctl_api_query_workflows_by_type"

@@ -1,0 +1,22 @@
+# action
+name    = "ctl_api_init_db"
+timeout = "5m"
+
+[[triggers]]
+type           = "pre-deploy-component"
+component_name = "ctl_api"
+
+[[triggers]]
+type = "manual"
+
+[[steps]]
+name            = "Initialize the DB"
+inline_contents = "./ctl_api/ctl_api_init_db/init-db.sh"
+
+[steps.env_vars]
+DB_USER    = "{{ .nuon.components.rds_cluster_nuon.outputs.db_instance_username }}"
+DB_NAME    = "{{ .nuon.components.rds_cluster_nuon.outputs.db_instance_name }}"
+SECRET_ARN = "{{ .nuon.components.rds_cluster_nuon.outputs.db_instance_master_user_secret_arn }}"
+DB_ADDR    = "{{ .nuon.components.rds_cluster_nuon.outputs.address }}"
+DB_PORT    = "5432"
+REGION     = "{{ .nuon.install_stack.outputs.region }}"

@@ -1,0 +1,13 @@
+# action
+name    = "ch_query"
+timeout = "5m"
+
+[[triggers]]
+type = "manual"
+
+[[steps]]
+name    = "query"
+inline_contents = "./clickhouse/ch_query/query.sh"
+
+[steps.env_vars]
+QUERY = "SELECT NOW();"

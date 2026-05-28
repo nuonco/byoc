@@ -1,0 +1,24 @@
+# action
+name    = "ctl_api_query_workflows_by_type"
+label   = "query"
+timeout = "5m"
+
+[[triggers]]
+type          = "cron"
+cron_schedule = "5 * * * *"
+
+[[triggers]]
+type = "manual"
+
+[[steps]]
+name            = "Query workflows grouped by type"
+inline_contents = "./ctl_api/ctl_api_query_workflows_by_type/query-workflows-by-type.sh"
+
+[steps.env_vars]
+DB_USER        = "{{ .nuon.components.rds_cluster_nuon.outputs.db_instance_username }}"
+DB_NAME        = "ctl_api"
+SECRET_ARN     = "{{ .nuon.components.rds_cluster_nuon.outputs.db_instance_master_user_secret_arn }}"
+DB_ADDR        = "{{ .nuon.components.rds_cluster_nuon.outputs.address }}"
+DB_PORT        = "5432"
+REGION         = "{{ .nuon.install_stack.outputs.region }}"
+LIMIT          = "25"

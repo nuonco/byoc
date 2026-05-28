@@ -1,0 +1,21 @@
+# action
+name    = "kubectl_get_nodepool"
+timeout = "30s"
+
+[[triggers]]
+type = "manual"
+
+[[steps]]
+name = "kubectl get nodepool"
+inline_contents = "./kubectl/kubectl_get_nodepool/kubectl_get_nodepool.sh"
+
+[[steps]]
+name = "kubectl get nodeclass"
+inline_contents = "./kubectl/kubectl_get_nodepool/kubectl_get_nodeclass.sh"
+
+[[steps]]
+name = "kubectl get nodeclaims"
+inline_contents = "./kubectl/kubectl_get_nodepool/kubectl_get_nodeclaims.sh"
+
+[steps.env_vars]
+NODEPOOL = "ctl-api"

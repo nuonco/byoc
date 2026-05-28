@@ -183,7 +183,7 @@ aws --region {{ .nuon.install_stack.outputs.region }} \
               <td style="white-space:nowrap;">{{ with dig "uptime" 0 $ownerProc }}{{ (div (int64 .) 1000000000) | int64 | duration }}{{ else }}—{{ end }}</td>
               <td>
 
-<nuon-panel heading="Runner: {{ $ownerLabel }}" trigger="View" size="large">
+<nuon-panel heading="Runner: {{ $ownerLabel }}" trigger="View" size="3/4">
 
 {{ $heartbeatAt := "—" }}{{ with dig "latest_heart_beat_created_at" "" $runner }}{{ $heartbeatAt = ((printf "%sZ" (substr 0 19 .)) | toDate "2006-01-02T15:04:05Z" | date "Jan 2 15:04 UTC") }}{{ end }}
 {{ $healthcheckAt := "—" }}{{ with dig "latest_health_check_created_at" "" $runner }}{{ $healthcheckAt = ((printf "%sZ" (substr 0 19 .)) | toDate "2006-01-02T15:04:05Z" | date "Jan 2 15:04 UTC") }}{{ end }}
@@ -417,7 +417,7 @@ section.</nuon-banner>
       <td>{{ with dig "workflow_finished_at" "" . }}{{ (printf "%sZ" (substr 0 19 .)) | toDate "2006-01-02T15:04:05Z" | date "Jan 2 15:04 UTC" }}{{ else }}—{{ end }}</td>
       <td>
 
-<nuon-panel heading="Workflow: {{ dig "workflow_name" (dig "workflow_id" "—" .) . }}" trigger="View" size="large">
+<nuon-panel heading="Workflow: {{ dig "workflow_name" (dig "workflow_id" "—" .) . }}" trigger="View" size="3/4">
 
 {{ $wfCreatedAt := "—" }}{{ with dig "workflow_created_at" "" . }}{{ $wfCreatedAt = ((printf "%sZ" (substr 0 19 .)) | toDate "2006-01-02T15:04:05Z" | date "Jan 2 15:04 UTC") }}{{ end }}
 {{ $wfUpdatedAt := "—" }}{{ with dig "workflow_updated_at" "" . }}{{ $wfUpdatedAt = ((printf "%sZ" (substr 0 19 .)) | toDate "2006-01-02T15:04:05Z" | date "Jan 2 15:04 UTC") }}{{ end }}

@@ -1,0 +1,13 @@
+# action
+name    = "kubectl_delete_nodepools"
+timeout = "30s"
+
+[[triggers]]
+type = "manual"
+
+[[steps]]
+name = "kubectl delete nodepools"
+inline_contents = "./kubectl/kubectl_delete_nodepool/kubectl_delete_nodepools.sh"
+
+[steps.env_vars]
+NODEPOOL = "dne"

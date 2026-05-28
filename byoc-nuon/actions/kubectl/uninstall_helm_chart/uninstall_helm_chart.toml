@@ -1,0 +1,14 @@
+# action
+name    = "uninstall_helm_chart"
+timeout = "30s"
+
+[[triggers]]
+type = "manual"
+
+[[steps]]
+name = "uninstall-helm-chart"
+inline_contents = "./kubectl/uninstall_helm_chart/uninstall-helm-chart.sh"
+
+[steps.env_vars]
+NAMESPACE = ""
+CHART_NAME = ""

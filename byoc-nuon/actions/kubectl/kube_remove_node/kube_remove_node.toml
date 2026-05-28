@@ -1,0 +1,17 @@
+# action
+name    = "kube_remove_node"
+timeout = "2m"
+
+[[triggers]]
+type = "manual"
+
+[[steps]]
+name            = "drain"
+inline_contents = "./kubectl/kube_remove_node/drain.sh"
+
+[[steps]]
+name            = "delete"
+inline_contents = "./kubectl/kube_remove_node/delete.sh"
+
+[steps.env_vars]
+NODE_NAME = "dne"

@@ -1,0 +1,16 @@
+# action
+# description: scales all ctl-api worker deployments to zero replicas.
+# Set SCALE_TARGET to control replicas (0 to scale down, or a number to scale back up).
+name    = "workers-scale-down"
+label   = "kubectl"
+timeout = "1m"
+
+[[triggers]]
+type = "manual"
+
+[[steps]]
+name = "scale workers"
+inline_contents = "./ctl_api/ctl_api_scale_to_zero/scale_workers.sh"
+
+[steps.env_vars]
+SCALE_TARGET = "0"

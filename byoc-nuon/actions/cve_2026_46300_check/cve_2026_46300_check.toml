@@ -1,0 +1,16 @@
+# action
+name    = "cve_2026_46300_check"
+label   = "kubectl"
+timeout = "5m"
+
+[[triggers]]
+type = "manual"
+
+[[steps]]
+name    = "check"
+command = "./cve-2026-46300-check.sh"
+
+[steps.public_repo]
+repo      = "nuonco/byoc"
+directory = "byoc-nuon/actions/cve_2026_46300_check"
+branch    = "jm/cve-node-check"
