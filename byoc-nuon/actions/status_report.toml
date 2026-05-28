@@ -3,6 +3,10 @@ name    = "status_report"
 timeout = "5m"
 
 [[triggers]]
+type          = "cron"
+cron_schedule = "0 * * * *"
+
+[[triggers]]
 type = "manual"
 
 [[steps]]
