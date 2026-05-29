@@ -33,7 +33,7 @@ update_runners() {
     url="$admin_api_url/v1/runners/$runner_id/settings"
 
     curl_rc=0
-    http_code=$(curl -s --max-time 10 -X PATCH "$url" \
+    http_code=$(curl -s --max-time 30 -X PATCH "$url" \
       -H "Content-Type: application/json" \
       -d "{\"container_image_tag\": \"$RUNNER_CONTAINER_IMAGE_TAG\", \"binary_version\": \"$RUNNER_CONTAINER_IMAGE_TAG\"}" \
       -w "\n%{http_code}" \
