@@ -18,7 +18,7 @@
 {{ $apiSteps := dig "steps" (dict) $api }} {{ $dashSteps := dig "steps" (dict) $dash }}
 
 <details>
-<summary><nuon-group gap="2" align="center" justify="start"><strong>API</strong>{{ range $step := list "alb-healthcheck-ctl-api-public" "alb-healthcheck-ctl-api-admin" "alb-healthcheck-ctl-api-runner" }}{{ $indicator := dig $step "indicator" "" $apiSteps }}{{ if eq $indicator "🟢" }}<nuon-status status="active" variant="badge"></nuon-status>{{ else if eq $indicator "🔴" }}<nuon-status status="error" variant="badge"></nuon-status>{{ else }}<nuon-status status="pending" variant="badge"></nuon-status>{{ end }}{{ end }}<nuon-label-badge label="version:{{ dig "ctl_api_version" "unknown" $api }}"></nuon-label-badge><nuon-label-badge label="git:{{ dig "ctl_api_git_ref" "unknown" $api }}"></nuon-label-badge><a href="https://api.{{ $public_domain }}/docs/index.html">Open ↗</a></nuon-group></summary>
+<summary><nuon-group gap="2" align="center" justify="start"><strong>API</strong>{{ range $step := list "alb-healthcheck-ctl-api-public" "alb-healthcheck-ctl-api-admin" "alb-healthcheck-ctl-api-runner" }}{{ $indicator := dig $step "indicator" "" $apiSteps }}{{ if eq $indicator "🟢" }}<nuon-status status="active" variant="badge"></nuon-status>{{ else if eq $indicator "🔴" }}<nuon-status status="error" variant="badge"></nuon-status>{{ else }}<nuon-status status="pending" variant="badge"></nuon-status>{{ end }}{{ end }}<nuon-label-badge label="version:{{ dig "ctl_api_version" "unknown" $api }}"></nuon-label-badge><nuon-label-badge label="git:{{ dig "ctl_api_git_ref" "unknown" $api }}"></nuon-label-badge><a href="https://api.{{ $public_domain }}/docs/index.html">Open ↗</a>{{ with dig "updated_at" "" $api }}<span style="margin-left:auto;"><nuon-label-badge label="last updated:{{ (toDate "2006-01-02T15:04:05Z" .) | date "Jan 2 15:04 UTC" }}"></nuon-label-badge></span>{{ end }}</nuon-group></summary>
 
 **Links**
 
@@ -54,7 +54,7 @@ nuon -f ~/.nuon.byoc login
 </details>
 
 <details>
-<summary><nuon-group gap="2" align="center" justify="start"><strong>Dashboard</strong>{{ $indicator := dig "alb-healthcheck-dashboard-ui" "indicator" "" $dashSteps }}{{ if eq $indicator "🟢" }}<nuon-status status="active" variant="badge"></nuon-status>{{ else if eq $indicator "🔴" }}<nuon-status status="error" variant="badge"></nuon-status>{{ else }}<nuon-status status="pending" variant="badge"></nuon-status>{{ end }}<nuon-label-badge label="version:{{ dig "dashboard_ui_version" "unknown" $dash }}"></nuon-label-badge><nuon-label-badge label="git:{{ dig "dashboard_ui_git_ref" "unknown" $dash }}"></nuon-label-badge><a href="https://app.{{ $public_domain }}">Open ↗</a></nuon-group></summary>
+<summary><nuon-group gap="2" align="center" justify="start"><strong>Dashboard</strong>{{ $indicator := dig "alb-healthcheck-dashboard-ui" "indicator" "" $dashSteps }}{{ if eq $indicator "🟢" }}<nuon-status status="active" variant="badge"></nuon-status>{{ else if eq $indicator "🔴" }}<nuon-status status="error" variant="badge"></nuon-status>{{ else }}<nuon-status status="pending" variant="badge"></nuon-status>{{ end }}<nuon-label-badge label="version:{{ dig "dashboard_ui_version" "unknown" $dash }}"></nuon-label-badge><nuon-label-badge label="git:{{ dig "dashboard_ui_git_ref" "unknown" $dash }}"></nuon-label-badge><a href="https://app.{{ $public_domain }}">Open ↗</a>{{ with dig "updated_at" "" $dash }}<span style="margin-left:auto;"><nuon-label-badge label="last updated:{{ (toDate "2006-01-02T15:04:05Z" .) | date "Jan 2 15:04 UTC" }}"></nuon-label-badge></span>{{ end }}</nuon-group></summary>
 
 **Links**
 
@@ -137,8 +137,9 @@ aws --region {{ .nuon.install_stack.outputs.region }} \
 {{ end }}
 {{ end }}
 
+{{ $statusOutputs := dict }}{{ with (index (default dict .nuon.actions.workflows) "status_report") }}{{ with .outputs }}{{ $statusOutputs = . }}{{ end }}{{ end }}
 <details>
-<summary><strong>Status</strong></summary>
+<summary><nuon-group gap="2" align="center" justify="start"><strong>Status</strong>{{ with dig "updated_at" "" $statusOutputs }}<span style="margin-left:auto;"><nuon-label-badge label="last updated:{{ (toDate "2006-01-02T15:04:05Z" .) | date "Jan 2 15:04 UTC" }}"></nuon-label-badge></span>{{ end }}</nuon-group></summary>
 
 {{ with (index (default dict .nuon.actions.workflows) "status_report") }}
 {{ $steps := dict }}{{ with .outputs }}{{ with .steps }}{{ $steps = . }}{{ end }}{{ end }}
@@ -371,8 +372,9 @@ section.</nuon-banner>
 
 </details>
 
+{{ $wfOutputs := dict }}{{ with (index (default dict .nuon.actions.workflows) "ctl_api_query_workflows_by_type") }}{{ with .outputs }}{{ $wfOutputs = . }}{{ end }}{{ end }}
 <details>
-<summary><strong>Workflows</strong></summary>
+<summary><nuon-group gap="2" align="center" justify="start"><strong>Workflows</strong>{{ with dig "updated_at" "" $wfOutputs }}<span style="margin-left:auto;"><nuon-label-badge label="last updated:{{ (toDate "2006-01-02T15:04:05Z" .) | date "Jan 2 15:04 UTC" }}"></nuon-label-badge></span>{{ end }}</nuon-group></summary>
 
 {{ with (index (default dict .nuon.actions.workflows) "ctl_api_query_workflows_by_type") }}
 {{ $wfData := dict }}{{ with .outputs }}{{ $wfData = . }}{{ end }} {{ $wfRows := dig "workflows" (list) $wfData }}
