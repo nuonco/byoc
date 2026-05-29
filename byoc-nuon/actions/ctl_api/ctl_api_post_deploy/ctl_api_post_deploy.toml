@@ -1,6 +1,6 @@
 # action
 name    = "ctl_api_post_deploy"
-timeout = "5m"
+timeout = "30m"
 
 [[triggers]]
 type           = "post-deploy-component"
