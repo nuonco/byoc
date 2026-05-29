@@ -2,7 +2,7 @@
 set -e
 
 # Extract tag from TOML file
-TOML_TAG=$(grep '^tag' byoc-nuon/components/4-image-nuon_ctl_api.toml | sed 's/tag[[:space:]]*=[[:space:]]*"\(.*\)"/\1/')
+TOML_TAG=$(grep '^tag' shared/components/images/nuon_ctl_api.toml | sed 's/tag[[:space:]]*=[[:space:]]*"\(.*\)"/\1/')
 
 # Extract tag from YAML file
 YAML_TAG=$(grep 'RUNNER_CONTAINER_IMAGE_TAG:' byoc-nuon/components/values/ctl-api.yaml | sed 's/.*RUNNER_CONTAINER_IMAGE_TAG:[[:space:]]*"\(.*\)"/\1/')
