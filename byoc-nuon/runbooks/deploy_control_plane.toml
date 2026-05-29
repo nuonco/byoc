@@ -1,4 +1,4 @@
-name        = "deploy_control_plan" # NOTE: "deploy_nuon", maybe?
+name        = "deploy_control_plane" # NOTE: "deploy_nuon", maybe?
 description = "Deploys Nuon's ctl-api and dashboard-ui: syncs and rolls the CTL API, then the dashboard UI."
 readme      = "./runbooks/deploy_control_plane.md"
 
