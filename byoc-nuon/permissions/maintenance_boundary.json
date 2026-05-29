@@ -15,6 +15,7 @@
         "iam:*",
         "kms:*",
         "organizations:DescribeOrganization",
+        "pi:*",
         "rds:*",
         "s3:*",
         "secretsmanager:*",
