@@ -5,3 +5,14 @@ description = "QuickLink to install runner for BYOC Nuon: Install {{.nuon.instal
 # nested stack
 vpc_nested_template_url    = "https://nuon-artifacts.s3.us-west-2.amazonaws.com/aws-cloudformation-templates/v0.1.12/vpc/eks/default/stack.yaml"
 runner_nested_template_url = "https://nuon-artifacts.s3.us-west-2.amazonaws.com/aws-cloudformation-templates/v0.4.0/runner/asg/stack.yaml"
+
+[[custom_nested_stacks]]
+name         = "byoc_nuon_read_only_access"
+template_url = "./cloudformation/byoc-nuon-read-only-access/stack.yaml"
+index        = 0
+# No [custom_nested_stacks.parameters] block: the nested template's parameter
+# names (InstallReadOnlyRoleArn, InstallReadOnlyEnableClusterAccess) match the
+# auto-hoisted install-input parameter names on the parent stack
+# ("Install" + camelCase(input name)). ctl-api's extractNestedStackParameters
+# auto-Refs them to the parent, so console edits to the parent params propagate
+# to the nested stack on the next changeset apply.
