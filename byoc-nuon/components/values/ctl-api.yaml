@@ -296,8 +296,10 @@ api:
   dashboard_admin:
     enabled: {{ or .nuon.inputs.inputs.admin_dashboard_enabled "false" }}
     port: 8087
-    domain: "admin.{{ .nuon.sandbox.outputs.nuon_dns.public_domain.name }}"
-    domain_certificate: "{{ .nuon.components.certificate_wildcard_public.outputs.public_domain_certificate_arn }}"
+    alb:
+      enabled: false  # TODO: this becomes an input
+      domain: "admin.{{ .nuon.sandbox.outputs.nuon_dns.public_domain.name }}"
+      domain_certificate: "{{ .nuon.components.certificate_wildcard_public.outputs.public_domain_certificate_arn }}"
     autoscaling:
       minReplicas: 2
       maxReplicas: 4
