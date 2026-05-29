@@ -1,0 +1,14 @@
+# action
+name    = "orgs_migrate_queues"
+timeout = "10m"
+
+[[triggers]]
+type = "manual"
+
+[[steps]]
+name            = "exec"
+inline_contents = "./orgs/common/admin_post.sh"
+
+[steps.env_vars]
+ADMIN_API_URL="http://admin.{{ .nuon.sandbox.outputs.nuon_dns.internal_domain.name }}"
+ENDPOINT="admin-migrate-queues"
