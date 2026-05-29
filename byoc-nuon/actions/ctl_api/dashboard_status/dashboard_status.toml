@@ -30,3 +30,7 @@ inline_contents = "./ctl_api/dashboard_status/healthcheck.sh"
 [steps.env_vars]
 INGRESS_NAME      = "dashboard-ui"
 INGRESS_NAMESPACE = "dashboard-ui"
+
+[[steps]]
+name            = "timestamp"
+inline_contents = "./ctl_api/dashboard_status/timestamp.sh"
