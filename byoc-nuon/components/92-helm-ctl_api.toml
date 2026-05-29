@@ -9,7 +9,7 @@ dependencies   = ["rds_cluster_nuon", "karpenter_nodepools", "clickhouse_cluster
 [public_repo]
 repo      = "nuonco/charts"
 directory = "charts/ctl-api"
-branch    = "ctl-api-v0.2.1"
+branch    = "ctl-api-v0.3.0"
 
 [[values_file]]
 contents = "./values/ctl-api.yaml"
