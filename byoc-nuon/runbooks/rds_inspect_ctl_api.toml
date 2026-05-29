@@ -1,0 +1,8 @@
+name        = "rds_inspect_ctl_api"
+description = "Inspects the ctl-api (nuon) RDS instance: instance configuration plus Performance Insights OS metrics (CPU, memory, IOPS) for the last hour, in table format."
+readme      = "./runbooks/rds_inspect_ctl_api.md"
+
+[[steps]]
+name        = "Inspect ctl-api RDS"
+type        = "action"
+action_name = "rds_inspect_ctl_api"

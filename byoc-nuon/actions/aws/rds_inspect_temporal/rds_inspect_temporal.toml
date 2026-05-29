@@ -1,0 +1,18 @@
+# action
+# description: inspects the Temporal RDS instance — prints instance config and
+# Performance Insights OS metrics (CPU / memory / IOPS) for the last hour in table format.
+name    = "rds_inspect_temporal"
+label   = "aws"
+timeout = "2m"
+role    = "{{.nuon.install.id}}-provision"
+
+[[triggers]]
+type = "manual"
+
+[[steps]]
+name            = "Inspect Temporal RDS"
+inline_contents = "./aws/rds_inspect/rds_inspect.sh"
+
+[steps.env_vars]
+DB_RESOURCE_ID = "{{ .nuon.components.rds_cluster_temporal.outputs.db_instance_resource_id }}"
+DB_LABEL       = "temporal"
