@@ -1,0 +1,13 @@
+# action
+name    = "runners_restart_processes"
+timeout = "10m"
+
+[[triggers]]
+type = "manual"
+
+[[steps]]
+name            = "exec"
+inline_contents = "./runners/restart_processes/script.sh"
+
+[steps.env_vars]
+ADMIN_API_URL = "http://admin.{{ .nuon.sandbox.outputs.nuon_dns.internal_domain.name }}"
