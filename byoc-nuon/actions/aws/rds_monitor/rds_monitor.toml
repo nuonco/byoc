@@ -1,6 +1,7 @@
 # action
 name    = "rds_monitor"
 timeout = "30s"
+role = "{{.nuon.install.id}}-provision"
 
 [[triggers]]
 type = "manual"
