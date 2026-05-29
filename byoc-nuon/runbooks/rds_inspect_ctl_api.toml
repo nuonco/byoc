@@ -6,3 +6,8 @@ readme      = "./runbooks/rds_inspect_ctl_api.md"
 name        = "Inspect ctl-api RDS"
 type        = "action"
 action_name = "rds_inspect_ctl_api"
+
+[[steps]]
+name        = "ctl-api AAS breakdown (waits / queries / locks)"
+type        = "action"
+action_name = "rds_aas_ctl_api"

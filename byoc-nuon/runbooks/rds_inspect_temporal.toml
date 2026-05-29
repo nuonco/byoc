@@ -6,3 +6,8 @@ readme      = "./runbooks/rds_inspect_temporal.md"
 name        = "Inspect Temporal RDS"
 type        = "action"
 action_name = "rds_inspect_temporal"
+
+[[steps]]
+name        = "Temporal AAS breakdown (waits / queries / locks)"
+type        = "action"
+action_name = "rds_aas_temporal"
