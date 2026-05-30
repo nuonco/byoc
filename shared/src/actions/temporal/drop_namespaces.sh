@@ -9,10 +9,11 @@ set -u
 function drop_namespace() {
   local name="$1"
 
-  echo >&2 " > namespace: $name (retention: $retention)"
+  echo >&2 " > dropping namespace: $name"
   kubectl -n temporal exec -i deployment/temporal-admintools -- \
     temporal operator namespace delete \
-         --namespace   "$name"
+         --namespace   "$name" \
+         --yes
 }
 
 # Namespaces that use the default short retention.
@@ -34,7 +35,6 @@ declare -a default_namespaces=(
 set +e
 for namespace in "${default_namespaces[@]}"
 do
-  echo >&2 "dropping namespace $namespace"
   drop_namespace "$namespace"
 done
 
