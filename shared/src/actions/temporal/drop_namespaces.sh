@@ -8,7 +8,6 @@ set -u
 
 function drop_namespace() {
   local name="$1"
-  local description="$3"
 
   echo >&2 " > namespace: $name (retention: $retention)"
   kubectl -n temporal exec -i deployment/temporal-admintools -- \
