@@ -1,0 +1,19 @@
+# action
+# description: ensures all required Temporal namespaces exist after Temporal deploys.
+name    = "temporal_drop_namespaces"
+timeout = "10m"
+
+[labels]
+temporal = "true"
+
+[[triggers]]
+type = "manual"
+
+[[steps]]
+name    = "dropping namespaces"
+command = "./temporal/drop_namespaces.sh"
+
+[steps.public_repo]
+repo      = "nuonco/byoc"
+directory = "shared/src/actions"
+branch    = "main"
