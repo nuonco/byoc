@@ -56,13 +56,39 @@ echo "username=$admin_username"
 
 read -r -d '' sql <<SQL || true
 SET default_transaction_read_only = on;
+WITH target_workflows AS (
+    SELECT *
+    FROM install_workflows
+    WHERE deleted_at = 0
+      ${workflow_filter}
+    ORDER BY created_at DESC
+    LIMIT ${limit}
+),
+step_signals AS (
+    SELECT owner_id AS step_id,
+           string_agg(type || ':' || (status->>'status'), ', ' ORDER BY enqueued) AS signals
+    FROM queue_signals
+    WHERE owner_type = 'install_workflow_steps'
+      AND deleted_at = 0
+    GROUP BY owner_id
+),
+sg_signals AS (
+    SELECT owner_id AS step_group_id,
+           string_agg(type || ':' || (status->>'status'), ', ' ORDER BY enqueued) AS signals
+    FROM queue_signals
+    WHERE owner_type = 'workflow_step_groups'
+      AND deleted_at = 0
+    GROUP BY owner_id
+)
 SELECT COALESCE(json_agg(row_to_json(t)), '[]'::json)::text FROM (
 SELECT
     w.id                                    AS workflow_id,
     w.type                                  AS workflow_type,
     w.status->>'status'                     AS workflow_status,
     w.owner_id                              AS install_id,
+    i.name                                  AS install_name,
     w.org_id,
+    o.name                                  AS org_name,
     w.approval_option,
     w.result_directive                      AS wf_result_directive,
     w.created_at                            AS workflow_created_at,
@@ -76,6 +102,7 @@ SELECT
     sg.parallel                             AS group_parallel,
     sg.status->>'status'                    AS step_group_status,
     sg.result_directive                     AS sg_result_directive,
+    sgs.signals                             AS sg_signals,
 
     s.id                                    AS step_id,
     s.name                                  AS step_name,
@@ -92,42 +119,31 @@ SELECT
     s.step_target_id,
     s.step_target_type,
 
-    qs_sg.id                                AS sg_signal_id,
-    qs_sg.type                              AS sg_signal_type,
-    qs_sg.status->>'status'                 AS sg_signal_status,
-    qs_sg.enqueued                          AS sg_signal_enqueued,
-    qs_sg.queue_id                          AS sg_signal_queue_id,
+    ss.signals                              AS step_signals
 
-    qs_s.id                                 AS step_signal_id,
-    qs_s.type                               AS step_signal_type,
-    qs_s.status->>'status'                  AS step_signal_status,
-    qs_s.enqueued                           AS step_signal_enqueued,
-    qs_s.queue_id                           AS step_signal_queue_id
-
-FROM install_workflows w
+FROM target_workflows w
 JOIN accounts a
     ON a.id = w.created_by_id
+LEFT JOIN installs i
+    ON i.id = w.owner_id
+    AND i.deleted_at = 0
+LEFT JOIN orgs o
+    ON o.id = w.org_id
+    AND o.deleted_at = 0
 LEFT JOIN workflow_step_groups sg
     ON sg.workflow_id = w.id
     AND sg.deleted_at = 0
 LEFT JOIN install_workflow_steps s
     ON s.workflow_step_group_id = sg.id
     AND s.deleted_at = 0
-LEFT JOIN queue_signals qs_sg
-    ON qs_sg.owner_id = sg.id
-    AND qs_sg.owner_type = 'workflow_step_groups'
-    AND qs_sg.deleted_at = 0
-LEFT JOIN queue_signals qs_s
-    ON qs_s.owner_id = s.id
-    AND qs_s.owner_type = 'install_workflow_steps'
-    AND qs_s.deleted_at = 0
-WHERE w.deleted_at = 0
-${workflow_filter}
+LEFT JOIN sg_signals sgs
+    ON sgs.step_group_id = sg.id
+LEFT JOIN step_signals ss
+    ON ss.step_id = s.id
 ORDER BY
     w.created_at DESC,
     sg.group_idx ASC,
     s.idx ASC
-LIMIT ${limit}
 ) t;
 SQL
 
@@ -151,7 +167,10 @@ echo "[query workflow steps] $(echo "$rows_json" | jq 'length') rows returned"
 
 if [[ -n "${NUON_ACTIONS_OUTPUT_FILEPATH:-}" ]]; then
   echo "[query workflow steps] writing outputs to $NUON_ACTIONS_OUTPUT_FILEPATH"
-  jq -cn --argjson rows "$rows_json" '{rows: $rows}' > "$NUON_ACTIONS_OUTPUT_FILEPATH"
+  # Pipe via stdin (not --argjson) to avoid "Argument list too long";
+  # emit compact JSON so the runner's outputs parser sees a single
+  # NDJSON line.
+  printf '%s' "$rows_json" | jq -c '{rows: .}' > "$NUON_ACTIONS_OUTPUT_FILEPATH"
 fi
 
 echo "[query workflow steps] done"
