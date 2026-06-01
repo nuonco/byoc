@@ -302,16 +302,22 @@ while :; do
 
   echo "$page" | jq -c '
     .[]
-    | (.status_v2.status // "unknown") as $status
+    | (.status // "unknown") as $status
     | ({"error":"0","active":"1"}[$status] // "2") as $prio
     | {("\($prio)_\(.id)"): {
-        id:         .id,
-        name:       .name,
-        status:     $status,
-        app_id:     .app_id,
-        org_id:     .org_id,
-        created_at: .created_at,
-        updated_at: .updated_at
+        id:                         .id,
+        name:                       .name,
+        status:                     $status,
+        app_id:                     .app_id,
+        org_id:                     .org_id,
+        runner_status:              .runner_status,
+        runner_status_description:  .runner_status_description,
+        sandbox_status:             .sandbox_status,
+        sandbox_status_description: .sandbox_status_description,
+        component_status:           .composite_component_status,
+        component_status_description: .composite_component_status_description,
+        created_at:                 .created_at,
+        updated_at:                 .updated_at
       }}' >> $NUON_ACTIONS_OUTPUT_FILEPATH
 
   if [ "$count" -lt "$limit" ]; then
