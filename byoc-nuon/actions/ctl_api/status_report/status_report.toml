@@ -302,7 +302,7 @@ while :; do
 
   echo "$page" | jq -c '
     .[]
-    | (.status_v2.status // "unknown") as $status
+    | (.status // "unknown") as $status
     | ({"error":"0","active":"1"}[$status] // "2") as $prio
     | {("\($prio)_\(.id)"): {
         id:         .id,
