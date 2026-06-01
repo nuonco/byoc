@@ -277,7 +277,8 @@ done
   <table>
       <thead>
           <tr>
-              <th></th>
+              <th>Status</th>
+              <th>ID</th>
               <th>Owner</th>
               <th>Type</th>
               <th>Latest Heartbeat</th>
@@ -297,6 +298,7 @@ done
           {{ $ownerProc := dict }}{{ range $p := $processes }}{{ $t := dig "type" "" $p }}{{ if or (eq $t "install") (eq $t "build") }}{{ $ownerProc = $p }}{{ end }}{{ end }}
           <tr>
               <td><nuon-status status="{{ $status }}"></nuon-status></td>
+              <td><code>{{ $runnerID }}</code></td>
               <td style="white-space:nowrap;">{{ $ownerLabel }}</td>
               <td>{{ dig "type" "—" $runner }}</td>
               <td>{{ with dig "latest_heart_beat_created_at" "" $runner }}<nuon-time time="{{ printf "%sZ" (substr 0 19 .) }}" format="relative"></nuon-time>{{ else }}—{{ end }}</td>
@@ -367,33 +369,69 @@ done
 {{ end }}
 
   </nuon-tab>
-  <nuon-tab name="orgs">
+  <nuon-tab name="installs">
 
-{{ $orgs := dig "orgs" (dict) $steps }} {{ if gt (len $orgs) 0 }}
+{{ $installs := dig "installs" (dict) $steps }} {{ $appsByID := dict }}
+{{ range $_, $a := (dig "apps" (dict) $steps) }}{{ $appsByID = set $appsByID (dig "id" "" $a) (dig "name" "" $a) }}{{ end }}
+{{ $installOrgsByID := dict }}
+{{ range $_, $o := (dig "orgs" (dict) $steps) }}{{ $installOrgsByID = set $installOrgsByID (dig "id" "" $o) (dig "name" "" $o) }}{{ end }}
+{{ if gt (len $installs) 0 }}
 
   <table>
       <thead>
           <tr>
               <th>Name</th>
-              <th>ID</th>
+              <th>App</th>
+              <th>Org</th>
               <th>Created At</th>
               <th>Updated At</th>
+              <th>Details</th>
           </tr>
       </thead>
       <tbody>
-      {{range $id, $org := $orgs}}
+      {{range $id, $install := $installs}}
+          {{ $appID := dig "app_id" "" $install }}
+          {{ $appName := dig $appID "" $appsByID }}
+          {{ $orgID := dig "org_id" "" $install }}
+          {{ $orgName := dig $orgID "" $installOrgsByID }}
+          {{ $installID := dig "id" "—" $install }}
+          {{ $installName := dig "name" "—" $install }}
+          {{ $installStatus := dig "status" "" $install }}
           <tr>
-              <td>{{ dig "name" "—" $org }}</td>
-              <td><code>{{ dig "id" "—" $org }}</code></td>
-              <td>{{ with dig "created_at" "" $org }}<nuon-time time="{{ printf "%sZ" (substr 0 19 .) }}" format="short-datetime"></nuon-time>{{ else }}—{{ end }}</td>
-              <td>{{ with dig "updated_at" "" $org }}<nuon-time time="{{ printf "%sZ" (substr 0 19 .) }}" format="relative"></nuon-time>{{ else }}—{{ end }}</td>
+              <td>{{ $installName }}<br><small style="opacity:0.6;"><code>{{ $installID }}</code></small></td>
+              <td style="white-space:nowrap;">{{ if $appName }}{{ $appName }}{{ else }}<code>{{ default "—" $appID }}</code>{{ end }}</td>
+              <td style="white-space:nowrap;">{{ if $orgName }}{{ $orgName }}{{ else }}<code>{{ default "—" $orgID }}</code>{{ end }}</td>
+              <td>{{ with dig "created_at" "" $install }}<nuon-time time="{{ printf "%sZ" (substr 0 19 .) }}" format="short-datetime"></nuon-time>{{ else }}—{{ end }}</td>
+              <td>{{ with dig "updated_at" "" $install }}<nuon-time time="{{ printf "%sZ" (substr 0 19 .) }}" format="relative"></nuon-time>{{ else }}—{{ end }}</td>
+              <td>
+
+<nuon-panel heading="Install: {{ $installName }}" trigger="View" size="3/4">
+
+<table>
+  <thead><tr><th>Field</th><th>Value</th></tr></thead>
+  <tbody>
+    <tr><td>Name</td><td>{{ $installName }}</td></tr>
+    <tr><td>ID</td><td><code>{{ $installID }}</code></td></tr>
+    <tr><td>Status</td><td>{{ if $installStatus }}<nuon-status status="{{ $installStatus }}" variant="badge"></nuon-status>{{ else }}—{{ end }}</td></tr>
+    <tr><td>App</td><td>{{ if $appName }}{{ $appName }}{{ else }}—{{ end }}</td></tr>
+    <tr><td>App ID</td><td><code>{{ default "—" $appID }}</code></td></tr>
+    <tr><td>Org</td><td>{{ if $orgName }}{{ $orgName }}{{ else }}—{{ end }}</td></tr>
+    <tr><td>Org ID</td><td><code>{{ default "—" $orgID }}</code></td></tr>
+    <tr><td>Created At</td><td>{{ with dig "created_at" "" $install }}<nuon-time time="{{ printf "%sZ" (substr 0 19 .) }}" format="short-datetime"></nuon-time>{{ else }}—{{ end }}</td></tr>
+    <tr><td>Updated At</td><td>{{ with dig "updated_at" "" $install }}<nuon-time time="{{ printf "%sZ" (substr 0 19 .) }}" format="relative"></nuon-time>{{ else }}—{{ end }}</td></tr>
+  </tbody>
+</table>
+
+</nuon-panel>
+
+              </td>
           </tr>
       {{end}}
       </tbody>
   </table>
   {{ else }}
 
-<div style="padding-top: 1rem;"><nuon-banner theme="info">No orgs reported.</nuon-banner></div>
+<div style="padding-top: 1rem;"><nuon-banner theme="info">No installs reported.</nuon-banner></div>
 
 {{ end }}
 
@@ -409,21 +447,42 @@ done
           <tr>
               <th>Name</th>
               <th>Org</th>
-              <th>ID</th>
               <th>Created At</th>
               <th>Updated At</th>
+              <th>Details</th>
           </tr>
       </thead>
       <tbody>
       {{range $id, $app := $apps}}
           {{ $orgID := dig "org_id" "" $app }}
           {{ $orgName := dig $orgID "" $orgsByID }}
+          {{ $appID := dig "id" "—" $app }}
+          {{ $appName := dig "name" "—" $app }}
           <tr>
-              <td>{{ dig "name" "—" $app }}</td>
+              <td>{{ $appName }}<br><small style="opacity:0.6;"><code>{{ $appID }}</code></small></td>
               <td style="white-space:nowrap;">{{ if $orgName }}{{ $orgName }}{{ else }}<code>{{ default "—" $orgID }}</code>{{ end }}</td>
-              <td><code>{{ dig "id" "—" $app }}</code></td>
               <td>{{ with dig "created_at" "" $app }}<nuon-time time="{{ printf "%sZ" (substr 0 19 .) }}" format="short-datetime"></nuon-time>{{ else }}—{{ end }}</td>
               <td>{{ with dig "updated_at" "" $app }}<nuon-time time="{{ printf "%sZ" (substr 0 19 .) }}" format="relative"></nuon-time>{{ else }}—{{ end }}</td>
+              <td>
+
+<nuon-panel heading="App: {{ $appName }}" trigger="View" size="3/4">
+
+<table>
+  <thead><tr><th>Field</th><th>Value</th></tr></thead>
+  <tbody>
+    <tr><td>Name</td><td>{{ $appName }}</td></tr>
+    <tr><td>ID</td><td><code>{{ $appID }}</code></td></tr>
+    <tr><td>Slug</td><td>{{ with dig "slug" "" $app }}<code>{{ . }}</code>{{ else }}—{{ end }}</td></tr>
+    <tr><td>Org</td><td>{{ if $orgName }}{{ $orgName }}{{ else }}—{{ end }}</td></tr>
+    <tr><td>Org ID</td><td><code>{{ default "—" $orgID }}</code></td></tr>
+    <tr><td>Created At</td><td>{{ with dig "created_at" "" $app }}<nuon-time time="{{ printf "%sZ" (substr 0 19 .) }}" format="short-datetime"></nuon-time>{{ else }}—{{ end }}</td></tr>
+    <tr><td>Updated At</td><td>{{ with dig "updated_at" "" $app }}<nuon-time time="{{ printf "%sZ" (substr 0 19 .) }}" format="relative"></nuon-time>{{ else }}—{{ end }}</td></tr>
+  </tbody>
+</table>
+
+</nuon-panel>
+
+              </td>
           </tr>
       {{end}}
       </tbody>
@@ -435,48 +494,52 @@ done
 {{ end }}
 
   </nuon-tab>
-  <nuon-tab name="installs">
+  <nuon-tab name="orgs">
 
-{{ $installs := dig "installs" (dict) $steps }} {{ $appsByID := dict }}
-{{ range $_, $a := (dig "apps" (dict) $steps) }}{{ $appsByID = set $appsByID (dig "id" "" $a) (dig "name" "" $a) }}{{ end }}
-{{ $installOrgsByID := dict }}
-{{ range $_, $o := (dig "orgs" (dict) $steps) }}{{ $installOrgsByID = set $installOrgsByID (dig "id" "" $o) (dig "name" "" $o) }}{{ end }}
-{{ if gt (len $installs) 0 }}
+{{ $orgs := dig "orgs" (dict) $steps }} {{ if gt (len $orgs) 0 }}
 
   <table>
       <thead>
           <tr>
-              <th></th>
               <th>Name</th>
-              <th>App</th>
-              <th>Org</th>
-              <th>ID</th>
               <th>Created At</th>
               <th>Updated At</th>
+              <th>Details</th>
           </tr>
       </thead>
       <tbody>
-      {{range $id, $install := $installs}}
-          {{ $status := dig "status" "" $install }}
-          {{ $appID := dig "app_id" "" $install }}
-          {{ $appName := dig $appID "" $appsByID }}
-          {{ $orgID := dig "org_id" "" $install }}
-          {{ $orgName := dig $orgID "" $installOrgsByID }}
+      {{range $id, $org := $orgs}}
+          {{ $orgID := dig "id" "—" $org }}
+          {{ $orgName := dig "name" "—" $org }}
           <tr>
-              <td><nuon-status status="{{ $status }}"></nuon-status></td>
-              <td>{{ dig "name" "—" $install }}</td>
-              <td style="white-space:nowrap;">{{ if $appName }}{{ $appName }}{{ else }}<code>{{ default "—" $appID }}</code>{{ end }}</td>
-              <td style="white-space:nowrap;">{{ if $orgName }}{{ $orgName }}{{ else }}<code>{{ default "—" $orgID }}</code>{{ end }}</td>
-              <td><code>{{ dig "id" "—" $install }}</code></td>
-              <td>{{ with dig "created_at" "" $install }}<nuon-time time="{{ printf "%sZ" (substr 0 19 .) }}" format="short-datetime"></nuon-time>{{ else }}—{{ end }}</td>
-              <td>{{ with dig "updated_at" "" $install }}<nuon-time time="{{ printf "%sZ" (substr 0 19 .) }}" format="relative"></nuon-time>{{ else }}—{{ end }}</td>
+              <td>{{ $orgName }}<br><small style="opacity:0.6;"><code>{{ $orgID }}</code></small></td>
+              <td>{{ with dig "created_at" "" $org }}<nuon-time time="{{ printf "%sZ" (substr 0 19 .) }}" format="short-datetime"></nuon-time>{{ else }}—{{ end }}</td>
+              <td>{{ with dig "updated_at" "" $org }}<nuon-time time="{{ printf "%sZ" (substr 0 19 .) }}" format="relative"></nuon-time>{{ else }}—{{ end }}</td>
+              <td>
+
+<nuon-panel heading="Org: {{ $orgName }}" trigger="View" size="3/4">
+
+<table>
+  <thead><tr><th>Field</th><th>Value</th></tr></thead>
+  <tbody>
+    <tr><td>Name</td><td>{{ $orgName }}</td></tr>
+    <tr><td>ID</td><td><code>{{ $orgID }}</code></td></tr>
+    <tr><td>Slug</td><td>{{ with dig "slug" "" $org }}<code>{{ . }}</code>{{ else }}—{{ end }}</td></tr>
+    <tr><td>Created At</td><td>{{ with dig "created_at" "" $org }}<nuon-time time="{{ printf "%sZ" (substr 0 19 .) }}" format="short-datetime"></nuon-time>{{ else }}—{{ end }}</td></tr>
+    <tr><td>Updated At</td><td>{{ with dig "updated_at" "" $org }}<nuon-time time="{{ printf "%sZ" (substr 0 19 .) }}" format="relative"></nuon-time>{{ else }}—{{ end }}</td></tr>
+  </tbody>
+</table>
+
+</nuon-panel>
+
+              </td>
           </tr>
       {{end}}
       </tbody>
   </table>
   {{ else }}
 
-<div style="padding-top: 1rem;"><nuon-banner theme="info">No installs reported.</nuon-banner></div>
+<div style="padding-top: 1rem;"><nuon-banner theme="info">No orgs reported.</nuon-banner></div>
 
 {{ end }}
 
