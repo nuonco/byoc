@@ -4,5 +4,4 @@ default      = ""
 display_name = "ctl-api-public memory request"
 required     = false
 group        = "nuon"
-
 user_configurable = false
