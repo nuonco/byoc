@@ -16,4 +16,4 @@ SECRET_ARN = "{{ .nuon.components.rds_cluster_nuon.outputs.db_instance_master_us
 DB_ADDR    = "{{ .nuon.components.rds_cluster_nuon.outputs.address }}"
 DB_PORT    = "5432"
 REGION     = "{{ .nuon.install_stack.outputs.region }}"
-LIMIT      = "10"
+LIMIT      = "1"
