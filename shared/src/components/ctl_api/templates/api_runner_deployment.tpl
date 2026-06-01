@@ -79,12 +79,7 @@ spec:
               path: {{ .Values.api.liveness_probe}}
               port: http-runner
           resources:
-            limits:
-              cpu: {{ .Values.api.resources.limits.cpu }}
-              memory: {{ .Values.api.resources.limits.memory }}
-            requests:
-              cpu: {{ .Values.api.resources.requests.cpu }}
-              memory: {{ .Values.api.resources.requests.memory }}
+            {{- include "ctl_api.containerResources" (dict "api" .Values.api "name" "runner") | nindent 12 }}
           volumeMounts:
             - name: iid-certs
               mountPath: /etc/nuon/iid-certs
