@@ -1,0 +1,157 @@
+#!/usr/bin/env bash
+#
+# Query ctl-api for recent install workflows joined with their step groups,
+# steps, and the queue_signals attached to each (step-group level and step
+# level). Useful for debugging stuck or retrying workflows.
+
+set -e
+set -o pipefail
+set -u
+
+db_name="$DB_NAME"
+db_user="$DB_USER"
+db_addr="$DB_ADDR"
+db_port="$DB_PORT"
+region="$REGION"
+secret_arn="$SECRET_ARN"
+limit="${LIMIT:-10}"
+workflow_id="${WORKFLOW_ID:-}"
+
+if ! [[ "$limit" =~ ^[0-9]+$ ]]; then
+  echo "[query workflow steps] ERROR: LIMIT must be an integer, got: $limit" >&2
+  exit 1
+fi
+
+# WORKFLOW_ID is an opaque ctl-api id (e.g. inwh3px7j15xbeey92mv0bbghk). Enforce
+# a conservative charset so it can be safely interpolated into the SQL below.
+if [[ -n "$workflow_id" ]] && ! [[ "$workflow_id" =~ ^[a-zA-Z0-9_-]+$ ]]; then
+  echo "[query workflow steps] ERROR: WORKFLOW_ID contains unexpected characters: $workflow_id" >&2
+  exit 1
+fi
+
+if [[ -n "$workflow_id" ]]; then
+  workflow_filter="AND w.id = '$workflow_id'"
+else
+  workflow_filter=""
+fi
+
+echo "[query workflow steps] kubectl auth whoami"
+kubectl auth whoami -o json | jq -c
+
+echo "[query workflow steps] scale up ctl-api-init"
+kubectl scale -n ctl-api --replicas=1 deployment/ctl-api-init
+kubectl wait deployment -n ctl-api ctl-api-init --for condition=Available=True --timeout=300s
+
+pod=$(kubectl -n ctl-api get pods --selector app=ctl-api-init -o json | jq -r '.items[0].metadata.name')
+echo "[query workflow steps] using pod: $pod"
+
+echo "[query workflow steps] reading db access secrets from AWS"
+secret=$(aws --region "$region" secretsmanager get-secret-value --secret-id="$secret_arn")
+admin_username=$(echo "$secret" | jq -r '.SecretString' | jq -r '.username')
+admin_password=$(echo "$secret" | jq -r '.SecretString' | jq -r '.password')
+
+echo "[query workflow steps] sanity check"
+echo "db_user=$db_user"
+echo "username=$admin_username"
+
+read -r -d '' sql <<SQL || true
+SET default_transaction_read_only = on;
+SELECT COALESCE(json_agg(row_to_json(t)), '[]'::json)::text FROM (
+SELECT
+    w.id                                    AS workflow_id,
+    w.type                                  AS workflow_type,
+    w.status->>'status'                     AS workflow_status,
+    w.owner_id                              AS install_id,
+    w.org_id,
+    w.approval_option,
+    w.result_directive                      AS wf_result_directive,
+    w.created_at                            AS workflow_created_at,
+    w.started_at                            AS workflow_started_at,
+    w.finished_at                           AS workflow_finished_at,
+    a.email                                 AS created_by_email,
+
+    sg.id                                   AS step_group_id,
+    sg.name                                 AS step_group_name,
+    sg.group_idx,
+    sg.parallel                             AS group_parallel,
+    sg.status->>'status'                    AS step_group_status,
+    sg.result_directive                     AS sg_result_directive,
+
+    s.id                                    AS step_id,
+    s.name                                  AS step_name,
+    s.idx                                   AS step_idx,
+    s.execution_type,
+    s.status->>'status'                     AS step_status,
+    s.result_directive                      AS step_result_directive,
+    s.retryable,
+    s.skippable,
+    s.retried,
+    s.started_at                            AS step_started_at,
+    s.finished_at                           AS step_finished_at,
+
+    s.step_target_id,
+    s.step_target_type,
+
+    qs_sg.id                                AS sg_signal_id,
+    qs_sg.type                              AS sg_signal_type,
+    qs_sg.status->>'status'                 AS sg_signal_status,
+    qs_sg.enqueued                          AS sg_signal_enqueued,
+    qs_sg.queue_id                          AS sg_signal_queue_id,
+
+    qs_s.id                                 AS step_signal_id,
+    qs_s.type                               AS step_signal_type,
+    qs_s.status->>'status'                  AS step_signal_status,
+    qs_s.enqueued                           AS step_signal_enqueued,
+    qs_s.queue_id                           AS step_signal_queue_id
+
+FROM install_workflows w
+JOIN accounts a
+    ON a.id = w.created_by_id
+LEFT JOIN workflow_step_groups sg
+    ON sg.workflow_id = w.id
+    AND sg.deleted_at = 0
+LEFT JOIN install_workflow_steps s
+    ON s.workflow_step_group_id = sg.id
+    AND s.deleted_at = 0
+LEFT JOIN queue_signals qs_sg
+    ON qs_sg.owner_id = sg.id
+    AND qs_sg.owner_type = 'workflow_step_groups'
+    AND qs_sg.deleted_at = 0
+LEFT JOIN queue_signals qs_s
+    ON qs_s.owner_id = s.id
+    AND qs_s.owner_type = 'install_workflow_steps'
+    AND qs_s.deleted_at = 0
+WHERE w.deleted_at = 0
+${workflow_filter}
+ORDER BY
+    w.created_at DESC,
+    sg.group_idx ASC,
+    s.idx ASC
+LIMIT ${limit}
+) t;
+SQL
+
+echo "[query workflow steps] running query (limit=$limit workflow_id=${workflow_id:-<all>})"
+rows_json=$(kubectl --namespace=ctl-api exec -i "$pod" -- \
+  env "PGHOST=$db_addr" "PGPORT=$db_port" "PGUSER=$admin_username" "PGPASSWORD=$admin_password" \
+  psql --no-psqlrc -d "$db_name" -A -t -q -c "$sql" \
+  | tr -d '\r' | { grep -E '^\[' || true; } | tail -n 1)
+
+echo "[query workflow steps] scale down ctl-api-init"
+kubectl scale -n ctl-api --current-replicas=1 --replicas=0 deployment/ctl-api-init
+
+if [[ -z "$rows_json" ]]; then
+  rows_json='[]'
+fi
+
+# Validate JSON; fail loud if psql returned something unparseable.
+echo "$rows_json" | jq . > /dev/null
+
+echo "[query workflow steps] $(echo "$rows_json" | jq 'length') rows returned"
+
+if [[ -n "${NUON_ACTIONS_OUTPUT_FILEPATH:-}" ]]; then
+  echo "[query workflow steps] writing outputs to $NUON_ACTIONS_OUTPUT_FILEPATH"
+  jq -cn --argjson rows "$rows_json" '{rows: $rows}' > "$NUON_ACTIONS_OUTPUT_FILEPATH"
+fi
+
+echo "[query workflow steps] done"
