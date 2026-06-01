@@ -282,20 +282,21 @@ api:
       targetCPUUtilizationPercentage: 75
       targetMemoryUtilizationPercentage: 75
     # Unset ctl_api_public_* inputs render as missing fields and inherit
-    # api.resources via the ctl_api.containerResources helper.
+    # api.resources via the ctl_api.containerResources helper. `index` is
+    # used so missing input keys return nil instead of raising.
     resources:
       limits:
-        {{- with .nuon.inputs.inputs.ctl_api_public_cpu_limit }}
+        {{- with index .nuon.inputs.inputs "ctl_api_public_cpu_limit" }}
         cpu: {{ . }}
         {{- end }}
-        {{- with .nuon.inputs.inputs.ctl_api_public_memory_limit }}
+        {{- with index .nuon.inputs.inputs "ctl_api_public_memory_limit" }}
         memory: {{ . }}
         {{- end }}
       requests:
-        {{- with .nuon.inputs.inputs.ctl_api_public_cpu_request }}
+        {{- with index .nuon.inputs.inputs "ctl_api_public_cpu_request" }}
         cpu: {{ . }}
         {{- end }}
-        {{- with .nuon.inputs.inputs.ctl_api_public_memory_request }}
+        {{- with index .nuon.inputs.inputs "ctl_api_public_memory_request" }}
         memory: {{ . }}
         {{- end }}
   admin:
