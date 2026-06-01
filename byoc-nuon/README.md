@@ -281,8 +281,8 @@ done
   <table>
       <thead>
           <tr>
-              <th>Status</th>
               <th>ID</th>
+              <th>Status</th>
               <th>Owner</th>
               <th>Type</th>
               <th>Latest Heartbeat</th>
@@ -301,8 +301,8 @@ done
           {{ $processes := default (list) (dig "process_uptimes" nil $runner) }}
           {{ $ownerProc := dict }}{{ range $p := $processes }}{{ $t := dig "type" "" $p }}{{ if or (eq $t "install") (eq $t "build") }}{{ $ownerProc = $p }}{{ end }}{{ end }}
           <tr>
-              <td><nuon-status status="{{ $status }}"></nuon-status></td>
               <td><code>{{ $runnerID }}</code></td>
+              <td><nuon-status status="{{ $status }}"></nuon-status></td>
               <td style="white-space:nowrap;">{{ $ownerLabel }}</td>
               <td>{{ dig "type" "—" $runner }}</td>
               <td>{{ with dig "latest_heart_beat_created_at" "" $runner }}<nuon-time time="{{ printf "%sZ" (substr 0 19 .) }}" format="relative"></nuon-time>{{ else }}—{{ end }}</td>
@@ -385,6 +385,7 @@ done
       <thead>
           <tr>
               <th>Name</th>
+              <th>Status</th>
               <th>App</th>
               <th>Org</th>
               <th>Created At</th>
@@ -401,8 +402,12 @@ done
           {{ $installID := dig "id" "—" $install }}
           {{ $installName := dig "name" "—" $install }}
           {{ $installStatus := dig "status" "" $install }}
+          {{ $runnerStatus := dig "runner_status" "" $install }}
+          {{ $sandboxStatus := dig "sandbox_status" "" $install }}
+          {{ $componentStatus := dig "component_status" "" $install }}
           <tr>
               <td>{{ $installName }}<br><small style="opacity:0.6;"><code>{{ $installID }}</code></small></td>
+              <td style="white-space:nowrap;"><nuon-group gap="1" align="center" justify="start">{{ if $runnerStatus }}<nuon-status status="{{ $runnerStatus }}" variant="badge" label="runner"></nuon-status>{{ end }}{{ if $sandboxStatus }}<nuon-status status="{{ $sandboxStatus }}" variant="badge" label="sandbox"></nuon-status>{{ end }}{{ if $componentStatus }}<nuon-status status="{{ $componentStatus }}" variant="badge" label="components"></nuon-status>{{ end }}</nuon-group></td>
               <td style="white-space:nowrap;">{{ if $appName }}{{ $appName }}{{ else }}<code>{{ default "—" $appID }}</code>{{ end }}</td>
               <td style="white-space:nowrap;">{{ if $orgName }}{{ $orgName }}{{ else }}<code>{{ default "—" $orgID }}</code>{{ end }}</td>
               <td>{{ with dig "created_at" "" $install }}<nuon-time time="{{ printf "%sZ" (substr 0 19 .) }}" format="short-datetime"></nuon-time>{{ else }}—{{ end }}</td>
@@ -416,7 +421,9 @@ done
   <tbody>
     <tr><td>Name</td><td>{{ $installName }}</td></tr>
     <tr><td>ID</td><td><code>{{ $installID }}</code></td></tr>
-    <tr><td>Status</td><td>{{ if $installStatus }}<nuon-status status="{{ $installStatus }}" variant="badge"></nuon-status>{{ else }}—{{ end }}</td></tr>
+    <tr><td>Runner Status</td><td>{{ if $runnerStatus }}<nuon-status status="{{ $runnerStatus }}" variant="badge"></nuon-status>{{ else }}—{{ end }}{{ with dig "runner_status_description" "" $install }} <small style="opacity:0.7;">{{ . }}</small>{{ end }}</td></tr>
+    <tr><td>Sandbox Status</td><td>{{ if $sandboxStatus }}<nuon-status status="{{ $sandboxStatus }}" variant="badge"></nuon-status>{{ else }}—{{ end }}{{ with dig "sandbox_status_description" "" $install }} <small style="opacity:0.7;">{{ . }}</small>{{ end }}</td></tr>
+    <tr><td>Components Status</td><td>{{ if $componentStatus }}<nuon-status status="{{ $componentStatus }}" variant="badge"></nuon-status>{{ else }}—{{ end }}{{ with dig "component_status_description" "" $install }} <small style="opacity:0.7;">{{ . }}</small>{{ end }}</td></tr>
     <tr><td>App</td><td>{{ if $appName }}{{ $appName }}{{ else }}—{{ end }}</td></tr>
     <tr><td>App ID</td><td><code>{{ default "—" $appID }}</code></td></tr>
     <tr><td>Org</td><td>{{ if $orgName }}{{ $orgName }}{{ else }}—{{ end }}</td></tr>
