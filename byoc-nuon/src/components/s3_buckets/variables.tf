@@ -1,5 +1,6 @@
 locals {
   install_templates_bucket_name = "${var.install_id}-byoc-nuon-install-templates"
+  blob_bucket_name              = "${var.install_id}-byoc-nuon-install-blob"
   tags = {
     "install.nuon.co/id"     = var.install_id
     "component.nuon.co/name" = "ctl-api-buckets"

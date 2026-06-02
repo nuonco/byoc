@@ -8,6 +8,16 @@ output "install_template_bucket" {
   }
 }
 
+output "blob_bucket" {
+  value = {
+    id          = aws_s3_bucket.blob.id
+    arn         = aws_s3_bucket.blob.arn
+    domain_name = aws_s3_bucket.blob.bucket_domain_name
+    base_url    = "https://${aws_s3_bucket.blob.bucket_regional_domain_name}/"
+    region      = aws_s3_bucket.blob.region
+  }
+}
+
 output "clickhouse_bucket" {
   value = {
     id          = module.clickhouse_bucket.s3_bucket_id
