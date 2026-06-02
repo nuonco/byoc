@@ -13,13 +13,31 @@ type           = "deploy"
 component_name = "img_nuon_ctl_api"
 
 [[steps]]
+name        = "Initialize the ctl-api DB"
+type        = "action"
+action_name = "ctl_api_init_db"
+
+[[steps]]
+name        = "Initialize ClickHouse"
+type        = "action"
+action_name = "ch_init"
+
+[[steps]]
 name            = "Deploy helm chart"
 type            = "deploy"
 component_name  = "ctl_api"
-deploy_triggers = "true"
+
+[[steps]]
+name        = "ctl-api post-deploy startup"
+type        = "action"
+action_name = "ctl_api_post_deploy_startup"
+
+[[steps]]
+name        = "ctl-api post-deploy"
+type        = "action"
+action_name = "ctl_api_post_deploy"
 
 [[steps]]
 name            = "Deploy dashboard helm chart"
 type            = "deploy"
 component_name  = "dashboard_ui"
-deploy_triggers = "true"
