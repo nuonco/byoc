@@ -8,7 +8,7 @@ type  = "manual"
 
 [[triggers]]
 type          = "cron"
-cron_schedule = "3,13,23,37,41,53 * * * *"
+cron_schedule = "10,20,30,40,50 * * * *"
 
 [[steps]]
 name            = "check_and_restore_replicas"
