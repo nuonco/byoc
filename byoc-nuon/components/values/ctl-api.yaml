@@ -90,6 +90,9 @@ env:
   TEMPORAL_UI_URL: http://temporal-ui.{{ .nuon.install_stack.outputs.region }}.{{ .nuon.sandbox.outputs.nuon_dns.internal_domain.name }}:8080
   SANDBOX_MODE_SLEEP: 1s
 
+  BLOB_STORAGE_BUCKET: "{{ or .nuon.components.s3_buckets.outputs.blob_bucket.id  '' }}"
+  BLOB_STORAGE_REGION: "{{ or .nuon.components.s3_buckets.outputs.blob_bucket.region '' }}"
+
   # NOTE: deprecated or not in use in byoc
   SEGMENT_WRITE_KEY: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
   LOOPS_API_KEY: "{{ .nuon.inputs.inputs.loops_api_key }}"
