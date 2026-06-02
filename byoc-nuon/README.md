@@ -27,16 +27,11 @@
 {{ $wfData := dict }}{{ with .outputs }}{{ $wfData = . }}{{ end }} {{ $wfRows := dig "workflows" (list) $wfData }}
 {{ if and .populated (eq .status "finished") (gt (len $wfRows) 0) }}
 
-<div style="padding-top: 1rem;"><nuon-group gap="8" align="center" justify="start">
-<nuon-label-badge label="count:{{ len $wfRows }}"></nuon-label-badge>
-</nuon-group></div>
-
 <table>
   <thead>
     <tr>
       <th>Status</th>
       <th>Name</th>
-      <th>Type</th>
       <th>Created By</th>
       <th>Org</th>
       <th>Owner</th>
@@ -57,11 +52,10 @@
     <tr>
       <td>{{ if $status }}<nuon-status status="{{ $status }}" variant="badge"></nuon-status>{{ else }}—{{ end }}</td>
       <td>{{ dig "workflow_name" "—" . }}</td>
-      <td>{{ dig "workflow_type" "—" . }}</td>
       <td style="white-space:nowrap;">{{ $createdByLabel }}</td>
       {{ $orgName := dig "org_name" "" . }}{{ $orgID := dig "org_id" "" . }}
-      <td style="white-space:nowrap;">{{ if $orgName }}{{ $orgName }}{{ else if $orgID }}<code>{{ $orgID }}</code>{{ else }}—{{ end }}</td>
-      <td style="white-space:nowrap;">{{ if $ownerName }}{{ $ownerName }}{{ else if $ownerID }}<code>{{ $ownerID }}</code>{{ else }}—{{ end }}</td>
+      <td style="white-space:nowrap;">{{ if $orgName }}{{ $orgName }}{{ with $orgID }}<br><small style="opacity:0.6;"><code>{{ . }}</code></small>{{ end }}{{ else if $orgID }}<code>{{ $orgID }}</code>{{ else }}—{{ end }}</td>
+      <td style="white-space:nowrap;">{{ if $ownerName }}{{ $ownerName }}{{ with $ownerID }}<br><small style="opacity:0.6;"><code>{{ . }}</code></small>{{ end }}{{ else if $ownerID }}<code>{{ $ownerID }}</code>{{ else }}—{{ end }}</td>
       <td>{{ with dig "workflow_created_at" "" . }}<nuon-time time="{{ printf "%sZ" (substr 0 19 .) }}" format="relative"></nuon-time>{{ else }}—{{ end }}</td>
       <td>{{ with dig "workflow_finished_at" "" . }}<nuon-time time="{{ printf "%sZ" (substr 0 19 .) }}" format="relative"></nuon-time>{{ else }}—{{ end }}</td>
       <td>
@@ -232,6 +226,8 @@ section.</nuon-banner>
 
 <div style="padding-top:1rem;"></div>
 
+<nuon-group gap="2" align="center" justify="start">{{ with dig "updated_at" "" $statusOutputs }}<span style="margin-left:auto;font-size:0.85em;">Last updated by <a href="/{{ $.nuon.org.id }}/installs/{{ $.nuon.install.id }}/actions/{{ $statusActionID }}">status_report</a> <nuon-time time="{{ . }}" format="relative"></nuon-time></span>{{ end }}</nuon-group>
+
 {{ $installs := dig "installs" (dict) $steps }} {{ $appsByID := dict }}
 {{ range $_, $a := (dig "apps" (dict) $steps) }}{{ $appsByID = set $appsByID (dig "id" "" $a) (dig "name" "" $a) }}{{ end }}
 {{ $installOrgsByID := dict }}
@@ -308,6 +304,8 @@ section.</nuon-banner>
 
 <div style="padding-top:1rem;"></div>
 
+<nuon-group gap="2" align="center" justify="start">{{ with dig "updated_at" "" $statusOutputs }}<span style="margin-left:auto;font-size:0.85em;">Last updated by <a href="/{{ $.nuon.org.id }}/installs/{{ $.nuon.install.id }}/actions/{{ $statusActionID }}">status_report</a> <nuon-time time="{{ . }}" format="relative"></nuon-time></span>{{ end }}</nuon-group>
+
 {{ $apps := dig "apps" (dict) $steps }} {{ $orgsByID := dict }}
 {{ range $_, $o := (dig "orgs" (dict) $steps) }}{{ $orgsByID = set $orgsByID (dig "id" "" $o) (dig "name" "" $o) }}{{ end }}
 {{ if gt (len $apps) 0 }}
@@ -367,6 +365,8 @@ section.</nuon-banner>
   <nuon-tab name="orgs">
 
 <div style="padding-top:1rem;"></div>
+
+<nuon-group gap="2" align="center" justify="start">{{ with dig "updated_at" "" $statusOutputs }}<span style="margin-left:auto;font-size:0.85em;">Last updated by <a href="/{{ $.nuon.org.id }}/installs/{{ $.nuon.install.id }}/actions/{{ $statusActionID }}">status_report</a> <nuon-time time="{{ . }}" format="relative"></nuon-time></span>{{ end }}</nuon-group>
 
 {{ $orgs := dig "orgs" (dict) $steps }} {{ if gt (len $orgs) 0 }}
 
