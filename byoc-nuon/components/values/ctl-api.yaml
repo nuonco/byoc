@@ -78,6 +78,9 @@ env:
   AWS_CLOUDFORMATION_STACK_TEMPLATE_BUCKET: "{{ .nuon.components.s3_buckets.outputs.install_template_bucket.id }}"
   AWS_CLOUDFORMATION_STACK_TEMPLATE_BUCKET_REGION: "{{ .nuon.components.s3_buckets.outputs.install_template_bucket.region }}"
 
+  BLOB_STORAGE_BUCKET: "{{ .nuon.components.s3_buckets.outputs.blob_bucket.id }}"
+  BLOB_STORAGE_BUCKET_REGION: "{{ .nuon.components.s3_buckets.outputs.blob_bucket.region }}"
+
   APP_URL: https://app.{{ .nuon.sandbox.outputs.nuon_dns.public_domain.name }}
   PUBLIC_API_URL: https://api.{{ .nuon.sandbox.outputs.nuon_dns.public_domain.name }}
   RUNNER_API_URL: https://runner.{{ .nuon.sandbox.outputs.nuon_dns.public_domain.name }}
