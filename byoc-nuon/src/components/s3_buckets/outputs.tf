@@ -8,6 +8,15 @@ output "install_template_bucket" {
   }
 }
 
+output "blob_bucket" {
+  value = {
+    id          = module.blob_bucket.s3_bucket_id
+    arn         = module.blob_bucket.s3_bucket_arn
+    domain_name = module.blob_bucket.s3_bucket_bucket_domain_name
+    region      = module.blob_bucket.s3_bucket_region
+  }
+}
+
 output "clickhouse_bucket" {
   value = {
     id          = module.clickhouse_bucket.s3_bucket_id
