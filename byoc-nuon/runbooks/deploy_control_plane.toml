@@ -1,43 +1,43 @@
-name        = "deploy_control_plane" # NOTE: "deploy_nuon", maybe?
-description = "Deploys Nuon's ctl-api and dashboard-ui: syncs and rolls the CTL API, then the dashboard UI."
+name        = "deploy_control_plane"
+description = "Sync and deploy ctl-api and dashboard-ui."
 readme      = "./runbooks/deploy_control_plane.md"
 
 [[steps]]
-name           = "Sync dashboard image"
-type           = "deploy"
-component_name = "img_nuon_dashboard_ui"
-
-[[steps]]
-name           = "Sync image"
+name           = "ctl-api: Sync image"
 type           = "deploy"
 component_name = "img_nuon_ctl_api"
 
 [[steps]]
-name        = "Initialize the ctl-api DB"
+name           = "dashboard-ui: Sync image"
+type           = "deploy"
+component_name = "img_nuon_dashboard_ui"
+
+[[steps]]
+name        = "ctl-api:Initialize postgres"
 type        = "action"
 action_name = "ctl_api_init_db"
 
 [[steps]]
-name        = "Initialize ClickHouse"
+name        = "ctl-api: Initialize clickhouse"
 type        = "action"
 action_name = "ch_init"
 
 [[steps]]
-name            = "Deploy helm chart"
+name            = "ctl-api: Deploy"
 type            = "deploy"
 component_name  = "ctl_api"
 
 [[steps]]
-name        = "ctl-api post-deploy startup"
+name        = "ctl-api: Post deploy startup"
 type        = "action"
 action_name = "ctl_api_post_deploy_startup"
 
 [[steps]]
-name        = "ctl-api post-deploy"
+name        = "ctl-api: Post deploy action"
 type        = "action"
 action_name = "ctl_api_post_deploy"
 
 [[steps]]
-name            = "Deploy dashboard helm chart"
+name            = "dashboard-ui: Deploy"
 type            = "deploy"
 component_name  = "dashboard_ui"
