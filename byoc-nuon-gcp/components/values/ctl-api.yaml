@@ -98,6 +98,9 @@ env:
 
   TEMPORAL_WORKFLOW_FAILURE_PANIC: "true"
 
+  # queues management
+  QUEUE_SIGNAL_CLEANUP_ENABLED: "true"
+
 envSecrets:
   - name: "GITHUB_APP_KEY"
     valueFrom:

@@ -124,6 +124,7 @@ env:
   # queues management
   QUEUE_CONTINUE_AS_NEW_HINT_PERIOD: 5m
   QUEUE_CONTINUE_AS_NEW_HISTORY_MAX: "1500"
+  QUEUE_SIGNAL_CLEANUP_ENABLED: "true"
 
 envSecrets:
   - name: "GITHUB_APP_KEY"
