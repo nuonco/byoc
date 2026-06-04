@@ -2,6 +2,7 @@ karpenter:
   discovery_key: "{{ .nuon.sandbox.outputs.karpenter.discovery_key }}"
   discovery_value: "{{ .nuon.sandbox.outputs.karpenter.discovery_value }}"
   instance_profile: "{{ .nuon.sandbox.outputs.karpenter.instance_profile.name }}"
+  ami_alias: "{{ .nuon.inputs.inputs.karpenter_ami_alias }}"
 
 cluster_name: "{{ .nuon.sandbox.outputs.cluster.name }}"
 

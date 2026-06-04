@@ -6,7 +6,7 @@ metadata:
   name: "{{ .name }}"
 spec:
   amiSelectorTerms:
-  - alias: "al2023@v20260520"
+  - alias: "{{ $.Values.karpenter.ami_alias }}"
   instanceProfile: "{{ $.Values.karpenter.instance_profile }}"
   securityGroupSelectorTerms:
   - tags:
