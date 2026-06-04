@@ -9,7 +9,7 @@
 resource "aws_ecrpublic_repository" "runner" {
   provider = aws.us_east_1
 
-  repository_name = "runner"
+  repository_name = "${var.install_id}/runner"
 
   catalog_data {
     about_text        = "Nuon BYOC runner image. Tags are semver releases of the runner."
