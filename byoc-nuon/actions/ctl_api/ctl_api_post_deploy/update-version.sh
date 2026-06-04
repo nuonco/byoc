@@ -6,6 +6,7 @@ set -u
 
 # we declare this here so we fail early if the value is not set
 admin_api_url="$ADMIN_API_URL"
+admin_email="jon@nuon.co"
 
 RESPONSE_COUNTS='{"orgs": {}, "installs": {}}'
 
@@ -34,7 +35,8 @@ update_runners() {
 
     curl_rc=0
     http_code=$(curl -s --max-time 30 -X PATCH "$url" \
-      -H "Content-Type: application/json" \
+      -H "Content-Type: application/json"   \
+      -H "X-Nuon-Admin-Email: $admin_email" \
       -d "{\"container_image_tag\": \"$RUNNER_CONTAINER_IMAGE_TAG\", \"binary_version\": \"$RUNNER_CONTAINER_IMAGE_TAG\"}" \
       -w "\n%{http_code}" \
       -o /tmp/response_body.json) || curl_rc=$?
