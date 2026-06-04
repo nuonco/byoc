@@ -1,0 +1,23 @@
+# action
+# Warms up the install's public ECR runner repository by importing every
+# runner image version that is currently in use across the install's runners.
+#
+# Queries ClickHouse (ctl_api.latest_runner_heartbeats) for the distinct set
+# of `version` values reported by runner heartbeats, then imports each of those
+# tags from the upstream Nuon public ECR registry into the install's own public
+# ECR runner repository (component: runner_repository) -- the same oras copy
+# performed by ecr_runner_import, just fanned out over every active version.
+name    = "runner_repository_warm_up"
+timeout = "15m"
+
+[[triggers]]
+type = "manual"
+
+[[steps]]
+name            = "warm-up"
+inline_contents = "./runner_repository/warm_up_repository/warm_up.sh"
+
+[steps.env_vars]
+# SOURCE_IMAGE_URL is hardcoded to the upstream public ecr repo in the script.
+RUNNER_REPOSITORY_URI = "{{ .nuon.components.runner_repository.outputs.runner_repository.repository_uri }}"
+OVERRIDE              = "false"

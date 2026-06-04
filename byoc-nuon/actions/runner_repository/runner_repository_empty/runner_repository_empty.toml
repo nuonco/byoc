@@ -1,0 +1,25 @@
+# action
+# description: empties the public ECR `runner` repository by deleting all of
+# its images, so the repository can be deleted. Provisioned by the
+# `runner_repository` component (components/0-tf-runner-repository.toml).
+name    = "runner_repository_empty"
+label   = "aws"
+timeout = "5m"
+
+# runs automatically before the runner_repository component is torn down --
+# ECR Public won't delete a repository that still contains images, so this
+# empties it first. Also runnable manually.
+[[triggers]]
+type           = "pre-teardown-component"
+component_name = "runner_repository"
+
+[[triggers]]
+type = "manual"
+
+[[steps]]
+name            = "empty"
+inline_contents = "./runner_repository/runner_repository_empty/empty.sh"
+
+[steps.env_vars]
+REPOSITORY_NAME = "runner"
+AWS_REGION      = "us-east-1"

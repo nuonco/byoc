@@ -11,7 +11,7 @@ type = "manual"
 
 [[steps]]
 name            = "list"
-inline_contents = "./runners/runner_repository_list_tags/list-tags.sh"
+inline_contents = "./runner_repository/runner_repository_list_tags/list-tags.sh"
 
 [steps.env_vars]
 REPOSITORY_NAME = "runner"
