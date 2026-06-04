@@ -1,3 +1,3 @@
-name         = "Karpenter"
+name         = "karpenter"
 description  = "Configurations for Karpenter"
 display_name = "Karpenter Configurations"
