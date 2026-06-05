@@ -8,6 +8,13 @@ cluster_name: "{{ .nuon.sandbox.outputs.cluster.name }}"
 
 region: "{{ .nuon.install_stack.outputs.region }}"
 
+# availability zones come from the sandbox VPC output rather than being derived
+# from the region, since the actual AZs can differ across sandboxes.
+azs:
+{{- range .nuon.sandbox.outputs.vpc.azs }}
+  - "{{ . }}"
+{{- end }}
+
 nodepools:
   - name: temporal
     instance_types:
