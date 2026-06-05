@@ -7,7 +7,7 @@ on:
   workflow_dispatch:
 env:
   GH_TOKEN: ${{ secrets.NUON_BOT_GITHUB_TOKEN }}
-  NODECLASS_FILE: byoc-nuon/src/components/karpenter-nodepools/templates/nodeclass.tpl
+  INPUT_FILE: byoc-nuon/inputs/karpenter/karpenter_ami_alias.toml
 jobs:
   update_ami_alias:
     name: Update AMI Alias to N-1
@@ -38,7 +38,7 @@ jobs:
             exit 1
           fi
 
-          current=$(grep -oE 'al2023@v[0-9]{8}' "$NODECLASS_FILE" | head -1 | cut -d'@' -f2)
+          current=$(grep -oE 'al2023@v[0-9]{8}' "$INPUT_FILE" | head -1 | cut -d'@' -f2)
 
           echo "latest=$latest"
           echo "n_minus_one=$n_minus_one"
@@ -64,13 +64,13 @@ jobs:
       - name: Update AMI alias
         if: steps.resolve.outputs.already_current == 'false' && steps.existing.outputs.existing == '0'
         run: |
-          ./scripts/update_ami_alias.sh "$NODECLASS_FILE" "${{ steps.resolve.outputs.n_minus_one }}"
+          ./scripts/update_ami_alias.sh "$INPUT_FILE" "${{ steps.resolve.outputs.n_minus_one }}"
       - name: Commit changes
         if: steps.resolve.outputs.already_current == 'false' && steps.existing.outputs.existing == '0'
         run: |
           branch="${{ steps.existing.outputs.branch }}"
           git checkout -b "$branch"
-          git add "$NODECLASS_FILE"
+          git add "$INPUT_FILE"
           git commit -m "chore: bump amazon linux alias to ${{ steps.resolve.outputs.n_minus_one }}"
           git push -u origin "$branch"
       - name: Open PR
