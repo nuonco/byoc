@@ -1,27 +1,29 @@
 type = "maintenance"
 name                 = "{{ .nuon.install.id }}-maintenance"
-description          = "maintenance"
-display_name         = "byoc-nuon maintenance role"
-permissions_boundary = "./maintenance_boundary.json"
+description          = "Maintenance Role for BYOC Nuon"
+display_name         = "maintenance"
+permissions_boundary = "./boundaries/maintenance_boundary.json"
 
-# Base identity policy: same service set as the permissions boundary (which is shared with the
-# provision role). Replaces AdministratorAccess so maintenance is capped to the install's services,
-# not the whole account. The scoped policies below are subsets of this and become the tightening
-# target once this broad base is narrowed to day-2-only actions.
+# Base identity policy: least-privilege action set for the maintenance role, derived from observed
+# CloudTrail usage (Telluride steady-state + foreign-forensics component-creation fallback), capped
+# by the shared permissions boundary. Replaces AdministratorAccess. Still includes component-create
+# verbs (s3/rds/route53/acm) for the interrupted-provision fallback path; these can be dropped to a
+# day-2-only set once provision reliably creates all components. The scoped policies below add the
+# secretsmanager writes (rds! secrets) and bucket-policy grants on top of this.
 [[policies]]
 name = "{{ .nuon.install.id }}-maintenance-base"
-contents = "./maintenance-base.json"
+contents = "./policies/maintenance-base.json"
 
 # NOTE: the tag in this policy is determined by the rds_cluster_* component config. the format is known ahead of time by
 # convention.
 [[policies]]
 name = "{{ .nuon.install.id }}-limited-secrets-manager-rds"
-contents = "./rds-secret.json"
+contents = "./policies/rds-secret.json"
 
 [[policies]]
 name = "{{ .nuon.install.id }}-allow-secret-list"
-contents = "./secrets-list.json"
+contents = "./policies/secrets-list.json"
 
 [[policies]]
 name = "bucket-put-policy-scoped"
-contents = "./bucket-put-policy.json"
+contents = "./policies/bucket-put-policy.json"
