@@ -57,7 +57,7 @@ env:
   INTERNAL_HTTP_PORT: !!string 8082
   RUNNER_HTTP_PORT: !!string 8083
   GRACEFUL_SHUTDOWN_TIMEOUT: 10s
-  RUNNER_CONTAINER_IMAGE_TAG: "0.19.978"
+  RUNNER_CONTAINER_IMAGE_TAG: "0.19.999"
   RUNNER_CONTAINER_IMAGE_URL: "{{ .nuon.inputs.inputs.runner_image_url }}"
 
   GITHUB_APP_ID: !!string {{ .nuon.inputs.inputs.github_app_id }}
@@ -366,10 +366,12 @@ api:
   minDomains: 2
 
   # TODO: these should actually match the zones the Nuon RDS Cluster is in to reduce latencey
+  # AZs come from the sandbox VPC output rather than being derived from the
+  # region, since the actual AZs can differ across sandboxes.
   zones:
-    - "{{ .nuon.install_stack.outputs.region }}a"
-    - "{{ .nuon.install_stack.outputs.region }}b"
-    - "{{ .nuon.install_stack.outputs.region }}c"
+  {{- range .nuon.sandbox.outputs.vpc.azs }}
+    - "{{ . }}"
+  {{- end }}
 
 # auth-specific secrets (in addition to the shared envSecrets)
 auth:

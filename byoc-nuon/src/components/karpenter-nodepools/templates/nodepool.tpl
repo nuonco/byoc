@@ -74,9 +74,9 @@ spec:
         - {{ . }}
         {{- end }}
         {{- else }}
-        - {{ $.Values.region }}a
-        - {{ $.Values.region }}b
-        - {{ $.Values.region }}c
+        {{- range $.Values.azs }}
+        - {{ . }}
+        {{- end }}
         {{- end }}
       - key: pool.nuon.co
         operator: Exists
