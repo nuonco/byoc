@@ -4,8 +4,13 @@ description          = "maintenance"
 display_name         = "byoc-nuon maintenance role"
 permissions_boundary = "./maintenance_boundary.json"
 
+# Base identity policy: same service set as the permissions boundary (which is shared with the
+# provision role). Replaces AdministratorAccess so maintenance is capped to the install's services,
+# not the whole account. The scoped policies below are subsets of this and become the tightening
+# target once this broad base is narrowed to day-2-only actions.
 [[policies]]
-managed_policy_name = "AdministratorAccess"
+name = "{{ .nuon.install.id }}-maintenance-base"
+contents = "./maintenance-base.json"
 
 # NOTE: the tag in this policy is determined by the rds_cluster_* component config. the format is known ahead of time by
 # convention.
