@@ -1,0 +1,58 @@
+name        = "temporal_db_reset"
+description = "Temporal DB reset SoP: quiesce Temporal server and ctl-api workers, drop and recreate the Temporal DB, restore namespaces, scale everything back up, and reprovision orgs."
+readme      = "./runbooks/temporal_db_reset.md"
+
+[[steps]]
+name        = "Refresh Temporal RDS secret"
+type        = "action"
+action_name = "temporal_rds_creds"
+
+[[steps]]
+name        = "Restart Temporal deployments"
+type        = "action"
+action_name = "temporal_restart"
+
+[[steps]]
+name        = "Scale down Temporal server"
+type        = "action"
+action_name = "temporal-scale-down"
+
+[[steps]]
+name        = "Pause ctl-api worker HPAs and scale to zero"
+type        = "action"
+action_name = "ctl_api_pause_worker_hpas"
+
+[[steps]]
+name        = "Clear org queue signals"
+type        = "action"
+action_name = "ctl_api_clear_org_queues"
+
+[[steps]]
+name        = "Drop Temporal DB"
+type        = "action"
+action_name = "temporal_drop_db"
+
+[[steps]]
+name        = "Init Temporal DB"
+type        = "action"
+action_name = "temporal_init_db"
+
+[[steps]]
+name        = "Scale up Temporal server"
+type        = "action"
+action_name = "temporal_hard_reset_scale_up_temporal"
+
+[[steps]]
+name        = "Ensure Temporal namespaces"
+type        = "action"
+action_name = "temporal_ensure_namespaces"
+
+[[steps]]
+name        = "Unpause ctl-api worker HPAs"
+type        = "action"
+action_name = "ctl_api_unpause_worker_hpas"
+
+[[steps]]
+name        = "Reprovision orgs"
+type        = "action"
+action_name = "temporal_hard_reset_reprovision_orgs"

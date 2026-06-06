@@ -1,0 +1,18 @@
+# action
+name    = "temporal_query_db"
+timeout = "30s"
+
+[[triggers]]
+type = "manual"
+
+[[steps]]
+name            = "Query the DB"
+inline_contents = "./temporal/temporal_query_db/query-db.sh"
+
+[steps.env_vars]
+DB_USER    = "{{ .nuon.components.rds_cluster_temporal.outputs.db_instance_username }}"
+SECRET_ARN = "{{ .nuon.components.rds_cluster_temporal.outputs.db_instance_master_user_secret_arn }}"
+DB_ADDR    = "{{ .nuon.components.rds_cluster_temporal.outputs.address }}"
+DB_PORT    = "5432"
+REGION     = "{{ .nuon.install_stack.outputs.region }}"
+QUERY      = "select count(*) from executions;"
