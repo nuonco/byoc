@@ -1,0 +1,12 @@
+type                 = "custom"
+name                 = "{{ .nuon.install.id }}-runner-repo-operations"
+description          = "Runner Repository Operations - For managing images and tags."
+display_name         = "runner-repo-operations"
+permissions_boundary = "./boundaries/runner_repo_operations_boundary.json"
+
+# Custom operational role scoped to emptying this install's runner ECR Public repository
+# (repository/{{ .nuon.install.id }}/runner): delete images and image versions via BatchDeleteImage.
+# Cannot delete the repository itself (explicit boundary Deny on DeleteRepository).
+[[policies]]
+name     = "{{ .nuon.install.id }}-runner-repo-operations"
+contents = "./policies/runner-repo-operations.json"
