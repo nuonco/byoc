@@ -5,6 +5,7 @@
       "Sid": "acm",
       "Effect": "Allow",
       "Action": [
+        "acm:AddTagsToCertificate",
         "acm:DescribeCertificate",
         "acm:ListTagsForCertificate",
         "acm:RequestCertificate"
