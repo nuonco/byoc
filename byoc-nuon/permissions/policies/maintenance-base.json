@@ -155,6 +155,7 @@
         "s3:GetBucketVersioning",
         "s3:GetBucketWebsite",
         "s3:GetBucketTagging",
+        "s3:ListBucket",
         "s3:PutEncryptionConfiguration",
         "s3:PutBucketOwnershipControls",
         "s3:PutBucketPolicy",
