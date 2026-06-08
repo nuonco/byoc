@@ -13,29 +13,17 @@ env:
   METRICS_TAGS: "org_id:{{ .nuon.org.id }},org_name:{{ .nuon.org.name }}"
 
   NUON_API_URL: "https://api.{{ .nuon.sandbox.outputs.nuon_dns.public_domain.name }}"
-  NEXT_PUBLIC_API_URL: "https://api.{{ .nuon.sandbox.outputs.nuon_dns.public_domain.name }}"
 
-  NEXT_PUBLIC_DATADOG_ENV: "byoc-nuon"
-  NEXT_PUBLIC_DATADOG_SITE: "us5.datadoghq.com"
-  NEXT_PUBLIC_DATADOG_CLIENT_TOKEN: "pubxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
-  NEXT_PUBLIC_DATADOG_APP_ID: "iiiiiiii-yyyy-xxxx-0000-xxxxxxxxxxxx"
+  DATADOG_ENV: "byoc-nuon"
+  DATADOG_SITE: "us5.datadoghq.com"
+  DATADOG_CLIENT_TOKEN: "pubxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+  DATADOG_APP_ID: "iiiiiiii-yyyy-xxxx-0000-xxxxxxxxxxxx"
 
   GITHUB_APP_NAME: "{{ .nuon.inputs.inputs.github_app_name }}"
 
   NUON_ADMIN_API_URL: "http://admin.{{ .nuon.sandbox.outputs.nuon_dns.internal_domain.name }}"
   NUON_CTL_API_ADMIN_URL: "http://admin.{{ .nuon.sandbox.outputs.nuon_dns.internal_domain.name }}"
   NUON_TEMPORAL_UI_URL: "http://temporal-web.temporal.svc.cluster.local:8080"
-
-  NUON_CANCEL_JOBS: "true"
-  NUON_DEPLOY_DATA: "true"
-  NUON_INSTALL_REPROVISION: "true"
-  NUON_INSTALL_UPDATE: "true"
-  NUON_ORG_DASHBOARD: "false"
-  NUON_ORG_RUNNER: "true"
-  NUON_ORG_SETTINGS: "false"
-  NUON_ORG_SUPPORT: "false"
-  NUON_RUNNERS: "true"
-  NUON_WORKFLOWS: "true"
 
   # Nuon Auth Configs
   # if NUON_AUTH_SERVICE_URL is not empty, nuon auth is enabled
@@ -47,10 +35,6 @@ env:
   HTTP_PORT: "4000"
 
 envSecrets:
-  # - name: "NEXT_PUBLIC_DATADOG_CLIENT_TOKEN"
-  #   valueFrom:
-  #     name: dashboard-ui-datadog-api-key
-  #     key: datadog_api_key
 
 ui:
   port: 4000
