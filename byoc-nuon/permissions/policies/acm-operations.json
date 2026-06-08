@@ -30,13 +30,25 @@
       }
     },
     {
-      "Sid": "Route53DnsValidation",
+      "Sid": "Route53ValidationScopedToZone",
       "Effect": "Allow",
       "Action": [
         "route53:ChangeResourceRecordSets",
-        "route53:GetChange",
         "route53:GetHostedZone",
         "route53:ListResourceRecordSets"
+      ],
+      "Resource": "*",
+      "Condition": {
+        "StringEquals": {
+          "aws:ResourceTag/install.nuon.co/id": "{{ .nuon.install.id }}"
+        }
+      }
+    },
+    {
+      "Sid": "Route53GetChange",
+      "Effect": "Allow",
+      "Action": [
+        "route53:GetChange"
       ],
       "Resource": "*"
     }
