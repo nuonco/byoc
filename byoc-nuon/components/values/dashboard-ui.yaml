@@ -25,6 +25,7 @@ env:
   NUON_ADMIN_API_URL: "http://admin.{{ .nuon.sandbox.outputs.nuon_dns.internal_domain.name }}"
   NUON_CTL_API_ADMIN_URL: "http://admin.{{ .nuon.sandbox.outputs.nuon_dns.internal_domain.name }}"
   NUON_TEMPORAL_UI_URL: "http://temporal-web.temporal.svc.cluster.local:8080"
+  NUON_ADMIN_DASHBOARD_URL: '{{ ternary "http://ctl-api-dashboard-admin.ctl-api.svc.cluster.local" "" (and (eq "true" .nuon.inputs.inputs.admin_dashboard_enabled) (eq "false" .nuon.inputs.inputs.admin_dashboard_alb_enabled)) }}'
 
   NUON_CANCEL_JOBS: "true"
   NUON_DEPLOY_DATA: "true"
