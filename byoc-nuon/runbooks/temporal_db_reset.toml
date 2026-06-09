@@ -58,6 +58,11 @@ type        = "action"
 action_name = "temporal_hard_reset_reprovision_orgs"
 
 [[steps]]
+name        = "Migrate org queues"
+type        = "action"
+action_name = "orgs_migrate_queue"
+
+[[steps]]
 name        = "Restart runner processes"
 type        = "action"
 action_name = "temporal_hard_reset_restart_runner_processes"
