@@ -5,12 +5,12 @@ labels      = { layer = "services", purpose = "sop" }
 
 [[steps]]
 name           = "ctl-api: Sync image"
-type           = "deploy"
+type           = "component_deploy"
 component_name = "img_nuon_ctl_api"
 
 [[steps]]
 name           = "dashboard-ui: Sync image"
-type           = "deploy"
+type           = "component_deploy"
 component_name = "img_nuon_dashboard_ui"
 
 [[steps]]
@@ -25,7 +25,7 @@ action_name = "ch_init"
 
 [[steps]]
 name            = "ctl-api: Deploy"
-type            = "deploy"
+type            = "component_deploy"
 component_name  = "ctl_api"
 
 [[steps]]
@@ -40,5 +40,5 @@ action_name = "ctl_api_post_deploy"
 
 [[steps]]
 name            = "dashboard-ui: Deploy"
-type            = "deploy"
+type            = "component_deploy"
 component_name  = "dashboard_ui"
