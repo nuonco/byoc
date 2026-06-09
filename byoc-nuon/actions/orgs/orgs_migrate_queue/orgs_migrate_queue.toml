@@ -1,0 +1,15 @@
+# action
+# description: migrates queues for every default org via the admin API.
+name    = "orgs_migrate_queue"
+timeout = "5m"
+
+[[triggers]]
+type = "manual"
+
+[[steps]]
+name = "migrate_queues"
+inline_contents = "./orgs/orgs_migrate_queue/migrate_queues.sh"
+
+[steps.env_vars]
+ADMIN_API_URL = "http://admin.{{ .nuon.sandbox.outputs.nuon_dns.internal_domain.name }}"
+ENDPOINT      = "admin-migrate-queues"
