@@ -1,0 +1,26 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "RunnerRepoOperations",
+      "Effect": "Allow",
+      "Action": [
+        "ecr-public:BatchDeleteImage",
+        "ecr-public:DescribeRepositories",
+        "ecr-public:DescribeImages",
+        "ecr-public:DescribeImageTags",
+        "sts:GetCallerIdentity"
+      ],
+      "Resource": "*"
+    },
+    {
+      "Sid": "DenyRepositoryDeletion",
+      "Effect": "Deny",
+      "Action": [
+        "ecr-public:DeleteRepository",
+        "ecr-public:DeleteRepositoryPolicy"
+      ],
+      "Resource": "*"
+    }
+  ]
+}

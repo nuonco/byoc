@@ -1,0 +1,16 @@
+type                 = "custom"
+name                 = "{{ .nuon.install.id }}-rds-operations"
+description          = "RDS backup operations (create/delete DB snapshots) for BYOC Nuon"
+display_name         = "rds-operations"
+permissions_boundary = "./boundaries/rds_operations_boundary.json"
+
+# Custom operational role scoped to RDS backup management: create/delete/copy DB and DB-cluster
+# snapshots, plus the describe/tag reads needed to target and label them.
+[[policies]]
+name     = "{{ .nuon.install.id }}-rds-operations-backups"
+contents = "./policies/rds-operations-backups.json"
+
+# Tag-scoped DB/cluster destruction (only this install's RDS resources, by install.nuon.co/id).
+[[policies]]
+name     = "{{ .nuon.install.id }}-rds-operations-destruction"
+contents = "./policies/rds-operations-destruction.json"

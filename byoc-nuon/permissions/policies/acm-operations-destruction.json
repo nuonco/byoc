@@ -1,0 +1,18 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "AcmDestruction",
+      "Effect": "Allow",
+      "Action": [
+        "acm:DeleteCertificate"
+      ],
+      "Resource": "*",
+      "Condition": {
+        "StringEquals": {
+          "aws:ResourceTag/install.nuon.co/id": "{{ .nuon.install.id }}"
+        }
+      }
+    }
+  ]
+}
