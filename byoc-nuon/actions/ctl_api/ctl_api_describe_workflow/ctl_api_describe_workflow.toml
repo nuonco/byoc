@@ -1,0 +1,22 @@
+# action
+# description: given a nuon (install) workflow id, returns the workflow row and
+# its steps as a single JSON object (status history trimmed to 10 latest).
+name    = "ctl_api_describe_workflow"
+label   = "query"
+timeout = "5m"
+
+[[triggers]]
+type = "manual"
+
+[[steps]]
+name            = "Describe workflow"
+inline_contents = "./ctl_api/ctl_api_describe_workflow/describe-workflow.sh"
+
+[steps.env_vars]
+DB_USER     = "{{ .nuon.components.rds_cluster_nuon.outputs.db_instance_username }}"
+DB_NAME     = "ctl_api"
+SECRET_ARN  = "{{ .nuon.components.rds_cluster_nuon.outputs.db_instance_master_user_secret_arn }}"
+DB_ADDR     = "{{ .nuon.components.rds_cluster_nuon.outputs.address }}"
+DB_PORT     = "5432"
+REGION      = "{{ .nuon.install_stack.outputs.region }}"
+WORKFLOW_ID = ""
