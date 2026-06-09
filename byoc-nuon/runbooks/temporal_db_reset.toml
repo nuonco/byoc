@@ -56,3 +56,8 @@ action_name = "ctl_api_unpause_worker_hpas"
 name        = "Reprovision orgs"
 type        = "action"
 action_name = "temporal_hard_reset_reprovision_orgs"
+
+[[steps]]
+name        = "Restart runner processes"
+type        = "action"
+action_name = "temporal_hard_reset_restart_runner_processes"
