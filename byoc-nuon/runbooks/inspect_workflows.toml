@@ -1,0 +1,13 @@
+name        = "inspect_workflows"
+description = "Inspect workflows — queries ctl-api for recent install workflows and renders each step group as a table."
+readme      = "./runbooks/inspect_workflows.md"
+
+[[steps]]
+name        = "Query recent workflows"
+type        = "action"
+action_name = "ctl_api_query_workflows_by_type"
+
+[[steps]]
+name        = "Query workflow steps"
+type        = "action"
+action_name = "ctl_api_query_workflow_steps"

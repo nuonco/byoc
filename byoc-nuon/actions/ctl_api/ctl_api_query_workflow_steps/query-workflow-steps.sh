@@ -42,7 +42,12 @@ echo "[query workflow steps] scale up ctl-api-init"
 kubectl scale -n ctl-api --replicas=1 deployment/ctl-api-init
 kubectl wait deployment -n ctl-api ctl-api-init --for condition=Available=True --timeout=300s
 
-pod=$(kubectl -n ctl-api get pods --selector app=ctl-api-init -o json | jq -r '.items[0].metadata.name')
+pod=$(kubectl -n ctl-api get pods --selector app=ctl-api-init --field-selector=status.phase=Running -o json \
+  | jq -r '[.items[] | select(.metadata.deletionTimestamp == null)] | sort_by(.metadata.creationTimestamp) | last | .metadata.name')
+if [[ -z "$pod" || "$pod" == "null" ]]; then
+  echo "[query workflow steps] ERROR: no running ctl-api-init pod found" >&2
+  exit 1
+fi
 echo "[query workflow steps] using pod: $pod"
 
 echo "[query workflow steps] reading db access secrets from AWS"

@@ -17,3 +17,7 @@ DB_ADDR    = "{{ .nuon.components.rds_cluster_nuon.outputs.address }}"
 DB_PORT    = "5432"
 REGION     = "{{ .nuon.install_stack.outputs.region }}"
 LIMIT      = "1"
+
+[[steps]]
+name            = "timestamp"
+inline_contents = "./ctl_api/ctl_api_query_workflow_steps/timestamp.sh"
