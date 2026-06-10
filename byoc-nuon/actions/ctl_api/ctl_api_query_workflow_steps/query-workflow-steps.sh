@@ -30,7 +30,7 @@ if [[ -n "$workflow_id" ]] && ! [[ "$workflow_id" =~ ^[a-zA-Z0-9_-]+$ ]]; then
 fi
 
 if [[ -n "$workflow_id" ]]; then
-  workflow_filter="AND w.id = '$workflow_id'"
+  workflow_filter="AND id = '$workflow_id'"
 else
   workflow_filter=""
 fi
