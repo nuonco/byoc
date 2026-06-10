@@ -3,6 +3,7 @@
 # via /v1/runners/shutdown-processes. Runner deployments respawn fresh processes and
 # re-register via POST /v1/runners/{id}/processes.
 name    = "temporal_hard_reset_restart_runner_processes"
+labels  = { layer = "app", purpose = "step" }
 timeout = "2m"
 
 [[triggers]]

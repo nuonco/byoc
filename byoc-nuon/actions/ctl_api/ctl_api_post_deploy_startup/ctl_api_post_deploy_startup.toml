@@ -1,5 +1,6 @@
 # action
 name    = "ctl_api_post_deploy_startup"
+labels  = { layer = "services", purpose = "step" }
 timeout = "1m30s"
 
 [[triggers]]

@@ -1,6 +1,7 @@
 # action
 # description: ensures all required Temporal namespaces exist after Temporal deploys.
 name    = "temporal_ensure_namespaces"
+labels  = { layer = "services", purpose = "sop" }
 timeout = "1m30s"
 
 [[triggers]]

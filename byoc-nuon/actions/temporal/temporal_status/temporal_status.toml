@@ -2,6 +2,7 @@
 # description: lists active Temporal workflows per namespace for the
 # "Temporal Status" README section.
 name    = "temporal_status"
+labels  = { layer = "services", purpose = "debug" }
 timeout = "5m"
 
 [[triggers]]

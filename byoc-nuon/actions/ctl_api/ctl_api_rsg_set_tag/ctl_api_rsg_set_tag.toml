@@ -1,5 +1,6 @@
 # action
 name    = "ctl_api_rsg_set_tag"
+labels  = { layer = "services", purpose = "sop" }
 timeout = "5m"
 
 [[triggers]]

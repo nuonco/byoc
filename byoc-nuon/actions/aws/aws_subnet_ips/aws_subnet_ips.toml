@@ -1,5 +1,6 @@
 # action
 name    = "aws_subnet_ips"
+labels  = { layer = "infra", purpose = "debug" }
 timeout = "15s"
 
 [[triggers]]

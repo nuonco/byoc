@@ -1,5 +1,6 @@
 # action
 name    = "debug_list_orgs"
+labels  = { layer = "app", purpose = "debug" }
 timeout = "5m"
 
 [[triggers]]

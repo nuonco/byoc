@@ -1,5 +1,6 @@
 # action
 name    = "ch_query"
+labels  = { layer = "infra", purpose = "tool" }
 timeout = "5m"
 
 [[triggers]]

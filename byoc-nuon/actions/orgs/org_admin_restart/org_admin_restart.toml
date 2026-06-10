@@ -1,5 +1,6 @@
 # action
 name    = "org_admin_restart"
+labels  = { layer = "app", purpose = "sop" }
 timeout = "30s"
 
 [[triggers]]

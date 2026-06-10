@@ -1,5 +1,6 @@
 # action
 name    = "ctl_api_query_phone_home"
+labels  = { layer = "services", purpose = "tool" }
 timeout = "120s"
 
 [[triggers]]

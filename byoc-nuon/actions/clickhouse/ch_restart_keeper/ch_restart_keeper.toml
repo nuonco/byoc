@@ -1,5 +1,6 @@
 # action
 name    = "ch_restart_keeper"
+labels  = { layer = "infra", purpose = "sop" }
 timeout = "3m"
 
 [[triggers]]

@@ -1,5 +1,6 @@
 # action
 name    = "runner_asg_instance_refresh"
+labels  = { layer = "app", purpose = "sop" }
 timeout = "1m"
 
 [[triggers]]

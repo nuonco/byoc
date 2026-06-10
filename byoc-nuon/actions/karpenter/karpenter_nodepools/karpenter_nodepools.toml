@@ -1,5 +1,6 @@
 # action
 name    = "karpenter_nodepools"
+labels  = { layer = "infra", purpose = "debug" }
 timeout = "20s"
 
 

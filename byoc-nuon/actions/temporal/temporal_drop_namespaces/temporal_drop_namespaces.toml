@@ -1,10 +1,8 @@
 # action
 # description: ensures all required Temporal namespaces exist after Temporal deploys.
 name    = "temporal_drop_namespaces"
+labels  = { layer = "services", purpose = "sop", temporal = "true" }
 timeout = "10m"
-
-[labels]
-temporal = "true"
 
 [[triggers]]
 type = "manual"

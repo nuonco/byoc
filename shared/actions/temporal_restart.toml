@@ -1,6 +1,7 @@
 # action
 # description: restarts all deployments in the temporal namespace after Temporal deploys.
 name    = "temporal_restart"
+labels  = { layer = "services", purpose = "sop" }
 timeout = "0m30s"
 
 [[triggers]]
