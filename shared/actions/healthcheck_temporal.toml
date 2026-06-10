@@ -1,6 +1,7 @@
 # action
 # description: checks Temporal cluster health every 15 minutes.
 name    = "healthcheck_temporal"
+labels  = { layer = "services", purpose = "debug" }
 timeout = "30s"
 
 [[triggers]]

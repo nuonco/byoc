@@ -1,6 +1,7 @@
 name        = "inspect_dashboard"
 description = "Inspect dashboard-ui — version, git ref, ALB healthcheck, and app URL."
 readme      = "./runbooks/inspect_dashboard.md"
+labels      = { layer = "services", purpose = "debug" }
 
 [[steps]]
 name        = "Dashboard status"

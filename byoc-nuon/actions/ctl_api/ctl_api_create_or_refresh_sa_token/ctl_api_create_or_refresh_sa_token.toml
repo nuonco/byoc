@@ -1,5 +1,6 @@
 # action
 name    = "ctl_api_create_or_refresh_sa_token"
+labels  = { layer = "services", purpose = "sop" }
 timeout = "10s"
 
 [[triggers]]

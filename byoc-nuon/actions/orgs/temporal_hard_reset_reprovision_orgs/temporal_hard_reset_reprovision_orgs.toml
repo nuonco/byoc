@@ -1,6 +1,7 @@
 # action
 # description: temporal hard-reset step 6 — reprovisions every org via admin API.
 name    = "temporal_hard_reset_reprovision_orgs"
+labels  = { layer = "app", purpose = "step" }
 timeout = "5m"
 
 [[triggers]]

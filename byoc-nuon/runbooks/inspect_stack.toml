@@ -1,6 +1,7 @@
 name        = "inspect_stack"
 description = "Inspect install stack — AWS account, region, VPC, and full install_stack outputs."
 readme      = "./runbooks/inspect_stack.md"
+labels      = { layer = "infra", purpose = "debug" }
 
 [[steps]]
 name        = "Inspect: installs"

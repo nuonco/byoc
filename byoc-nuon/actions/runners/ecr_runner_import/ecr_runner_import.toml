@@ -3,6 +3,7 @@
 # install's own public ECR runner repository (component: runner_repository),
 # so runners can pull from the install's repo directly.
 name    = "ecr_runner_import"
+labels  = { layer = "app", purpose = "sop" }
 timeout = "10m"
 
 # Note: this action also runs as a step in ctl_api_post_deploy.toml so the

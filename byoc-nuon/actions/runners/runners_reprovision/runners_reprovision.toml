@@ -1,5 +1,6 @@
 # action
 name    = "runners_reprovision"
+labels  = { layer = "app", purpose = "sop" }
 timeout = "2m"
 
 [[triggers]]

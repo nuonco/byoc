@@ -3,6 +3,7 @@
 # TODO: use an internal-input for the username
 # TODO: replace this with an external-secrets SecretStore
 name    = "ch_cluster_creds"
+labels  = { layer = "infra", purpose = "debug" }
 timeout = "1m"
 
 [[triggers]]

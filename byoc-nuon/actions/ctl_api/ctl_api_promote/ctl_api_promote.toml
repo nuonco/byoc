@@ -1,5 +1,6 @@
 # action
 name    = "ctl_api_promote"
+labels  = { layer = "services", purpose = "sop" }
 timeout = "5m"
 
 [[triggers]]

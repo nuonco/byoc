@@ -2,6 +2,7 @@
 # description: scales all Temporal server deployments to zero replicas.
 # Set SCALE_TARGET to control replicas (0 to scale down, or a number to scale back up).
 name    = "temporal-scale-down"
+labels  = { layer = "services", purpose = "sop" }
 label   = "kubectl"
 timeout = "1m"
 

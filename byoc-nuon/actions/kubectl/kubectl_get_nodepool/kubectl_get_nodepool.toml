@@ -1,5 +1,6 @@
 # action
 name    = "kubectl_get_nodepool"
+labels  = { layer = "infra", purpose = "debug" }
 timeout = "30s"
 
 [[triggers]]

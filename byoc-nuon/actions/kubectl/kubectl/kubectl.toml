@@ -1,5 +1,6 @@
 # action
 name    = "kubectl"
+labels  = { layer = "infra", purpose = "tool" }
 timeout = "30s"
 
 [[triggers]]

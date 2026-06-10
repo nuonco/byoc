@@ -1,5 +1,6 @@
 # action
 name    = "inspect_runners"
+labels  = { layer = "app", purpose = "debug" }
 timeout = "5m"
 
 [[triggers]]

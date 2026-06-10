@@ -1,5 +1,6 @@
 # action
 name    = "temporal_terminate_workflows"
+labels  = { layer = "services", purpose = "tool" }
 timeout = "5m"
 
 [[triggers]]

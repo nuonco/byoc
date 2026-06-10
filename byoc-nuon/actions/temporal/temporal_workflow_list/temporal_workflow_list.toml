@@ -1,6 +1,7 @@
 # action
 # description: lists all workflows in a Temporal namespace, paginated in batches of 100.
 name    = "temporal_workflow_list"
+labels  = { layer = "services", purpose = "debug" }
 label   = "temporal"
 timeout = "5m"
 

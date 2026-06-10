@@ -1,5 +1,6 @@
 # action
 name    = "deployment_logs"
+labels  = { layer = "infra", purpose = "debug" }
 timeout = "2m0s"
 
 [[triggers]]

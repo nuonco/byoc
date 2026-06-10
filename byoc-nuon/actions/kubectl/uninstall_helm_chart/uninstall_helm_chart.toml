@@ -1,5 +1,6 @@
 # action
 name    = "uninstall_helm_chart"
+labels  = { layer = "infra", purpose = "sop" }
 timeout = "30s"
 
 [[triggers]]
