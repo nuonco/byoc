@@ -137,10 +137,39 @@ FROM (
          w.created_by_id     AS created_by_id,
          a.email             AS created_by_email,
          a.subject           AS created_by_subject,
-         a.account_type      AS created_by_account_type
+         a.account_type      AS created_by_account_type,
+         cs.step_id          AS latest_step_id,
+         cs.step_name        AS latest_step_name,
+         cs.step_status      AS latest_step_status,
+         cs.step_group_name  AS latest_step_group_name,
+         cs.group_idx        AS latest_step_group_idx,
+         cs.step_idx         AS latest_step_idx
   FROM install_workflows w
   LEFT JOIN accounts a ON a.id = w.created_by_id
   LEFT JOIN orgs     o ON o.id = w.org_id
+  LEFT JOIN LATERAL (
+    SELECT s.id             AS step_id,
+           s.name           AS step_name,
+           s.status->>'status' AS step_status,
+           sg.name          AS step_group_name,
+           sg.group_idx     AS group_idx,
+           s.idx            AS step_idx
+    FROM workflow_step_groups sg
+    JOIN install_workflow_steps s
+      ON s.workflow_step_group_id = sg.id
+     AND s.deleted_at = 0
+    WHERE sg.workflow_id = w.id
+      AND sg.deleted_at = 0
+    ORDER BY
+      -- prefer in-flight steps (finished_at IS NULL): pick the earliest
+      CASE WHEN s.finished_at IS NULL THEN 0 ELSE 1 END,
+      CASE WHEN s.finished_at IS NULL THEN sg.group_idx END ASC NULLS LAST,
+      CASE WHEN s.finished_at IS NULL THEN s.idx        END ASC NULLS LAST,
+      -- otherwise fall back to the most recent finished step
+      sg.group_idx DESC,
+      s.idx        DESC
+    LIMIT 1
+  ) cs ON true
   WHERE w.deleted_at = 0
   ORDER BY w.created_at DESC
   LIMIT $limit
