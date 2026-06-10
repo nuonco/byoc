@@ -1,7 +1,0 @@
-name         = "ctl_api_public_memory_limit"
-description  = "Override the memory limit for the ctl-api-public deployment (e.g. \"2048Mi\", \"2Gi\"). Leave empty to inherit the shared ctl-api default."
-default      = ""
-display_name = "ctl-api-public memory limit"
-required     = false
-group        = "nuon"
-user_configurable = false
