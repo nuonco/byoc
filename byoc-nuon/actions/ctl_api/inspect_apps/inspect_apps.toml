@@ -1,0 +1,83 @@
+# action
+name    = "inspect_apps"
+timeout = "5m"
+
+[[triggers]]
+type          = "cron"
+cron_schedule = "0 * * * *"
+
+[[triggers]]
+type = "manual"
+
+[[steps]]
+name = "timestamp"
+inline_contents = '''
+#!/usr/bin/env bash
+set -euo pipefail
+jq -nc --arg ts "$(TZ=UTC date +%Y-%m-%dT%H:%M:%SZ)" '{updated_at: $ts}' >> $NUON_ACTIONS_OUTPUT_FILEPATH
+'''
+
+[[steps]]
+name = "apps"
+inline_contents = '''
+#!/usr/bin/env bash
+
+set -e
+set -o pipefail
+set -u
+
+echo "inspect_apps step starting"
+admin_api_addr="$ADMIN_API_URL"
+echo "admin_api_addr=$admin_api_addr"
+
+limit=10
+offset=0
+
+while :; do
+  url="$admin_api_addr/v1/apps/details?limit=$limit&offset=$offset"
+  body_file=$(mktemp)
+  http_code=$(curl --max-time 30 -q -s -o "$body_file" -w '%{http_code}' \
+    "$url" \
+    -H 'accept: application/json' \
+    -H 'X-Nuon-Admin-Email: jon@nuon.co')
+  page=$(cat "$body_file")
+  rm -f "$body_file"
+
+  echo "GET $url -> $http_code"
+  if [ "$http_code" != "200" ]; then
+    echo "non-200 response: $page"
+    exit 1
+  fi
+
+  if ! echo "$page" | jq -e 'type == "array"' >/dev/null; then
+    echo "expected JSON array, got: $page"
+    exit 1
+  fi
+
+  count=$(echo "$page" | jq 'length')
+  echo "page returned $count app(s)"
+  if [ "$count" -eq 0 ]; then
+    break
+  fi
+
+  echo "$page" | jq -c '
+    .[]
+    | {(.id): {
+        id:         .id,
+        name:       .name,
+        slug:       .slug,
+        org_id:     .org_id,
+        created_at: .created_at,
+        updated_at: .updated_at
+      }}' >> $NUON_ACTIONS_OUTPUT_FILEPATH
+
+  if [ "$count" -lt "$limit" ]; then
+    break
+  fi
+
+  offset=$((offset + limit))
+done
+'''
+
+[steps.env_vars]
+ADMIN_API_URL = "http://admin.{{ .nuon.sandbox.outputs.nuon_dns.internal_domain.name }}"

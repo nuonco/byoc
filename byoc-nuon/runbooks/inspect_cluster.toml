@@ -1,0 +1,8 @@
+name        = "inspect_cluster"
+description = "Inspect EKS cluster — sandbox status, cluster name/version, outputs, and access instructions."
+readme      = "./runbooks/inspect_cluster.md"
+
+[[steps]]
+name        = "Inspect: installs"
+type        = "action"
+action_name = "inspect_installs"

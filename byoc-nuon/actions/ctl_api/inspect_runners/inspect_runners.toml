@@ -1,0 +1,104 @@
+# action
+name    = "inspect_runners"
+timeout = "5m"
+
+[[triggers]]
+type          = "cron"
+cron_schedule = "0 * * * *"
+
+[[triggers]]
+type = "manual"
+
+[[steps]]
+name = "timestamp"
+inline_contents = '''
+#!/usr/bin/env bash
+set -euo pipefail
+jq -nc --arg ts "$(TZ=UTC date +%Y-%m-%dT%H:%M:%SZ)" '{updated_at: $ts}' >> $NUON_ACTIONS_OUTPUT_FILEPATH
+'''
+
+[[steps]]
+name = "runners"
+inline_contents = '''
+#!/usr/bin/env bash
+
+set -e
+set -o pipefail
+set -u
+
+echo "inspect_runners step starting"
+admin_api_addr="$ADMIN_API_URL"
+echo "admin_api_addr=$admin_api_addr"
+
+limit=10
+offset=0
+
+while :; do
+  url="$admin_api_addr/v1/runners/details?limit=$limit&offset=$offset"
+  body_file=$(mktemp)
+  http_code=$(curl --max-time 30 -q -s -o "$body_file" -w '%{http_code}' \
+    "$url" \
+    -H 'accept: application/json' \
+    -H 'X-Nuon-Admin-Email: jon@nuon.co')
+  page=$(cat "$body_file")
+  rm -f "$body_file"
+
+  echo "GET $url -> $http_code"
+  if [ "$http_code" != "200" ]; then
+    echo "non-200 response: $page"
+    exit 1
+  fi
+
+  if ! echo "$page" | jq -e 'type == "array"' >/dev/null; then
+    echo "expected JSON array, got: $page"
+    exit 1
+  fi
+
+  count=$(echo "$page" | jq 'length')
+  echo "page returned $count runner(s)"
+  if [ "$count" -eq 0 ]; then
+    break
+  fi
+
+  echo "$page" | jq -c '
+    .[]
+    | (.status_v2.status // "unknown") as $status
+    | ({"error":"0","active":"1"}[$status] // "2") as $prio
+    | {("\($prio)_\(.id)"): {
+        id:         .id,
+        image:      .runner_group.settings.container_image_url,
+        tag:        .runner_group.settings.container_image_tag,
+        status:     $status,
+        type:       .runner_group.type,
+        owner_id:   .runner_group.owner_id,
+        owner_type: .runner_group.owner_type,
+        platform:   .runner_group.platform,
+        latest_health_check_created_at: .latest_health_check.created_at,
+        latest_health_check_status: .latest_health_check.status,
+        latest_heart_beat_created_at: .latest_heart_beat.created_at,
+        latest_heart_beat_version: .latest_heart_beat.version,
+        uptime: .uptime,
+        process_uptimes: [
+          .recent_processes // []
+          | group_by(.type)[]
+          | sort_by(.started_at // .created_at) | last
+          | {
+              id:         .id,
+              type:       .type,
+              status:     .composite_status.status,
+              started_at: .started_at,
+              uptime:     .uptime
+            }
+        ]
+      }}' >> $NUON_ACTIONS_OUTPUT_FILEPATH
+
+  if [ "$count" -lt "$limit" ]; then
+    break
+  fi
+
+  offset=$((offset + limit))
+done
+'''
+
+[steps.env_vars]
+ADMIN_API_URL = "http://admin.{{ .nuon.sandbox.outputs.nuon_dns.internal_domain.name }}"

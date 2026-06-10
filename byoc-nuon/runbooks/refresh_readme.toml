@@ -13,9 +13,24 @@ type        = "action"
 action_name = "dashboard_status"
 
 [[steps]]
-name        = "Status report"
+name        = "Inspect: runners"
 type        = "action"
-action_name = "status_report"
+action_name = "inspect_runners"
+
+[[steps]]
+name        = "Inspect: installs"
+type        = "action"
+action_name = "inspect_installs"
+
+[[steps]]
+name        = "Inspect: apps"
+type        = "action"
+action_name = "inspect_apps"
+
+[[steps]]
+name        = "Inspect: orgs"
+type        = "action"
+action_name = "inspect_orgs"
 
 [[steps]]
 name        = "Healthcheck temporal"
