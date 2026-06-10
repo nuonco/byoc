@@ -1,0 +1,8 @@
+name        = "inspect_dashboard"
+description = "Inspect dashboard-ui — version, git ref, ALB healthcheck, and app URL."
+readme      = "./runbooks/inspect_dashboard.md"
+
+[[steps]]
+name        = "Dashboard status"
+type        = "action"
+action_name = "dashboard_status"

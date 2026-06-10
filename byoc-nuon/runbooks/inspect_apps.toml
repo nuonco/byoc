@@ -1,0 +1,13 @@
+name        = "inspect_apps"
+description = "Inspect apps — all apps reported by inspect_apps, with org name lookup."
+readme      = "./runbooks/inspect_apps.md"
+
+[[steps]]
+name        = "Inspect: apps"
+type        = "action"
+action_name = "inspect_apps"
+
+[[steps]]
+name        = "Inspect: orgs"
+type        = "action"
+action_name = "inspect_orgs"

@@ -1,5 +1,5 @@
 <nuon-tabs>
-  <nuon-tab name="List Workflows">
+  <nuon-tab name="Recent Workflows">
 
 <div style="padding-top:1rem;"></div>
 
@@ -112,35 +112,31 @@ section.</nuon-banner>
 
 {{ $rows := list }}{{ with index .nuon.actions.workflows "ctl_api_query_workflow_steps" }}{{ with .outputs }}{{ $rows = (dig "rows" (list) .) }}{{ end }}{{ end }}
 
-{{ if not $rows }} _No rows returned. Run the **Query workflow steps** action above (optionally with a `WORKFLOW_ID`)
-and re-render this runbook._ {{ else }} {{ $state := dict "lastWf" "" }} {{ range $rows }}
+{{ if not $rows }}
+
+<nuon-banner theme="info">Run the <a href="/{{ $.nuon.org.id }}/installs/{{ $.nuon.install.id }}/actions/{{ $stepsActionID }}">ctl_api_query_workflow_steps</a> action to inspect the details of a workflow.</nuon-banner>
+
+{{ else }} {{ $state := dict "lastWf" "" }} {{ range $rows }}
 {{- if ne .workflow_id (index $state "lastWf") }} {{- if ne (index $state "lastWf") "" }}
 
   </tbody>
 </table>
 {{- end }}
 
-<div style="display:flex;gap:1rem;align-items:stretch;flex-wrap:wrap;margin-bottom:1rem;">
-  <div style="flex:2 1 0;min-width:320px;border:1px solid var(--nuon-border-color,#e5e7eb);border-radius:0.5rem;padding:1rem;background:var(--nuon-card-bg,#fff);">
-    <h3 style="margin-top:0;">Workflow</h3>
-    <ul style="list-style:none;padding-left:0;margin:0;">
-      <li><strong>ID:</strong> <code>{{ .workflow_id }}</code></li>
-      <li><strong>Type:</strong> {{ .workflow_type }}</li>
-      <li><strong>Status:</strong> <span style="display:inline-block;vertical-align:middle;">{{ if .workflow_status }}<nuon-status status="{{ .workflow_status }}" variant="badge"></nuon-status>{{ end }}</span></li>
-      <li><strong>Install:</strong> {{ default "—" .install_name }} <small><code>{{ .install_id }}</code></small></li>
-      <li><strong>Org:</strong> {{ default "—" .org_name }} <small><code>{{ .org_id }}</code></small></li>
-      <li><strong>Created by:</strong> {{ .created_by_email }}</li>
-      <li><strong>Approval:</strong> {{ .approval_option }}</li>
-      <li><strong>Created:</strong> {{ with .workflow_created_at }}<nuon-time time="{{ printf "%sZ" (substr 0 19 .) }}" format="relative"></nuon-time>{{ else }}—{{ end }}</li>
-      <li><strong>Started:</strong> {{ with .workflow_started_at }}<nuon-time time="{{ printf "%sZ" (substr 0 19 .) }}" format="relative"></nuon-time>{{ else }}—{{ end }}</li>
-      <li><strong>Finished:</strong> {{ with .workflow_finished_at }}<nuon-time time="{{ printf "%sZ" (substr 0 19 .) }}" format="relative"></nuon-time>{{ else }}—{{ end }}</li>
-    </ul>
-  </div>
-  <div style="flex:1 1 0;min-width:240px;border:1px solid var(--nuon-border-color,#e5e7eb);border-radius:0.5rem;padding:1rem;background:var(--nuon-card-bg,#fff);">
-    <h3 style="margin-top:0;">About this runbook</h3>
-    <p>This runbook reads a workflow and its steps for debugging. Fetches the most recent workflow run by default.</p>
-    <p>Set the action's <code>WORKFLOW_ID</code> env var to inspect a specific workflow. (This can currently only be done by running the action itself, until we add inputs to runbooks.)</p>
-  </div>
+<div style="padding:1rem 0;">
+  <h3 style="margin-top:0;">{{ default .workflow_type (dig "workflow_name" "" .) }}</h3>
+  <ul style="list-style:none;padding-left:0;margin:0;">
+    <li><strong>ID:</strong> <code>{{ .workflow_id }}</code></li>
+    <li><strong>Type:</strong> {{ .workflow_type }}</li>
+    <li><strong>Status:</strong> <span style="display:inline-block;vertical-align:middle;">{{ if .workflow_status }}<nuon-status status="{{ .workflow_status }}" variant="badge"></nuon-status>{{ end }}</span></li>
+    <li><strong>Install:</strong> {{ default "—" .install_name }} <small><code>{{ .install_id }}</code></small></li>
+    <li><strong>Org:</strong> {{ default "—" .org_name }} <small><code>{{ .org_id }}</code></small></li>
+    <li><strong>Created by:</strong> {{ .created_by_email }}</li>
+    <li><strong>Approval:</strong> {{ .approval_option }}</li>
+    <li><strong>Created:</strong> {{ with .workflow_created_at }}<nuon-time time="{{ printf "%sZ" (substr 0 19 .) }}" format="relative"></nuon-time>{{ else }}—{{ end }}</li>
+    <li><strong>Started:</strong> {{ with .workflow_started_at }}<nuon-time time="{{ printf "%sZ" (substr 0 19 .) }}" format="relative"></nuon-time>{{ else }}—{{ end }}</li>
+    <li><strong>Finished:</strong> {{ with .workflow_finished_at }}<nuon-time time="{{ printf "%sZ" (substr 0 19 .) }}" format="relative"></nuon-time>{{ else }}—{{ end }}</li>
+  </ul>
 </div>
 
 ### Steps

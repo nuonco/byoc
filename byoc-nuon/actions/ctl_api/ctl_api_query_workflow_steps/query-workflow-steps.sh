@@ -89,6 +89,50 @@ SELECT COALESCE(json_agg(row_to_json(t)), '[]'::json)::text FROM (
 SELECT
     w.id                                    AS workflow_id,
     w.type                                  AS workflow_type,
+    (
+      CASE
+        WHEN w.finished_at IS NOT NULL THEN
+          CASE w.type
+            WHEN 'provision'                     THEN 'Provisioned install'
+            WHEN 'reprovision'                   THEN 'Reprovisioned install'
+            WHEN 'reprovision_sandbox'           THEN 'Reprovisioned sandbox'
+            WHEN 'drift_run_reprovision_sandbox' THEN 'Reprovisioned sandbox'
+            WHEN 'deprovision'                   THEN 'Deprovisioned install'
+            WHEN 'manual_deploy'                 THEN 'Deployed to install'
+            WHEN 'drift_run'                     THEN 'Deployed to install'
+            WHEN 'input_update'                  THEN 'Updated Input'
+            WHEN 'teardown_components'           THEN 'Tore down all components'
+            WHEN 'deploy_components'             THEN 'Deployed all components'
+            WHEN 'sync_secrets'                  THEN 'Synced secrets'
+            WHEN 'action_workflow_run'           THEN 'Action run'
+            WHEN 'app_config_build'              THEN 'Built app config components'
+            ELSE w.type::text
+          END
+        ELSE
+          CASE w.type
+            WHEN 'provision'                     THEN 'Provisioning install'
+            WHEN 'reprovision'                   THEN 'Reprovisioning install'
+            WHEN 'reprovision_sandbox'           THEN 'Reprovisioning sandbox'
+            WHEN 'drift_run_reprovision_sandbox' THEN 'Reprovisioning sandbox'
+            WHEN 'deprovision'                   THEN 'Deprovisioning install'
+            WHEN 'manual_deploy'                 THEN 'Deploying to install'
+            WHEN 'drift_run'                     THEN 'Deploying to install'
+            WHEN 'input_update'                  THEN 'Input Update'
+            WHEN 'teardown_components'           THEN 'Tearing down all components'
+            WHEN 'deploy_components'             THEN 'Deploying all components'
+            WHEN 'sync_secrets'                  THEN 'Syncing secrets'
+            WHEN 'action_workflow_run'           THEN 'Action run'
+            WHEN 'app_config_build'              THEN 'Building app config components'
+            ELSE w.type::text
+          END
+      END
+      || COALESCE(' (' || (w.metadata -> 'workflow-name-suffix') || ')', '')
+      || CASE
+           WHEN w.type = 'action_workflow_run' AND (w.metadata -> 'install_action_workflow_name') IS NOT NULL
+             THEN ' (' || (w.metadata -> 'install_action_workflow_name') || ')'
+           ELSE ''
+         END
+    )                                       AS workflow_name,
     w.status->>'status'                     AS workflow_status,
     w.owner_id                              AS install_id,
     i.name                                  AS install_name,

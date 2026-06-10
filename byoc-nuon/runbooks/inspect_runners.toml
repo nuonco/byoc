@@ -1,0 +1,23 @@
+name        = "inspect_runners"
+description = "Inspect runners — all runners reported by inspect_runners, with owner-name lookups from installs/orgs/apps."
+readme      = "./runbooks/inspect_runners.md"
+
+[[steps]]
+name        = "Inspect: runners"
+type        = "action"
+action_name = "inspect_runners"
+
+[[steps]]
+name        = "Inspect: installs"
+type        = "action"
+action_name = "inspect_installs"
+
+[[steps]]
+name        = "Inspect: orgs"
+type        = "action"
+action_name = "inspect_orgs"
+
+[[steps]]
+name        = "Inspect: apps"
+type        = "action"
+action_name = "inspect_apps"

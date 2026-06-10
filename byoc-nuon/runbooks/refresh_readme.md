@@ -6,7 +6,10 @@ Runs every action that populates a section of the install README, so the rendere
 |---|---|
 | `api_status` | API status badge, version/git labels, healthcheck indicators |
 | `dashboard_status` | Dashboard status badge, version/git labels |
-| `status_report` | Runners, orgs, apps, installs tabs |
+| `inspect_runners` | Runners section |
+| `inspect_installs` | Installs section |
+| `inspect_apps` | Apps section |
+| `inspect_orgs` | Orgs section |
 | `healthcheck_temporal` | Temporal healthcheck indicator |
 | `temporal_status` | Active Temporal workflows by namespace |
 | `ctl_api_query_workflows_by_type` | Workflows table |
