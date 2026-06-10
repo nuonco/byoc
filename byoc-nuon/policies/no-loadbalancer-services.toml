@@ -1,0 +1,4 @@
+type       = "helm_chart"
+engine     = "opa"
+contents   = "./no-loadbalancer-services.rego"
+components = ["*"]

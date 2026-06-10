@@ -1,0 +1,4 @@
+type       = "terraform_module"
+engine     = "opa"
+contents   = "./network-no-public-ingress.rego"
+components = ["*"]

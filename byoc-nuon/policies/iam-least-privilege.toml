@@ -1,0 +1,4 @@
+type       = "terraform_module"
+engine     = "opa"
+contents   = "./iam-least-privilege.rego"
+components = ["*"]

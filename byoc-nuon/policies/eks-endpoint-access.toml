@@ -1,0 +1,4 @@
+# `sandbox` policies evaluate the sandbox run; the `components` field is ignored.
+type     = "sandbox"
+engine   = "opa"
+contents = "./eks-endpoint-access.rego"
