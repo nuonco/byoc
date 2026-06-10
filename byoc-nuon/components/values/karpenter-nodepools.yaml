@@ -50,7 +50,7 @@ nodepools:
     limits:
       cpu: 14
       memory: "1000Gi"
-    expireAfter: "2160h"
+    expireAfter: "Never"
     disruption:
       budgets:
         - nodes: "0"
