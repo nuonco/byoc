@@ -6,12 +6,17 @@
   <nuon-run-runbook name="refresh_readme"></nuon-run-runbook>
 </div>
 
-<img class="mt-0 block dark:hidden" src="https://mintlify.s3-us-west-1.amazonaws.com/nuoninc/logo/light.svg"/>
-<img class="mt-0 hidden dark:block" src="https://mintlify.s3-us-west-1.amazonaws.com/nuoninc/logo/dark.svg"/>
+<img class="mt-0 block dark:hidden" src="https://mintlify.s3-us-west-1.amazonaws.com/nuoninc/logo/light.svg" style="margin:0;padding:0;"/>
+<img class="mt-0 hidden dark:block" src="https://mintlify.s3-us-west-1.amazonaws.com/nuoninc/logo/dark.svg" style="margin:0;padding:0;"/>
+
+<nuon-tabs>
+<nuon-tab name="Application">
+
+<div style="padding-top:1rem;"></div>
 
 {{ $wfOutputs := dict }}{{ $wfActionID := "" }}{{ with (index (default dict .nuon.actions.workflows) "ctl_api_query_workflows_by_type") }}{{ with .outputs }}{{ $wfOutputs = . }}{{ end }}{{ $wfActionID = dig "id" "" . }}{{ end }}
 
-<div style="display:flex;align-items:baseline;gap:0.75rem;"><h3 style="margin:0;">Recent workflows</h3><a href="/{{ $.nuon.org.id }}/installs/{{ $.nuon.install.id }}/runbooks/inspect_workflows" style="font-size:0.85em;">See more →</a>{{ with dig "updated_at" "" $wfOutputs }}<span style="margin-left:auto;font-size:0.85em;">Last updated by <a href="/{{ $.nuon.org.id }}/installs/{{ $.nuon.install.id }}/actions/{{ $wfActionID }}">ctl_api_query_workflows_by_type</a> <nuon-time time="{{ . }}" format="relative"></nuon-time></span>{{ end }}</div>
+<div style="display:flex;align-items:baseline;gap:0.75rem;"><h3 style="margin:0;">Recent workflows</h3><a href="/{{ $.nuon.org.id }}/installs/{{ $.nuon.install.id }}/runbooks/inspect_workflows" style="font-size:0.85em;">See more →</a>{{ with dig "updated_at" "" $wfOutputs }}<span style="margin-left:auto;font-size:0.85em;">Last updated <nuon-time time="{{ . }}" format="relative"></nuon-time></span>{{ end }}</div>
 
 {{ with (index (default dict .nuon.actions.workflows) "ctl_api_query_workflows_by_type") }}
 {{ $wfData := dict }}{{ with .outputs }}{{ $wfData = . }}{{ end }} {{ $wfRows := dig "workflows" (list) $wfData }}
@@ -114,15 +119,17 @@
 {{ $installsAction := default dict (index (default dict .nuon.actions.workflows) "inspect_installs") }}
 {{ $orgsAction     := default dict (index (default dict .nuon.actions.workflows) "inspect_orgs") }}
 {{ $appsAction     := default dict (index (default dict .nuon.actions.workflows) "inspect_apps") }}
-{{ $runnersSteps  := dig "steps" dict (default dict (dig "outputs" dict $runnersAction)) }}
-{{ $installsSteps := dig "steps" dict (default dict (dig "outputs" dict $installsAction)) }}
+{{ $runnersOutputs  := default dict (dig "outputs" dict $runnersAction) }}
+{{ $installsOutputs := default dict (dig "outputs" dict $installsAction) }}
+{{ $runnersSteps  := dig "steps" dict $runnersOutputs }}
+{{ $installsSteps := dig "steps" dict $installsOutputs }}
 {{ $orgsSteps     := dig "steps" dict (default dict (dig "outputs" dict $orgsAction)) }}
 {{ $appsSteps     := dig "steps" dict (default dict (dig "outputs" dict $appsAction)) }}
 
 <div style="display:flex;gap:1.5rem;align-items:flex-start;">
   <div style="flex:1;min-width:0;">
 
-<h3 style="display:inline;margin-right:0.75rem;">Installs</h3><a href="/{{ $.nuon.org.id }}/installs/{{ $.nuon.install.id }}/runbooks/inspect_installs" style="font-size:0.85em;">See more →</a>
+<div style="display:flex;align-items:baseline;gap:0.75rem;"><h3 style="margin:0;">Installs</h3><a href="/{{ $.nuon.org.id }}/installs/{{ $.nuon.install.id }}/runbooks/inspect_installs" style="font-size:0.85em;">See more →</a>{{ with dig "updated_at" "" $installsOutputs }}<span style="margin-left:auto;font-size:0.85em;">Last updated <nuon-time time="{{ . }}" format="relative"></nuon-time></span>{{ end }}</div>
 
 {{ $installs := dig "installs" (dict) $installsSteps }} {{ $appsByID := dict }}
 {{ range $_, $a := (dig "apps" (dict) $appsSteps) }}{{ $appsByID = set $appsByID (dig "id" "" $a) (dig "name" "" $a) }}{{ end }}
@@ -186,7 +193,7 @@
   </div>
   <div style="flex:1;min-width:0;">
 
-<h3 style="display:inline;margin-right:0.75rem;">Runners</h3><a href="/{{ $.nuon.org.id }}/installs/{{ $.nuon.install.id }}/runbooks/inspect_runners" style="font-size:0.85em;">See more →</a>
+<div style="display:flex;align-items:baseline;gap:0.75rem;"><h3 style="margin:0;">Runners</h3><a href="/{{ $.nuon.org.id }}/installs/{{ $.nuon.install.id }}/runbooks/inspect_runners" style="font-size:0.85em;">See more →</a>{{ with dig "updated_at" "" $runnersOutputs }}<span style="margin-left:auto;font-size:0.85em;">Last updated <nuon-time time="{{ . }}" format="relative"></nuon-time></span>{{ end }}</div>
 
 {{ $runners := dig "runners" (dict) $runnersSteps }} {{ $ownerNames := dict }}
 {{ range $_, $i := (dig "installs" (dict) $installsSteps) }}{{ $ownerNames = set $ownerNames (dig "id" "" $i) (dig "name" "" $i) }}{{ end }}
@@ -268,4 +275,88 @@
 
   </div>
 </div>
+
+</nuon-tab>
+<nuon-tab name="Services">
+
+{{ $api  := dict }}{{ $apiActionID  := "" }}{{ with index .nuon.actions.workflows "api_status"       }}{{ with .outputs }}{{ $api  = . }}{{ end }}{{ $apiActionID  = dig "id" "" . }}{{ end }}
+{{ $dash := dict }}{{ $dashActionID := "" }}{{ with index .nuon.actions.workflows "dashboard_status" }}{{ with .outputs }}{{ $dash = . }}{{ end }}{{ $dashActionID = dig "id" "" . }}{{ end }}
+{{ $apiSteps  := dig "steps" (dict) $api  }}
+{{ $dashSteps := dig "steps" (dict) $dash }}
+
+<div style="display:flex;gap:1.5rem;align-items:flex-start;margin-top:1.5rem;">
+  <div style="flex:1;min-width:0;">
+
+<div style="display:flex;align-items:baseline;gap:0.75rem;"><h3 style="margin:0;">API</h3><a href="/{{ $.nuon.org.id }}/installs/{{ $.nuon.install.id }}/runbooks/inspect_api" style="font-size:0.85em;">See more →</a>{{ with dig "updated_at" "" $api }}<span style="margin-left:auto;font-size:0.85em;">Last updated <nuon-time time="{{ . }}" format="relative"></nuon-time></span>{{ end }}</div>
+
+<nuon-card>
+
+<nuon-group gap="2" align="center" justify="start">{{ range $step := list "alb-healthcheck-ctl-api-public" "alb-healthcheck-ctl-api-admin" "alb-healthcheck-ctl-api-runner" }}{{ $indicator := dig $step "indicator" "" $apiSteps }}{{ if eq $indicator "🟢" }}<nuon-status status="active" variant="badge"></nuon-status>{{ else if eq $indicator "🔴" }}<nuon-status status="error" variant="badge"></nuon-status>{{ else }}<nuon-status status="pending" variant="badge"></nuon-status>{{ end }}{{ end }}<nuon-label-badge label="version:{{ dig "ctl_api_version" "unknown" $api }}"></nuon-label-badge><nuon-label-badge label="git:{{ dig "ctl_api_git_ref" "unknown" $api }}"></nuon-label-badge><a href="https://api.{{ $public_domain }}/docs/index.html">Open ↗</a></nuon-group>
+
+{{ if not (dig "updated_at" "" $api) }}<nuon-banner theme="warn">Waiting on api_status. Run it to populate this section.</nuon-banner>{{ end }}
+
+</nuon-card>
+
+  </div>
+  <div style="flex:1;min-width:0;">
+
+<div style="display:flex;align-items:baseline;gap:0.75rem;"><h3 style="margin:0;">Dashboard</h3><a href="/{{ $.nuon.org.id }}/installs/{{ $.nuon.install.id }}/runbooks/inspect_dashboard" style="font-size:0.85em;">See more →</a>{{ with dig "updated_at" "" $dash }}<span style="margin-left:auto;font-size:0.85em;">Last updated <nuon-time time="{{ . }}" format="relative"></nuon-time></span>{{ end }}</div>
+
+<nuon-card>
+
+<nuon-group gap="2" align="center" justify="start">{{ $indicator := dig "alb-healthcheck-dashboard-ui" "indicator" "" $dashSteps }}{{ if eq $indicator "🟢" }}<nuon-status status="active" variant="badge"></nuon-status>{{ else if eq $indicator "🔴" }}<nuon-status status="error" variant="badge"></nuon-status>{{ else }}<nuon-status status="pending" variant="badge"></nuon-status>{{ end }}<nuon-label-badge label="version:{{ dig "dashboard_ui_version" "unknown" $dash }}"></nuon-label-badge><nuon-label-badge label="git:{{ dig "dashboard_ui_git_ref" "unknown" $dash }}"></nuon-label-badge><a href="https://app.{{ $public_domain }}">Open ↗</a></nuon-group>
+
+{{ if not (dig "updated_at" "" $dash) }}<nuon-banner theme="warn">Waiting on dashboard_status. Run it to populate this section.</nuon-banner>{{ end }}
+
+</nuon-card>
+
+  </div>
+</div>
+
+</nuon-tab>
+<nuon-tab name="Infrastructure">
+
+<div style="padding-top:1rem;"></div>
+
+<div style="display:flex;gap:1.5rem;align-items:flex-start;">
+  <div style="flex:1;min-width:0;">
+
+<div style="display:flex;align-items:baseline;gap:0.75rem;"><h3 style="margin:0;">Stack</h3><a href="/{{ $.nuon.org.id }}/installs/{{ $.nuon.install.id }}/runbooks/inspect_stack" style="font-size:0.85em;">See more →</a></div>
+
+{{ $stackStatus := dig "status" "" .nuon.install_stack }}
+{{ $stackOutputs := default dict .nuon.install_stack.outputs }}
+
+<table>
+  <tbody>
+    <tr><td>Status</td><td>{{ if $stackStatus }}<nuon-status status="{{ $stackStatus }}" variant="badge"></nuon-status>{{ else }}—{{ end }}</td></tr>
+    <tr><td>Cloud</td><td>AWS</td></tr>
+    <tr><td>Account</td><td><code>{{ dig "account_id" "—" $stackOutputs }}</code></td></tr>
+    <tr><td>Region</td><td><code>{{ default "—" .nuon.cloud_account.aws.region }}</code></td></tr>
+    <tr><td>VPC</td><td><code>{{ dig "vpc_id" "—" $stackOutputs }}</code></td></tr>
+  </tbody>
+</table>
+
+  </div>
+  <div style="flex:1;min-width:0;">
+
+<div style="display:flex;align-items:baseline;gap:0.75rem;"><h3 style="margin:0;">Cluster</h3><a href="/{{ $.nuon.org.id }}/installs/{{ $.nuon.install.id }}/runbooks/inspect_cluster" style="font-size:0.85em;">See more →</a></div>
+
+{{ $sandboxStatus := dig "status" "" .nuon.sandbox }}
+{{ $cluster := dig "outputs" "cluster" (dict) .nuon.sandbox }}
+
+<table>
+  <tbody>
+    <tr><td>Status</td><td>{{ if $sandboxStatus }}<nuon-status status="{{ lower $sandboxStatus }}" variant="badge"></nuon-status>{{ else }}—{{ end }}</td></tr>
+    <tr><td>Name</td><td><code>{{ dig "name" "—" $cluster }}</code></td></tr>
+    <tr><td>Version</td><td><code>{{ coalesce (dig "version" nil $cluster) (dig "platform_version" nil $cluster) "—" }}</code></td></tr>
+    <tr><td>Endpoint</td><td>{{ with dig "endpoint" "" $cluster }}<code>{{ . }}</code>{{ else }}—{{ end }}</td></tr>
+    <tr><td>ARN</td><td>{{ with dig "arn" "" $cluster }}<code>{{ . }}</code>{{ else }}—{{ end }}</td></tr>
+  </tbody>
+</table>
+
+  </div>
+</div>
+
+</nuon-tab>
+</nuon-tabs>
 
