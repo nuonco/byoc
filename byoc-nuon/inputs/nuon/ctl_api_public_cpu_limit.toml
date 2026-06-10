@@ -1,7 +1,0 @@
-name         = "ctl_api_public_cpu_limit"
-description  = "Override the CPU limit for the ctl-api-public deployment (e.g. \"500m\", \"1\"). Leave empty to inherit the shared ctl-api default."
-default      = ""
-display_name = "ctl-api-public CPU limit"
-required     = false
-group        = "nuon"
-user_configurable = false
