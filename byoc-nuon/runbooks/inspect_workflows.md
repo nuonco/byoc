@@ -114,7 +114,11 @@ section.</nuon-banner>
 
 {{ if not $rows }}
 
-<nuon-banner theme="info">Run the <a href="/{{ $.nuon.org.id }}/installs/{{ $.nuon.install.id }}/actions/{{ $stepsActionID }}">ctl_api_query_workflow_steps</a> action to inspect the details of a workflow.</nuon-banner>
+<nuon-banner theme="info">Run the ctl_api_query_workflow_steps action below to inspect the details of a workflow.</nuon-banner>
+
+<div style="padding-top:1rem;"></div>
+
+<nuon-action-card name="ctl_api_query_workflow_steps"></nuon-action-card>
 
 {{ else }} {{ $state := dict "lastWf" "" }} {{ range $rows }}
 {{- if ne .workflow_id (index $state "lastWf") }} {{- if ne (index $state "lastWf") "" }}
