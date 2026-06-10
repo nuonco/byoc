@@ -4,6 +4,11 @@ readme      = "./runbooks/refresh_readme.md"
 labels      = { layer = "app", purpose = "sop" }
 
 [[steps]]
+name        = "Query workflows by type"
+type        = "action"
+action_name = "ctl_api_query_workflows_by_type"
+
+[[steps]]
 name        = "API status"
 type        = "action"
 action_name = "api_status"
@@ -22,28 +27,3 @@ action_name = "inspect_runners"
 name        = "Inspect: installs"
 type        = "action"
 action_name = "inspect_installs"
-
-[[steps]]
-name        = "Inspect: apps"
-type        = "action"
-action_name = "inspect_apps"
-
-[[steps]]
-name        = "Inspect: orgs"
-type        = "action"
-action_name = "inspect_orgs"
-
-[[steps]]
-name        = "Healthcheck temporal"
-type        = "action"
-action_name = "healthcheck_temporal"
-
-[[steps]]
-name        = "Temporal status"
-type        = "action"
-action_name = "temporal_status"
-
-[[steps]]
-name        = "Query workflows by type"
-type        = "action"
-action_name = "ctl_api_query_workflows_by_type"
