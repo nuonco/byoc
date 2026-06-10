@@ -232,6 +232,8 @@ section.</nuon-banner>
 {{ range $_, $a := (dig "apps" (dict) $steps) }}{{ $appsByID = set $appsByID (dig "id" "" $a) (dig "name" "" $a) }}{{ end }}
 {{ $installOrgsByID := dict }}
 {{ range $_, $o := (dig "orgs" (dict) $steps) }}{{ $installOrgsByID = set $installOrgsByID (dig "id" "" $o) (dig "name" "" $o) }}{{ end }}
+{{ $runnerStatusByOwner := dict }}
+{{ range $_, $r := (dig "runners" (dict) $steps) }}{{ $oid := dig "owner_id" "" $r }}{{ if not (hasKey $runnerStatusByOwner $oid) }}{{ $runnerStatusByOwner = set $runnerStatusByOwner $oid (dig "status" "" $r) }}{{ end }}{{ end }}
 {{ if gt (len $installs) 0 }}
 
   <table>
@@ -255,7 +257,7 @@ section.</nuon-banner>
           {{ $installID := dig "id" "—" $install }}
           {{ $installName := dig "name" "—" $install }}
           {{ $installStatus := dig "status" "" $install }}
-          {{ $runnerStatus := dig "runner_status" "" $install }}
+          {{ $runnerStatus := dig (dig "id" "" $install) "" $runnerStatusByOwner }}
           {{ $sandboxStatus := dig "sandbox_status" "" $install }}
           {{ $componentStatus := dig "component_status" "" $install }}
           <tr>
