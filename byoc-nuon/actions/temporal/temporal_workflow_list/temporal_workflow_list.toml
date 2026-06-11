@@ -1,5 +1,5 @@
 # action
-# description: lists all workflows in a Temporal namespace, paginated in batches of 100.
+# description: lists the most recent running workflows for each Temporal namespace.
 name    = "temporal_workflow_list"
 labels  = { layer = "services", purpose = "debug" }
 label   = "temporal"
@@ -13,4 +13,4 @@ name = "list workflows"
 inline_contents = "./temporal/temporal_workflow_list/list_workflows.sh"
 
 [steps.env_vars]
-NAMESPACE = "general"
+LIMIT = "10"
