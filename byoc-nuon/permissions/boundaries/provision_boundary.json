@@ -22,6 +22,7 @@
         "rds:*",
         "route53:*",
         "s3:*",
+        "s3control:*",
         "secretsmanager:*",
         "sqs:*"
       ],
