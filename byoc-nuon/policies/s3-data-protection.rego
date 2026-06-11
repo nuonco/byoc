@@ -19,6 +19,20 @@ import future.keywords.in
 
 public_acls := {"public-read", "public-read-write", "authenticated-read"}
 
+# Buckets that are intentionally public: the install-templates bucket serves
+# CloudFormation QuickLink templates that the customer's AWS account fetches over
+# public HTTPS, so its public-access block is deliberately open (access is scoped
+# by a bucket policy to specific public prefixes).
+intentionally_public_buckets := {"install_template"}
+
+# Buckets that hold immutable backup objects and do not require versioning.
+unversioned_ok_buckets := {"clickhouse_bucket"}
+
+bucket_exempt(address, names) if {
+	some name in names
+	contains(address, name)
+}
+
 # ──────────────────────────────────────────────────────────────────────────────
 # Bucket versioning must remain Enabled (protects against overwrite/delete).
 # ──────────────────────────────────────────────────────────────────────────────
@@ -26,6 +40,7 @@ deny contains msg if {
 	some rc in input.plan.resource_changes
 	rc.type == "aws_s3_bucket_versioning"
 	rc.change.actions[_] in ["create", "update"]
+	not bucket_exempt(rc.address, unversioned_ok_buckets)
 	some cfg in rc.change.after.versioning_configuration
 	cfg.status != "Enabled"
 	msg := sprintf(
@@ -57,12 +72,14 @@ public_access_blocks := [rc |
 ]
 
 # ──────────────────────────────────────────────────────────────────────────────
-# A public-access block that disables any protection defeats its purpose.
+# A public-access block that disables any protection defeats its purpose, unless
+# the bucket is intentionally public.
 # ──────────────────────────────────────────────────────────────────────────────
 deny contains msg if {
 	some rc in input.plan.resource_changes
 	rc.type == "aws_s3_bucket_public_access_block"
 	rc.change.actions[_] in ["create", "update"]
+	not bucket_exempt(rc.address, intentionally_public_buckets)
 	after := rc.change.after
 	some field in ["block_public_acls", "block_public_policy", "ignore_public_acls", "restrict_public_buckets"]
 	after[field] == false
