@@ -10,13 +10,20 @@ region: "{{ .nuon.install_stack.outputs.region }}"
 
 # availability zones come from the sandbox VPC output rather than being derived
 # from the region, since the actual AZs can differ across sandboxes.
-azs:
-{{- range .nuon.sandbox.outputs.vpc.azs }}
+# we specifically use the subnet azs because using the vpc's azs will include
+# zones in which we do not currently have subnets
+public_azs:
+{{- range .nuon.sandbox.outputs.vpc.public_subnet_azs }}
+  - "{{ . }}"
+{{- end }}
+private_azs:
+{{- range .nuon.sandbox.outputs.vpc.private_subnet_azs }}
   - "{{ . }}"
 {{- end }}
 
 nodepools:
   - name: temporal
+    public: false
     instance_types:
       - c5.xlarge
     limits:
@@ -30,6 +37,7 @@ nodepools:
   # clickhouse nodes are not being forcefully moved to c5 because we don't want
   # all of the nodes rotating at once.
   - name: clickhouse-keeper
+    public: false
     instance_types:
       - t3a.medium
       - c5.medium
@@ -44,6 +52,7 @@ nodepools:
       consolidateAfter: "15m"
 
   - name: clickhouse-installation
+    public: false
     instance_types:
       - t3a.large
       - c5.large
@@ -58,6 +67,7 @@ nodepools:
       consolidateAfter: "15m"
 
   - name: ctl-api
+    public: true
     instance_types:
       - c5.large
     limits:
@@ -79,6 +89,7 @@ nodepools:
       consolidateAfter: "30s"
 
   - name: ctl-api-worker
+    public: false
     instance_types:
       - c5.xlarge
     limits:
@@ -90,6 +101,7 @@ nodepools:
       consolidateAfter: "5m"
 
   - name: public
+    public: true
     instance_types:
       - c5.xlarge
     limits:
@@ -115,6 +127,7 @@ nodepools:
 
   # temporal worker nodepools by namespace
   - name: ctl-api-workers-apps
+    public: false
     instance_types:
       - c5.2xlarge  # 8 cpu, 32 gb ram
       - c5.xlarge   # 4 cpu, 16 gb ram
@@ -128,6 +141,7 @@ nodepools:
         - nodes: "25%"
 
   - name: ctl-api-workers-installs
+    public: false
     instance_types:
       - c5.2xlarge  # 8 cpu, 32 gb ram
       - c5.xlarge   # 4 cpu, 16 gb ram
@@ -141,6 +155,7 @@ nodepools:
         - nodes: "25%"
 
   - name: ctl-api-workers-runners
+    public: false
     instance_types:
       - c5.2xlarge  # 8 cpu, 32 gb ram
       - c5.xlarge   # 4 cpu, 16 gb ram
@@ -154,6 +169,7 @@ nodepools:
         - nodes: "25%"
 
   - name: ctl-api-workers-general
+    public: false
     instance_types:
       - c5.2xlarge  # 8 cpu, 32 gb ram
       - c5.xlarge   # 4 cpu, 16 gb ram
