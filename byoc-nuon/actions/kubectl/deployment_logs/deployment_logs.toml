@@ -1,6 +1,6 @@
 # action
 name    = "deployment_logs"
-labels  = { layer = "infra", purpose = "debug" }
+labels  = { service = "kubernetes", type = "debug" }
 timeout = "2m0s"
 
 [[triggers]]

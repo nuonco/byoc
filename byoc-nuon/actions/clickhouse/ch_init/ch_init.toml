@@ -1,6 +1,6 @@
 # action
 name    = "ch_init"
-labels  = { layer = "infra", purpose = "step" }
+labels  = { service = "clickhouse", type = "step" }
 timeout = "1m30s"
 
 # It can take about 20 minutes for clickhouse to be ready,

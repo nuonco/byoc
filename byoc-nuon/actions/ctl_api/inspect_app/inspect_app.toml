@@ -1,6 +1,6 @@
 # action
 name    = "inspect_app"
-labels  = { layer = "app", purpose = "debug" }
+labels  = { service = "ctl-api", type = "debug" }
 timeout = "5m"
 
 [[triggers]]

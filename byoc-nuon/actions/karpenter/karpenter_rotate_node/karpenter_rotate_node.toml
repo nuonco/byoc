@@ -1,6 +1,6 @@
 # action
 name    = "karpenter_rotate_node"
-labels  = { layer = "infra", purpose = "sop" }
+labels  = { service = "karpenter", type = "sop" }
 timeout = "1m"
 
 [[triggers]]

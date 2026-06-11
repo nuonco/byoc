@@ -1,6 +1,6 @@
 # action
 name    = "restart_org_queues"
-labels  = { layer = "app", purpose = "sop" }
+labels  = { service = "ctl-api", type = "sop" }
 timeout = "5m"
 
 [[triggers]]

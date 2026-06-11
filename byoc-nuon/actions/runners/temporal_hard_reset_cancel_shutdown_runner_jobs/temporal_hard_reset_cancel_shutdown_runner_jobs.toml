@@ -2,7 +2,7 @@
 # description: temporal hard-reset step 10 — cancels still-active runner_jobs rows
 # whose type is shut-down / mng-shut-down / mng-vm-shut-down.
 name    = "temporal_hard_reset_cancel_shutdown_runner_jobs"
-labels  = { layer = "app", purpose = "step" }
+labels  = { service = "runners", type = "step" }
 timeout = "5m"
 
 [[triggers]]

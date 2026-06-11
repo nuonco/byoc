@@ -1,6 +1,6 @@
 # action
 name    = "rds_rename_final_snapshot"
-labels  = { layer = "infra", purpose = "sop" }
+labels  = { service = "rds", type = "sop" }
 timeout = "5m"
 
 [[triggers]]

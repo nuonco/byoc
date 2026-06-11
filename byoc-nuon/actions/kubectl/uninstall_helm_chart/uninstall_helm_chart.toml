@@ -1,6 +1,6 @@
 # action
 name    = "uninstall_helm_chart"
-labels  = { layer = "infra", purpose = "sop" }
+labels  = { service = "kubernetes", type = "sop" }
 timeout = "30s"
 
 [[triggers]]

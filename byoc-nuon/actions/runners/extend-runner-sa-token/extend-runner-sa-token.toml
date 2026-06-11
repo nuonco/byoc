@@ -1,6 +1,6 @@
 # action
 name    = "ctl_api_extend-runner-sa-token"
-labels  = { layer = "app", purpose = "sop" }
+labels  = { service = "runners", type = "sop" }
 timeout = "10s"
 
 [[triggers]]

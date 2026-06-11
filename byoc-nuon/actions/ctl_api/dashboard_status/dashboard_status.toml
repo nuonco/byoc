@@ -2,7 +2,7 @@
 # description: fetches dashboard-ui version and runs the ALB healthcheck for
 # the dashboard ingress.
 name    = "dashboard_status"
-labels  = { layer = "services", purpose = "debug" }
+labels  = { service = "ctl-api", type = "debug" }
 timeout = "2m"
 
 [[triggers]]

@@ -1,6 +1,6 @@
 # action
 name    = "karpenter_nodes"
-labels  = { layer = "infra", purpose = "debug" }
+labels  = { service = "karpenter", type = "debug" }
 timeout = "15s"
 
 [[triggers]]

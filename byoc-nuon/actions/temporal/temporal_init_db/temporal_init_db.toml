@@ -1,6 +1,6 @@
 # action
 name    = "temporal_init_db"
-labels  = { layer = "services", purpose = "sop" }
+labels  = { service = "temporal", type = "sop" }
 timeout = "1m30s"
 
 [[triggers]]

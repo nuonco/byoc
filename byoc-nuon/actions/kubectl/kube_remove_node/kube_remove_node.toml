@@ -1,6 +1,6 @@
 # action
 name    = "kube_remove_node"
-labels  = { layer = "infra", purpose = "sop" }
+labels  = { service = "kubernetes", type = "sop" }
 timeout = "2m"
 
 [[triggers]]

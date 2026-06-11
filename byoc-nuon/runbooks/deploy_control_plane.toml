@@ -1,7 +1,7 @@
 name        = "deploy_control_plane"
 description = "Sync and deploy ctl-api and dashboard-ui."
 readme      = "./runbooks/deploy_control_plane.md"
-labels      = { layer = "services", purpose = "sop" }
+labels      = { service = "ctl-api", type = "sop" }
 
 [[steps]]
 name           = "ctl-api: Sync image"

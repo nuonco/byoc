@@ -2,7 +2,7 @@
 # description: temporal hard-reset step 9 — cancels all install_workflows rows whose
 # composite status is "queued" by updating status->>'status' to "cancelled".
 name    = "temporal_hard_reset_cancel_queued_workflows"
-labels  = { layer = "services", purpose = "step" }
+labels  = { service = "ctl-api", type = "step" }
 timeout = "5m"
 
 [[triggers]]

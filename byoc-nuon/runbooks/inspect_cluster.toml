@@ -1,7 +1,7 @@
 name        = "inspect_cluster"
 description = "Inspect EKS cluster — sandbox status, cluster name/version, outputs, and access instructions."
 readme      = "./runbooks/inspect_cluster.md"
-labels      = { layer = "infra", purpose = "debug" }
+labels      = { service = "kubernetes", type = "debug" }
 
 [[steps]]
 name        = "Inspect: installs"

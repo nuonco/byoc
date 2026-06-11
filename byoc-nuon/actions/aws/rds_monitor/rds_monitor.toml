@@ -1,6 +1,6 @@
 # action
 name    = "rds_monitor"
-labels  = { layer = "infra", purpose = "debug" }
+labels  = { service = "rds", type = "debug" }
 timeout = "30s"
 role = "{{.nuon.install.id}}-provision"
 

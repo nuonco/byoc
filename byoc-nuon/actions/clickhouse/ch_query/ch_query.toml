@@ -1,6 +1,6 @@
 # action
 name    = "ch_query"
-labels  = { layer = "infra", purpose = "tool" }
+labels  = { service = "clickhouse", type = "tool" }
 timeout = "5m"
 
 [[triggers]]

@@ -1,6 +1,6 @@
 # action
 name    = "org_admin_restart"
-labels  = { layer = "app", purpose = "sop" }
+labels  = { service = "ctl-api", type = "sop" }
 timeout = "30s"
 
 [[triggers]]
