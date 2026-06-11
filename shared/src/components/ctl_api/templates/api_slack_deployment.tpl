@@ -28,16 +28,14 @@ spec:
       automountServiceAccountToken: true
 
       # start: NodePool Selection
+      {{- with .Values.api.nodeSelector }}
       nodeSelector:
-        pool.nuon.co: "public"
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.api.tolerations }}
       tolerations:
-        - key: "pool.nuon.co"
-          operator: "Equal"
-          value: "public"
-          effect: "NoSchedule"
-        - key: "pool.nuon.co/public" # this taint is being renamed and deprecated
-          operator: "Exists"
-          effect: "NoSchedule"
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
       # end: NodePool Selection
 
       # start: Topology Spread Constraints
