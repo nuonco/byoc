@@ -10,7 +10,7 @@ dependencies = ["ctl_api"]
 [public_repo]
 repo      = "nuonco/charts"
 directory = "charts/dashboard-ui"
-branch    = "main"
+branch    = "dashboard-ui-v0.1.1"
 
 [[values_file]]
 contents = "./values/dashboard-ui.yaml"
