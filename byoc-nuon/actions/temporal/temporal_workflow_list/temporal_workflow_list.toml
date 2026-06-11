@@ -1,7 +1,7 @@
 # action
 # description: lists the most recent running workflows for each Temporal namespace.
 name    = "temporal_workflow_list"
-labels  = { layer = "services", purpose = "debug" }
+labels  = { service = "temporal", purpose = "debug" }
 label   = "temporal"
 timeout = "5m"
 

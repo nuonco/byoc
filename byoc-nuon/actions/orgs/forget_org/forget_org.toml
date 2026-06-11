@@ -1,6 +1,6 @@
 # action
 name    = "forget_org"
-labels  = { layer = "app", purpose = "sop" }
+labels  = { service = "ctl-api", purpose = "sop" }
 timeout = "5m"
 
 [[triggers]]

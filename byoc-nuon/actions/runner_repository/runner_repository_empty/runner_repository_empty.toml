@@ -3,7 +3,7 @@
 # its images, so the repository can be deleted. Provisioned by the
 # `runner_repository` component (components/0-tf-runner-repository.toml).
 name    = "runner_repository_empty"
-labels  = { layer = "app", purpose = "sop" }
+labels  = { service = "runner-repository", purpose = "sop" }
 label   = "aws"
 timeout = "5m"
 

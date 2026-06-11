@@ -1,6 +1,6 @@
 # action
 name    = "ctl_api_init_db"
-labels  = { layer = "services", purpose = "step" }
+labels  = { service = "ctl-api", purpose = "step" }
 timeout = "5m"
 
 [[triggers]]

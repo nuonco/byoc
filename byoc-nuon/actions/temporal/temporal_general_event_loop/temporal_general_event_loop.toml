@@ -1,6 +1,6 @@
 # action
 name    = "temporal_general_event_loop"
-labels  = { layer = "services", purpose = "debug" }
+labels  = { service = "temporal", purpose = "debug" }
 timeout = "5m"
 
 [[triggers]]

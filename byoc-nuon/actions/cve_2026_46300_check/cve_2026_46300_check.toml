@@ -1,6 +1,6 @@
 # action
 name    = "cve_2026_46300_check"
-labels  = { layer = "services", purpose = "debug" }
+labels  = { purpose = "debug" }
 label   = "kubectl"
 timeout = "5m"
 

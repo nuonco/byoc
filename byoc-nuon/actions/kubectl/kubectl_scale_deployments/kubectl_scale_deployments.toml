@@ -4,7 +4,7 @@
 # Set NAMESPACE to target a namespace (default ctl-api).
 # Set FILTER to grep deployment names (optional).
 name    = "kubectl_scale_deployments"
-labels  = { layer = "infra", purpose = "tool" }
+labels  = { service = "kubernetes", purpose = "tool" }
 label   = "kubectl"
 timeout = "2m"
 

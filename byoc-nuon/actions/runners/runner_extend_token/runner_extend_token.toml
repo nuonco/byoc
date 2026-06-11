@@ -1,6 +1,6 @@
 # action
 name    = "runner_extend_token"
-labels  = { layer = "app", purpose = "sop" }
+labels  = { service = "runners", purpose = "sop" }
 timeout = "10s"
 
 [[triggers]]

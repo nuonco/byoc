@@ -2,7 +2,7 @@
 # description: inspects the ctl-api (nuon) RDS instance — prints instance config and
 # Performance Insights OS metrics (CPU / memory / IOPS) for the last hour in table format.
 name    = "rds_inspect_ctl_api"
-labels  = { layer = "infra", purpose = "debug" }
+labels  = { service = "rds", purpose = "debug" }
 label   = "aws"
 timeout = "2m"
 role    = "{{.nuon.install.id}}-provision"

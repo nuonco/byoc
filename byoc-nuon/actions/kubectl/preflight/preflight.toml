@@ -1,6 +1,6 @@
 # action
 name    = "preflight"
-labels  = { layer = "infra", purpose = "debug" }
+labels  = { service = "kubernetes", purpose = "debug" }
 timeout = "1m"
 
 # [[triggers]]

@@ -2,7 +2,7 @@
 # description: fetches ctl-api version and runs ALB healthchecks for the
 # public, admin (private), and runner ingresses.
 name    = "api_status"
-labels  = { layer = "services", purpose = "debug" }
+labels  = { service = "ctl-api", purpose = "debug" }
 timeout = "2m"
 
 [[triggers]]

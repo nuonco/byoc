@@ -2,7 +2,7 @@
 # description: fetches RDS CPU, IOPS, burst balance, and storage metrics from CloudWatch.
 # Set DB_TARGET to "ctl-api" or "temporal" to switch databases.
 name    = "rds_health"
-labels  = { layer = "infra", purpose = "debug" }
+labels  = { service = "rds", purpose = "debug" }
 label   = "aws"
 timeout = "1m"
 

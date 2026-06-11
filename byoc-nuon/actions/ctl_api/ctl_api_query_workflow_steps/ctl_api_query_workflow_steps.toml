@@ -1,6 +1,6 @@
 # action
 name    = "ctl_api_query_workflow_steps"
-labels  = { layer = "services", purpose = "tool" }
+labels  = { service = "ctl-api", purpose = "tool" }
 timeout = "5m"
 
 [[triggers]]

@@ -1,7 +1,7 @@
 name        = "rds_inspect_temporal"
 description = "Inspects the Temporal RDS instance: instance configuration plus Performance Insights OS metrics (CPU, memory, IOPS) for the last hour, in table format."
 readme      = "./runbooks/rds_inspect_temporal.md"
-labels      = { layer = "infra", purpose = "debug" }
+labels      = { service = "rds", purpose = "debug" }
 
 [[steps]]
 name        = "Inspect Temporal RDS"

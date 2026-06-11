@@ -1,6 +1,6 @@
 # action
 name    = "runners_restart"
-labels  = { layer = "app", purpose = "sop" }
+labels  = { service = "runners", purpose = "sop" }
 timeout = "2m"
 
 [[triggers]]

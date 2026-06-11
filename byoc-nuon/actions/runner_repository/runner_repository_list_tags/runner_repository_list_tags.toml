@@ -3,7 +3,7 @@
 # provisioned by the `runner_repository` component
 # (components/0-tf-runner-repository.toml).
 name    = "runner_repository_list_tags"
-labels  = { layer = "app", purpose = "debug" }
+labels  = { service = "runner-repository", purpose = "debug" }
 label   = "aws"
 timeout = "30s"
 

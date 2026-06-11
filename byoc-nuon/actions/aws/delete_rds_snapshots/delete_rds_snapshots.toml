@@ -1,6 +1,6 @@
 # action
 name    = "delete_rds_snapshots"
-labels  = { layer = "infra", purpose = "sop" }
+labels  = { service = "rds", purpose = "sop" }
 timeout = "10m"
 
 [[triggers]]

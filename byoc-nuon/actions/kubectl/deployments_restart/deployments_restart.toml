@@ -1,6 +1,6 @@
 # action
 name    = "deployments_restart"
-labels  = { layer = "infra", purpose = "sop" }
+labels  = { service = "kubernetes", purpose = "sop" }
 timeout = "0m30s"
 
 [[triggers]]
