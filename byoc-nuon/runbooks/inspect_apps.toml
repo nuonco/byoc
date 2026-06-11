@@ -1,5 +1,5 @@
 name        = "inspect_apps"
-description = "Inspect apps — all apps reported by inspect_apps, with org name lookup."
+description = "Inspect apps — list all apps, and inspect a single app's details."
 readme      = "./runbooks/inspect_apps.md"
 labels      = { layer = "app", purpose = "debug" }
 
@@ -9,6 +9,6 @@ type        = "action"
 action_name = "inspect_apps"
 
 [[steps]]
-name        = "Inspect: orgs"
+name        = "Inspect: app"
 type        = "action"
-action_name = "inspect_orgs"
+action_name = "inspect_app"
