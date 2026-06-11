@@ -1,6 +1,6 @@
 # action
 name    = "debug_list_orgs"
-labels  = { service = "ctl-api", purpose = "debug" }
+labels  = { service = "ctl-api", type = "debug" }
 timeout = "5m"
 
 [[triggers]]

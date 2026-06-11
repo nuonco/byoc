@@ -1,6 +1,6 @@
 # action
 name    = "list_rds_snapshots"
-labels  = { service = "rds", purpose = "debug" }
+labels  = { service = "rds", type = "debug" }
 timeout = "5m"
 
 [[triggers]]

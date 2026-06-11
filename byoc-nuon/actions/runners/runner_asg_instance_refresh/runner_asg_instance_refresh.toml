@@ -1,6 +1,6 @@
 # action
 name    = "runner_asg_instance_refresh"
-labels  = { service = "runners", purpose = "sop" }
+labels  = { service = "runners", type = "sop" }
 timeout = "1m"
 
 [[triggers]]

@@ -1,6 +1,6 @@
 # action
 name    = "temporal_drop_db"
-labels  = { service = "temporal", purpose = "sop" }
+labels  = { service = "temporal", type = "sop" }
 timeout = "1m30s"
 
 [[triggers]]

@@ -1,7 +1,7 @@
 # action
 # description: temporal hard-reset step 2 — recreates the Temporal DB and DB users.
 name    = "temporal_hard_reset_init_db"
-labels  = { service = "temporal", purpose = "step" }
+labels  = { service = "temporal", type = "step" }
 timeout = "1m30s"
 
 [[triggers]]

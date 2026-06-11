@@ -1,6 +1,6 @@
 # action
 name    = "kubectl_get_pods"
-labels  = { service = "kubernetes", purpose = "debug" }
+labels  = { service = "kubernetes", type = "debug" }
 label   = "kubectl"
 timeout = "30s"
 

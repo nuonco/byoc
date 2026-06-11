@@ -1,6 +1,6 @@
 # action
 name    = "runners_restart"
-labels  = { service = "runners", purpose = "sop" }
+labels  = { service = "runners", type = "sop" }
 timeout = "2m"
 
 [[triggers]]

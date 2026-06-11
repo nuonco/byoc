@@ -1,7 +1,7 @@
 # action
 # NOTE(fd): use this is you need to set all install runners to a specific version
 name    = "runners_update_and_restart"
-labels  = { service = "runners", purpose = "sop" }
+labels  = { service = "runners", type = "sop" }
 timeout = "5m"
 
 [[triggers]]

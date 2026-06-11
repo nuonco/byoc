@@ -1,6 +1,6 @@
 # action
 name    = "ctl_api_add_support_users"
-labels  = { service = "ctl-api", purpose = "sop" }
+labels  = { service = "ctl-api", type = "sop" }
 timeout = "10s"
 
 [[triggers]]

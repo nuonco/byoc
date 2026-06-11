@@ -1,6 +1,6 @@
 # action
 name    = "kubectl"
-labels  = { service = "kubernetes", purpose = "tool" }
+labels  = { service = "kubernetes", type = "tool" }
 timeout = "30s"
 
 [[triggers]]

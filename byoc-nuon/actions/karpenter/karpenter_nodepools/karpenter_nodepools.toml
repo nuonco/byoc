@@ -1,6 +1,6 @@
 # action
 name    = "karpenter_nodepools"
-labels  = { service = "karpenter", purpose = "debug" }
+labels  = { service = "karpenter", type = "debug" }
 timeout = "20s"
 
 

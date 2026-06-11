@@ -1,7 +1,7 @@
 name        = "enable_slack"
 description = "Enables api-slack for this install: syncs Slack client/signing secrets from the central AWS Secrets Manager into the install's ctl-api namespace and restarts api-slack."
 readme      = "./runbooks/enable_slack.md"
-labels      = { service = "slack", purpose = "sop" }
+labels      = { service = "slack", type = "sop" }
 
 [[steps]]
 name        = "Sync slack secrets"

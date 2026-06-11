@@ -1,6 +1,6 @@
 # action
 name    = "inspect_runners"
-labels  = { service = "runners", purpose = "debug" }
+labels  = { service = "runners", type = "debug" }
 timeout = "5m"
 
 [[triggers]]

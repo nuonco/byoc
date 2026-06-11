@@ -1,6 +1,6 @@
 # action
 name    = "kube_list_nodes"
-labels  = { service = "kubernetes", purpose = "debug" }
+labels  = { service = "kubernetes", type = "debug" }
 timeout = "15s"
 
 # [[triggers]]

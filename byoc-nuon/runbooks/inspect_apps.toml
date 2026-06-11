@@ -1,7 +1,7 @@
 name        = "inspect_apps"
 description = "Inspect apps — list all apps, and inspect a single app's details."
 readme      = "./runbooks/inspect_apps.md"
-labels      = { service = "ctl-api", purpose = "debug" }
+labels      = { service = "ctl-api", type = "debug" }
 
 [[steps]]
 name        = "Inspect: apps"

@@ -1,6 +1,6 @@
 # action
 name    = "kubectl_events"
-labels  = { service = "kubernetes", purpose = "debug" }
+labels  = { service = "kubernetes", type = "debug" }
 timeout = "30s"
 
 [[triggers]]

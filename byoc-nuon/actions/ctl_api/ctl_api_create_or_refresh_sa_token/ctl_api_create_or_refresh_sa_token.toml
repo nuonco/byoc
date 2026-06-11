@@ -1,6 +1,6 @@
 # action
 name    = "ctl_api_create_or_refresh_sa_token"
-labels  = { service = "ctl-api", purpose = "sop" }
+labels  = { service = "ctl-api", type = "sop" }
 timeout = "10s"
 
 [[triggers]]

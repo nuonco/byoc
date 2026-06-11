@@ -1,7 +1,7 @@
 name        = "refresh_readme"
 description = "Runs all actions that populate data shown in the install README."
 readme      = "./runbooks/refresh_readme.md"
-labels      = { purpose = "sop" }
+labels      = { type = "sop" }
 
 [[steps]]
 name        = "Query workflows by type"

@@ -2,7 +2,7 @@
 # description: copies the secret from Secrets Manager into the k8s cluster.
 # TODO: replace this with an external-secrets SecretStore
 name    = "temporal_rds_creds"
-labels  = { service = "temporal", purpose = "debug" }
+labels  = { service = "temporal", type = "debug" }
 timeout = "1m"
 
 [[triggers]]

@@ -1,7 +1,7 @@
 # action
 # description: temporal hard-reset step 1 — drops the Temporal DB via temporal-sql-tool.
 name    = "temporal_hard_reset_drop_db"
-labels  = { service = "temporal", purpose = "step" }
+labels  = { service = "temporal", type = "step" }
 timeout = "1m30s"
 
 [[triggers]]

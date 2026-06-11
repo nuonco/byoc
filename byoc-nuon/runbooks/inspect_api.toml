@@ -1,7 +1,7 @@
 name        = "inspect_api"
 description = "Inspect ctl-api — version, git ref, ALB healthchecks, and CLI setup links."
 readme      = "./runbooks/inspect_api.md"
-labels      = { service = "ctl-api", purpose = "debug" }
+labels      = { service = "ctl-api", type = "debug" }
 
 [[steps]]
 name        = "API status"

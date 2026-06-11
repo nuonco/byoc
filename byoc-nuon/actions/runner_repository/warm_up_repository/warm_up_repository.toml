@@ -8,7 +8,7 @@
 # ECR runner repository (component: runner_repository) -- the same oras copy
 # performed by ecr_runner_import, just fanned out over every active version.
 name    = "runner_repository_warm_up"
-labels  = { service = "runner-repository", purpose = "sop" }
+labels  = { service = "runner-repository", type = "sop" }
 timeout = "15m"
 
 [[triggers]]

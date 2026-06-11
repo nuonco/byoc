@@ -1,6 +1,6 @@
 # action
 name    = "kill_pods_in_namespace"
-labels  = { service = "kubernetes", purpose = "tool" }
+labels  = { service = "kubernetes", type = "tool" }
 timeout = "30s"
 
 [[triggers]]

@@ -1,7 +1,7 @@
 name        = "inspect_temporal"
 description = "Inspect Temporal — lists recent running workflows in the Temporal namespace."
 readme      = "./runbooks/inspect_temporal.md"
-labels      = { service = "temporal", purpose = "debug" }
+labels      = { service = "temporal", type = "debug" }
 
 [[steps]]
 name        = "List workflows"

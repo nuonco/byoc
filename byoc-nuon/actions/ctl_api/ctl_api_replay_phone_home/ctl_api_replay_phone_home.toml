@@ -1,6 +1,6 @@
 # action
 name    = "ctl_api_replay_phone_home"
-labels  = { service = "ctl-api", purpose = "sop" }
+labels  = { service = "ctl-api", type = "sop" }
 timeout = "120s"
 
 [[triggers]]

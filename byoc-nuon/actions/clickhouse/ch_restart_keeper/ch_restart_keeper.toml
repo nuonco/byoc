@@ -1,6 +1,6 @@
 # action
 name    = "ch_restart_keeper"
-labels  = { service = "clickhouse", purpose = "sop" }
+labels  = { service = "clickhouse", type = "sop" }
 timeout = "3m"
 
 [[triggers]]

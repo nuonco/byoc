@@ -1,6 +1,6 @@
 # action
 name    = "kubectl_delete_nodepools"
-labels  = { service = "kubernetes", purpose = "sop" }
+labels  = { service = "kubernetes", type = "sop" }
 timeout = "30s"
 
 [[triggers]]

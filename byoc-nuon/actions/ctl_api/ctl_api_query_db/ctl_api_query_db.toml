@@ -1,6 +1,6 @@
 # action
 name    = "ctl_api_query_db"
-labels  = { service = "ctl-api", purpose = "tool" }
+labels  = { service = "ctl-api", type = "tool" }
 timeout = "30s"
 
 [[triggers]]

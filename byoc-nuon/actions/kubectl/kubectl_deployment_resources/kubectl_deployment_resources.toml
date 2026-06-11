@@ -3,7 +3,7 @@
 # and any OOMKilled containers in a namespace. Output is json.
 # Set NAMESPACE to target a namespace (default ctl-api).
 name    = "kubectl_deployment_resources"
-labels  = { service = "kubernetes", purpose = "debug" }
+labels  = { service = "kubernetes", type = "debug" }
 label   = "kubectl"
 timeout = "1m"
 
