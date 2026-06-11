@@ -69,14 +69,14 @@ spec:
       - key: topology.kubernetes.io/zone
         operator: In
         values:
-        {{- if .zones }}
-        {{- range .zones }}
-        - {{ . }}
+        {{- /* explicit per-nodepool zones win; otherwise pivot on public to
+               select the public or private availability zones */}}
+        {{- $zones := .zones }}
+        {{- if not $zones }}
+        {{- $zones = ternary $.Values.public_azs $.Values.private_azs (.public | default false) }}
         {{- end }}
-        {{- else }}
-        {{- range $.Values.azs }}
+        {{- range $zones }}
         - {{ . }}
-        {{- end }}
         {{- end }}
       - key: pool.nuon.co
         operator: Exists
