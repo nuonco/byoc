@@ -1,0 +1,4 @@
+type       = "terraform_module"
+engine     = "opa"
+contents   = "./rds-data-protection.rego"
+components = ["rds_cluster_nuon", "rds_cluster_temporal"]
