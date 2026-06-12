@@ -1,0 +1,20 @@
+# action
+name    = "ctl_api_rsg_set_tag"
+labels  = { service = "ctl-api", type = "sop" }
+timeout = "5m"
+
+[[triggers]]
+type = "manual"
+
+# TODO: uncomment the following, in due time
+# [[triggers]]
+# type           = "pre-deploy-component"
+# component_name = "ctl_api"
+
+[[steps]]
+name            = "rsg_set_tag"
+inline_contents = "./ctl_api/ctl_api_rsg_set_tag/rsg-set-tag.sh"
+
+[steps.env_vars]
+ADMIN_API_URL = "http://admin.{{ .nuon.sandbox.outputs.nuon_dns.internal_domain.name }}"
+TAG           = "cloud"

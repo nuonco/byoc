@@ -1,0 +1,11 @@
+# action
+name    = "temporal_drop_db"
+labels  = { service = "temporal", type = "sop" }
+timeout = "1m30s"
+
+[[triggers]]
+type = "manual"
+
+[[steps]]
+name            = "exec"
+inline_contents = "./temporal/temporal_drop_db/drop-db.sh"

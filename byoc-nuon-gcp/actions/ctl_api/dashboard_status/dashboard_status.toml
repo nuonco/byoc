@@ -1,0 +1,37 @@
+# action
+# description: fetches dashboard-ui version and runs the ingress healthcheck for
+# the dashboard ingress.
+name    = "dashboard_status"
+labels  = { service = "ctl-api", type = "debug" }
+timeout = "2m"
+
+[[triggers]]
+type          = "cron"
+cron_schedule = "15,45 * * * *"
+
+[[triggers]]
+type           = "post-deploy-component"
+component_name = "dashboard_ui"
+index          = 5
+
+[[triggers]]
+type = "manual"
+
+[[steps]]
+name            = "fetch dashboard-ui version"
+inline_contents = "./ctl_api/dashboard_status/version.sh"
+
+[steps.env_vars]
+APP_URL = "https://app.{{ .nuon.sandbox.outputs.nuon_dns.public_domain.name }}"
+
+[[steps]]
+name            = "ingress-healthcheck-dashboard-ui"
+inline_contents = "./ctl_api/dashboard_status/healthcheck.sh"
+
+[steps.env_vars]
+INGRESS_NAME      = "dashboard-ui"
+INGRESS_NAMESPACE = "dashboard-ui"
+
+[[steps]]
+name            = "timestamp"
+inline_contents = "./ctl_api/dashboard_status/timestamp.sh"

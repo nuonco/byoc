@@ -1,0 +1,18 @@
+# action
+name    = "runners_monitor"
+labels  = { service = "runners", type = "debug" }
+timeout = "5m"
+
+[[triggers]]
+type = "manual"
+
+[[triggers]]
+type          = "cron"
+cron_schedule = "0 */1 * * *"  # https://crontab.guru/#0_*/1_*_*_*
+
+[[steps]]
+name            = "org"
+inline_contents = "./runners/runners_monitor/check-org-runners-statuses.sh"
+
+[steps.env_vars]
+ADMIN_API_URL = "http://admin.{{ .nuon.sandbox.outputs.nuon_dns.internal_domain.name }}"

@@ -22,9 +22,9 @@ env:
   ROOT_DOMAIN: "{{ .nuon.sandbox.outputs.nuon_dns.public_domain.name }}"
 
   # Auth0 config (legacy, non-empty placeholders)
-  AUTH0_ISSUER_URL: '{{ or .nuon.inputs.inputs.auth_issuer_url "auth_issuer_url" }}'
-  AUTH0_AUDIENCE: '{{ or .nuon.inputs.inputs.auth_audience "auth_audience" }}'
-  AUTH0_CLIENT_ID: '{{ or .nuon.inputs.inputs.auth_client_id_ctl_api "auth_client_id_ctl_api" }}'
+  AUTH0_ISSUER_URL: '{{ dig "inputs" "auth_issuer_url" "dne" .nuon.inputs }}'
+  AUTH0_AUDIENCE: '{{ dig "inputs" "auth_audience" "dne" .nuon.inputs }}'
+  AUTH0_CLIENT_ID: '{{ dig "inputs" "auth_client_id_ctl_api" "dne" .nuon.inputs }}'
 
   # OIDC config
   NUON_AUTH_PROVIDER_TYPE: "{{ .nuon.inputs.inputs.nuon_auth_provider_type }}"
@@ -48,7 +48,7 @@ env:
   INTERNAL_HTTP_PORT: !!string 8082
   RUNNER_HTTP_PORT: !!string 8083
   GRACEFUL_SHUTDOWN_TIMEOUT: 10s
-  RUNNER_CONTAINER_IMAGE_TAG: "0.19.913"
+  RUNNER_CONTAINER_IMAGE_TAG: "0.19.999"
   RUNNER_CONTAINER_IMAGE_URL: "{{ .nuon.inputs.inputs.runner_image_url }}"
 
   GITHUB_APP_ID: !!string {{ .nuon.inputs.inputs.github_app_id }}
@@ -77,6 +77,9 @@ env:
   TEMPORAL_UI_URL: http://temporal-ui.temporal.svc.cluster.local:8080
   SANDBOX_MODE_SLEEP: 1s
 
+  BLOB_STORAGE_BUCKET: "{{ .nuon.components.gcs_buckets.outputs.blob_bucket.name }}"
+  BLOB_STORAGE_REGION: "{{ .nuon.install_stack.outputs.region }}"
+
   SEGMENT_WRITE_KEY: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
   LOOPS_API_KEY: "{{ .nuon.inputs.inputs.loops_api_key }}"
 
@@ -99,6 +102,8 @@ env:
   TEMPORAL_WORKFLOW_FAILURE_PANIC: "true"
 
   # queues management
+  QUEUE_CONTINUE_AS_NEW_HINT_PERIOD: 5m
+  QUEUE_CONTINUE_AS_NEW_HISTORY_MAX: "1500"
   QUEUE_SIGNAL_CLEANUP_ENABLED: "true"
 
 envSecrets:
@@ -212,6 +217,10 @@ api:
       maxReplicas: 10
       targetCPUUtilizationPercentage: 50
       targetMemoryUtilizationPercentage: 50
+    resources:
+      requests:
+        cpu: 1000m
+        memory: 2Gi
   admin:
     port: 8082
     domain: "admin.{{ .nuon.sandbox.outputs.nuon_dns.internal_domain.name }}"
@@ -237,7 +246,7 @@ api:
       targetCPUUtilizationPercentage: 80
       targetMemoryUtilizationPercentage: 80
   slack:
-    enabled: true
+    enabled: {{ or .nuon.inputs.inputs.slack_enabled "false" }}
     port: 8089
     domain: "slack.{{ .nuon.sandbox.outputs.nuon_dns.public_domain.name }}"
 

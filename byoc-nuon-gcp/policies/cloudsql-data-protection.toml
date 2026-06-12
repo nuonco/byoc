@@ -1,0 +1,4 @@
+type       = "terraform_module"
+engine     = "opa"
+contents   = "./cloudsql-data-protection.rego"
+components = ["cloudsql_nuon", "cloudsql_temporal"]

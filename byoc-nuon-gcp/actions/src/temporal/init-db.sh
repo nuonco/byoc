@@ -1,1 +1,0 @@
-../../../../shared/actions/src/temporal/init-db.sh

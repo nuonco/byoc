@@ -13,34 +13,18 @@ env:
   METRICS_TAGS: "org_id:{{ .nuon.org.id }},org_name:{{ .nuon.org.name }}"
 
   NUON_API_URL: "https://api.{{ .nuon.sandbox.outputs.nuon_dns.public_domain.name }}"
-  NEXT_PUBLIC_API_URL: "https://api.{{ .nuon.sandbox.outputs.nuon_dns.public_domain.name }}"
 
-  NEXT_PUBLIC_DATADOG_ENV: "byoc-nuon"
-  NEXT_PUBLIC_DATADOG_SITE: "us5.datadoghq.com"
-  NEXT_PUBLIC_DATADOG_CLIENT_TOKEN: "pubxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
-  NEXT_PUBLIC_DATADOG_APP_ID: "iiiiiiii-yyyy-xxxx-0000-xxxxxxxxxxxx"
-
-  # Auth0 config
-  AUTH0_AUDIENCE: "{{ .nuon.inputs.inputs.auth_audience }}"
-  AUTH0_BASE_URL: "https://app.{{ .nuon.sandbox.outputs.nuon_dns.public_domain.name }}"
-  AUTH0_ISSUER_BASE_URL: "{{ .nuon.inputs.inputs.auth_issuer_url }}"
-  AUTH0_CLIENT_ID: "{{ .nuon.inputs.inputs.auth_client_id_dashboard_ui }}"
+  DATADOG_ENV: "byoc-nuon"
+  DATADOG_SITE: "us5.datadoghq.com"
+  DATADOG_CLIENT_TOKEN: "pubxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+  DATADOG_APP_ID: "iiiiiiii-yyyy-xxxx-0000-xxxxxxxxxxxx"
 
   GITHUB_APP_NAME: "{{ .nuon.inputs.inputs.github_app_name }}"
 
+  NUON_ADMIN_API_URL: "http://admin.{{ .nuon.sandbox.outputs.nuon_dns.internal_domain.name }}"
   NUON_CTL_API_ADMIN_URL: "http://admin.{{ .nuon.sandbox.outputs.nuon_dns.internal_domain.name }}"
   NUON_TEMPORAL_UI_URL: "http://temporal-web.temporal.svc.cluster.local:8080"
-
-  NUON_CANCEL_JOBS: "true"
-  NUON_DEPLOY_DATA: "true"
-  NUON_INSTALL_REPROVISION: "true"
-  NUON_INSTALL_UPDATE: "true"
-  NUON_ORG_DASHBOARD: "false"
-  NUON_ORG_RUNNER: "true"
-  NUON_ORG_SETTINGS: "false"
-  NUON_ORG_SUPPORT: "false"
-  NUON_RUNNERS: "true"
-  NUON_WORKFLOWS: "true"
+  NUON_ADMIN_DASHBOARD_URL: '{{ ternary "http://ctl-api-dashboard-admin.ctl-api.svc.cluster.local" "" (and (eq "true" .nuon.inputs.inputs.admin_dashboard_enabled) (eq "false" .nuon.inputs.inputs.admin_dashboard_alb_enabled)) }}'
 
   NUON_AUTH_SERVICE_URL: '{{ ternary (print "https://auth." .nuon.sandbox.outputs.nuon_dns.public_domain.name) "" (or (eq "google" .nuon.inputs.inputs.nuon_auth_provider_type) (eq "oidc" .nuon.inputs.inputs.nuon_auth_provider_type)) }}'
   NUON_APP_URL: "https://app.{{.nuon.sandbox.outputs.nuon_dns.public_domain.name}}"
@@ -50,14 +34,6 @@ env:
   HTTP_PORT: "4000"
 
 envSecrets:
-  - name: "AUTH0_CLIENT_SECRET"
-    valueFrom:
-      name: dashboard-ui-auth0-client-secret
-      key: value
-  - name: "AUTH0_SECRET"
-    valueFrom:
-      name: dashboard-ui-auth0-secret
-      key: value
 
 ui:
   port: 4000

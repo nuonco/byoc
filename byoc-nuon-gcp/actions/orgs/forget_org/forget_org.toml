@@ -1,0 +1,15 @@
+# action
+name    = "forget_org"
+labels  = { service = "ctl-api", type = "sop" }
+timeout = "5m"
+
+[[triggers]]
+type = "manual"
+
+[[steps]]
+name    = "forget-org"
+inline_contents = "./orgs/forget_org/forget-org.sh"
+
+[steps.env_vars]
+ORG_ID = ""
+ADMIN_API_URL = "http://admin.{{ .nuon.sandbox.outputs.nuon_dns.internal_domain.name }}"

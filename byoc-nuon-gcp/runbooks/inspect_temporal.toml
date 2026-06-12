@@ -1,0 +1,14 @@
+name        = "inspect_temporal"
+description = "Inspect Temporal — lists recent running workflows in the Temporal namespace."
+readme      = "./runbooks/inspect_temporal.md"
+labels      = { service = "temporal", type = "debug" }
+
+[[steps]]
+name        = "List workflows"
+type        = "action"
+action_name = "temporal_workflow_list"
+
+[[steps]]
+name        = "Workflow details"
+type        = "action"
+action_name = "temporal_workflow_history"

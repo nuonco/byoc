@@ -1,0 +1,7 @@
+name         = "ch_instance_type_cluster"
+description  = "What GCE machine type should each clickhouse cluster node deploy on?"
+default      = "e2-standard-2"
+display_name = "Cluster Instance Type"
+group        = "clickhouse"
+
+user_configurable = false

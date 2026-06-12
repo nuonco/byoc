@@ -1,0 +1,18 @@
+# action
+name    = "ctl_api_query_db"
+labels  = { service = "ctl-api", type = "tool" }
+timeout = "30s"
+
+[[triggers]]
+type = "manual"
+
+[[steps]]
+name            = "Query the DB"
+inline_contents = "./ctl_api/ctl_api_query_db/query-db.sh"
+
+[steps.env_vars]
+DB_USER = "{{ .nuon.components.cloudsql_nuon.outputs.db_instance_username }}"
+DB_NAME = "ctl_api"
+DB_ADDR = "{{ .nuon.components.cloudsql_nuon.outputs.address }}"
+DB_PORT = "5432"
+QUERY   = "select count(id) from installs;"

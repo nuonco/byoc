@@ -1,7 +1,7 @@
 type           = "provision"
 name           = "{{.nuon.install.id}}-provision"
-description    = "Create and configure BYOC Nuon infrastructure on GCP."
-display_name   = "provision"
+description    = "Provision role for BYOC Nuon"
+display_name   = "Provision"
 cloud_platform = "gcp"
 
 [[policies]]
