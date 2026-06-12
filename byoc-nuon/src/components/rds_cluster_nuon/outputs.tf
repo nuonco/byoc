@@ -29,3 +29,11 @@ output "db_instance_username" {
 output "db_instance_availability_zone" {
   value = module.db.db_instance_availability_zone
 }
+
+output "replica_endpoint" {
+  value = length(module.db_replica) > 0 ? module.db_replica[0].db_instance_endpoint : null
+}
+
+output "replica_address" {
+  value = length(module.db_replica) > 0 ? module.db_replica[0].db_instance_address : null
+}
