@@ -1,12 +1,12 @@
 # action
 name    = "ctl_api_query_workflows_by_type"
-labels  = { service = "ctl-api", type = "tool" }
+labels  = { service = "ctl-api", type = "report" }
 label   = "query"
 timeout = "5m"
 
 [[triggers]]
 type          = "cron"
-cron_schedule = "5,35 * * * *"
+cron_schedule = "*/10 * * * *"
 
 [[triggers]]
 type = "manual"

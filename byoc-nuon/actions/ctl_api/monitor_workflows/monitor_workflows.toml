@@ -1,0 +1,26 @@
+# action
+name    = "monitor_workflows"
+labels  = { service = "ctl-api", type = "monitor" }
+timeout = "5m"
+
+[[triggers]]
+type          = "cron"
+cron_schedule = "*/10 * * * *"
+
+[[triggers]]
+type = "manual"
+
+[[steps]]
+name            = "Monitor workflows for errors"
+inline_contents = "./ctl_api/monitor_workflows/monitor-workflows.sh"
+
+[steps.env_vars]
+DB_USER       = "{{ .nuon.components.rds_cluster_nuon.outputs.db_instance_username }}"
+DB_NAME       = "ctl_api"
+SECRET_ARN    = "{{ .nuon.components.rds_cluster_nuon.outputs.db_instance_master_user_secret_arn }}"
+DB_ADDR       = "{{ .nuon.components.rds_cluster_nuon.outputs.address }}"
+DB_PORT       = "5432"
+REGION        = "{{ .nuon.install_stack.outputs.region }}"
+SINCE_MINUTES = "10"
+LIMIT         = "100"
+SINCE_TS      = '{{ dig "outputs" "updated_at" "" (default dict (index (default dict .nuon.actions.workflows) "monitor_workflows")) }}'
