@@ -1,6 +1,6 @@
 # action
 name    = "inspect_installs"
-labels  = { service = "ctl-api", type = "debug" }
+labels  = { service = "ctl-api", type = "report" }
 timeout = "5m"
 
 [[triggers]]

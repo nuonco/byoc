@@ -1,11 +1,11 @@
 # action
 name    = "inspect_runners"
-labels  = { service = "runners", type = "debug" }
+labels  = { service = "runners", type = "report" }
 timeout = "5m"
 
 [[triggers]]
 type          = "cron"
-cron_schedule = "0,30 * * * *"
+cron_schedule = "*/10 * * * *"
 
 [[triggers]]
 type = "manual"
