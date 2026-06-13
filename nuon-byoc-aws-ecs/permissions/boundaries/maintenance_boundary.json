@@ -12,10 +12,12 @@
         "ec2:*",
         "ecr-public:*",
         "ecr:*",
+        "ecs:*",
         "eks:*",
         "elasticloadbalancing:*",
         "events:*",
         "iam:*",
+        "servicediscovery:*",
         "kms:*",
         "logs:*",
         "pi:*",
@@ -23,6 +25,7 @@
         "route53:*",
         "s3:*",
         "secretsmanager:*",
+        "sns:*",
         "sqs:*"
       ],
       "Resource": "*"

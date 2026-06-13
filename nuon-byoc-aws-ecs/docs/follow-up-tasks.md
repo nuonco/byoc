@@ -4,9 +4,9 @@ Work deferred from earlier phases. Re-add as standalone PRs when the surrounding
 
 ## Phase 5 caveats
 
-### Billing alarm has no subscription
+### Wire a subscriber to the cloudwatch billing alarm
 
-`13-tf-cloudwatch` creates an SNS topic + `EstimatedCharges` alarm at $290, but nothing subscribes to the topic. Add a subscription input (email, Slack webhook via Lambda, or wire to the Datadog integration once `14-tf-datadog` lands).
+`13-tf-cloudwatch` creates an SNS topic + `EstimatedCharges` alarm at $290/mo, but nothing subscribes to the topic, so it's silent. Add a subscription input — email, Slack webhook via a tiny Lambda, or wire to the Datadog integration once `14-tf-datadog` lands.
 
 ### ClickHouse backup task command won't shell-expand
 

@@ -194,6 +194,23 @@
           "aws:ResourceTag/install.nuon.co/id": "{{ .nuon.install.id }}"
         }
       }
+    },
+    {
+      "Sid": "EcsFargateStack",
+      "Effect": "Allow",
+      "Action": [
+        "ecs:*",
+        "servicediscovery:*",
+        "elasticloadbalancing:*",
+        "events:*",
+        "cloudwatch:*",
+        "sns:*",
+        "application-autoscaling:*",
+        "autoscaling:*",
+        "ec2:*",
+        "logs:*"
+      ],
+      "Resource": "*"
     }
   ]
 }
