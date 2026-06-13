@@ -1,0 +1,8 @@
+#:schema http://localhost:8081/v1/general/config-schema?type=inputs
+name         = "temporal_server_image"
+description  = "Container image for the Temporal server (auto-setup variant)."
+default      = "temporalio/auto-setup:1.24"
+display_name = "Temporal server image"
+group        = "temporal"
+
+user_configurable = true

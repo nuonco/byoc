@@ -1,0 +1,8 @@
+region                         = "{{ .nuon.install_stack.outputs.region }}"
+install_id                     = "{{ .nuon.install.id }}"
+org_id                         = "{{ .nuon.org.id }}"
+log_group_name                 = "{{ .nuon.sandbox.outputs.cluster.log_group_name }}"
+execution_role_arn             = "{{ .nuon.components.task_roles.outputs.execution_role_arn }}"
+ctl_api_task_role_arn          = "{{ .nuon.components.task_roles.outputs.ctl_api_task_role_arn }}"
+ctl_api_image                  = "{{ .nuon.inputs.inputs.ctl_api_image }}"
+clickhouse_password_secret_arn = "{{ .nuon.secrets.clickhouse_password.arn }}"

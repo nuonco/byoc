@@ -2,6 +2,22 @@
 
 Work deferred from earlier phases. Re-add as standalone PRs when the surrounding components need them.
 
+## Phase 5 caveats
+
+### Billing alarm has no subscription
+
+`13-tf-cloudwatch` creates an SNS topic + `EstimatedCharges` alarm at $290, but nothing subscribes to the topic. Add a subscription input (email, Slack webhook via Lambda, or wire to the Datadog integration once `14-tf-datadog` lands).
+
+### ClickHouse backup task command won't shell-expand
+
+`13-tf-clickhouse-backup` task def passes `["create_remote", "scheduled-$(date -u +%Y%m%dT%H%M%S)"]` as the container command. ECS does not invoke a shell, so `$(date ...)` is taken literally. Fix one of:
+- Wrap with `["sh", "-c", "create_remote scheduled-$(date ...)"]`
+- Let `clickhouse-backup` auto-name the backup (drop the second arg)
+
+### Datadog component deferred
+
+The `datadog` input group + `datadog_enabled` / API key inputs exist, but there's no `14-tf-datadog` component module yet. Add when a customer opts in.
+
 ## Fork `management` + `runner-repository` modules for ECS
 
 Both modules live in `byoc-nuon/src/components/` and assume EKS. They were removed from `nuon-byoc-aws-ecs/components/` so the directory would sync; re-add them once forked into `nuon-byoc-aws-ecs/src/components/`.
@@ -33,6 +49,16 @@ The EKS-specific surface is concentrated in the IRSA trust policies. For ECS, ev
 - Rewrite each `*_access_role.tf` to trust the ECS task role principal (`Service: ecs-tasks.amazonaws.com` + condition on the task role ARN) instead of the OIDC federated principal
 
 Nothing else in the module is EKS-bound.
+
+### Verify ctl-api migration CLI subcommands
+
+The init tasks (`ecs-aurora-init`, `ecs-clickhouse-init`) invoke:
+- `ctl-api migrate up` against Aurora
+- `ctl-api migrate-clickhouse up` against ClickHouse
+
+Confirm these subcommand names against the ctl-api source. If they differ, update the `command` arrays in `src/components/ecs-aurora-init/main.tf` and `src/components/ecs-clickhouse-init/main.tf`.
+
+Also need a runbook step (Phase 6) that calls `aws ecs run-task --task-definition <family>` against each init task def post-apply.
 
 ### `runner-repository`
 

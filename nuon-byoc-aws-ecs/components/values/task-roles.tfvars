@@ -1,0 +1,8 @@
+region                         = "{{ .nuon.install_stack.outputs.region }}"
+install_id                     = "{{ .nuon.install.id }}"
+org_id                         = "{{ .nuon.org.id }}"
+aurora_credentials_secret_arn  = "{{ .nuon.components.aurora.outputs.credentials_secret_arn }}"
+clickhouse_password_secret_arn = "{{ .nuon.secrets.clickhouse_password.arn }}"
+blob_bucket_arn                = "{{ .nuon.components.s3_buckets.outputs.blob_bucket_arn }}"
+install_templates_bucket_arn   = "{{ .nuon.components.s3_buckets.outputs.install_templates_bucket_arn }}"
+clickhouse_backup_bucket_arn   = "{{ .nuon.components.s3_buckets.outputs.clickhouse_backup_bucket_arn }}"

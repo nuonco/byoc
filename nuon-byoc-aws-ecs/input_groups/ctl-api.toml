@@ -1,0 +1,4 @@
+#:schema http://localhost:8081/v1/general/config-schema?type=input-groups
+name         = "ctl-api"
+description  = "ctl-api control plane service configuration."
+display_name = "ctl-api"

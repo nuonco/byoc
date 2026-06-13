@@ -1,0 +1,8 @@
+#:schema http://localhost:8081/v1/general/config-schema?type=inputs
+name         = "ctl_api_image"
+description  = "Container image URL for ctl-api. Same image is used by the API services and by the Aurora/ClickHouse migration tasks."
+default      = "public.ecr.aws/nuon/ctl-api:latest"
+display_name = "ctl-api image"
+group        = "ctl-api"
+
+user_configurable = true
