@@ -40,25 +40,25 @@ inline_contents = "./ctl_api/ctl_api_post_deploy/get-migrations.sh"
 ADMIN_API_URL = "http://admin.{{ .nuon.sandbox.outputs.nuon_dns.internal_domain.name }}"
 
 [[steps]]
-name            = "public-ingress-healthcheck"
+name            = "public-route-healthcheck"
 inline_contents = "./ctl_api/ctl_api_post_deploy/healthcheck.sh"
 
 [steps.env_vars]
-INGRESS_NAME      = "ctl-api-public"
-INGRESS_NAMESPACE = "ctl-api"
+ROUTE_NAME      = "ctl-api-public"
+ROUTE_NAMESPACE = "ctl-api"
 
 [[steps]]
-name            = "runner-ingress-healthcheck"
+name            = "runner-route-healthcheck"
 inline_contents = "./ctl_api/ctl_api_post_deploy/healthcheck.sh"
 
 [steps.env_vars]
-INGRESS_NAME      = "ctl-api-runner"
-INGRESS_NAMESPACE = "ctl-api"
+ROUTE_NAME      = "ctl-api-runner"
+ROUTE_NAMESPACE = "ctl-api"
 
 [[steps]]
-name            = "admin-ingress-healthcheck"
+name            = "admin-route-healthcheck"
 inline_contents = "./ctl_api/ctl_api_post_deploy/healthcheck.sh"
 
 [steps.env_vars]
-INGRESS_NAME      = "ctl-api-admin"
-INGRESS_NAMESPACE = "ctl-api"
+ROUTE_NAME      = "ctl-api-admin"
+ROUTE_NAMESPACE = "ctl-api"
