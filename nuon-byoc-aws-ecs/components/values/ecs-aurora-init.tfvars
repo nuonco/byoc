@@ -1,7 +1,7 @@
 region                        = "{{ .nuon.install_stack.outputs.region }}"
 install_id                    = "{{ .nuon.install.id }}"
 org_id                        = "{{ .nuon.org.id }}"
-private_subnet_ids            = "{{ .nuon.components.cluster.outputs.private_subnet_ids }}"
+vpc_id                        = "{{ .nuon.install_stack.outputs.vpc_id }}"
 cluster_arn                   = "{{ .nuon.components.cluster.outputs.cluster_arn }}"
 log_group_name                = "{{ .nuon.components.cluster.outputs.log_group_name }}"
 execution_role_arn            = "{{ .nuon.components.task_roles.outputs.execution_role_arn }}"

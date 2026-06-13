@@ -10,11 +10,22 @@ provider "aws" {
   default_tags { tags = local.tags }
 }
 
+data "aws_subnets" "public" {
+  filter {
+    name   = "vpc-id"
+    values = [var.vpc_id]
+  }
+  tags = {
+    visibility           = "public"
+    "install.nuon.co/id" = var.install_id
+  }
+}
+
+
 variable "region" { type = string }
 variable "install_id" { type = string }
 variable "org_id" { type = string }
 variable "vpc_id" { type = string }
-variable "public_subnet_ids" { type = list(string) }
 variable "certificate_arn" { type = string }
 
 locals {
@@ -56,7 +67,7 @@ resource "aws_lb" "main" {
   internal           = false
   load_balancer_type = "application"
   security_groups    = [aws_security_group.alb.id]
-  subnets            = var.public_subnet_ids
+  subnets            = data.aws_subnets.public.ids
 }
 
 resource "aws_lb_listener" "http_redirect" {

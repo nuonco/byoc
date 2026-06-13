@@ -10,11 +10,23 @@ provider "aws" {
   default_tags { tags = local.tags }
 }
 
+data "aws_subnets" "private" {
+  filter {
+    name   = "vpc-id"
+    values = [var.vpc_id]
+  }
+  tags = {
+    visibility               = "private"
+    "network.nuon.co/domain" = "internal"
+    "install.nuon.co/id"     = var.install_id
+  }
+}
+
+
 variable "region" { type = string }
 variable "install_id" { type = string }
 variable "org_id" { type = string }
 variable "vpc_id" { type = string }
-variable "private_subnet_ids" { type = list(string) }
 variable "cluster_arn" { type = string }
 variable "log_group_name" { type = string }
 variable "execution_role_arn" { type = string }
@@ -118,7 +130,7 @@ resource "aws_ecs_service" "dashboard" {
   launch_type     = "FARGATE"
 
   network_configuration {
-    subnets          = var.private_subnet_ids
+    subnets          = data.aws_subnets.private.ids
     security_groups  = [aws_security_group.dashboard.id]
     assign_public_ip = false
   }

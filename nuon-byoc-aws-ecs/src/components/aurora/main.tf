@@ -10,11 +10,23 @@ provider "aws" {
   default_tags { tags = local.tags }
 }
 
+data "aws_subnets" "private" {
+  filter {
+    name   = "vpc-id"
+    values = [var.vpc_id]
+  }
+  tags = {
+    visibility               = "private"
+    "network.nuon.co/domain" = "internal"
+    "install.nuon.co/id"     = var.install_id
+  }
+}
+
+
 variable "region" { type = string }
 variable "install_id" { type = string }
 variable "org_id" { type = string }
 variable "vpc_id" { type = string }
-variable "private_subnet_ids" { type = list(string) }
 variable "vpc_cidr" { type = string }
 variable "master_username" { type = string }
 variable "master_password" {
@@ -45,7 +57,7 @@ locals {
 
 resource "aws_db_subnet_group" "main" {
   name       = local.cluster_id
-  subnet_ids = var.private_subnet_ids
+  subnet_ids = data.aws_subnets.private.ids
 }
 
 resource "aws_security_group" "aurora" {

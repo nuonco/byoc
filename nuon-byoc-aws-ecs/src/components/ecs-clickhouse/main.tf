@@ -10,12 +10,24 @@ provider "aws" {
   default_tags { tags = local.tags }
 }
 
+data "aws_subnets" "private" {
+  filter {
+    name   = "vpc-id"
+    values = [var.vpc_id]
+  }
+  tags = {
+    visibility               = "private"
+    "network.nuon.co/domain" = "internal"
+    "install.nuon.co/id"     = var.install_id
+  }
+}
+
+
 variable "region" { type = string }
 variable "install_id" { type = string }
 variable "org_id" { type = string }
 variable "vpc_id" { type = string }
 variable "vpc_cidr" { type = string }
-variable "private_subnet_ids" { type = list(string) }
 variable "cluster_arn" { type = string }
 variable "cluster_name" { type = string }
 variable "cloud_map_namespace_id" { type = string }
@@ -161,7 +173,7 @@ resource "aws_ecs_service" "clickhouse" {
   enable_execute_command = true
 
   network_configuration {
-    subnets          = var.private_subnet_ids
+    subnets          = data.aws_subnets.private.ids
     security_groups  = [aws_security_group.clickhouse.id]
     assign_public_ip = false
   }
