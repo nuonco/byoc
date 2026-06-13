@@ -1,0 +1,8 @@
+#:schema http://localhost:8081/v1/general/config-schema?type=inputs
+name         = "aurora_backup_retention_days"
+description  = "Days of automated Aurora backups to retain."
+default      = "7"
+display_name = "Aurora backup retention (days)"
+group        = "aurora"
+
+user_configurable = true

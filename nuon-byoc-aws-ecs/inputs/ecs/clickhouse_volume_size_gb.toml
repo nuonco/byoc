@@ -1,0 +1,8 @@
+#:schema http://localhost:8081/v1/general/config-schema?type=inputs
+name         = "clickhouse_volume_size_gb"
+description  = "Size of the managed EBS gp3 volume attached to the ClickHouse Fargate task."
+default      = "50"
+display_name = "ClickHouse EBS volume (GB)"
+group        = "ecs"
+
+user_configurable = true

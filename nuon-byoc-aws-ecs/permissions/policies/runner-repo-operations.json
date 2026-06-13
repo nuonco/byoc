@@ -1,0 +1,23 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "EmptyRunnerRepository",
+      "Effect": "Allow",
+      "Action": [
+        "ecr-public:BatchDeleteImage"
+      ],
+      "Resource": "arn:aws:ecr-public::*:repository/{{ .nuon.install.id }}/runner"
+    },
+    {
+      "Sid": "RunnerRepositoryReads",
+      "Effect": "Allow",
+      "Action": [
+        "ecr-public:DescribeRepositories",
+        "ecr-public:DescribeImages",
+        "ecr-public:DescribeImageTags"
+      ],
+      "Resource": "*"
+    }
+  ]
+}

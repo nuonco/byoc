@@ -1,0 +1,5 @@
+name         = "datadog_app_key"
+description  = "Datadog App Key"
+default      = ""
+display_name = "Datadog App Key"
+group        = "datadog"

@@ -1,0 +1,8 @@
+#:schema http://localhost:8081/v1/general/config-schema?type=inputs
+name         = "enable_fargate_spot"
+description  = "Run stateless workers (ctl-api-workers, temporal-server, temporal-ui) on FARGATE_SPOT. ClickHouse always runs on-demand."
+default      = "true"
+display_name = "Enable Fargate Spot for workers"
+group        = "ecs"
+
+user_configurable = true

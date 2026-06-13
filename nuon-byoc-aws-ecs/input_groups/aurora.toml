@@ -1,0 +1,4 @@
+#:schema http://localhost:8081/v1/general/config-schema?type=input-groups
+name         = "aurora"
+description  = "Aurora Serverless v2 cluster hosting both ctl_api and temporal databases. Capacity bounds set the cost ceiling."
+display_name = "Aurora Database"

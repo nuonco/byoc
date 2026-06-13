@@ -1,0 +1,9 @@
+type                 = "provision"
+name                 = "{{.nuon.install.id}}-provision"
+description          = "Provision role for BYOC Nuon"
+display_name         = "Provision"
+permissions_boundary = "./boundaries/provision_boundary.json"
+
+[[policies]]
+managed_policy_name = "AdministratorAccess"
+

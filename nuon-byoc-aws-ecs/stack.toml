@@ -1,0 +1,8 @@
+type        = "aws-cloudformation"
+name        = "nuon-byoc-aws-ecs-install-{{.nuon.install.id}}"
+description = "QuickLink to install runner for nuon-byoc-aws-ecs: Install {{.nuon.install.id}}"
+
+# nested stack — reuse the EKS-flavored VPC template for now (same subnet/NAT
+# shape works for ECS). Phase 2 may replace this with our own 1-cfn-vpc.
+vpc_nested_template_url    = "https://nuon-artifacts.s3.us-west-2.amazonaws.com/aws-cloudformation-templates/v0.1.12/vpc/eks/default/stack.yaml"
+runner_nested_template_url = "https://nuon-artifacts.s3.us-west-2.amazonaws.com/aws-cloudformation-templates/v0.4.0/runner/asg/stack.yaml"

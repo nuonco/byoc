@@ -1,0 +1,5 @@
+version = "v2"
+
+description  = "Nuon BYOC on AWS ECS Fargate"
+display_name = "nuon-byoc-aws-ecs"
+readme       = "./README.md"

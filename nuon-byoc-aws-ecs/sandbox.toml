@@ -1,0 +1,18 @@
+# sandbox
+terraform_version = "1.11.3"
+
+[public_repo]
+directory = "."
+repo      = "nuonco/nuon-byoc-aws-ecs-sandbox"
+branch    = "main"
+
+[vars]
+cluster_name = "n-{{.nuon.install.id}}"
+
+enable_nuon_dns      = "true"
+public_root_domain   = "{{ .nuon.inputs.inputs.root_domain }}"
+internal_root_domain = "internal.{{ .nuon.inputs.inputs.root_domain }}"
+
+[[var_file]]
+#:schema https://api.nuon.co/v1/general/config-schema?type=sandbox
+contents = "./sandbox.tfvars"

@@ -1,0 +1,8 @@
+#:schema http://localhost:8081/v1/general/config-schema?type=inputs
+name         = "ch_database"
+description  = "ClickHouse database name used by ctl-api."
+default      = "ctl_api"
+display_name = "ClickHouse Database"
+group        = "clickhouse"
+
+user_configurable = false
