@@ -116,14 +116,17 @@ envSecrets:
       name: clickhouse-cluster-pw
       key: value
   - name: "SLACK_CLIENT_SECRET"
+    optional: true
     valueFrom:
       name: ctl-api-slack-client-secret
       key: value
   - name: "SLACK_SIGNING_SECRET"
+    optional: true
     valueFrom:
       name: ctl-api-slack-signing-secret
       key: value
   - name: "SLACK_STATE_JWT_SECRET"
+    optional: true
     valueFrom:
       name: ctl-api-slack-state-jwt-secret
       key: value
