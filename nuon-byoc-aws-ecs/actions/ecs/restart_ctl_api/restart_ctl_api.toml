@@ -1,0 +1,16 @@
+# Force-new-deployment on all three ctl-api services.
+name    = "restart_ctl_api"
+labels  = { service = "ctl-api", type = "ops" }
+timeout = "5m"
+
+[[triggers]]
+type = "manual"
+
+[[steps]]
+name            = "restart ctl-api services"
+inline_contents = "./ecs/restart_ctl_api/restart.sh"
+
+[steps.env_vars]
+CLUSTER  = "{{ .nuon.sandbox.outputs.cluster.name }}"
+SERVICES = "n-{{ .nuon.install.id }}-ctl-api-public n-{{ .nuon.install.id }}-ctl-api-admin n-{{ .nuon.install.id }}-ctl-api-workers"
+REGION   = "{{ .nuon.install_stack.outputs.region }}"

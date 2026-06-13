@@ -1,0 +1,34 @@
+name        = "deploy_control_plane"
+description = "Deploy ctl-api, temporal, and dashboard-ui ECS services."
+readme      = "./runbooks/deploy_control_plane.md"
+labels      = { service = "ctl-api", type = "sop" }
+
+[[steps]]
+name        = "aurora: Run schema migrations"
+type        = "action"
+action_name = "run_aurora_init"
+
+[[steps]]
+name        = "clickhouse: Run schema migrations"
+type        = "action"
+action_name = "run_clickhouse_init"
+
+[[steps]]
+name           = "temporal: Deploy"
+type           = "deploy"
+component_name = "ecs_temporal"
+
+[[steps]]
+name           = "ctl-api: Deploy"
+type           = "deploy"
+component_name = "ecs_ctl_api"
+
+[[steps]]
+name        = "ctl-api: Force new deployment"
+type        = "action"
+action_name = "restart_ctl_api"
+
+[[steps]]
+name           = "dashboard-ui: Deploy"
+type           = "deploy"
+component_name = "ecs_dashboard"

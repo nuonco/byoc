@@ -14,6 +14,24 @@ Work deferred from earlier phases. Re-add as standalone PRs when the surrounding
 - Wrap with `["sh", "-c", "create_remote scheduled-$(date ...)"]`
 - Let `clickhouse-backup` auto-name the backup (drop the second arg)
 
+## Phase 6 follow-ups
+
+### Port remaining runbooks
+
+Phase 6 landed only `deploy_control_plane`. The rest of byoc-nuon's runbooks (`inspect_*`, `enable_slack`, `refresh_readme`, `rds_inspect_*`) still need to be ported — most are generic ctl-api queries and port cleanly with light edits; `inspect_cluster` is EKS-only (drop), and `rds_inspect_*` collapse into a single `aurora_inspect`.
+
+### Port remaining actions
+
+Phase 6 landed five ECS actions (`restart_ctl_api`, `run_aurora_init`, `run_clickhouse_init`, `exec_task`, `clickhouse_restore`). The full byoc-nuon action set (~50 actions across `ctl_api`, `temporal`, `clickhouse`, `aws`, `orgs`, `runners`, `runner_repository`, `slack`) still needs ECS-shaped equivalents. Many use `kubectl exec` patterns that need to be rewritten as `aws ecs execute-command`.
+
+### Restore `clickhouse-backups-present` policy
+
+Dropped in Phase 6 because the rego inspects `kubectl_manifest` resources. Rewrite to assert that the `clickhouse_backup` component is present in the plan, then re-add.
+
+### Drop more EKS-shaped policies if not relevant
+
+`block-destructive-changes`, `image-pinned-tags`, `image-registry-trust`, `s3-data-protection` were ported as-is. Audit each rego for k8s assumptions before relying on them.
+
 ### Datadog component deferred
 
 The `datadog` input group + `datadog_enabled` / API key inputs exist, but there's no `14-tf-datadog` component module yet. Add when a customer opts in.

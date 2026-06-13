@@ -1,0 +1,18 @@
+# Break-glass interactive shell into any running ECS task.
+name    = "exec_task"
+labels  = { type = "break-glass" }
+timeout = "30m"
+
+[[triggers]]
+type = "manual"
+
+[[steps]]
+name            = "ecs execute-command"
+inline_contents = "./ecs/exec_task/exec.sh"
+
+[steps.env_vars]
+CLUSTER = "{{ .nuon.sandbox.outputs.cluster.name }}"
+REGION  = "{{ .nuon.install_stack.outputs.region }}"
+# Override SERVICE and COMMAND at invocation time.
+SERVICE = "ctl-api-public"
+COMMAND = "/bin/sh"
