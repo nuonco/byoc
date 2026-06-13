@@ -1,6 +1,6 @@
 # action
-# description: fetches dashboard-ui version and runs the ingress healthcheck for
-# the dashboard ingress.
+# description: fetches dashboard-ui version and runs the route healthcheck for
+# the dashboard HTTPRoute.
 name    = "dashboard_status"
 labels  = { service = "ctl-api", type = "debug" }
 timeout = "2m"
@@ -25,12 +25,12 @@ inline_contents = "./ctl_api/dashboard_status/version.sh"
 APP_URL = "https://app.{{ .nuon.sandbox.outputs.nuon_dns.public_domain.name }}"
 
 [[steps]]
-name            = "ingress-healthcheck-dashboard-ui"
+name            = "route-healthcheck-dashboard-ui"
 inline_contents = "./ctl_api/dashboard_status/healthcheck.sh"
 
 [steps.env_vars]
-INGRESS_NAME      = "dashboard-ui"
-INGRESS_NAMESPACE = "dashboard-ui"
+ROUTE_NAME      = "dashboard-ui"
+ROUTE_NAMESPACE = "dashboard-ui"
 
 [[steps]]
 name            = "timestamp"
