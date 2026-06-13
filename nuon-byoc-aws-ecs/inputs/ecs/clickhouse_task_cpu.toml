@@ -1,8 +1,0 @@
-#:schema http://localhost:8081/v1/general/config-schema?type=inputs
-name         = "clickhouse_task_cpu"
-description  = "Fargate CPU units for the ClickHouse task (1024 = 1 vCPU)."
-default      = "512"
-display_name = "ClickHouse task CPU"
-group        = "ecs"
-
-user_configurable = true

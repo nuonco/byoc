@@ -1,3 +1,0 @@
-name         = "read-only"
-description  = "Cross-account read-only access for this install. When enabled, a scoped IAM role is created in the install account that a customer-owned role can assume for RDS metrics inspection, CloudWatch read, and optional EKS cluster access. SecretsManager is always denied."
-display_name = "Read-Only Access"

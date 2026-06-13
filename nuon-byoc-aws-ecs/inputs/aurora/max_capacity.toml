@@ -1,8 +1,0 @@
-#:schema http://localhost:8081/v1/general/config-schema?type=inputs
-name         = "aurora_max_capacity"
-description  = "Maximum Aurora Serverless v2 capacity (ACU). Acts as the cost ceiling: max_capacity * $0.12/hr * 730."
-default      = "1"
-display_name = "Aurora max ACU"
-group        = "aurora"
-
-user_configurable = true

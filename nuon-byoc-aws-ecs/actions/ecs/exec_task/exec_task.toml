@@ -11,7 +11,7 @@ name            = "ecs execute-command"
 inline_contents = "./ecs/exec_task/exec.sh"
 
 [steps.env_vars]
-CLUSTER = "{{ .nuon.sandbox.outputs.cluster.name }}"
+CLUSTER = "{{ .nuon.components.cluster.outputs.cluster_name }}"
 REGION  = "{{ .nuon.install_stack.outputs.region }}"
 # Override SERVICE and COMMAND at invocation time.
 SERVICE = "ctl-api-public"

@@ -1,4 +1,0 @@
-#:schema http://localhost:8081/v1/general/config-schema?type=input-groups
-name         = "ecs"
-description  = "ECS Fargate task sizing and Spot opt-in."
-display_name = "ECS Fargate"

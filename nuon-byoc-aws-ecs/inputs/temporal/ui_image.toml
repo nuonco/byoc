@@ -1,8 +1,0 @@
-#:schema http://localhost:8081/v1/general/config-schema?type=inputs
-name         = "temporal_ui_image"
-description  = "Container image for the Temporal UI."
-default      = "temporalio/ui:2.31"
-display_name = "Temporal UI image"
-group        = "temporal"
-
-user_configurable = true

@@ -10,8 +10,8 @@ name            = "run aurora init task"
 inline_contents = "./ecs/run_aurora_init/run.sh"
 
 [steps.env_vars]
-CLUSTER    = "{{ .nuon.sandbox.outputs.cluster.name }}"
+CLUSTER    = "{{ .nuon.components.cluster.outputs.cluster_name }}"
 TASK_DEF   = "{{ .nuon.components.ecs_aurora_init.outputs.task_family }}"
-SUBNETS    = "{{ .nuon.sandbox.outputs.vpc.private_subnet_ids }}"
+SUBNETS    = "{{ .nuon.components.cluster.outputs.private_subnet_ids }}"
 REGION     = "{{ .nuon.install_stack.outputs.region }}"
 SG         = "{{ .nuon.components.ecs_ctl_api.outputs.security_group_id }}"

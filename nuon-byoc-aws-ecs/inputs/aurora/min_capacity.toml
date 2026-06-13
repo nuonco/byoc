@@ -1,8 +1,0 @@
-#:schema http://localhost:8081/v1/general/config-schema?type=inputs
-name         = "aurora_min_capacity"
-description  = "Minimum Aurora Serverless v2 capacity (ACU). 0.5 keeps the DB warm; 0 enables scale-to-zero with ~15s cold start."
-default      = "0.5"
-display_name = "Aurora min ACU"
-group        = "aurora"
-
-user_configurable = true

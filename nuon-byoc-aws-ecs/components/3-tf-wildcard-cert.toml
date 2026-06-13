@@ -11,5 +11,5 @@ branch    = "ja/aws-ecs"
 [vars]
 install_id  = "{{ .nuon.install.id }}"
 region      = "{{ .nuon.install_stack.outputs.region }}"
-zone_id     = "{{ .nuon.sandbox.outputs.nuon_dns.public_domain.zone_id }}"
-domain_name = "*.{{ .nuon.sandbox.outputs.nuon_dns.public_domain.name }}"
+zone_id     = "{{ .nuon.install.sandbox.outputs.nuon_dns.public_domain.zone_id }}"
+domain_name = "*.{{ .nuon.install.sandbox.outputs.nuon_dns.public_domain.name }}"

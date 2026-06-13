@@ -1,8 +1,0 @@
-#:schema http://localhost:8081/v1/general/config-schema?type=inputs
-name         = "dashboard_image"
-description  = "Container image URL for the Nuon dashboard UI."
-default      = "public.ecr.aws/nuon/dashboard-ui:latest"
-display_name = "Dashboard image"
-group        = "dashboard"
-
-user_configurable = true

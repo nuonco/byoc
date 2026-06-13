@@ -1,1 +1,3 @@
-# sandbox-level overrides (none today — defaults live in sandbox/variables.tf)
+additional_tags = {
+  "app.nuon.co/name" : "nuon-byoc-aws-ecs"
+}

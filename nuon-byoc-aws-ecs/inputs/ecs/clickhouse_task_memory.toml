@@ -1,8 +1,0 @@
-#:schema http://localhost:8081/v1/general/config-schema?type=inputs
-name         = "clickhouse_task_memory"
-description  = "Fargate memory (MiB) for the ClickHouse task."
-default      = "4096"
-display_name = "ClickHouse task memory"
-group        = "ecs"
-
-user_configurable = true

@@ -11,9 +11,9 @@ name            = "run clickhouse-backup restore_remote"
 inline_contents = "./ecs/clickhouse_restore/restore.sh"
 
 [steps.env_vars]
-CLUSTER     = "{{ .nuon.sandbox.outputs.cluster.name }}"
+CLUSTER     = "{{ .nuon.components.cluster.outputs.cluster_name }}"
 TASK_FAMILY = "{{ .nuon.components.clickhouse_backup.outputs.task_family }}"
-SUBNETS     = "{{ .nuon.sandbox.outputs.vpc.private_subnet_ids }}"
+SUBNETS     = "{{ .nuon.components.cluster.outputs.private_subnet_ids }}"
 SG          = "{{ .nuon.components.ecs_clickhouse.outputs.security_group_id }}"
 REGION      = "{{ .nuon.install_stack.outputs.region }}"
 BACKUP_NAME = ""

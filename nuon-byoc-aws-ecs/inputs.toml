@@ -1,0 +1,120 @@
+# inputs
+
+[[group]]
+name         = "dns"
+description  = "Public DNS for Nuon control plane services."
+display_name = "DNS"
+
+[[input]]
+name         = "domain"
+description  = "Root domain for Nuon-managed Route53 zone (e.g. nuon.run, stage.nuon.run)."
+default      = "nuon.run"
+display_name = "Domain"
+group        = "dns"
+
+
+[[group]]
+name         = "aurora"
+description  = "Aurora Serverless v2 cluster hosting ctl_api + temporal databases."
+display_name = "Aurora"
+
+[[input]]
+name         = "aurora_min_capacity"
+description  = "Minimum Aurora Serverless v2 capacity (ACU)."
+default      = "0.5"
+display_name = "Aurora min ACU"
+group        = "aurora"
+
+[[input]]
+name         = "aurora_max_capacity"
+description  = "Maximum Aurora Serverless v2 capacity (ACU). Cost ceiling = max * $0.12/hr * 730."
+default      = "1"
+display_name = "Aurora max ACU"
+group        = "aurora"
+
+[[input]]
+name         = "aurora_backup_retention_days"
+description  = "Days of automated Aurora backups to retain."
+default      = "7"
+display_name = "Aurora backup retention (days)"
+group        = "aurora"
+
+
+[[group]]
+name         = "ecs"
+description  = "ECS Fargate task sizing + Spot opt-in."
+display_name = "ECS Fargate"
+
+[[input]]
+name         = "clickhouse_task_cpu"
+description  = "Fargate CPU units for the ClickHouse task (1024 = 1 vCPU)."
+default      = "512"
+display_name = "ClickHouse task CPU"
+group        = "ecs"
+
+[[input]]
+name         = "clickhouse_task_memory"
+description  = "Fargate memory (MiB) for the ClickHouse task."
+default      = "4096"
+display_name = "ClickHouse task memory"
+group        = "ecs"
+
+[[input]]
+name         = "clickhouse_volume_size_gb"
+description  = "Size of the managed EBS gp3 volume attached to the ClickHouse Fargate task."
+default      = "50"
+display_name = "ClickHouse EBS volume (GB)"
+group        = "ecs"
+
+[[input]]
+name         = "enable_fargate_spot"
+description  = "Run stateless workers on FARGATE_SPOT."
+default      = "true"
+display_name = "Enable Fargate Spot for workers"
+group        = "ecs"
+
+
+[[group]]
+name         = "ctl-api"
+description  = "ctl-api control plane service."
+display_name = "ctl-api"
+
+[[input]]
+name         = "ctl_api_image"
+description  = "Container image URL for ctl-api."
+default      = "public.ecr.aws/nuon/ctl-api:latest"
+display_name = "ctl-api image"
+group        = "ctl-api"
+
+
+[[group]]
+name         = "temporal"
+description  = "Temporal server + UI."
+display_name = "Temporal"
+
+[[input]]
+name         = "temporal_server_image"
+description  = "Container image for the Temporal server (auto-setup variant)."
+default      = "temporalio/auto-setup:1.24"
+display_name = "Temporal server image"
+group        = "temporal"
+
+[[input]]
+name         = "temporal_ui_image"
+description  = "Container image for the Temporal UI."
+default      = "temporalio/ui:2.31"
+display_name = "Temporal UI image"
+group        = "temporal"
+
+
+[[group]]
+name         = "dashboard"
+description  = "Dashboard UI."
+display_name = "Dashboard"
+
+[[input]]
+name         = "dashboard_image"
+description  = "Container image URL for the Nuon dashboard UI."
+default      = "public.ecr.aws/nuon/dashboard-ui:latest"
+display_name = "Dashboard image"
+group        = "dashboard"

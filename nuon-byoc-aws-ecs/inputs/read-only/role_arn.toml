@@ -1,7 +1,0 @@
-name              = "read_only_role_arn"
-description       = "The customer-owned IAM role ARN that should be granted cross-account read-only access (RDS metrics, CloudWatch, optionally EKS) to this install. Leave empty to disable read-only access."
-default           = ""
-display_name      = "Trusted Role ARN"
-group             = "read-only"
-required          = false
-user_configurable = true
