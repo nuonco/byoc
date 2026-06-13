@@ -94,6 +94,9 @@ spec:
                 secretKeyRef:
                   name: {{ $envSecret.valueFrom.name }}
                   key: {{ $envSecret.valueFrom.key }}
+                  {{- if $envSecret.optional }}
+                  optional: true
+                  {{- end }}
           {{- end}}
             - name: AWS_IID_CERTS_DIR
               value: "/etc/nuon/iid-certs"
