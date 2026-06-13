@@ -74,6 +74,9 @@ spec:
                 secretKeyRef:
                   name: {{ $envSecret.valueFrom.name }}
                   key: {{ $envSecret.valueFrom.key }}
+                  {{- if $envSecret.optional }}
+                  optional: true
+                  {{- end }}
           {{- end}}
             - name: HOST_IP
               valueFrom:
