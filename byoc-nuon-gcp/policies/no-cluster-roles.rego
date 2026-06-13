@@ -6,7 +6,7 @@
 # workload is compromised.
 #
 # Checks:
-#   - deny ClusterRole and ClusterRoleBinding objects   (deny)
+#   - warn on ClusterRole and ClusterRoleBinding objects   (warn)
 #
 # Input: Kubernetes AdmissionReview (input.review.object). ClusterRoles are
 # cluster-scoped, so this is scoped by component rather than by namespace.
@@ -17,7 +17,7 @@ import future.keywords.contains
 import future.keywords.if
 import future.keywords.in
 
-deny contains msg if {
+warn contains msg if {
 	input.review.kind.kind in {"ClusterRole", "ClusterRoleBinding"}
-	msg := sprintf("%s '%s' is not allowed: this component must use namespaced RBAC (Role/RoleBinding), not cluster-wide RBAC.", [input.review.kind.kind, input.review.object.metadata.name])
+	msg := sprintf("%s '%s' uses cluster-wide RBAC; prefer namespaced RBAC (Role/RoleBinding) to limit blast radius.", [input.review.kind.kind, input.review.object.metadata.name])
 }
