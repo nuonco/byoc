@@ -1,0 +1,6 @@
+region            = "{{ .nuon.install_stack.outputs.region }}"
+install_id        = "{{ .nuon.install.id }}"
+org_id            = "{{ .nuon.org.id }}"
+vpc_id            = "{{ .nuon.sandbox.outputs.vpc.id }}"
+public_subnet_ids = "{{ .nuon.sandbox.outputs.vpc.public_subnet_ids }}"
+certificate_arn   = "{{ .nuon.components.certificate_wildcard_public.outputs.acm_certificate_arn }}"

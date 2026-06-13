@@ -32,9 +32,7 @@ Components run in numeric prefix order, same convention as byoc-nuon.
 |---|---|---|
 | `0-tf-management` | terraform | KMS keys, account-level shared resources |
 | `0-tf-runner-repository` | terraform | ECR repos for ctl-api, dashboard-ui, temporal images |
-| `1-cfn-vpc` | cloudformation | VPC, 2 AZs, 2 public + 2 private subnets, route tables, IGW |
-| `1-tf-vpc-endpoints` | terraform | Interface endpoints (ECR API/DKR, Secrets Manager, Logs, STS); S3 gateway endpoint |
-| `1-tf-fck-nat` | terraform | `t4g.nano` NAT-instance ASG in one public subnet, route from private subnets |
+| _(VPC endpoints)_ | sandbox | Interface endpoints (ECR API/DKR, Secrets Manager, Logs, STS) + S3 gateway endpoint. Lives in the sandbox alongside the VPC, since the endpoint set is stable across deploys and tasks can't start without it. VPC + NAT come from the install stack's VPC nested stack (`vpc/eks/default`). |
 | `2-tf-aurora` | terraform | Aurora Serverless v2 cluster (min 0.5 / max 1 ACU), `ctl_api` + `temporal` databases, Secrets Manager entries for creds |
 | `2-s3-buckets` | terraform | blob, install-templates, clickhouse-backups buckets |
 | `3-tf-wildcard-cert` | terraform | ACM cert for `*.<domain>` (keep from byoc-nuon) |

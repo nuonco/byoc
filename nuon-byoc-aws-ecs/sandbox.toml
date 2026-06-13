@@ -2,16 +2,25 @@
 terraform_version = "1.11.3"
 
 [public_repo]
-directory = "."
-repo      = "nuonco/nuon-byoc-aws-ecs-sandbox"
-branch    = "main"
+directory = "nuon-byoc-aws-ecs/sandbox"
+repo      = "nuonco/byoc"
+branch    = "ja/aws-ecs"
 
 [vars]
-cluster_name = "n-{{.nuon.install.id}}"
+region          = "{{ .nuon.install_stack.outputs.region }}"
+install_id      = "{{ .nuon.install.id }}"
+org_id          = "{{ .nuon.org.id }}"
+app_id          = "{{ .nuon.app.id }}"
+cluster_name    = "n-{{ .nuon.install.id }}"
+root_domain     = "{{ .nuon.inputs.inputs.root_domain }}"
+nuon_dns_domain = "{{ .nuon.inputs.inputs.nuon_dns_domain }}"
+enable_nuon_dns = "{{ .nuon.inputs.inputs.nuon_dns }}"
 
-enable_nuon_dns      = "true"
-public_root_domain   = "{{ .nuon.inputs.inputs.root_domain }}"
-internal_root_domain = "internal.{{ .nuon.inputs.inputs.root_domain }}"
+# Passthrough from the parent install stack's VPC nested stack outputs.
+vpc_id             = "{{ .nuon.install_stack.outputs.vpc.id }}"
+public_subnet_ids  = "{{ .nuon.install_stack.outputs.vpc.public_subnet_ids }}"
+private_subnet_ids = "{{ .nuon.install_stack.outputs.vpc.private_subnet_ids }}"
+runner_subnet_id   = "{{ .nuon.install_stack.outputs.vpc.runner_subnet_id }}"
 
 [[var_file]]
 #:schema https://api.nuon.co/v1/general/config-schema?type=sandbox
