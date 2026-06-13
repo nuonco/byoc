@@ -1,0 +1,16 @@
+# action
+name    = "ctl_api_extend-runner-sa-token"
+labels  = { service = "runners", type = "sop" }
+timeout = "10s"
+
+[[triggers]]
+type = "manual"
+
+[[steps]]
+name            = "extend-runner-sa-token"
+inline_contents = "./runners/extend-runner-sa-token/extend-runner-sa-token.sh"
+
+[steps.env_vars]
+ADMIN_API_URL = "http://admin.{{ .nuon.sandbox.outputs.nuon_dns.internal_domain.name }}"
+RUNNER_ID      = ""
+DURATION       = "8760h"

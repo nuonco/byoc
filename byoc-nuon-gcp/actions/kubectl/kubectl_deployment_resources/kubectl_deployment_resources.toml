@@ -1,0 +1,18 @@
+# action
+# description: per-deployment resource requests/limits, current top usage per pod,
+# and any OOMKilled containers in a namespace. Output is json.
+# Set NAMESPACE to target a namespace (default ctl-api).
+name    = "kubectl_deployment_resources"
+labels  = { service = "kubernetes", type = "debug" }
+label   = "kubectl"
+timeout = "1m"
+
+[[triggers]]
+type = "manual"
+
+[[steps]]
+name            = "exec"
+inline_contents = "./kubectl/kubectl_deployment_resources/deployment-resources.sh"
+
+[steps.env_vars]
+NAMESPACE = "ctl-api"

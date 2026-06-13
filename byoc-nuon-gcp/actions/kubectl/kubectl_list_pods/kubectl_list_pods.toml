@@ -1,0 +1,15 @@
+# action
+name    = "kubectl_get_pods"
+labels  = { service = "kubernetes", type = "debug" }
+label   = "kubectl"
+timeout = "30s"
+
+[[triggers]]
+type = "manual"
+
+[[steps]]
+name = "kubectl get pods"
+inline_contents = "./kubectl/kubectl_list_pods/kubectl_get_pods.sh"
+
+[steps.env_vars]
+NAMESPACE = "ctl-api"

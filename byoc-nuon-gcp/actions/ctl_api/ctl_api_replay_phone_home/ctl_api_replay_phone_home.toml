@@ -1,0 +1,17 @@
+# action
+name    = "ctl_api_replay_phone_home"
+labels  = { service = "ctl-api", type = "sop" }
+timeout = "120s"
+
+[[triggers]]
+type = "manual"
+
+[[steps]]
+name            = "Replay phone home"
+inline_contents = "./ctl_api/ctl_api_replay_phone_home/replay-phone-home.sh"
+
+[steps.env_vars]
+ADMIN_API_URL   = "http://admin.{{ .nuon.sandbox.outputs.nuon_dns.internal_domain.name }}"
+INSTALL_ID      = ""
+PHONE_HOME_PATH = ""
+PAYLOAD         = ""

@@ -1,0 +1,9 @@
+name        = "inspect_dashboard"
+description = "Inspect dashboard-ui — version, git ref, ingress healthcheck, and app URL."
+readme      = "./runbooks/inspect_dashboard.md"
+labels      = { service = "dashboard", type = "debug" }
+
+[[steps]]
+name        = "Dashboard status"
+type        = "action"
+action_name = "dashboard_status"

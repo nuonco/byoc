@@ -1,0 +1,22 @@
+# action
+name    = "ctl_api_promote"
+labels  = { service = "ctl-api", type = "sop" }
+timeout = "5m"
+
+[[triggers]]
+type = "manual"
+
+[[steps]]
+name            = "post-deploy-promote-callback"
+inline_contents = "./ctl_api/ctl_api_promote/promote.sh"
+
+[steps.env_vars]
+ADMIN_API_URL = "http://admin.{{ .nuon.sandbox.outputs.nuon_dns.internal_domain.name }}"
+
+
+[[steps]]
+name            = "post-deploy-get-migrations-callback"
+inline_contents = "./ctl_api/ctl_api_promote/get-migrations.sh"
+
+[steps.env_vars]
+ADMIN_API_URL = "http://admin.{{ .nuon.sandbox.outputs.nuon_dns.internal_domain.name }}"

@@ -1,0 +1,14 @@
+# action
+name    = "kubectl_logs"
+labels  = { service = "kubernetes", type = "debug" }
+timeout = "30s"
+
+[[triggers]]
+type = "manual"
+
+[[steps]]
+name = "kubectl logs"
+inline_contents = "./kubectl/kubectl_logs/kubectl_logs.sh"
+
+[steps.env_vars]
+NAMESPACE = "default"

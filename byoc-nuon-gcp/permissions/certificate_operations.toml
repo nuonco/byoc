@@ -1,0 +1,30 @@
+type           = "custom"
+name           = "{{ .nuon.install.id }}-certificate-operations"
+description    = "Full lifecycle management of the install's Certificate Manager certificate for BYOC Nuon"
+display_name   = "certificate-operations"
+cloud_platform = "gcp"
+
+# Custom operational role for full Certificate Manager lifecycle: create (certificate + the DNS
+# authorization records in Cloud DNS), modify/renew, and destroy. GCP equivalent of the AWS
+# acm-operations role; GCP IAM cannot scope Certificate Manager grants by label, so the editor
+# role is project-wide.
+[[policies]]
+name                = "{{ .nuon.install.id }}-certificate-operations"
+gcp_predefined_role = "roles/certificatemanager.editor"
+
+# The certificate's DNS authorization records live in the install's Cloud DNS zone (the GCP
+# equivalent of the Route53 validation-record grants in the AWS policy).
+[[policies]]
+name            = "{{ .nuon.install.id }}-certificate-operations-dns"
+gcp_permissions = [
+  "dns.changes.create",
+  "dns.changes.get",
+  "dns.changes.list",
+  "dns.managedZones.get",
+  "dns.managedZones.list",
+  "dns.resourceRecordSets.create",
+  "dns.resourceRecordSets.delete",
+  "dns.resourceRecordSets.get",
+  "dns.resourceRecordSets.list",
+  "dns.resourceRecordSets.update",
+]

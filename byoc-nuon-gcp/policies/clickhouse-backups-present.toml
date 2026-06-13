@@ -1,0 +1,4 @@
+type       = "terraform_module"
+engine     = "opa"
+contents   = "./clickhouse-backups-present.rego"
+components = ["clickhouse_cluster"]

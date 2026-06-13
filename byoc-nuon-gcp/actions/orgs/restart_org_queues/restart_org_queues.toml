@@ -1,0 +1,14 @@
+# action
+name    = "restart_org_queues"
+labels  = { service = "ctl-api", type = "sop" }
+timeout = "5m"
+
+[[triggers]]
+type = "manual"
+
+[[steps]]
+name = "restart_org_queues"
+inline_contents = "./orgs/restart_org_queues/restart_org_queues.sh"
+
+[steps.env_vars]
+ADMIN_API_URL = "http://admin.{{ .nuon.sandbox.outputs.nuon_dns.internal_domain.name }}"

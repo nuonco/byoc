@@ -1,0 +1,19 @@
+# action
+# description: temporal hard-reset step 9 — cancels all install_workflows rows whose
+# composite status is "queued" by updating status->>'status' to "cancelled".
+name    = "temporal_hard_reset_cancel_queued_workflows"
+labels  = { service = "ctl-api", type = "step" }
+timeout = "5m"
+
+[[triggers]]
+type = "manual"
+
+[[steps]]
+name            = "Cancel queued workflows"
+inline_contents = "./ctl_api/temporal_hard_reset_cancel_queued_workflows/cancel-queued-workflows.sh"
+
+[steps.env_vars]
+DB_USER = "{{ .nuon.components.cloudsql_nuon.outputs.db_instance_username }}"
+DB_NAME = "ctl_api"
+DB_ADDR = "{{ .nuon.components.cloudsql_nuon.outputs.address }}"
+DB_PORT = "5432"

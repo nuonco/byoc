@@ -1,4 +1,4 @@
-#:schema https://api.nuon.co/v1/general/config-schema?type=sandbox
+# sandbox
 terraform_version = "1.11.3"
 
 [public_repo]
@@ -17,4 +17,5 @@ internal_root_domain = "internal.{{ .nuon.inputs.inputs.root_domain }}"
 gke_node_pool_sa_email = "{{.nuon.install_stack.outputs.gke_node_pool_sa_email}}"
 
 [[var_file]]
+#:schema https://api.nuon.co/v1/general/config-schema?type=sandbox
 contents = "./sandbox.tfvars"

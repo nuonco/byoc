@@ -1,351 +1,362 @@
-{{ $region := .nuon.install_stack.outputs.region }}
-{{ $project_id := .nuon.install_stack.outputs.project_id }}
-{{ $public_domain  := (dig "outputs" "nuon_dns" "public_domain"  "name" .nuon.inputs.inputs.root_domain .nuon.sandbox) }}
-{{ $internal_domain := (dig "outputs" "nuon_dns" "internal_domain" "name" .nuon.inputs.inputs.root_domain .nuon.sandbox) }}
+{{ $inputs := (default dict (index (default dict .nuon.inputs) "inputs")) }}
+{{ $root_domain := (dig "root_domain" "" $inputs) }}
+{{ $public_domain  := (dig "outputs" "nuon_dns" "public_domain"  "name" $root_domain .nuon.sandbox) }}
 
-<center>
-  <img class="mt-0 block dark:hidden" src="https://mintlify.s3-us-west-1.amazonaws.com/nuoninc/logo/light.svg"/>
-  <img class="mt-0 hidden dark:block" src="https://mintlify.s3-us-west-1.amazonaws.com/nuoninc/logo/dark.svg"/>
-  <small>
-{{ if .nuon.install_stack.outputs }}
-GCP | {{ $project_id }} | {{ $region }}
-{{ else }}
-GCP | project-id | region
-{{ end }}
-  </small>
-
-{{ if .nuon.inputs.inputs.datadog_api_key }}<small>[DataDog](https://us5.datadoghq.com/logs?query=env%3Abyoc%20install.id%3A{{
-.nuon.install.id}})</small> | {{ end }}<small>[Dashboard](https://app.{{
-$public_domain }})</small> | <small>[API](https://api.{{
-$public_domain }}/docs/index.html)</small>
-
-</center>
-
-<div>
-    <table style="width:100%">
-        <thead>
-            <tr>
-                <th></th>
-                <th>Monitor</th>
-                <th>Status</th>
-                <th>Outputs</th>
-            </tr>
-        </thead>
-        <tbody>
-        {{ if .nuon.actions.populated }}
-            {{range $name, $action := .nuon.actions.workflows}}
-                {{if contains "healthcheck" $name}}
-                    <tr>
-                        <td style="width: 1rem">
-                        {{with $action.status}}
-                            {{if eq . "error"}}
-                                🔴
-                            {{else if eq . "finished"}}
-                                🟢
-                            {{else}}
-                                🟡
-                            {{end}}
-                        {{end}}
-                        </td>
-                        <td>{{$name}}</td>
-                        <td>{{ if or (eq $action.status "") (eq $action.status "unknown") }}pending{{ else }}{{ $action.status }}{{ end }}</td>
-                        <td>{{ dig "indicator" "—" $action.outputs }}</td>
-                    </tr>
-                {{end}}
-            {{end}}
-        {{ end }}
-        </tbody>
-    </table>
-
+<div style="float:right;">
+  <nuon-run-runbook name="refresh_readme"></nuon-run-runbook>
 </div>
 
-- [Installing Nuon](#installing-nuon)
-  - [1. Prerequisites](#1-prerequisites)
-  - [2. Sync the App](#2-sync-the-app)
-  - [3. Create the Install](#3-create-the-install)
-  - [4. Run the Install Stack (provide secrets)](#4-run-the-install-stack-provide-secrets)
-  - [5. Delegate DNS](#5-delegate-dns)
-- [Application Links](#application-links)
-- [Accessing the GKE Cluster](#accessing-the-gke-cluster)
-- [Secrets](#secrets)
-- [Components](#components)
-- [CLI](#cli)
+<img class="mt-0 block dark:hidden" src="https://mintlify.s3-us-west-1.amazonaws.com/nuoninc/logo/light.svg" style="margin:0;padding:0;"/>
+<img class="mt-0 hidden dark:block" src="https://mintlify.s3-us-west-1.amazonaws.com/nuoninc/logo/dark.svg" style="margin:0;padding:0;"/>
 
-<a id="installing-nuon"></a>
-## Installing Nuon
+<nuon-tabs>
+<nuon-tab name="Application">
 
-Installing BYOC Nuon on GCP is a simple 5-step flow:
+<div style="padding-top:1rem;"></div>
 
-1. Set up a GitHub App and a Google OAuth client (one-time prerequisites).
-2. Sync the app into your Nuon org.
-3. Create an install — via the dashboard or `nuon installs sync` with a TOML.
-4. Run the generated install stack in your GCP project. Fill the two required secrets (`github_app_key`, `nuon_auth_client_secret`) into `install.tfvars` and `terraform apply`.
-5. Delegate your root domain to the Cloud DNS zone Nuon provisioned.
+{{ $wfOutputs := dict }}{{ $wfActionID := "" }}{{ with (index (default dict .nuon.actions.workflows) "ctl_api_query_workflows_by_type") }}{{ with .outputs }}{{ $wfOutputs = . }}{{ end }}{{ $wfActionID = dig "id" "" . }}{{ end }}
 
-Everything else (databases, session keys, JWT secrets, internal DNS, TLS certs) is wired up automatically.
+<div style="display:flex;align-items:baseline;gap:0.75rem;"><h3 style="margin:0;">Recent workflows</h3><a href="/{{ $.nuon.org.id }}/installs/{{ $.nuon.install.id }}/runbooks/inspect_workflows" style="font-size:0.85em;">See more →</a>{{ with dig "updated_at" "" $wfOutputs }}<span style="margin-left:auto;font-size:0.85em;">Last updated <nuon-time time="{{ . }}" format="relative"></nuon-time></span>{{ end }}</div>
 
-<a id="1-prerequisites"></a>
-### 1. Prerequisites
+{{ with (index (default dict .nuon.actions.workflows) "ctl_api_query_workflows_by_type") }}
+{{ $wfData := dict }}{{ with .outputs }}{{ $wfData = . }}{{ end }} {{ $wfRows := dig "workflows" (list) $wfData }}
+{{ if and .populated (eq .status "finished") (gt (len $wfRows) 0) }}
 
-You need two things before creating the install: a **GitHub App** (so Nuon can clone component repos) and a **Google
-OAuth client** (so users can sign in to the dashboard).
+<table>
+  <thead>
+    <tr>
+      <th>Status</th>
+      <th>Name</th>
+      <th>Latest Step</th>
+      <th>Created By</th>
+      <th>Started</th>
+      <th>Finished</th>
+      <th>Details</th>
+    </tr>
+  </thead>
+  <tbody>
+  {{ $topWf := $wfRows }}{{ if gt (len $wfRows) 5 }}{{ $topWf = slice $wfRows 0 5 }}{{ end }}
+  {{ range $wf := $topWf }}
+    {{ $status := dig "workflow_status" "" $wf }}
+    {{ $email := dig "created_by_email" "" $wf }}
+    {{ $createdByID := dig "created_by_id" "" $wf }}
+    {{ $createdByLabel := $email }}{{ if not $createdByLabel }}{{ $createdByLabel = default "—" $createdByID }}{{ end }}
+    {{ $wfID := dig "workflow_id" "" $wf }}
+    {{ $curStep := dig "latest_step_name" "" $wf }}{{ $curStatus := dig "latest_step_status" "" $wf }}{{ $curGroup := dig "latest_step_group_name" "" $wf }}
+    <tr>
+      <td>{{ if $status }}<nuon-status status="{{ $status }}" variant="badge"></nuon-status>{{ else }}—{{ end }}</td>
+      <td style="white-space:nowrap;">{{ dig "workflow_name" "—" $wf }}{{ with $wfID }}<br><small style="opacity:0.6;"><code>{{ . }}</code></small>{{ end }}</td>
+      <td style="white-space:nowrap;">{{ if $curStep }}{{ $curStep }}{{ with $curStatus }} <nuon-status status="{{ . }}" variant="badge"></nuon-status>{{ end }}{{ with $curGroup }}<br><small style="opacity:0.6;">{{ . }}</small>{{ end }}{{ else }}—{{ end }}</td>
+      <td style="white-space:nowrap;">{{ $createdByLabel }}</td>
+      <td>{{ with dig "workflow_started_at" "" $wf }}<nuon-time time="{{ printf "%sZ" (substr 0 19 .) }}" format="relative"></nuon-time>{{ else }}—{{ end }}</td>
+      <td>{{ with dig "workflow_finished_at" "" $wf }}<nuon-time time="{{ printf "%sZ" (substr 0 19 .) }}" format="relative"></nuon-time>{{ else }}—{{ end }}</td>
+      <td>
 
-#### GitHub App
+<nuon-panel heading="Workflow: {{ dig "workflow_name" (dig "workflow_id" "—" $wf) $wf }}" trigger="View" size="3/4">
 
-Create a new app at https://github.com/settings/apps with the following settings:
+{{ $ownerID := dig "owner_id" "" $wf }}{{ $ownerName := dig "owner_name" "" $wf }}{{ $ownerType := dig "owner_type" "" $wf }}
+{{ $orgID := dig "org_id" "" $wf }}{{ $orgName := dig "org_name" "" $wf }}
 
-- **Name**: anything you like
-- **Homepage URL**: `https://app.{{ $public_domain }}`
-- **Setup URL** (under *Post Installation*): `https://app.{{ $public_domain }}/connect`, and check **Redirect on Update**
-- **Webhook**: uncheck *Active*
-- **Permissions** → *Repository permissions* → **Contents: Read-only**
-- **Where can this GitHub App be installed?**: *Only on this account*
+<table>
+  <thead><tr><th>Field</th><th>Value</th></tr></thead>
+  <tbody>
+    <tr><td>Status</td><td>{{ if $status }}<nuon-status status="{{ $status }}" variant="badge"></nuon-status>{{ else }}—{{ end }}</td></tr>
+    <tr><td>Name</td><td>{{ dig "workflow_name" "—" $wf }}</td></tr>
+    <tr><td>Type</td><td>{{ dig "workflow_type" "—" $wf }}</td></tr>
+    <tr><td>Workflow ID</td><td><code>{{ dig "workflow_id" "—" $wf }}</code></td></tr>
+    <tr><td>Created By</td><td>{{ if $email }}{{ $email }}{{ else }}—{{ end }}</td></tr>
+    <tr><td>Created By ID</td><td>{{ if $createdByID }}<code>{{ $createdByID }}</code>{{ else }}—{{ end }}</td></tr>
+    <tr><td>Created By Subject</td><td>{{ default "—" (dig "created_by_subject" "" $wf) }}</td></tr>
+    <tr><td>Created By Account Type</td><td>{{ default "—" (dig "created_by_account_type" "" $wf) }}</td></tr>
+    <tr><td>Org</td><td>{{ if $orgName }}{{ $orgName }}{{ else }}—{{ end }}</td></tr>
+    <tr><td>Org ID</td><td>{{ if $orgID }}<code>{{ $orgID }}</code>{{ else }}—{{ end }}</td></tr>
+    <tr><td>Owner</td><td>{{ if $ownerName }}{{ $ownerName }}{{ else }}—{{ end }}</td></tr>
+    <tr><td>Owner ID</td><td>{{ if $ownerID }}<code>{{ $ownerID }}</code>{{ else }}—{{ end }}</td></tr>
+    <tr><td>Owner Type</td><td>{{ default "—" $ownerType }}</td></tr>
+    <tr><td>Created At</td><td>{{ with dig "workflow_created_at" "" $wf }}<nuon-time time="{{ printf "%sZ" (substr 0 19 .) }}" format="relative"></nuon-time>{{ else }}—{{ end }}</td></tr>
+    <tr><td>Updated At</td><td>{{ with dig "workflow_updated_at" "" $wf }}<nuon-time time="{{ printf "%sZ" (substr 0 19 .) }}" format="relative"></nuon-time>{{ else }}—{{ end }}</td></tr>
+    <tr><td>Started At</td><td>{{ with dig "workflow_started_at" "" $wf }}<nuon-time time="{{ printf "%sZ" (substr 0 19 .) }}" format="relative"></nuon-time>{{ else }}—{{ end }}</td></tr>
+    <tr><td>Finished At</td><td>{{ with dig "workflow_finished_at" "" $wf }}<nuon-time time="{{ printf "%sZ" (substr 0 19 .) }}" format="relative"></nuon-time>{{ else }}—{{ end }}</td></tr>
+  </tbody>
+</table>
 
-Once created:
+<h4 style="margin-top:1rem;">Latest step</h4>
+<table>
+  <thead><tr><th>Field</th><th>Value</th></tr></thead>
+  <tbody>
+    <tr><td>Name</td><td>{{ default "—" (dig "latest_step_name" "" $wf) }}</td></tr>
+    <tr><td>Status</td><td>{{ with dig "latest_step_status" "" $wf }}<nuon-status status="{{ . }}" variant="badge"></nuon-status>{{ else }}—{{ end }}</td></tr>
+    <tr><td>Step ID</td><td>{{ with dig "latest_step_id" "" $wf }}<code>{{ . }}</code>{{ else }}—{{ end }}</td></tr>
+    <tr><td>Step idx</td><td>{{ default "—" (dig "latest_step_idx" "" $wf) }}</td></tr>
+    <tr><td>Group</td><td>{{ default "—" (dig "latest_step_group_name" "" $wf) }}</td></tr>
+    <tr><td>Group idx</td><td>{{ default "—" (dig "latest_step_group_idx" "" $wf) }}</td></tr>
+  </tbody>
+</table>
 
-- Note the **App ID**, **App Name**, and **Client ID** — you'll paste them into the install inputs.
-- Scroll to the bottom and **generate a private key**. Base64-encode the downloaded `.pem` file — you'll provide that as
-  a secret.
+</nuon-panel>
 
-```bash
-base64 -i your-app.private-key.pem | pbcopy
-```
+      </td>
+    </tr>
+  {{ end }}
+  </tbody>
+</table>
 
-#### Google OAuth Client
+{{ else if and .populated (eq .status "finished") }}
 
-1. Open [Google Cloud Console → Credentials](https://console.cloud.google.com/apis/credentials).
-2. **Create Credentials → OAuth client ID → Web application**.
-3. Configure:
-
-   | Setting                       | Value                                    |
-   | ----------------------------- | ---------------------------------------- |
-   | Authorized JavaScript origins | `https://auth.{{ $public_domain }}`      |
-   | Authorized redirect URIs      | `https://auth.{{ $public_domain }}/auth` |
-
-4. Note the **Client ID** (goes into inputs) and **Client Secret** (goes into secrets).
-
-<a id="2-sync-the-app"></a>
-### 2. Sync the App
-
-From this repo, sync the app config into your Nuon org:
-
-```bash
-nuon apps sync
-```
-
-<a id="3-create-the-install"></a>
-### 3. Create the Install
-
-You can create the install two ways — pick whichever fits your workflow.
-
-#### Option A — Dashboard
-
-Open the Nuon dashboard, click **Create Install**, fill in the inputs (root domain, nuon DNS domain, GitHub App ID/name/client ID, Google OAuth client ID), and submit.
-
-#### Option B — CLI with a TOML config
-
-Create an `install.toml` with the following content, fill in the values from your prerequisites, and apply it:
-
-```toml
-# install
-name             = 'my-install'
-approval_option  = 'approve-all'
-
-# input.group: inputs
-[[inputs]]
-# DNS — root_domain is where Nuon services are served; nuon_dns_domain is used to issue subdomains for installs and must not overlap.
-root_domain       = 'byoc.yourcompany.com'
-nuon_dns_domain   = 'installs.yourcompany.com'
-
-# Auth — Google OAuth client ID (the matching client_secret is entered separately, see below).
-nuon_auth_provider_type    = 'google'
-nuon_auth_client_id        = '<your-google-oauth-client-id>.apps.googleusercontent.com'
-nuon_auth_redirect_url     = 'https://auth.byoc.yourcompany.com/auth'
-nuon_auth_allow_all_users  = 'true'
-nuon_auth_allowed_domains  = 'yourcompany.com'
-
-# GitHub App — values from the App you created.
-github_app_name      = 'your-github-app-name'
-github_app_id        = '123456'
-github_app_client_id = 'Iv1.xxxxxxxxxxxxxxxx'
-```
-
-Apply it:
-
-```bash
-nuon installs sync --file install.toml --app-id byoc-nuon-gcp --yes
-```
-
-<a id="4-run-the-install-stack-provide-secrets"></a>
-### 4. Run the Install Stack (provide secrets)
-
-Once the install is created, Nuon's *Await Install Stack* step generates an `install.tfvars` file for you with the IDs, runner config, phone-home URL, and a `secrets = { ... }` block with the values you need to fill in. It looks like this:
-
-```hcl
-nuon_install_id        = "inl..."
-nuon_org_id            = "org..."
-nuon_app_id            = "app..."
-runner_api_url         = "https://runner.nuon.co"
-runner_api_token       = "tok..."
-runner_id              = "run..."
-runner_init_script_url = "https://raw.githubusercontent.com/nuonco/runner/refs/heads/main/scripts/gcp/init.sh"
-phone_home_url         = "https://api.nuon.co/v1/installs/.../phone-home/..."
-# ...
-auto_generate_secrets = ["nuon_auth_session_key", "auth0_secret", "clickhouse_cluster_pw", ...]
-secrets = {
-  "nuon_auth_client_secret" = { description = "OIDC Client Secret from your identity provider.", required = false, value = "" }
-  "auth0_client_secret"     = { description = "...",                                              required = false, value = "dne" }
-  "github_app_key"          = { description = "Base64 encoded Github App Key",                   required = true,  value = "" }
-}
-```
-
-Drop that file into the [nuonco/install-stacks](https://github.com/nuonco/install-stacks) repo under `gcp/`, then fill in the two `secrets` you provisioned in step 1:
-
-- `github_app_key` — base64-encoded PEM private key from your GitHub App.
-- `nuon_auth_client_secret` — client secret from your Google OAuth client.
-
-Everything in `auto_generate_secrets` is generated by Nuon — leave it alone.
-
-Then apply the install stack:
-
-```bash
-cd gcp/
-cp backend.tf.example backend.tf   # optional: configure a remote backend
-
-terraform init
-terraform plan -var-file=install.tfvars
-terraform apply -var-file=install.tfvars
-```
-
-You'll be prompted for `gcp_project_id` and `gcp_region`. Once `terraform apply` completes, the runner phones home and the sandbox kicks off — GKE cluster, networking, Cloud SQL, and Cloud DNS zones get provisioned.
-
-<a id="5-delegate-dns"></a>
-### 5. Delegate DNS
-
-Once the sandbox finishes, Nuon creates a public Cloud DNS zone for your `root_domain`. To make the install reachable on
-the public internet, add an `NS` record at your domain registrar pointing your `root_domain` (or the appropriate
-subdomain) at the Cloud DNS nameservers shown below.
-
-{{ if (and .nuon.sandbox.populated .nuon.sandbox.outputs) }}
-
-| Attribute   | Value                                                                                    |
-| ----------- | ---------------------------------------------------------------------------------------- |
-| Domain Name | {{ $public_domain }}                                                                     |
-| Zone ID     | {{ dig "outputs" "nuon_dns" "public_domain" "zone_id" "zone-xxxxxxxxxx" .nuon.sandbox }} |
-
-<!-- prettier-ignore-start -->
-| Nameserver | Record Type | priority |
-| ---------- | ----------- | -------- |
-{{ range $i, $ns := .nuon.sandbox.outputs.nuon_dns.public_domain.nameservers }}| {{ $ns }} | NS          | {{$i}}   |
-{{ end }}
-<!-- prettier-ignore-end -->
+<nuon-banner theme="info">No workflows returned by the last run of ctl_api_query_workflows_by_type.</nuon-banner>
 
 {{ else }}
 
-> [!WARNING] Waiting on sandbox provision. Once the sandbox is ready, the nameservers to delegate to will appear here.
+<nuon-banner theme="warn">Waiting on ctl_api_query_workflows_by_type. Run it to populate this section.</nuon-banner>
+
+{{ end }} {{ else }}
+
+<nuon-banner theme="warn">Waiting on ctl_api_query_workflows_by_type. Run it to populate this section.</nuon-banner>
 
 {{ end }}
 
-{{ if (and .nuon.components .nuon.components.management) }}
+{{ $runnersAction  := default dict (index (default dict .nuon.actions.workflows) "inspect_runners") }}
+{{ $installsAction := default dict (index (default dict .nuon.actions.workflows) "inspect_installs") }}
+{{ $orgsAction     := default dict (index (default dict .nuon.actions.workflows) "inspect_orgs") }}
+{{ $appsAction     := default dict (index (default dict .nuon.actions.workflows) "inspect_apps") }}
+{{ $runnersOutputs  := default dict (dig "outputs" dict $runnersAction) }}
+{{ $installsOutputs := default dict (dig "outputs" dict $installsAction) }}
+{{ $runnersSteps  := dig "steps" dict $runnersOutputs }}
+{{ $installsSteps := dig "steps" dict $installsOutputs }}
+{{ $orgsSteps     := dig "steps" dict (default dict (dig "outputs" dict $orgsAction)) }}
+{{ $appsSteps     := dig "steps" dict (default dict (dig "outputs" dict $appsAction)) }}
 
-A second zone is created for `nuon_dns_domain` — used to issue subdomains to installs managed by this BYOC Nuon. If you
-plan to use that, delegate it the same way:
+<div style="display:flex;gap:1.5rem;align-items:flex-start;">
+  <div style="flex:1;min-width:0;">
 
-| Attribute   | Value                                                      |
-| ----------- | ---------------------------------------------------------- |
-| Domain Name | {{ .nuon.components.management.outputs.dns_zone.domain }}  |
-| Zone Name   | {{ .nuon.components.management.outputs.dns_zone.name }}    |
+<div style="display:flex;align-items:baseline;gap:0.75rem;"><h3 style="margin:0;">Installs</h3><a href="/{{ $.nuon.org.id }}/installs/{{ $.nuon.install.id }}/runbooks/inspect_installs" style="font-size:0.85em;">See more →</a>{{ with dig "updated_at" "" $installsOutputs }}<span style="margin-left:auto;font-size:0.85em;">Last updated <nuon-time time="{{ . }}" format="relative"></nuon-time></span>{{ end }}</div>
 
-<!-- prettier-ignore-start -->
-| Nameserver | Record Type | priority |
-| ---------- | ----------- | -------- |
-{{ range $i, $ns := .nuon.components.management.outputs.dns_zone.nameservers }}| {{ $ns }} | NS          | {{$i}}   |
-{{ end }}
-<!-- prettier-ignore-end -->
+{{ $installs := dig "installs" (dict) $installsSteps }} {{ $appsByID := dict }}
+{{ range $_, $a := (dig "apps" (dict) $appsSteps) }}{{ $appsByID = set $appsByID (dig "id" "" $a) (dig "name" "" $a) }}{{ end }}
+{{ $installOrgsByID := dict }}
+{{ range $_, $o := (dig "orgs" (dict) $orgsSteps) }}{{ $installOrgsByID = set $installOrgsByID (dig "id" "" $o) (dig "name" "" $o) }}{{ end }}
+{{ $installList := values $installs }}
+{{ if gt (len $installList) 0 }}
 
-{{ end }}
+<table>
+  <thead><tr><th>Name</th><th>Status</th><th>Updated</th><th>Details</th></tr></thead>
+  <tbody>
+  {{ $topInstalls := $installList }}{{ if gt (len $installList) 5 }}{{ $topInstalls = slice $installList 0 5 }}{{ end }}
+  {{ range $install := $topInstalls }}
+    {{ $installID := dig "id" "—" $install }}
+    {{ $installName := dig "name" "—" $install }}
+    {{ $runnerStatus := dig "runner_status" "" $install }}
+    {{ $sandboxStatus := dig "sandbox_status" "" $install }}
+    {{ $componentStatus := dig "component_status" "" $install }}
+    {{ $themeMap := dict "active" "success" "healthy" "success" "finished" "success" "ready" "success" "failed" "error" "error" "error" "unhealthy" "error" "pending" "warn" "queued" "warn" "in_progress" "info" "deprovisioned" "neutral" "unknown" "neutral" }}
+    <tr>
+      <td>{{ $installName }}<br><small style="opacity:0.6;"><code>{{ $installID }}</code></small></td>
+      <td><div style="display:flex;flex-direction:column;gap:0.25rem;align-items:flex-start;">{{ if $runnerStatus }}<nuon-label-badge theme="{{ dig (lower $runnerStatus) "neutral" $themeMap }}" label="runner:{{ $runnerStatus }}"></nuon-label-badge>{{ end }}{{ if $sandboxStatus }}<nuon-label-badge theme="{{ dig (lower $sandboxStatus) "neutral" $themeMap }}" label="sandbox:{{ $sandboxStatus }}"></nuon-label-badge>{{ end }}{{ if $componentStatus }}<nuon-label-badge theme="{{ dig (lower $componentStatus) "neutral" $themeMap }}" label="components:{{ $componentStatus }}"></nuon-label-badge>{{ end }}</div></td>
+      <td>{{ with dig "updated_at" "" $install }}<nuon-time time="{{ printf "%sZ" (substr 0 19 .) }}" format="relative"></nuon-time>{{ else }}—{{ end }}</td>
+      <td>
 
-After the NS records propagate, the dashboard will be reachable at the URLs below.
+<nuon-panel heading="Install: {{ $installName }}" trigger="View" size="3/4">
 
-<a id="application-links"></a>
-## Application Links
+<table>
+  <thead><tr><th>Field</th><th>Value</th></tr></thead>
+  <tbody>
+    {{ $appID := dig "app_id" "" $install }}{{ $appName := dig $appID "" $appsByID }}
+    {{ $orgID := dig "org_id" "" $install }}{{ $orgName := dig $orgID "" $installOrgsByID }}
+    <tr><td>Name</td><td>{{ $installName }}</td></tr>
+    <tr><td>ID</td><td><code>{{ $installID }}</code></td></tr>
+    <tr><td>Runner Status</td><td>{{ if $runnerStatus }}<nuon-status status="{{ $runnerStatus }}" variant="badge"></nuon-status>{{ else }}—{{ end }}</td></tr>
+    <tr><td>Sandbox Status</td><td>{{ if $sandboxStatus }}<nuon-status status="{{ $sandboxStatus }}" variant="badge"></nuon-status>{{ else }}—{{ end }}</td></tr>
+    <tr><td>Components Status</td><td>{{ if $componentStatus }}<nuon-status status="{{ $componentStatus }}" variant="badge"></nuon-status>{{ else }}—{{ end }}</td></tr>
+    <tr><td>App</td><td>{{ if $appName }}{{ $appName }}{{ else }}—{{ end }}</td></tr>
+    <tr><td>App ID</td><td><code>{{ default "—" $appID }}</code></td></tr>
+    <tr><td>Org</td><td>{{ if $orgName }}{{ $orgName }}{{ else }}—{{ end }}</td></tr>
+    <tr><td>Org ID</td><td><code>{{ default "—" $orgID }}</code></td></tr>
+    <tr><td>Created At</td><td>{{ with dig "created_at" "" $install }}<nuon-time time="{{ printf "%sZ" (substr 0 19 .) }}" format="short-datetime"></nuon-time>{{ else }}—{{ end }}</td></tr>
+    <tr><td>Updated At</td><td>{{ with dig "updated_at" "" $install }}<nuon-time time="{{ printf "%sZ" (substr 0 19 .) }}" format="relative"></nuon-time>{{ else }}—{{ end }}</td></tr>
+  </tbody>
+</table>
 
-{{ if .nuon.sandbox.outputs }}
+</nuon-panel>
 
-| Service    | URL                                                                |
-| ---------- | ------------------------------------------------------------------ |
-| Dashboard  | [app.{{ $public_domain }}](https://app.{{ $public_domain }})       |
-| CTL API    | [api.{{ $public_domain }}](https://api.{{ $public_domain }})       |
-| Runner API | [runner.{{ $public_domain }}](https://runner.{{ $public_domain }}) |
+      </td>
+    </tr>
+  {{ end }}
+  </tbody>
+</table>
 
 {{ else }}
 
-> Install is still provisioning...
+<nuon-banner theme="info">No installs reported.</nuon-banner>
 
 {{ end }}
 
-<a id="accessing-the-gke-cluster"></a>
-## Accessing the GKE Cluster
+  </div>
+  <div style="flex:1;min-width:0;">
 
-1. Ensure you have `gcloud` CLI installed and authenticated.
-2. Run:
+<div style="display:flex;align-items:baseline;gap:0.75rem;"><h3 style="margin:0;">Runners</h3><a href="/{{ $.nuon.org.id }}/installs/{{ $.nuon.install.id }}/runbooks/inspect_runners" style="font-size:0.85em;">See more →</a>{{ with dig "updated_at" "" $runnersOutputs }}<span style="margin-left:auto;font-size:0.85em;">Last updated <nuon-time time="{{ . }}" format="relative"></nuon-time></span>{{ end }}</div>
 
-<pre>
-gcloud container clusters get-credentials {{ dig "outputs" "cluster" "name" "$cluster_name" .nuon.sandbox }} \
-    --region {{ $region }} \
-    --project {{ $project_id }}
-</pre>
+{{ $runners := dig "runners" (dict) $runnersSteps }} {{ $ownerNames := dict }}
+{{ range $_, $i := (dig "installs" (dict) $installsSteps) }}{{ $ownerNames = set $ownerNames (dig "id" "" $i) (dig "name" "" $i) }}{{ end }}
+{{ range $_, $o := (dig "orgs" (dict) $orgsSteps) }}{{ $ownerNames = set $ownerNames (dig "id" "" $o) (dig "name" "" $o) }}{{ end }}
+{{ range $_, $a := (dig "apps" (dict) $appsSteps) }}{{ $ownerNames = set $ownerNames (dig "id" "" $a) (dig "name" "" $a) }}{{ end }}
+{{ $runnerList := values $runners }}
+{{ if gt (len $runnerList) 0 }}
 
-<a id="secrets"></a>
-## Secrets
+<table>
+  <thead><tr><th>Owner</th><th>Healthcheck</th><th>Heartbeat</th><th>Details</th></tr></thead>
+  <tbody>
+  {{ $topRunners := $runnerList }}{{ if gt (len $runnerList) 5 }}{{ $topRunners = slice $runnerList 0 5 }}{{ end }}
+  {{ range $runner := $topRunners }}
+    {{ $status := dig "status" "" $runner }}
+    {{ $ownerID := dig "owner_id" "" $runner }}
+    {{ $ownerName := dig $ownerID "" $ownerNames }}
+    {{ $ownerLabel := $ownerName }}{{ if not $ownerLabel }}{{ $ownerLabel = default "—" $ownerID }}{{ end }}
+    {{ $runnerID := dig "id" "—" $runner }}
+    <tr>
+      <td>{{ $ownerLabel }}<br><small style="opacity:0.6;"><code>{{ $runnerID }}</code></small></td>
+      <td>{{ with dig "latest_health_check_status" "" $runner }}<nuon-status status="{{ . }}" variant="badge"></nuon-status>{{ else }}—{{ end }}</td>
+      <td>{{ with dig "latest_heart_beat_created_at" "" $runner }}<nuon-time time="{{ printf "%sZ" (substr 0 19 .) }}" format="relative"></nuon-time>{{ else }}—{{ end }}</td>
+      <td>
 
-| Secret                   | Key(s)            | Namespace  | name                       | Source                         | Description                                 |
-| ------------------------ | ----------------- | ---------- | -------------------------- | ------------------------------ | ------------------------------------------- |
-| clickhouse-operator-pw   | value             | clickhouse | clickhouse-operator-pw     | secrets-sync                   | clickhouse operator password                |
-| clickhouse-cluster-ro-pw | value             | clickhouse | clickhouse-cluster-ro-pw   | secrets-sync                   | clickhouse cluster readonly user password   |
-| clickhouse-cluster-pw    | value             | clickhouse | clickhouse-cluster-pw      | secrets-sync                   | clickhouse cluster read/write user password |
-| clickhouse-operator-pw   | username/password | clickhouse | clickhouse-operator        | action:ch_operator_creds       | creds in the format the operator wants      |
-| clickhouse-cluster-pw    | value             | ctl-api    | clickhouse-cluster-pw      | action:ch_cluster_creds        | a copy of the secret in the `ctl-api` ns    |
-| github-app-key           | value             | ctl-api    | github-app-key             | secrets-sync                   | github app key                              |
-| nuon_auth_client_secret  | value             | ctl-api    | ctl-api-auth-client-secret | secrets-sync                   | OIDC client secret                          |
-| nuon_auth_session_key    | value             | ctl-api    | ctl-api-auth-session-key   | secrets-sync                   | Auto-generated session key                  |
-| nuon_auth_jwt_secret     | value             | ctl-api    | ctl-api-auth-jwt-secret    | secrets-sync                   | Auto-generated JWT signing secret           |
-| cloudsql_nuon            | username/password | ctl-api    | nuon-db                    | action:nuon_cloudsql_creds     | Cloud SQL credentials for ctl-api           |
-| cloudsql_temporal        | username/password | temporal   | temporal-db                | action:temporal_cloudsql_creds | Cloud SQL credentials for temporal          |
+{{ $processes := default (list) (dig "process_uptimes" nil $runner) }}
 
-<a id="components"></a>
-## Components
+<nuon-panel heading="Runner: {{ $ownerLabel }}" trigger="View" size="3/4">
 
-### Cloud SQL
+<table>
+  <thead><tr><th>Field</th><th>Value</th></tr></thead>
+  <tbody>
+    <tr><td>Status</td><td><nuon-status status="{{ $status }}" variant="badge"></nuon-status></td></tr>
+    <tr><td>Owner</td><td>{{ $ownerLabel }}</td></tr>
+    <tr><td>Owner ID</td><td><code>{{ $ownerID }}</code></td></tr>
+    <tr><td>Type</td><td>{{ dig "type" "—" $runner }}</td></tr>
+    <tr><td>Platform</td><td>{{ dig "platform" "—" $runner }}</td></tr>
+    <tr><td>Image</td><td><code>{{ dig "image" "—" $runner }}:{{ dig "tag" "—" $runner }}</code></td></tr>
+    <tr><td>Runner ID</td><td><code>{{ $runnerID }}</code></td></tr>
+    <tr><td>Latest Heartbeat</td><td>{{ with dig "latest_heart_beat_created_at" "" $runner }}<nuon-time time="{{ printf "%sZ" (substr 0 19 .) }}" format="relative"></nuon-time>{{ else }}—{{ end }}</td></tr>
+    <tr><td>Latest Heartbeat Version</td><td>{{ with dig "latest_heart_beat_version" "" $runner }}<nuon-badge theme="info" size="sm" variant="code">{{ . }}</nuon-badge>{{ else }}—{{ end }}</td></tr>
+    <tr><td>Latest Healthcheck</td><td>{{ with dig "latest_health_check_created_at" "" $runner }}<nuon-time time="{{ printf "%sZ" (substr 0 19 .) }}" format="relative"></nuon-time>{{ else }}—{{ end }}</td></tr>
+    <tr><td>Latest Healthcheck Status</td><td>{{ with dig "latest_health_check_status" "" $runner }}<nuon-status status="{{ . }}" variant="badge"></nuon-status>{{ else }}—{{ end }}</td></tr>
+  </tbody>
+</table>
 
-The nuon Cloud SQL instance is created with an admin user and a default database. The `ctl_api` user and database are
-created via the `ctl_api_init_db` action (pre-deploy). Workload Identity access is granted via the `ctl_api_grant_wi`
-action (pre-deploy).
+{{ if gt (len $processes) 0 }}
 
-### Networking
+<h4 style="margin-top:1rem;">Processes</h4>
+<table>
+  <thead><tr><th>Type</th><th>Status</th><th>Started At</th><th>Uptime</th><th>ID</th></tr></thead>
+  <tbody>
+  {{ range $p := $processes }}
+    <tr>
+      <td>{{ dig "type" "—" $p }}</td>
+      <td>{{ with dig "status" "" $p }}<nuon-status status="{{ . }}" variant="badge"></nuon-status>{{ else }}—{{ end }}</td>
+      <td>{{ with dig "started_at" "" $p }}<nuon-time time="{{ printf "%sZ" (substr 0 19 .) }}" format="relative"></nuon-time>{{ else }}—{{ end }}</td>
+      <td>{{ with dig "uptime" 0 $p }}{{ (div (int64 .) 1000000000) | int64 | duration }}{{ else }}—{{ end }}</td>
+      <td><code>{{ dig "id" "—" $p }}</code></td>
+    </tr>
+  {{ end }}
+  </tbody>
+</table>
 
-- **External Ingress**: GKE Ingress (`gce` class) with Google-managed TLS via Certificate Manager CertificateMap
-- **Internal Ingress**: GKE Internal Ingress (`gce-internal` class) for admin API
-- **DNS**: external-dns syncs Ingress hostnames to Cloud DNS (public and private zones)
-- **Proxy-only Subnet**: Required for internal HTTP(S) load balancers
+{{ end }}
 
-<a id="cli"></a>
-## CLI
+</nuon-panel>
 
-Install the latest version of the nuon cli ([docs](https://docs.nuon.co/cli#cli)):
+      </td>
+    </tr>
+  {{ end }}
+  </tbody>
+</table>
 
-```bash
-brew install nuonco/tap/nuon
-```
+{{ else }}
 
-Configure:
+<nuon-banner theme="info">No runners reported.</nuon-banner>
 
-```yaml
-api_url: https://api.{{ $public_domain }}
-```
+{{ end }}
 
-Log in:
+  </div>
+</div>
 
-```bash
-nuon login
-```
+</nuon-tab>
+<nuon-tab name="Services">
+
+{{ $api  := dict }}{{ $apiActionID  := "" }}{{ with index .nuon.actions.workflows "api_status"       }}{{ with .outputs }}{{ $api  = . }}{{ end }}{{ $apiActionID  = dig "id" "" . }}{{ end }}
+{{ $dash := dict }}{{ $dashActionID := "" }}{{ with index .nuon.actions.workflows "dashboard_status" }}{{ with .outputs }}{{ $dash = . }}{{ end }}{{ $dashActionID = dig "id" "" . }}{{ end }}
+{{ $apiSteps  := dig "steps" (dict) $api  }}
+{{ $dashSteps := dig "steps" (dict) $dash }}
+
+<div style="display:flex;gap:1.5rem;align-items:flex-start;margin-top:1.5rem;">
+  <div style="flex:1;min-width:0;">
+
+<div style="display:flex;align-items:baseline;gap:0.75rem;"><h3 style="margin:0;">API</h3><a href="/{{ $.nuon.org.id }}/installs/{{ $.nuon.install.id }}/runbooks/inspect_api" style="font-size:0.85em;">See more →</a>{{ with dig "updated_at" "" $api }}<span style="margin-left:auto;font-size:0.85em;">Last updated <nuon-time time="{{ . }}" format="relative"></nuon-time></span>{{ end }}</div>
+
+<nuon-card>
+
+<nuon-group gap="2" align="center" justify="start">{{ range $step := list "ingress-healthcheck-ctl-api-public" "ingress-healthcheck-ctl-api-admin" "ingress-healthcheck-ctl-api-runner" }}{{ $indicator := dig $step "indicator" "" $apiSteps }}{{ if eq $indicator "🟢" }}<nuon-status status="active" variant="badge"></nuon-status>{{ else if eq $indicator "🔴" }}<nuon-status status="error" variant="badge"></nuon-status>{{ else }}<nuon-status status="pending" variant="badge"></nuon-status>{{ end }}{{ end }}<nuon-label-badge label="version:{{ dig "ctl_api_version" "unknown" $api }}"></nuon-label-badge><nuon-label-badge label="git:{{ dig "ctl_api_git_ref" "unknown" $api }}"></nuon-label-badge><a href="https://api.{{ $public_domain }}/docs/index.html">Open ↗</a></nuon-group>
+
+{{ if not (dig "updated_at" "" $api) }}<nuon-banner theme="warn">Waiting on api_status. Run it to populate this section.</nuon-banner>{{ end }}
+
+</nuon-card>
+
+  </div>
+  <div style="flex:1;min-width:0;">
+
+<div style="display:flex;align-items:baseline;gap:0.75rem;"><h3 style="margin:0;">Dashboard</h3><a href="/{{ $.nuon.org.id }}/installs/{{ $.nuon.install.id }}/runbooks/inspect_dashboard" style="font-size:0.85em;">See more →</a>{{ with dig "updated_at" "" $dash }}<span style="margin-left:auto;font-size:0.85em;">Last updated <nuon-time time="{{ . }}" format="relative"></nuon-time></span>{{ end }}</div>
+
+<nuon-card>
+
+<nuon-group gap="2" align="center" justify="start">{{ $indicator := dig "ingress-healthcheck-dashboard-ui" "indicator" "" $dashSteps }}{{ if eq $indicator "🟢" }}<nuon-status status="active" variant="badge"></nuon-status>{{ else if eq $indicator "🔴" }}<nuon-status status="error" variant="badge"></nuon-status>{{ else }}<nuon-status status="pending" variant="badge"></nuon-status>{{ end }}<nuon-label-badge label="version:{{ dig "dashboard_ui_version" "unknown" $dash }}"></nuon-label-badge><nuon-label-badge label="git:{{ dig "dashboard_ui_git_ref" "unknown" $dash }}"></nuon-label-badge><a href="https://app.{{ $public_domain }}">Open ↗</a></nuon-group>
+
+{{ if not (dig "updated_at" "" $dash) }}<nuon-banner theme="warn">Waiting on dashboard_status. Run it to populate this section.</nuon-banner>{{ end }}
+
+</nuon-card>
+
+  </div>
+</div>
+
+</nuon-tab>
+<nuon-tab name="Infrastructure">
+
+<div style="padding-top:1rem;"></div>
+
+<div style="display:flex;gap:1.5rem;align-items:flex-start;">
+  <div style="flex:1;min-width:0;">
+
+<div style="display:flex;align-items:baseline;gap:0.75rem;"><h3 style="margin:0;">Stack</h3><a href="/{{ $.nuon.org.id }}/installs/{{ $.nuon.install.id }}/runbooks/inspect_stack" style="font-size:0.85em;">See more →</a></div>
+
+{{ $stackStatus := dig "status" "" .nuon.install_stack }}
+{{ $stackOutputs := default dict .nuon.install_stack.outputs }}
+
+<table>
+  <tbody>
+    <tr><td>Status</td><td>{{ if $stackStatus }}<nuon-status status="{{ $stackStatus }}" variant="badge"></nuon-status>{{ else }}—{{ end }}</td></tr>
+    <tr><td>Cloud</td><td>GCP</td></tr>
+    <tr><td>Project</td><td><code>{{ dig "project_id" "—" $stackOutputs }}</code></td></tr>
+    <tr><td>Region</td><td><code>{{ dig "region" "—" $stackOutputs }}</code></td></tr>
+    <tr><td>Network</td><td><code>{{ dig "network_name" "—" $stackOutputs }}</code></td></tr>
+  </tbody>
+</table>
+
+  </div>
+  <div style="flex:1;min-width:0;">
+
+<div style="display:flex;align-items:baseline;gap:0.75rem;"><h3 style="margin:0;">Cluster</h3><a href="/{{ $.nuon.org.id }}/installs/{{ $.nuon.install.id }}/runbooks/inspect_cluster" style="font-size:0.85em;">See more →</a></div>
+
+{{ $sandboxStatus := dig "status" "" .nuon.sandbox }}
+{{ $cluster := dig "outputs" "cluster" (dict) .nuon.sandbox }}
+
+<table>
+  <tbody>
+    <tr><td>Status</td><td>{{ if $sandboxStatus }}<nuon-status status="{{ lower $sandboxStatus }}" variant="badge"></nuon-status>{{ else }}—{{ end }}</td></tr>
+    <tr><td>Name</td><td><code>{{ dig "name" "—" $cluster }}</code></td></tr>
+    <tr><td>Location</td><td><code>{{ dig "location" "—" $cluster }}</code></td></tr>
+    <tr><td>Endpoint</td><td>{{ with dig "endpoint" "" $cluster }}<code>{{ . }}</code>{{ else }}—{{ end }}</td></tr>
+    <tr><td>Self Link</td><td>{{ with dig "self_link" "" $cluster }}<code>{{ . }}</code>{{ else }}—{{ end }}</td></tr>
+  </tbody>
+</table>
+
+  </div>
+</div>
+
+</nuon-tab>
+</nuon-tabs>
+

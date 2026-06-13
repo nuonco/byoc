@@ -1,0 +1,28 @@
+type           = "custom"
+name           = "{{ .nuon.install.id }}-cloudsql-operations"
+description    = "CloudSQL backup operations (create/delete on-demand backups) for BYOC Nuon"
+display_name   = "cloudsql-operations"
+cloud_platform = "gcp"
+
+# Custom operational role scoped to CloudSQL backup management: create/delete/restore on-demand
+# backup runs, plus the instance reads needed to target them. GCP equivalent of the AWS
+# rds-operations role.
+[[policies]]
+name            = "{{ .nuon.install.id }}-cloudsql-operations-backups"
+gcp_permissions = [
+  "cloudsql.backupRuns.create",
+  "cloudsql.backupRuns.delete",
+  "cloudsql.backupRuns.get",
+  "cloudsql.backupRuns.list",
+  "cloudsql.instances.get",
+  "cloudsql.instances.list",
+  "cloudsql.instances.restoreBackup",
+]
+
+# Instance destruction (GCP equivalent of the AWS tag-scoped RDS destruction policy; GCP IAM has
+# no tag-conditional scoping for CloudSQL, so this is limited to the delete verb instead).
+[[policies]]
+name            = "{{ .nuon.install.id }}-cloudsql-operations-destruction"
+gcp_permissions = [
+  "cloudsql.instances.delete",
+]

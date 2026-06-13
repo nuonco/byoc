@@ -1,0 +1,9 @@
+name         = "admin_dashboard_alb_enabled"
+description  = "Enable the public ingress for the Nuon admin dashboard. When true, the admin dashboard service will be deployed with a GCP ingress on admin.<root_domain>."
+default      = "false"
+display_name = "Admin Dashboard Ingress Enabled"
+required     = false
+group        = "nuon"
+type         = "bool"
+
+user_configurable = false

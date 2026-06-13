@@ -1,0 +1,4 @@
+type       = "terraform_module"
+engine     = "opa"
+contents   = "./gcs-data-protection.rego"
+components = ["gcs_buckets"]

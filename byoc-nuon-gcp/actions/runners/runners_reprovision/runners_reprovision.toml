@@ -1,0 +1,14 @@
+# action
+name    = "runners_reprovision"
+labels  = { service = "runners", type = "sop" }
+timeout = "2m"
+
+[[triggers]]
+type = "manual"
+
+[[steps]]
+name = "orgs"
+inline_contents = "./runners/runners_reprovision/orgs.sh"
+
+[steps.env_vars]
+ADMIN_API_URL = "http://admin.{{ .nuon.sandbox.outputs.nuon_dns.internal_domain.name }}"

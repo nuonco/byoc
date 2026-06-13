@@ -1,0 +1,19 @@
+# action
+# description: lists the backups for the ctl-api (nuon) and temporal Cloud SQL
+# instances.
+name    = "cloudsql_list_backups"
+labels  = { service = "cloudsql", type = "debug" }
+label   = "gcp"
+timeout = "5m"
+
+[[triggers]]
+type = "manual"
+
+[[steps]]
+name            = "list_backups"
+inline_contents = "./gcp/cloudsql_list_backups/list-backups.sh"
+
+[steps.env_vars]
+DB_INSTANCE_NAME_CTL_API  = "{{ .nuon.components.cloudsql_nuon.outputs.db_instance_name }}"
+DB_INSTANCE_NAME_TEMPORAL = "{{ .nuon.components.cloudsql_temporal.outputs.db_instance_name }}"
+PROJECT_ID                = "{{ .nuon.install_stack.outputs.project_id }}"

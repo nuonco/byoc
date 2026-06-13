@@ -1,0 +1,44 @@
+name        = "deploy_control_plane"
+description = "Sync and deploy ctl-api and dashboard-ui."
+readme      = "./runbooks/deploy_control_plane.md"
+labels      = { service = "ctl-api", type = "sop" }
+
+[[steps]]
+name           = "ctl-api: Sync image"
+type           = "deploy"
+component_name = "img_nuon_ctl_api"
+
+[[steps]]
+name           = "dashboard-ui: Sync image"
+type           = "deploy"
+component_name = "img_nuon_dashboard_ui"
+
+[[steps]]
+name        = "ctl-api:Initialize postgres"
+type        = "action"
+action_name = "ctl_api_init_db"
+
+[[steps]]
+name        = "ctl-api: Initialize clickhouse"
+type        = "action"
+action_name = "ch_init"
+
+[[steps]]
+name            = "ctl-api: Deploy"
+type            = "deploy"
+component_name  = "ctl_api"
+
+[[steps]]
+name        = "ctl-api: Post deploy startup"
+type        = "action"
+action_name = "ctl_api_post_deploy_startup"
+
+[[steps]]
+name        = "ctl-api: Post deploy action"
+type        = "action"
+action_name = "ctl_api_post_deploy"
+
+[[steps]]
+name            = "dashboard-ui: Deploy"
+type            = "deploy"
+component_name  = "dashboard_ui"

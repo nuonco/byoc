@@ -1,0 +1,4 @@
+type       = "helm_chart"
+engine     = "opa"
+contents   = "./ctl-api-control-plane-integrity.rego"
+components = ["ctl_api"]

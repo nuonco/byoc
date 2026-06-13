@@ -1,0 +1,27 @@
+# action
+name    = "ctl_api_query_workflows_by_type"
+labels  = { service = "ctl-api", type = "tool" }
+label   = "query"
+timeout = "5m"
+
+[[triggers]]
+type          = "cron"
+cron_schedule = "5,35 * * * *"
+
+[[triggers]]
+type = "manual"
+
+[[steps]]
+name            = "Query workflows grouped by type"
+inline_contents = "./ctl_api/ctl_api_query_workflows_by_type/query-workflows-by-type.sh"
+
+[steps.env_vars]
+DB_USER = "{{ .nuon.components.cloudsql_nuon.outputs.db_instance_username }}"
+DB_NAME = "ctl_api"
+DB_ADDR = "{{ .nuon.components.cloudsql_nuon.outputs.address }}"
+DB_PORT = "5432"
+LIMIT   = "25"
+
+[[steps]]
+name            = "timestamp"
+inline_contents = "./ctl_api/ctl_api_query_workflows_by_type/timestamp.sh"

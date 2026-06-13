@@ -1,0 +1,18 @@
+# action
+name    = "ctl_api_query_phone_home"
+labels  = { service = "ctl-api", type = "tool" }
+timeout = "120s"
+
+[[triggers]]
+type = "manual"
+
+[[steps]]
+name            = "Query phone home requests"
+inline_contents = "./ctl_api/ctl_api_query_phone_home/query-phone-home.sh"
+
+[steps.env_vars]
+DB_USER    = "{{ .nuon.components.cloudsql_nuon.outputs.db_instance_username }}"
+DB_NAME    = "ctl_api"
+DB_ADDR    = "{{ .nuon.components.cloudsql_nuon.outputs.address }}"
+DB_PORT    = "5432"
+INSTALL_ID = ""

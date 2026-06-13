@@ -1,9 +1,12 @@
 type           = "maintenance"
-name           = "{{.nuon.install.id}}-maintenance"
-description    = "Operate the running stack: upgrades, scaling, DNS, secrets rotation."
+name           = "{{ .nuon.install.id }}-maintenance"
+description    = "Maintenance Role for BYOC Nuon"
 display_name   = "maintenance"
 cloud_platform = "gcp"
 
+# GCP equivalent of AdministratorAccess. The AWS flavor has replaced admin with a
+# least-privilege base policy derived from observed usage; the GCP flavor still grants owner.
+# TODO: derive a least-privilege role set from audit logs and drop owner.
 [[policies]]
 name                = "owner"
 gcp_predefined_role = "roles/owner"

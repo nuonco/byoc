@@ -1,0 +1,14 @@
+# action
+name    = "kubectl_events"
+labels  = { service = "kubernetes", type = "debug" }
+timeout = "30s"
+
+[[triggers]]
+type = "manual"
+
+[[steps]]
+name = "kubectl events"
+inline_contents = "./kubectl/kubectl_events/kubectl_events.sh"
+
+[steps.env_vars]
+NAMESPACE = "default"

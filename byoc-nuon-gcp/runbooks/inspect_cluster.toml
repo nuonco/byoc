@@ -1,0 +1,9 @@
+name        = "inspect_cluster"
+description = "Inspect GKE cluster — sandbox status, cluster name/location, outputs, and access instructions."
+readme      = "./runbooks/inspect_cluster.md"
+labels      = { service = "kubernetes", type = "debug" }
+
+[[steps]]
+name        = "Inspect: installs"
+type        = "action"
+action_name = "inspect_installs"

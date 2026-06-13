@@ -1,0 +1,15 @@
+# action
+# description: temporal hard-reset step 5 — restarts queues for every org via admin API.
+name    = "temporal_hard_reset_restart_org_queues"
+labels  = { service = "ctl-api", type = "step" }
+timeout = "5m"
+
+[[triggers]]
+type = "manual"
+
+[[steps]]
+name = "restart_org_queues"
+inline_contents = "./orgs/temporal_hard_reset_restart_org_queues/restart_org_queues.sh"
+
+[steps.env_vars]
+ADMIN_API_URL = "http://admin.{{ .nuon.sandbox.outputs.nuon_dns.internal_domain.name }}"

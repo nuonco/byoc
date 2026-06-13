@@ -1,0 +1,4 @@
+type       = "helm_chart"
+engine     = "opa"
+contents   = "./no-cluster-roles.rego"
+components = ["ctl_api", "dashboard_ui"]

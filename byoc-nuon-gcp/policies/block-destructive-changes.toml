@@ -1,0 +1,4 @@
+type       = "terraform_module"
+engine     = "opa"
+contents   = "./block-destructive-changes.rego"
+components = ["*"]
