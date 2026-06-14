@@ -1,0 +1,14 @@
+name = "jm/app-branches"
+
+[public_repo]
+repo      = "nuonco/byoc"
+directory = "byoc-nuon"
+branch    = "jm/app-branches"
+
+[[install_groups]]
+name="beta"
+label_selector = { beta = "true" }
+
+[[install_groups]]
+name="production"
+label_selector = {  production = "true" }
