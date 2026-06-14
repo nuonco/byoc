@@ -1,0 +1,29 @@
+name        = "deploy_control_plane"
+description = "Deploy ctl-api + dashboard ECS services for nuon-lite."
+readme      = "./runbooks/deploy_control_plane.md"
+labels      = { service = "ctl-api", type = "sop" }
+
+[[steps]]
+name           = "temporal-cloud: Provision namespaces"
+type           = "deploy"
+component_name = "temporal_namespaces"
+
+[[steps]]
+name        = "aurora: Run schema migrations"
+type        = "action"
+action_name = "run_ctl_api_init"
+
+[[steps]]
+name           = "ctl-api: Deploy"
+type           = "deploy"
+component_name = "ctl_api"
+
+[[steps]]
+name        = "ctl-api: Force new deployment"
+type        = "action"
+action_name = "restart_ctl_api"
+
+[[steps]]
+name           = "dashboard-ui: Deploy"
+type           = "deploy"
+component_name = "dashboard"

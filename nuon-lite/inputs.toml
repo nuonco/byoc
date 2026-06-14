@@ -1,0 +1,212 @@
+# inputs
+
+[[group]]
+name         = "dns"
+description  = "Public DNS for Nuon control plane services."
+display_name = "DNS"
+
+[[input]]
+name         = "domain"
+description  = "Public domain for the install, e.g. `acme.nuon.run`. Must be a delegated subdomain of a zone Nuon controls."
+display_name = "Domain"
+group        = "dns"
+
+
+[[group]]
+name         = "aurora"
+description  = "Aurora Serverless v2 cluster hosting the ctl_api database."
+display_name = "Aurora"
+
+[[input]]
+name         = "aurora_min_capacity"
+description  = "Minimum Aurora Serverless v2 capacity (ACU)."
+default      = "0.5"
+display_name = "Aurora min ACU"
+group        = "aurora"
+
+[[input]]
+name         = "aurora_max_capacity"
+description  = "Maximum Aurora Serverless v2 capacity (ACU). Cost ceiling = max * $0.12/hr * 730."
+default      = "1"
+display_name = "Aurora max ACU"
+group        = "aurora"
+
+[[input]]
+name         = "aurora_backup_retention_days"
+description  = "Days of automated Aurora backups to retain."
+default      = "7"
+display_name = "Aurora backup retention (days)"
+group        = "aurora"
+
+
+[[group]]
+name         = "clickhouse_cloud"
+description  = "Pre-created ClickHouse Cloud service. Create the service in the ClickHouse Cloud UI before installing; password is stored as a Nuon secret."
+display_name = "ClickHouse Cloud"
+
+[[input]]
+name         = "clickhouse_host"
+description  = "ClickHouse Cloud service hostname (e.g. xyz.us-east-1.aws.clickhouse.cloud)."
+display_name = "ClickHouse host"
+group        = "clickhouse_cloud"
+
+[[input]]
+name         = "clickhouse_port"
+description  = "ClickHouse Cloud port. 9440 = native TLS, 8443 = HTTPS."
+default      = "9440"
+display_name = "ClickHouse port"
+group        = "clickhouse_cloud"
+
+[[input]]
+name         = "clickhouse_database"
+description  = "ClickHouse database name."
+default      = "default"
+display_name = "ClickHouse database"
+group        = "clickhouse_cloud"
+
+[[input]]
+name         = "clickhouse_username"
+description  = "ClickHouse user."
+default      = "default"
+display_name = "ClickHouse username"
+group        = "clickhouse_cloud"
+
+[[input]]
+name         = "clickhouse_tls"
+description  = "Use TLS to connect to ClickHouse Cloud."
+default      = "true"
+display_name = "ClickHouse TLS"
+group        = "clickhouse_cloud"
+
+
+[[group]]
+name         = "temporal_cloud"
+description  = "Temporal Cloud namespaces are self-provisioned by the temporal-cloud component. Supply an account-level API key with namespace + api-key admin scope."
+display_name = "Temporal Cloud"
+
+[[input]]
+name         = "tc_region"
+description  = "Temporal Cloud region (e.g. aws-us-east-1, aws-us-west-2)."
+default      = "aws-us-east-1"
+display_name = "Temporal Cloud region"
+group        = "temporal_cloud"
+
+[[input]]
+name         = "tc_retention_days"
+description  = "Default per-namespace workflow retention (days). vcs/emitters override to 30 to match byoc-nuon."
+default      = "7"
+display_name = "Default retention (days)"
+group        = "temporal_cloud"
+
+[[input]]
+name         = "tc_namespace_prefix"
+description  = "Prefix applied to every namespace name. Final name is `<prefix>-<domain>`, e.g. `<install-name>-orgs`."
+default      = "{{ .nuon.install.name }}"
+display_name = "Namespace prefix"
+group        = "temporal_cloud"
+
+
+[[group]]
+name         = "nuon"
+description  = "Control-plane meta config."
+display_name = "Nuon meta"
+
+[[input]]
+name         = "env"
+description  = "Nuon environment. One of `dev` or `prod`. Affects logging + sentry sampling. If unsure, pick `prod`."
+default      = "prod"
+display_name = "Environment"
+group        = "nuon"
+
+[[input]]
+name         = "admin_dashboard_enabled"
+description  = "Deploy a second dashboard task wired to admin-only routes."
+default      = "false"
+display_name = "Admin dashboard enabled"
+group        = "nuon"
+
+
+[[group]]
+name         = "auth"
+description  = "OIDC identity provider for the Nuon dashboard. ctl-api will not start without an issuer + client_id."
+display_name = "Auth (OIDC)"
+
+[[input]]
+name         = "nuon_auth_provider_type"
+description  = "Identity provider type. Currently only `google` is supported."
+default      = "google"
+display_name = "Auth provider type"
+group        = "auth"
+
+[[input]]
+name         = "nuon_auth_issuer_url"
+description  = "OIDC issuer URL. Leave empty for Google OAuth; required for generic OIDC providers."
+default      = ""
+display_name = "Auth issuer URL"
+group        = "auth"
+
+[[input]]
+name         = "nuon_auth_client_id"
+description  = "OIDC client ID from your identity provider."
+display_name = "Auth client ID"
+group        = "auth"
+
+[[input]]
+name         = "nuon_auth_allow_all_users"
+description  = "If true, any user with an email in `nuon_auth_allowed_domains` can register."
+default      = "true"
+display_name = "Allow all users"
+group        = "auth"
+
+[[input]]
+name         = "nuon_auth_allowed_domains"
+description  = "Comma-delimited list of email domains permitted to register, e.g. `acme.co,partner.com`."
+display_name = "Allowed domains"
+group        = "auth"
+
+
+[[group]]
+name         = "github"
+description  = "GitHub App for VCS integration. Leave empty to disable."
+display_name = "GitHub"
+
+[[input]]
+name         = "github_app_id"
+description  = "Numeric GitHub App ID from the app's settings page."
+default      = ""
+display_name = "GitHub App ID"
+group        = "github"
+
+[[input]]
+name         = "github_app_client_id"
+description  = "GitHub App OAuth client ID."
+default      = ""
+display_name = "GitHub App client ID"
+group        = "github"
+
+[[input]]
+name         = "github_app_name"
+description  = "GitHub App slug used in install URLs."
+default      = ""
+display_name = "GitHub App name"
+group        = "github"
+
+
+[[group]]
+name         = "slack"
+description  = "Slack app for chat integration. Leave `slack_client_id` empty to disable."
+display_name = "Slack"
+
+[[input]]
+name         = "slack_client_id"
+description  = "Slack app OAuth client ID. Found on the Slack app's Basic Information page."
+default      = ""
+display_name = "Slack client ID"
+group        = "slack"
+
+[[input]]
+name         = "slack_oauth_redirect_url"
+description  = "Slack OAuth callback URL. Must match a Redirect URL configured in the Slack app's OAuth & Permissions page."
+default      = "https://slack.{{ .nuon.install.id }}.{{ .nuon.inputs.inputs.domain }}/slack/oauth/callback"
+display_name = "Slack OAuth redirect URL"
+group        = "slack"

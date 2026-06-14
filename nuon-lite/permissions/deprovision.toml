@@ -1,0 +1,16 @@
+type                 = "deprovision"
+name                 = "{{.nuon.install.id}}-deprovision"
+description          = "Deprovision Role for BYOC Nuon"
+display_name         = "deprovision"
+permissions_boundary = "./boundaries/deprovision_boundary.json"
+
+[[policies]]
+managed_policy_name = "AdministratorAccess"
+
+# Scoped teardown grants for deprovision (the start of its least-privilege set). Currently additive
+# under AdministratorAccess (inert until admin is removed); enumerate the full destruction set here
+# before dropping admin. First grant: destroy the runner ECR Public repo + delete its images,
+# scoped to this install's repo via the install.nuon.co/id tag.
+[[policies]]
+name     = "{{ .nuon.install.id }}-deprovision-base"
+contents = "./policies/deprovision-base.json"

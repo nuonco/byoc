@@ -1,0 +1,38 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "RunnerRepositoryTeardown",
+      "Effect": "Allow",
+      "Action": [
+        "ecr-public:DeleteRepository",
+        "ecr-public:BatchDeleteImage"
+      ],
+      "Resource": "*",
+      "Condition": {
+        "StringEquals": {
+          "aws:ResourceTag/install.nuon.co/id": "{{ .nuon.install.id }}"
+        }
+      }
+    },
+    {
+      "Sid": "RunnerRepositoryReads",
+      "Effect": "Allow",
+      "Action": [
+        "ecr-public:DescribeRepositories",
+        "ecr-public:DescribeImages",
+        "ecr-public:DescribeImageTags",
+        "ecr-public:ListTagsForResource"
+      ],
+      "Resource": "*"
+    },
+    {
+      "Sid": "S3Reads",
+      "Effect": "Allow",
+      "Action": [
+        "s3:GetEncryptionConfiguration"
+      ],
+      "Resource": "*"
+    }
+  ]
+}

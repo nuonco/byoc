@@ -1,0 +1,26 @@
+[[role]]
+name                 = "nuon-lite-break-glass-{{ .nuon.install.id }}"
+description          = "Break Glass Permissions for nuon-lite Install {{ .nuon.install.id }}"
+display_name         = "nuon-lite: Break Glass"
+permissions_boundary = ""
+
+[[role.policies]]
+managed_policy_name = "AdministratorAccess"
+
+[[role.policies]]
+name     = "remove-secrets-manager"
+contents = """
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Sid": "DenySecretsManagerAccess",
+            "Effect": "Deny",
+            "Action": [
+                "secretsmanager:*"
+            ],
+            "Resource": "*"
+        }
+    ]
+}
+"""

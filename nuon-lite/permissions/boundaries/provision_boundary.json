@@ -1,0 +1,46 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "ManagedServices",
+      "Effect": "Allow",
+      "Action": [
+        "acm:*",
+        "application-autoscaling:*",
+        "autoscaling:*",
+        "cloudwatch:*",
+        "ec2:*",
+        "ecr-public:*",
+        "ecr:*",
+        "ecs:*",
+        "eks:*",
+        "servicediscovery:*",
+        "elasticloadbalancing:*",
+        "events:*",
+        "iam:*",
+        "kms:*",
+        "logs:*",
+        "pi:*",
+        "rds:*",
+        "route53:*",
+        "s3:*",
+        "s3control:*",
+        "secretsmanager:*",
+        "sns:*",
+        "sqs:*"
+      ],
+      "Resource": "*"
+    },
+    {
+      "Sid": "ScopedReads",
+      "Effect": "Allow",
+      "Action": [
+        "organizations:DescribeOrganization",
+        "organizations:ListAccounts",
+        "sts:GetCallerIdentity",
+        "sts:GetServiceBearerToken"
+      ],
+      "Resource": "*"
+    }
+  ]
+}

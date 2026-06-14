@@ -1,0 +1,4 @@
+type       = "container_image"
+engine     = "opa"
+contents   = "./image-pinned-tags.rego"
+components = ["*"]

@@ -1,0 +1,5 @@
+version = "v2"
+
+description  = "Nuon BYOC on AWS ECS Fargate + ClickHouse Cloud + Temporal Cloud"
+display_name = "nuon-lite"
+readme       = "./README.md"

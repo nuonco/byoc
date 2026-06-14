@@ -1,0 +1,7 @@
+region                       = "{{ .nuon.install_stack.outputs.region }}"
+install_id                   = "{{ .nuon.install.id }}"
+org_id                       = "{{ .nuon.org.id }}"
+tc_region                    = "{{ .nuon.inputs.inputs.tc_region }}"
+tc_retention_days            = "{{ .nuon.inputs.inputs.tc_retention_days }}"
+tc_namespace_prefix          = "{{ .nuon.inputs.inputs.tc_namespace_prefix }}"
+tc_account_api_key_secret_arn = "{{ .nuon.install_stack.outputs.temporal_cloud_account_api_key_arn }}"

@@ -1,0 +1,5 @@
+region            = "{{ .nuon.install_stack.outputs.region }}"
+install_id        = "{{ .nuon.install.id }}"
+org_id            = "{{ .nuon.org.id }}"
+vpc_id            = "{{ .nuon.install_stack.outputs.vpc_id }}"
+certificate_arn   = "{{ .nuon.components.public_tls_cert.outputs.public_domain_certificate_arn }}"

@@ -1,0 +1,83 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "ManagedServices",
+      "Effect": "Allow",
+      "Action": [
+        "acm:*",
+        "application-autoscaling:*",
+        "autoscaling:*",
+        "cloudwatch:*",
+        "ec2:*",
+        "ecr-public:*",
+        "ecr:*",
+        "ecs:*",
+        "eks:*",
+        "elasticloadbalancing:*",
+        "events:*",
+        "iam:*",
+        "servicediscovery:*",
+        "kms:*",
+        "logs:*",
+        "pi:*",
+        "rds:*",
+        "route53:*",
+        "s3:*",
+        "secretsmanager:*",
+        "sns:*",
+        "sqs:*"
+      ],
+      "Resource": "*"
+    },
+    {
+      "Sid": "ScopedReads",
+      "Effect": "Allow",
+      "Action": [
+        "organizations:DescribeOrganization",
+        "organizations:ListAccounts",
+        "sts:GetCallerIdentity",
+        "sts:GetServiceBearerToken"
+      ],
+      "Resource": "*"
+    },
+    {
+      "Sid": "DenyEksAccessEntryMutation",
+      "Effect": "Deny",
+      "Action": [
+        "eks:CreateAccessEntry",
+        "eks:DeleteAccessEntry",
+        "eks:UpdateAccessEntry",
+        "eks:AssociateAccessPolicy",
+        "eks:DisassociateAccessPolicy"
+      ],
+      "Resource": "*"
+    },
+    {
+      "Sid": "DenyRdsBackupModification",
+      "Effect": "Deny",
+      "Action": [
+        "rds:CreateDBSnapshot",
+        "rds:DeleteDBSnapshot",
+        "rds:CopyDBSnapshot",
+        "rds:ModifyDBSnapshot",
+        "rds:ModifyDBSnapshotAttribute",
+        "rds:CreateDBClusterSnapshot",
+        "rds:DeleteDBClusterSnapshot",
+        "rds:CopyDBClusterSnapshot",
+        "rds:ModifyDBClusterSnapshotAttribute",
+        "rds:DeleteDBInstanceAutomatedBackup"
+      ],
+      "Resource": "*"
+    },
+    {
+      "Sid": "DenyRdsDestruction",
+      "Effect": "Deny",
+      "Action": [
+        "rds:DeleteDBInstance",
+        "rds:DeleteDBCluster"
+      ],
+      "Resource": "*"
+    }
+  ]
+}

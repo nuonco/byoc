@@ -1,0 +1,18 @@
+type                 = "custom"
+name                 = "{{ .nuon.install.id }}-acm-operations"
+description          = "Full lifecycle management of the install's ACM certificate for BYOC Nuon"
+display_name         = "acm-operations"
+permissions_boundary = "./boundaries/acm_operations_boundary.json"
+
+# Custom operational role for full ACM certificate lifecycle: create (RequestCertificate + the DNS
+# validation records in Route53), modify/renew, and destroy. Create/read are account-scoped (ACM
+# ARNs are dynamic; ListCertificates is account-wide); modify and destroy are scoped to this
+# install's certificate via the install.nuon.co/id tag.
+[[policies]]
+name     = "{{ .nuon.install.id }}-acm-operations"
+contents = "./policies/acm-operations.json"
+
+# Tag-scoped certificate destruction (only this install's cert, by install.nuon.co/id).
+[[policies]]
+name     = "{{ .nuon.install.id }}-acm-operations-destruction"
+contents = "./policies/acm-operations-destruction.json"

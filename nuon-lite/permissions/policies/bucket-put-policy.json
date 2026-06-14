@@ -1,0 +1,15 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "AllowPutBucketPolicyScoped",
+      "Effect": "Allow",
+      "Action": "s3:PutBucketPolicy",
+      "Resource": [
+        "arn:aws:s3:::{{ .nuon.install.id }}-byoc-nuon-install-templates",
+        "arn:aws:s3:::{{ .nuon.install.id }}-byoc-nuon-install-blob",
+        "arn:aws:s3:::{{ .nuon.install.id }}-nuon-clickhouse"
+      ]
+    }
+  ]
+}

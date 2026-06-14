@@ -1,0 +1,17 @@
+name    = "run_ctl_api_init"
+labels  = { service = "ctl-api", type = "ops" }
+timeout = "10m"
+
+[[triggers]]
+type = "manual"
+
+[[steps]]
+name            = "run ctl-api init task"
+inline_contents = "./ecs/run_ctl_api_init/run.sh"
+
+[steps.env_vars]
+CLUSTER  = "{{ .nuon.components.ecs_runtime.outputs.cluster_name }}"
+TASK_DEF = "{{ .nuon.components.ctl_api_migrations.outputs.task_family }}"
+SUBNETS  = "{{ .nuon.components.ecs_runtime.outputs.private_subnet_ids }}"
+REGION   = "{{ .nuon.install_stack.outputs.region }}"
+SG       = "{{ .nuon.components.ctl_api.outputs.security_group_id }}"
