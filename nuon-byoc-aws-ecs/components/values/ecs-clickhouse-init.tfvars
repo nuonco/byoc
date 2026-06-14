@@ -5,4 +5,4 @@ log_group_name                 = "{{ .nuon.components.cluster.outputs.log_group_
 execution_role_arn             = "{{ .nuon.components.task_roles.outputs.execution_role_arn }}"
 ctl_api_task_role_arn          = "{{ .nuon.components.task_roles.outputs.ctl_api_task_role_arn }}"
 ctl_api_image                  = "{{ .nuon.inputs.inputs.ctl_api_image }}"
-clickhouse_password_secret_arn = "{{ .nuon.secrets.clickhouse_password.arn }}"
+clickhouse_password_secret_arn = "{{ .nuon.install_stack.outputs.clickhouse_password_arn }}"

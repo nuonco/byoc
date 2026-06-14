@@ -28,11 +28,8 @@ variable "install_id" { type = string }
 variable "org_id" { type = string }
 variable "vpc_id" { type = string }
 variable "vpc_cidr" { type = string }
-variable "master_username" { type = string }
-variable "master_password" {
-  type      = string
-  sensitive = true
-}
+variable "master_username_secret_arn" { type = string }
+variable "master_password_secret_arn" { type = string }
 variable "min_capacity" {
   type    = number
   default = 0.5
@@ -53,6 +50,14 @@ locals {
     "org.nuon.co/id"         = var.org_id
     "component.nuon.co/name" = "aurora"
   }
+}
+
+data "aws_secretsmanager_secret_version" "username" {
+  secret_id = data.aws_secretsmanager_secret_version.username.secret_string_secret_arn
+}
+
+data "aws_secretsmanager_secret_version" "password" {
+  secret_id = data.aws_secretsmanager_secret_version.password.secret_string_secret_arn
 }
 
 resource "aws_db_subnet_group" "main" {
@@ -79,8 +84,8 @@ resource "aws_rds_cluster" "main" {
   engine_mode             = "provisioned"
   engine_version          = "16.4"
   database_name           = "ctl_api"
-  master_username         = var.master_username
-  master_password         = var.master_password
+  master_username         = data.aws_secretsmanager_secret_version.username.secret_string
+  master_password         = data.aws_secretsmanager_secret_version.password.secret_string
   db_subnet_group_name    = aws_db_subnet_group.main.name
   vpc_security_group_ids  = [aws_security_group.aurora.id]
   backup_retention_period = var.backup_retention_days
@@ -112,8 +117,8 @@ resource "aws_secretsmanager_secret" "creds" {
 resource "aws_secretsmanager_secret_version" "creds" {
   secret_id = aws_secretsmanager_secret.creds.id
   secret_string = jsonencode({
-    username = var.master_username
-    password = var.master_password
+    username = data.aws_secretsmanager_secret_version.username.secret_string
+    password = data.aws_secretsmanager_secret_version.password.secret_string
     host     = aws_rds_cluster.main.endpoint
     port     = aws_rds_cluster.main.port
   })

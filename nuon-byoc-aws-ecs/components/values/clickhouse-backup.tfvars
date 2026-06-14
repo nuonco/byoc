@@ -9,4 +9,4 @@ execution_role_arn             = "{{ .nuon.components.task_roles.outputs.executi
 clickhouse_task_role_arn       = "{{ .nuon.components.task_roles.outputs.clickhouse_task_role_arn }}"
 clickhouse_security_group_id   = "{{ .nuon.components.ecs_clickhouse.outputs.security_group_id }}"
 clickhouse_backup_bucket       = "{{ .nuon.components.s3_buckets.outputs.clickhouse_backup_bucket }}"
-clickhouse_password_secret_arn = "{{ .nuon.secrets.clickhouse_password.arn }}"
+clickhouse_password_secret_arn = "{{ .nuon.install_stack.outputs.clickhouse_password_arn }}"
