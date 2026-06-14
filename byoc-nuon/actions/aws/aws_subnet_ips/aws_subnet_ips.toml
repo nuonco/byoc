@@ -21,3 +21,4 @@ branch    = "main"
 
 [steps.env_vars]
 AWS_REGION = "{{ .nuon.install_stack.outputs.region }}"
+TEST = "true"
