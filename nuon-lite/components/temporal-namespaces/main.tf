@@ -4,7 +4,7 @@ terraform {
     aws = { source = "hashicorp/aws", version = "~> 5.0" }
     temporalcloud = {
       source  = "temporalio/temporalcloud"
-      version = "~> 0.10"
+      version = "~> 1.3"
     }
   }
 }
@@ -76,15 +76,25 @@ resource "temporalcloud_namespace" "ns" {
   retention_days     = each.value.retention
 }
 
+resource "temporalcloud_service_account" "workload" {
+  for_each = local.namespaces
+
+  name        = "${each.value.name}-workload"
+  description = "Workload service account for ${each.value.name}, consumed by ctl-api."
+  namespace_scoped_access = {
+    namespace_id = temporalcloud_namespace.ns[each.key].id
+    permission   = "write"
+  }
+}
+
 resource "temporalcloud_apikey" "workload" {
   for_each = local.namespaces
 
   display_name = "${each.value.name}-workload"
   description  = "Workload API key for ${each.value.name}, consumed by ctl-api."
-  # Scope this key to operate within the corresponding namespace only.
-  # NOTE: exact scoping argument name depends on provider version — verify
-  # against the temporalio/temporalcloud provider docs when wiring.
-  expiry_time = timeadd(timestamp(), "8760h") # 1 year
+  owner_type   = "service-account"
+  owner_id     = temporalcloud_service_account.workload[each.key].id
+  expiry_time  = timeadd(timestamp(), "8760h") # 1 year
   lifecycle {
     ignore_changes = [expiry_time]
   }
@@ -103,7 +113,7 @@ resource "aws_secretsmanager_secret" "workload_key" {
 resource "aws_secretsmanager_secret_version" "workload_key" {
   for_each      = local.namespaces
   secret_id     = aws_secretsmanager_secret.workload_key[each.key].id
-  secret_string = temporalcloud_apikey.workload[each.key].secret_key
+  secret_string = temporalcloud_apikey.workload[each.key].token
 }
 
 output "namespace_ids" {
