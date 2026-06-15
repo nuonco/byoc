@@ -23,7 +23,3 @@ contents = "./policies/rds-secret.json"
 [[policies]]
 name = "{{ .nuon.install.id }}-allow-secret-list"
 contents = "./policies/secrets-list.json"
-
-[[policies]]
-name = "bucket-put-policy-scoped"
-contents = "./policies/bucket-put-policy.json"

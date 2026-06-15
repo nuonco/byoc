@@ -23,7 +23,6 @@ locals {
   buckets = {
     blob              = "n-${var.install_id}-blob"
     install_templates = "n-${var.install_id}-install-templates"
-    clickhouse_backup = "n-${var.install_id}-clickhouse-backup"
   }
 }
 
@@ -58,20 +57,7 @@ resource "aws_s3_bucket_public_access_block" "this" {
   restrict_public_buckets = true
 }
 
-resource "aws_s3_bucket_lifecycle_configuration" "clickhouse_backup" {
-  bucket = aws_s3_bucket.this["clickhouse_backup"].id
-
-  rule {
-    id     = "expire-old-backups"
-    status = "Enabled"
-    filter {}
-    expiration { days = 14 }
-  }
-}
-
 output "blob_bucket" { value = aws_s3_bucket.this["blob"].id }
 output "install_templates_bucket" { value = aws_s3_bucket.this["install_templates"].id }
-output "clickhouse_backup_bucket" { value = aws_s3_bucket.this["clickhouse_backup"].id }
 output "blob_bucket_arn" { value = aws_s3_bucket.this["blob"].arn }
 output "install_templates_bucket_arn" { value = aws_s3_bucket.this["install_templates"].arn }
-output "clickhouse_backup_bucket_arn" { value = aws_s3_bucket.this["clickhouse_backup"].arn }

@@ -1,4 +1,0 @@
-type       = "container_image"
-engine     = "opa"
-contents   = "./image-registry-trust.rego"
-components = ["*"]

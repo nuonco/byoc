@@ -14,10 +14,8 @@ variable "region" { type = string }
 variable "install_id" { type = string }
 variable "org_id" { type = string }
 variable "aurora_credentials_secret_arn" { type = string }
-variable "clickhouse_password_secret_arn" { type = string }
 variable "blob_bucket_arn" { type = string }
 variable "install_templates_bucket_arn" { type = string }
-variable "clickhouse_backup_bucket_arn" { type = string }
 
 locals {
   prefix = "n-${var.install_id}"
@@ -142,37 +140,7 @@ resource "aws_iam_role" "dashboard" {
   assume_role_policy = local.ecs_tasks_trust
 }
 
-# ClickHouse task role — backup bucket + password.
-resource "aws_iam_role" "clickhouse" {
-  name               = "${local.prefix}-clickhouse"
-  assume_role_policy = local.ecs_tasks_trust
-}
-
-resource "aws_iam_role_policy" "clickhouse" {
-  name = "clickhouse"
-  role = aws_iam_role.clickhouse.id
-  policy = jsonencode({
-    Version = "2012-10-17"
-    Statement = [
-      {
-        Effect = "Allow"
-        Action = ["s3:GetObject", "s3:PutObject", "s3:DeleteObject", "s3:ListBucket"]
-        Resource = [
-          var.clickhouse_backup_bucket_arn,
-          "${var.clickhouse_backup_bucket_arn}/*",
-        ]
-      },
-      {
-        Effect   = "Allow"
-        Action   = ["secretsmanager:GetSecretValue"]
-        Resource = [var.clickhouse_password_secret_arn]
-      },
-    ]
-  })
-}
-
 output "execution_role_arn" { value = aws_iam_role.execution.arn }
 output "ctl_api_task_role_arn" { value = aws_iam_role.ctl_api.arn }
 output "temporal_task_role_arn" { value = aws_iam_role.temporal.arn }
 output "dashboard_task_role_arn" { value = aws_iam_role.dashboard.arn }
-output "clickhouse_task_role_arn" { value = aws_iam_role.clickhouse.arn }

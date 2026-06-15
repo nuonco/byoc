@@ -1,4 +1,0 @@
-type       = "terraform_module"
-engine     = "opa"
-contents   = "./s3-data-protection.rego"
-components = ["object_storage"]

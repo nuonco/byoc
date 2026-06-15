@@ -141,6 +141,7 @@
       "Effect": "Allow",
       "Action": [
         "s3:CreateBucket",
+        "s3:DeleteBucket",
         "s3:GetAccelerateConfiguration",
         "s3:GetBucketAcl",
         "s3:GetBucketCors",
@@ -161,6 +162,7 @@
         "s3:PutBucketOwnershipControls",
         "s3:PutBucketPolicy",
         "s3:PutBucketPublicAccessBlock",
+        "s3:PutBucketTagging",
         "s3:PutBucketVersioning"
       ],
       "Resource": "*"
