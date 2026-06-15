@@ -1,5 +1,5 @@
 name        = "inspect_orgs"
-description = "Inspect orgs — all orgs reported by inspect_orgs."
+description = "Inspect orgs — list all orgs, and inspect a single org's details."
 readme      = "./runbooks/inspect_orgs.md"
 labels      = { service = "ctl-api", type = "debug" }
 
@@ -7,3 +7,8 @@ labels      = { service = "ctl-api", type = "debug" }
 name        = "Inspect: orgs"
 type        = "action"
 action_name = "inspect_orgs"
+
+[[steps]]
+name        = "Inspect: org"
+type        = "action"
+action_name = "inspect_org"

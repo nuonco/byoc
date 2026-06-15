@@ -127,7 +127,7 @@ SELECT row_to_json(t)
   ) t;
 
 -- 2) Install components.
-SELECT json_build_object('components', COALESCE(json_agg(c ORDER BY c.created_at), '[]'::json))
+SELECT jsonb_build_object('components', COALESCE(jsonb_agg(c ORDER BY c.created_at), '[]'::jsonb))
   FROM (
     SELECT ic.id, ic.component_id, c.name AS component_name, c.var_name AS component_var_name,
            c.type AS component_type, ic.status, ic.status_description,
@@ -138,7 +138,7 @@ SELECT json_build_object('components', COALESCE(json_agg(c ORDER BY c.created_at
   ) c;
 
 -- 3) Install sandbox (current).
-SELECT json_build_object('sandbox', COALESCE(to_json(sb), 'null'::json))
+SELECT jsonb_build_object('sandbox', COALESCE(to_json(sb), 'null'::json))
   FROM (
     SELECT id, status, status_description, status_v2,
            created_at, updated_at
@@ -149,7 +149,7 @@ SELECT json_build_object('sandbox', COALESCE(to_json(sb), 'null'::json))
   ) sb;
 
 -- 4) Install stack (current) + its latest outputs hstore as JSON.
-SELECT json_build_object('stack',
+SELECT jsonb_build_object('stack',
          CASE WHEN s.id IS NULL THEN NULL
               ELSE to_jsonb(s) || jsonb_build_object('outputs', COALESCE(o.outputs, '{}'::json))
          END)
