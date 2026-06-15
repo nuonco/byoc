@@ -2,6 +2,7 @@
 name              = "public_dns"
 type              = "terraform_module"
 terraform_version = "1.11.3"
+dependencies      = ["public_ingress"]
 
 [public_repo]
 repo      = "nuonco/byoc"

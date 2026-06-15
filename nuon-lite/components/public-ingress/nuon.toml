@@ -2,6 +2,7 @@
 name              = "public_ingress"
 type              = "terraform_module"
 terraform_version = "1.11.3"
+dependencies      = ["ecs_runtime", "public_tls_cert"]
 
 [public_repo]
 repo      = "nuonco/byoc"

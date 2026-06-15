@@ -2,6 +2,7 @@
 name              = "task_iam"
 type              = "terraform_module"
 terraform_version = "1.11.3"
+dependencies      = ["ctl_api_db", "object_storage"]
 
 [public_repo]
 repo      = "nuonco/byoc"

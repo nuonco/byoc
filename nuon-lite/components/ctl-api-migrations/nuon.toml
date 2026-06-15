@@ -2,6 +2,7 @@
 name              = "ctl_api_migrations"
 type              = "terraform_module"
 terraform_version = "1.11.3"
+dependencies      = ["ctl_api_db", "task_iam", "ecs_runtime", "ctl_api_image"]
 
 [public_repo]
 repo      = "nuonco/byoc"
