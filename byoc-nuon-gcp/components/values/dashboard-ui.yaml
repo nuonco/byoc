@@ -58,6 +58,7 @@ ui:
     targetMemoryUtilizationPercentage: 50
 
 gcp:
+  enabled: true
   certMap: "{{ .nuon.components.certificate_wildcard_public.outputs.cert_map_name }}"
 
 serviceAccount:
