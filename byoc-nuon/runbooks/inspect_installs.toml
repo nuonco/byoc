@@ -1,5 +1,5 @@
 name        = "inspect_installs"
-description = "Inspect installs — all installs reported by inspect_installs, with app/org name lookups."
+description = "Inspect installs — list all installs, and inspect a single install's details."
 readme      = "./runbooks/inspect_installs.md"
 labels      = { service = "ctl-api", type = "debug" }
 
@@ -9,11 +9,6 @@ type        = "action"
 action_name = "inspect_installs"
 
 [[steps]]
-name        = "Inspect: apps"
+name        = "Inspect: install"
 type        = "action"
-action_name = "inspect_apps"
-
-[[steps]]
-name        = "Inspect: orgs"
-type        = "action"
-action_name = "inspect_orgs"
+action_name = "inspect_install"
