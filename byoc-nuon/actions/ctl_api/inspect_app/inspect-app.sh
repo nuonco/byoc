@@ -95,7 +95,7 @@ SELECT row_to_json(t)
   ) t;
 
 -- 2) Components.
-SELECT json_build_object('components', COALESCE(json_agg(c ORDER BY c.name), '[]'::json))
+SELECT jsonb_build_object('components', COALESCE(jsonb_agg(c ORDER BY c.name), '[]'::jsonb))
   FROM (
     SELECT id, name, var_name, type, status, status_description,
            created_by_id, created_at, updated_at
@@ -104,7 +104,7 @@ SELECT json_build_object('components', COALESCE(json_agg(c ORDER BY c.name), '[]
   ) c;
 
 -- 3) Action workflows.
-SELECT json_build_object('action_workflows', COALESCE(json_agg(w ORDER BY w.name), '[]'::json))
+SELECT jsonb_build_object('action_workflows', COALESCE(jsonb_agg(w ORDER BY w.name), '[]'::jsonb))
   FROM (
     SELECT id, name, status, status_description,
            created_by_id, created_at, updated_at
@@ -113,7 +113,7 @@ SELECT json_build_object('action_workflows', COALESCE(json_agg(w ORDER BY w.name
   ) w;
 
 -- 4) Runbooks.
-SELECT json_build_object('runbooks', COALESCE(json_agg(r ORDER BY r.name), '[]'::json))
+SELECT jsonb_build_object('runbooks', COALESCE(jsonb_agg(r ORDER BY r.name), '[]'::jsonb))
   FROM (
     SELECT id, name, description, status, status_description,
            created_by_id, created_at, updated_at
@@ -122,7 +122,7 @@ SELECT json_build_object('runbooks', COALESCE(json_agg(r ORDER BY r.name), '[]':
   ) r;
 
 -- 5) App branches.
-SELECT json_build_object('app_branches', COALESCE(json_agg(b ORDER BY b.name), '[]'::json))
+SELECT jsonb_build_object('app_branches', COALESCE(jsonb_agg(b ORDER BY b.name), '[]'::jsonb))
   FROM (
     SELECT id, name, created_by_id, created_at, updated_at
       FROM app_branches
@@ -130,7 +130,7 @@ SELECT json_build_object('app_branches', COALESCE(json_agg(b ORDER BY b.name), '
   ) b;
 
 -- 6) Current runner config (mirrors AfterQuery's [0] = most recent non-deleted).
-SELECT json_build_object('runner_config', COALESCE(to_json(rc), 'null'::json))
+SELECT jsonb_build_object('runner_config', COALESCE(to_json(rc), 'null'::json))
   FROM (
     SELECT id, type, helm_driver, instance_type, init_script_url,
            env_vars, app_config_id, created_at
@@ -141,7 +141,7 @@ SELECT json_build_object('runner_config', COALESCE(to_json(rc), 'null'::json))
   ) rc;
 
 -- 6b) Current stack config.
-SELECT json_build_object('stack_config', COALESCE(to_json(sc), 'null'::json))
+SELECT jsonb_build_object('stack_config', COALESCE(to_json(sc), 'null'::json))
   FROM (
     SELECT id, type, name, description,
            runner_nested_template_url, vpc_nested_template_url,
@@ -182,7 +182,7 @@ vcs AS (
      AND component_config_id IN (SELECT id FROM current_sb)
      AND deleted_at = 0
 )
-SELECT json_build_object(
+SELECT jsonb_build_object(
          'sandbox_config',
          CASE WHEN (SELECT id FROM current_sb) IS NULL THEN NULL
               ELSE (
@@ -209,7 +209,7 @@ roles AS (
   SELECT r.id, r.name, r.display_name, r.description, r.type,
          r.cloud_platform, r.enabled_in_stack, r.created_at,
          COALESCE((
-           SELECT json_agg(json_build_object(
+           SELECT jsonb_agg(jsonb_build_object(
                     'id',                  p.id,
                     'name',                p.name,
                     'managed_policy_name', p.managed_policy_name,
@@ -219,18 +219,18 @@ roles AS (
              FROM app_awsiam_policy_configs p
             WHERE p.app_awsiam_role_config_id = r.id
               AND p.deleted_at = 0
-         ), '[]'::json) AS policies
+         ), '[]'::jsonb) AS policies
     FROM app_awsiam_role_configs r
    WHERE r.owner_type = 'app_permissions_configs'
      AND r.owner_id IN (SELECT id FROM current_pc)
      AND r.deleted_at = 0
 )
-SELECT json_build_object(
+SELECT jsonb_build_object(
          'permissions_config',
          CASE WHEN (SELECT id FROM current_pc) IS NULL THEN NULL
-              ELSE json_build_object(
+              ELSE jsonb_build_object(
                 'id',    (SELECT id FROM current_pc),
-                'roles', COALESCE((SELECT json_agg(to_json(roles) ORDER BY roles.name) FROM roles), '[]'::json)
+                'roles', COALESCE((SELECT jsonb_agg(to_json(roles) ORDER BY roles.name) FROM roles), '[]'::jsonb)
               )
          END
        );

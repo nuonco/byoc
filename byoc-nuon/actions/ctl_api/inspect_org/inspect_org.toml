@@ -1,11 +1,7 @@
 # action
-name    = "inspect_orgs"
-labels  = { service = "ctl-api", type = "report" }
+name    = "inspect_org"
+labels  = { service = "ctl-api", type = "debug" }
 timeout = "5m"
-
-[[triggers]]
-type          = "cron"
-cron_schedule = "0,30 * * * *"
 
 [[triggers]]
 type = "manual"
@@ -19,10 +15,11 @@ jq -nc --arg ts "$(TZ=UTC date +%Y-%m-%dT%H:%M:%SZ)" '{updated_at: $ts}' >> $NUO
 '''
 
 [[steps]]
-name            = "orgs"
-inline_contents = "./ctl_api/inspect_orgs/inspect-orgs.sh"
+name            = "org"
+inline_contents = "./ctl_api/inspect_org/inspect-org.sh"
 
 [steps.env_vars]
+ORG_ID     = ""
 DB_USER    = "{{ .nuon.components.rds_cluster_nuon.outputs.db_instance_username }}"
 DB_NAME    = "ctl_api"
 SECRET_ARN = "{{ .nuon.components.rds_cluster_nuon.outputs.db_instance_master_user_secret_arn }}"
