@@ -1,3 +1,5 @@
+name: Sync to Nuon
+
 on:
   push:
     branches: main
@@ -74,3 +76,18 @@ jobs:
         env:
           NUON_ORG_ID: org4f5hq4tyo44legra6r4nm18
           NUON_API_TOKEN: ${{ secrets.NUON_API_TOKEN_org4f5hq4tyo44legra6r4nm18 }}
+
+      - name: Trigger BYOC install configs sync in nuonco/mono
+        if: steps.check_label.outputs.skip != 'true' && success()
+        uses: peter-evans/repository-dispatch@v3
+        with:
+          token: ${{ secrets.MONO_REPO_DISPATCH_TOKEN }}
+          repository: nuonco/mono
+          event-type: byoc-sync-completed
+          client-payload: |
+            {
+              "dry_run": true,
+              "source_run_id": "${{ github.run_id }}",
+              "source_sha": "${{ github.sha }}",
+              "source_actor": "${{ github.actor }}"
+            }
