@@ -8,7 +8,7 @@ image:
   tag: "{{ .nuon.components.img_nuon_dashboard_ui.outputs.image.tag }}"
 
 env:
-  ENV: byoc
+  ENV: prod
   NUON_BYOC: "true"
   METRICS_TAGS: "org_id:{{ .nuon.org.id }},org_name:{{ .nuon.org.name }}"
 
@@ -58,6 +58,7 @@ ui:
     targetMemoryUtilizationPercentage: 50
 
 gcp:
+  enabled: true
   certMap: "{{ .nuon.components.certificate_wildcard_public.outputs.cert_map_name }}"
 
 serviceAccount:

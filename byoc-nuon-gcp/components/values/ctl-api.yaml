@@ -1,6 +1,6 @@
 ---
 env:
-  ENV: byoc
+  ENV: prod
   LOG_LEVEL: INFO
   MIDDLEWARES: tracer,public_metrics,error,public,size,global,auth,org,log,offset_pagination,invites,headers,cors,config,patcher,panicker
   RUNNER_MIDDLEWARES: tracer,runner_metrics,error,size,public,auth,runner_org,log,offset_pagination,headers,cors,config,patcher,panicker
@@ -49,7 +49,7 @@ env:
   RUNNER_HTTP_PORT: !!string 8083
   GRACEFUL_SHUTDOWN_TIMEOUT: 10s
   RUNNER_CONTAINER_IMAGE_TAG: "0.19.999"
-  RUNNER_CONTAINER_IMAGE_URL: "{{ .nuon.inputs.inputs.runner_image_url }}"
+  RUNNER_CONTAINER_IMAGE_URL: "public.ecr.aws/p7e3r5y0/runner"
 
   GITHUB_APP_ID: !!string {{ .nuon.inputs.inputs.github_app_id }}
   INTEGRATION_GITHUB_INSTALL_ID: !!string 00000000
@@ -58,7 +58,7 @@ env:
   SLACK_HTTP_PORT: !!string 8089
   SLACK_MIDDLEWARES: "tracer,public_metrics,error,size,log,headers,cors,config,panicker"
   SLACK_CLIENT_ID: '{{ or .nuon.inputs.inputs.slack_client_id "" }}'
-  SLACK_OAUTH_REDIRECT_URL: '{{ or .nuon.inputs.inputs.slack_oauth_redirect_url "" }}'
+  SLACK_OAUTH_REDIRECT_URL: "https://slack.{{.nuon.inputs.inputs.root_domain}}/slack/oauth/callback"
 
   INTERNAL_SLACK_WEBHOOK_URL: |-
     https://hooks.slack.com/services/xxxxxxxxxxx/xxxxxxxxxxx/xxxxxxxxxxxxxxxxxxxxxxxx
@@ -263,6 +263,7 @@ auth:
         key: value
 
 gcp:
+  enabled: true
   certMap: "{{ .nuon.components.certificate_wildcard_public.outputs.cert_map_name }}"
 
 serviceAccount:

@@ -7,9 +7,9 @@ storage_driver = "configmap"
 dependencies   = ["cloudsql_nuon", "clickhouse_cluster", "temporal", "management", "ctl_api_init_db", "ctl_api_wi", "certificate_wildcard_public", "external_dns"]
 
 [public_repo]
-repo      = "nuonco/byoc"
-directory = "shared/src/components/ctl_api"
-branch    = "main"
+repo      = "nuonco/charts"
+directory = "charts/ctl-api"
+branch    = "ctl-api-v0.3.2"
 
 [[values_file]]
 contents = "./values/ctl-api.yaml"
