@@ -1,14 +1,16 @@
 #!/bin/bash
 
-# Script to update the Karpenter EC2NodeClass AMI alias version
+# Script to update the Karpenter AL2023 AMI alias version in a file.
+# Rewrites any "al2023@vYYYYMMDD" token, so it works on both the input
+# default (default = "al2023@v...") and the nodeclass template (alias: "al2023@v...").
 # Usage: ./update_ami_alias.sh <file_path> <version>
-# Example: ./update_ami_alias.sh "byoc-nuon/src/components/karpenter-nodepools/templates/nodeclass.tpl" "v20260520"
+# Example: ./update_ami_alias.sh "byoc-nuon/inputs/karpenter/karpenter_ami_alias.toml" "v20260520"
 
 set -euo pipefail
 
 if [ $# -ne 2 ]; then
     echo "Usage: $0 <file_path> <version>"
-    echo "Example: $0 \"byoc-nuon/src/components/karpenter-nodepools/templates/nodeclass.tpl\" \"v20260520\""
+    echo "Example: $0 \"byoc-nuon/inputs/karpenter/karpenter_ami_alias.toml\" \"v20260520\""
     exit 1
 fi
 
@@ -27,10 +29,10 @@ if ! echo "$VERSION" | grep -qE '^v[0-9]{8}$'; then
 fi
 
 if [[ "$OSTYPE" == "darwin"* ]]; then
-    sed -i.tmp -E "s|(alias:[[:space:]]*\"al2023@)v[0-9]{8}(\")|\1${VERSION}\2|" "$FILE_PATH"
+    sed -i.tmp -E "s|(al2023@)v[0-9]{8}|\1${VERSION}|" "$FILE_PATH"
     rm -f "${FILE_PATH}.tmp"
 else
-    sed -i -E "s|(alias:[[:space:]]*\"al2023@)v[0-9]{8}(\")|\1${VERSION}\2|" "$FILE_PATH"
+    sed -i -E "s|(al2023@)v[0-9]{8}|\1${VERSION}|" "$FILE_PATH"
 fi
 
 if grep -q "al2023@${VERSION}" "$FILE_PATH"; then
