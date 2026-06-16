@@ -1,3 +1,5 @@
+name: Sync to Nuon
+
 on:
   push:
     branches: main
