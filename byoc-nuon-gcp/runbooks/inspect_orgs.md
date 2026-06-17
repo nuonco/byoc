@@ -1,11 +1,12 @@
 {{ $orgsAction := default dict (index (default dict .nuon.actions.workflows) "inspect_orgs") }}
-{{ $orgsOutputs := default dict (dig "outputs" dict $orgsAction) }}
-{{ $orgsActionID := dig "id" "" $orgsAction }}
+{{ $orgsOutputs := default dict (dig "outputs" dict $orgsAction) }} {{ $orgsActionID := dig "id" "" $orgsAction }}
 {{ $orgsSteps := dig "steps" dict $orgsOutputs }}
 
 <div style="padding-top:1rem;"></div>
 
-<nuon-group gap="2" align="center" justify="start">{{ with dig "updated_at" "" $orgsOutputs }}<span style="margin-left:auto;font-size:0.85em;">Last updated by <a href="/{{ $.nuon.org.id }}/installs/{{ $.nuon.install.id }}/actions/{{ $orgsActionID }}">inspect_orgs</a> <nuon-time time="{{ . }}" format="relative"></nuon-time></span>{{ end }}</nuon-group>
+<nuon-group gap="2" align="center" justify="start">{{ with dig "updated_at" "" $orgsOutputs }}<span style="margin-left:auto;font-size:0.85em;">Last
+updated by <a href="/{{ $.nuon.org.id }}/installs/{{ $.nuon.install.id }}/actions/{{ $orgsActionID }}">inspect_orgs</a>
+<nuon-time time="{{ . }}" format="relative"></nuon-time></span>{{ end }}</nuon-group>
 
 <div style="padding-bottom:1rem;"></div>
 
@@ -51,6 +52,7 @@
           </tr>
       {{end}}
       </tbody>
+
   </table>
   {{ else }}
 

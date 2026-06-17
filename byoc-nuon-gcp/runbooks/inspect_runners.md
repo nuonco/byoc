@@ -3,15 +3,17 @@
 {{ $orgsAction := default dict (index (default dict .nuon.actions.workflows) "inspect_orgs") }}
 {{ $appsAction := default dict (index (default dict .nuon.actions.workflows) "inspect_apps") }}
 {{ $runnersOutputs := default dict (dig "outputs" dict $runnersAction) }}
-{{ $runnersActionID := dig "id" "" $runnersAction }}
-{{ $runnersSteps := dig "steps" dict $runnersOutputs }}
+{{ $runnersActionID := dig "id" "" $runnersAction }} {{ $runnersSteps := dig "steps" dict $runnersOutputs }}
 {{ $installsSteps := dig "steps" dict (default dict (dig "outputs" dict $installsAction)) }}
 {{ $orgsSteps := dig "steps" dict (default dict (dig "outputs" dict $orgsAction)) }}
 {{ $appsSteps := dig "steps" dict (default dict (dig "outputs" dict $appsAction)) }}
 
 <div style="padding-top:1rem;"></div>
 
-<nuon-group gap="2" align="center" justify="start">{{ with dig "updated_at" "" $runnersOutputs }}<span style="margin-left:auto;font-size:0.85em;">Last updated by <a href="/{{ $.nuon.org.id }}/installs/{{ $.nuon.install.id }}/actions/{{ $runnersActionID }}">inspect_runners</a> <nuon-time time="{{ . }}" format="relative"></nuon-time></span>{{ end }}</nuon-group>
+<nuon-group gap="2" align="center" justify="start">{{ with dig "updated_at" "" $runnersOutputs }}<span style="margin-left:auto;font-size:0.85em;">Last
+updated by
+<a href="/{{ $.nuon.org.id }}/installs/{{ $.nuon.install.id }}/actions/{{ $runnersActionID }}">inspect_runners</a>
+<nuon-time time="{{ . }}" format="relative"></nuon-time></span>{{ end }}</nuon-group>
 
 <div style="padding-bottom:1rem;"></div>
 

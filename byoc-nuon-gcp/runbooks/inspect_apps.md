@@ -2,20 +2,20 @@
   <nuon-tab name="Apps">
 
 {{ $appsAction := default dict (index (default dict .nuon.actions.workflows) "inspect_apps") }}
-{{ $appsOutputs := default dict (dig "outputs" dict $appsAction) }}
-{{ $appsActionID := dig "id" "" $appsAction }}
+{{ $appsOutputs := default dict (dig "outputs" dict $appsAction) }} {{ $appsActionID := dig "id" "" $appsAction }}
 {{ $appsSteps := dig "steps" dict $appsOutputs }}
 
 <div style="padding-top:1rem;"></div>
 
-<nuon-group gap="2" align="center" justify="start">{{ with dig "updated_at" "" $appsOutputs }}<span style="margin-left:auto;font-size:0.85em;">Last updated by <a href="/{{ $.nuon.org.id }}/installs/{{ $.nuon.install.id }}/actions/{{ $appsActionID }}">inspect_apps</a> <nuon-time time="{{ . }}" format="relative"></nuon-time></span>{{ end }}</nuon-group>
+<nuon-group gap="2" align="center" justify="start">{{ with dig "updated_at" "" $appsOutputs }}<span style="margin-left:auto;font-size:0.85em;">Last
+updated by <a href="/{{ $.nuon.org.id }}/installs/{{ $.nuon.install.id }}/actions/{{ $appsActionID }}">inspect_apps</a>
+<nuon-time time="{{ . }}" format="relative"></nuon-time></span>{{ end }}</nuon-group>
 
 <div style="padding-bottom:1rem;"></div>
 
 {{ if and $appsAction (dig "populated" false $appsAction) (eq (dig "status" "" $appsAction) "finished") }}
 
-{{ $apps := dig "apps" (dict) $appsSteps }}
-{{ if gt (len $apps) 0 }}
+{{ $apps := dig "apps" (dict) $appsSteps }} {{ if gt (len $apps) 0 }}
 
   <table>
       <thead>
@@ -58,12 +58,13 @@
   <nuon-tab name="Inspect App">
 
 {{ $appAction := default dict (index (default dict .nuon.actions.workflows) "inspect_app") }}
-{{ $appOutputs := default dict (dig "outputs" dict $appAction) }}
-{{ $appActionID := dig "id" "" $appAction }}
+{{ $appOutputs := default dict (dig "outputs" dict $appAction) }} {{ $appActionID := dig "id" "" $appAction }}
 
 <div style="padding-top:1rem;"></div>
 
-<nuon-group gap="2" align="center" justify="start">{{ with dig "updated_at" "" $appOutputs }}<span style="margin-left:auto;font-size:0.85em;">Last updated by <a href="/{{ $.nuon.org.id }}/installs/{{ $.nuon.install.id }}/actions/{{ $appActionID }}">inspect_app</a> <nuon-time time="{{ . }}" format="relative"></nuon-time></span>{{ end }}</nuon-group>
+<nuon-group gap="2" align="center" justify="start">{{ with dig "updated_at" "" $appOutputs }}<span style="margin-left:auto;font-size:0.85em;">Last
+updated by <a href="/{{ $.nuon.org.id }}/installs/{{ $.nuon.install.id }}/actions/{{ $appActionID }}">inspect_app</a>
+<nuon-time time="{{ . }}" format="relative"></nuon-time></span>{{ end }}</nuon-group>
 
 <div style="padding-bottom:1rem;"></div>
 
@@ -91,8 +92,7 @@
 
 <h3>Components</h3>
 
-{{ $components := dig "components" (list) $appOutputs }}
-{{ if gt (len $components) 0 }}
+{{ $components := dig "components" (list) $appOutputs }} {{ if gt (len $components) 0 }}
 
 <table>
   <thead><tr><th>Name</th><th>Type</th><th>Status</th><th>ID</th></tr></thead>
