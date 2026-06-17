@@ -1,7 +1,16 @@
+resource "google_project_service" "certificate_manager" {
+  project = var.project_id
+  service = "certificatemanager.googleapis.com"
+
+  disable_on_destroy = false
+}
+
 resource "google_certificate_manager_certificate" "wildcard" {
   project  = var.project_id
   name     = "${var.install_id}-wildcard"
   location = "global"
+
+  depends_on = [google_project_service.certificate_manager]
 
   managed {
     domains = [trimsuffix(var.domain_name, ".")]
@@ -20,6 +29,8 @@ resource "google_certificate_manager_dns_authorization" "wildcard" {
   name     = "${var.install_id}-wildcard-auth"
   location = "global"
   domain   = trimsuffix(trimprefix(var.domain_name, "*."), ".")
+
+  depends_on = [google_project_service.certificate_manager]
 }
 
 resource "google_certificate_manager_certificate_map" "default" {
@@ -29,6 +40,8 @@ resource "google_certificate_manager_certificate_map" "default" {
   labels = {
     "install-nuon-co-id" = var.install_id
   }
+
+  depends_on = [google_project_service.certificate_manager]
 }
 
 resource "google_certificate_manager_certificate_map_entry" "wildcard" {
