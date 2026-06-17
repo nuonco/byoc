@@ -1,4 +1,6 @@
-Deploys the Nuon control plane in four steps: syncs the `img_nuon_ctl_api` image and rolls the `ctl_api` Helm chart, then syncs `img_nuon_dashboard_ui` and rolls the `dashboard_ui` Helm chart. Use this to ship new control-plane versions without touching the rest of the install.
+Deploys the Nuon control plane in four steps: syncs the `img_nuon_ctl_api` image and rolls the `ctl_api` Helm chart,
+then syncs `img_nuon_dashboard_ui` and rolls the `dashboard_ui` Helm chart. Use this to ship new control-plane versions
+without touching the rest of the install.
 
 {{ $inputs := (default dict (index (default dict .nuon.inputs) "inputs")) }}
 {{ $root_domain := (dig "root_domain" "" $inputs) }}
@@ -7,9 +9,9 @@ Deploys the Nuon control plane in four steps: syncs the `img_nuon_ctl_api` image
 
 **Links**
 
-| Service | URL |
-|---|---|
-| CTL API | [api.{{ $public_domain }}](https://api.{{ $public_domain }}) |
+| Service    | URL                                                                |
+| ---------- | ------------------------------------------------------------------ |
+| CTL API    | [api.{{ $public_domain }}](https://api.{{ $public_domain }})       |
 | Runner API | [runner.{{ $public_domain }}](https://runner.{{ $public_domain }}) |
 
 **CLI**

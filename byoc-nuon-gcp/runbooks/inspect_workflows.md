@@ -5,7 +5,10 @@
 
 {{ $wfOutputs := dict }}{{ $wfActionID := "" }}{{ with (index (default dict .nuon.actions.workflows) "ctl_api_query_workflows_by_type") }}{{ with .outputs }}{{ $wfOutputs = . }}{{ end }}{{ $wfActionID = dig "id" "" . }}{{ end }}
 
-<nuon-group gap="2" align="center" justify="start">{{ with dig "updated_at" "" $wfOutputs }}<span style="margin-left:auto;font-size:0.85em;">Last updated by <a href="/{{ $.nuon.org.id }}/installs/{{ $.nuon.install.id }}/actions/{{ $wfActionID }}">ctl_api_query_workflows_by_type</a> <nuon-time time="{{ . }}" format="relative"></nuon-time></span>{{ end }}</nuon-group>
+<nuon-group gap="2" align="center" justify="start">{{ with dig "updated_at" "" $wfOutputs }}<span style="margin-left:auto;font-size:0.85em;">Last
+updated by
+<a href="/{{ $.nuon.org.id }}/installs/{{ $.nuon.install.id }}/actions/{{ $wfActionID }}">ctl_api_query_workflows_by_type</a>
+<nuon-time time="{{ . }}" format="relative"></nuon-time></span>{{ end }}</nuon-group>
 
 {{ with (index (default dict .nuon.actions.workflows) "ctl_api_query_workflows_by_type") }}
 {{ $wfData := dict }}{{ with .outputs }}{{ $wfData = . }}{{ end }} {{ $wfRows := dig "workflows" (list) $wfData }}
@@ -106,7 +109,10 @@ section.</nuon-banner>
 
 {{ $stepsOutputs := dict }}{{ $stepsActionID := "" }}{{ with (index (default dict .nuon.actions.workflows) "ctl_api_query_workflow_steps") }}{{ with .outputs }}{{ $stepsOutputs = . }}{{ end }}{{ $stepsActionID = dig "id" "" . }}{{ end }}
 
-<nuon-group gap="2" align="center" justify="start">{{ with dig "updated_at" "" $stepsOutputs }}<span style="margin-left:auto;font-size:0.85em;">Last updated by <a href="/{{ $.nuon.org.id }}/installs/{{ $.nuon.install.id }}/actions/{{ $stepsActionID }}">ctl_api_query_workflow_steps</a> <nuon-time time="{{ . }}" format="relative"></nuon-time></span>{{ end }}</nuon-group>
+<nuon-group gap="2" align="center" justify="start">{{ with dig "updated_at" "" $stepsOutputs }}<span style="margin-left:auto;font-size:0.85em;">Last
+updated by
+<a href="/{{ $.nuon.org.id }}/installs/{{ $.nuon.install.id }}/actions/{{ $stepsActionID }}">ctl_api_query_workflow_steps</a>
+<nuon-time time="{{ . }}" format="relative"></nuon-time></span>{{ end }}</nuon-group>
 
 <div style="padding-bottom:1rem;"></div>
 
@@ -114,14 +120,15 @@ section.</nuon-banner>
 
 {{ if not $rows }}
 
-<nuon-banner theme="info">Run the ctl_api_query_workflow_steps action below to inspect the details of a workflow.</nuon-banner>
+<nuon-banner theme="info">Run the ctl_api_query_workflow_steps action below to inspect the details of a
+workflow.</nuon-banner>
 
 <div style="padding-top:1rem;"></div>
 
 <nuon-action-card name="ctl_api_query_workflow_steps"></nuon-action-card>
 
-{{ else }} {{ $state := dict "lastWf" "" }} {{ range $rows }}
-{{- if ne .workflow_id (index $state "lastWf") }} {{- if ne (index $state "lastWf") "" }}
+{{ else }} {{ $state := dict "lastWf" "" }} {{ range $rows }} {{- if ne .workflow_id (index $state "lastWf") }}
+{{- if ne (index $state "lastWf") "" }}
 
   </tbody>
 </table>

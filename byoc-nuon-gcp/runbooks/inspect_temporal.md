@@ -1,8 +1,6 @@
 {{ $listAction := default dict (index (default dict .nuon.actions.workflows) "temporal_workflow_list") }}
-{{ $listOutputs := default dict (dig "outputs" dict $listAction) }}
-{{ $listActionID := dig "id" "" $listAction }}
-{{ $namespaces := dig "namespaces" (list) $listOutputs }}
-{{ $totalCount := dig "total_count" 0 $listOutputs }}
+{{ $listOutputs := default dict (dig "outputs" dict $listAction) }} {{ $listActionID := dig "id" "" $listAction }}
+{{ $namespaces := dig "namespaces" (list) $listOutputs }} {{ $totalCount := dig "total_count" 0 $listOutputs }}
 
 {{ if and (dig "populated" false $listAction) (eq (dig "status" "" $listAction) "finished") (gt (len $namespaces) 0) }}
 
@@ -16,7 +14,11 @@
 
 {{ $wfs := dig "workflows" (list) . }}
 
-<nuon-group gap="2" align="center" justify="start"><nuon-label-badge label="total:{{ dig "running_total" 0 . }}"></nuon-label-badge>{{ with dig "updated_at" "" $listOutputs }}<span style="margin-left:auto;font-size:0.85em;">Last updated by <a href="/{{ $.nuon.org.id }}/installs/{{ $.nuon.install.id }}/actions/{{ $listActionID }}">temporal_workflow_list</a> <nuon-time time="{{ . }}" format="relative"></nuon-time></span>{{ end }}</nuon-group>
+<nuon-group gap="2" align="center" justify="start"><nuon-label-badge
+label="total:{{ dig "running_total" 0 . }}"></nuon-label-badge>{{ with dig "updated_at" "" $listOutputs }}<span style="margin-left:auto;font-size:0.85em;">Last
+updated by
+<a href="/{{ $.nuon.org.id }}/installs/{{ $.nuon.install.id }}/actions/{{ $listActionID }}">temporal_workflow_list</a>
+<nuon-time time="{{ . }}" format="relative"></nuon-time></span>{{ end }}</nuon-group>
 
 {{ if gt (len $wfs) 0 }}
 
@@ -69,7 +71,10 @@
 
 ## Workflow details
 
-<nuon-group gap="2" align="center" justify="start">{{ with dig "updated_at" "" $historyOutputs }}<span style="margin-left:auto;font-size:0.85em;">Last updated by <a href="/{{ $.nuon.org.id }}/installs/{{ $.nuon.install.id }}/actions/{{ $historyActionID }}">temporal_workflow_history</a> <nuon-time time="{{ . }}" format="relative"></nuon-time></span>{{ end }}</nuon-group>
+<nuon-group gap="2" align="center" justify="start">{{ with dig "updated_at" "" $historyOutputs }}<span style="margin-left:auto;font-size:0.85em;">Last
+updated by
+<a href="/{{ $.nuon.org.id }}/installs/{{ $.nuon.install.id }}/actions/{{ $historyActionID }}">temporal_workflow_history</a>
+<nuon-time time="{{ . }}" format="relative"></nuon-time></span>{{ end }}</nuon-group>
 
 {{ if and (dig "populated" false $historyAction) (eq (dig "status" "" $historyAction) "finished") (dig "workflow_id" "" $historyOutputs) }}
 
@@ -136,6 +141,7 @@
 
 {{ else }}
 
-<nuon-banner theme="warn">Run <code>temporal_workflow_history</code> with a <code>WORKFLOW_ID</code> to populate this section.</nuon-banner>
+<nuon-banner theme="warn">Run <code>temporal_workflow_history</code> with a <code>WORKFLOW_ID</code> to populate this
+section.</nuon-banner>
 
 {{ end }}

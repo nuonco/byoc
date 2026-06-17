@@ -1,4 +1,4 @@
-#:schema https://api.nuon.co/v1/general/config-schema?type=helm
+# component
 name           = "ctl_api"
 type           = "helm_chart"
 chart_name     = "ctl-api"
@@ -9,7 +9,7 @@ dependencies   = ["cloudsql_nuon", "clickhouse_cluster", "temporal", "management
 [public_repo]
 repo      = "nuonco/charts"
 directory = "charts/ctl-api"
-branch    = "ctl-api-v0.3.2"
+branch    = "ctl-api-v0.3.3"
 
 [[values_file]]
 contents = "./values/ctl-api.yaml"
