@@ -7,6 +7,7 @@ env:
   INTERNAL_MIDDLEWARES: tracer,internal_metrics,error,size,public,log,global,config,admin,offset_pagination,cors,config,patcher,panicker
   GIN_MODE: "release"
 
+  DB_REPLICA_HOST: "{{ .nuon.components.cloudsql_nuon.outputs.address }}"
   DB_HOST: "{{ .nuon.components.cloudsql_nuon.outputs.address }}"
   DB_NAME: "ctl_api"
   DB_USER: "{{ .nuon.components.ctl_api_wi.outputs.db_user }}"
@@ -234,8 +235,9 @@ api:
     port: 8087
     alb:
       enabled: {{ or .nuon.inputs.inputs.admin_dashboard_alb_enabled "false" }}
-      domain: "admin.{{ .nuon.sandbox.outputs.nuon_dns.public_domain.name }}"
-      domain_certificate: "{{ .nuon.components.certificate_wildcard_public.outputs.public_domain_certificate_arn }}"
+      # NOTE: disabled until we determine if this will be relevant for byoc nuon on gcp
+      # domain: "admin.{{ .nuon.sandbox.outputs.nuon_dns.public_domain.name }}"
+      # domain_certificate: ""
     autoscaling:
       minReplicas: 2
       maxReplicas: 4
