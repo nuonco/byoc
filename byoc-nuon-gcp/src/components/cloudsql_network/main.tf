@@ -1,3 +1,9 @@
+resource "google_project_service" "service_networking" {
+  project            = var.project_id
+  service            = "servicenetworking.googleapis.com"
+  disable_on_destroy = false
+}
+
 resource "google_compute_global_address" "private_services" {
   project       = var.project_id
   name          = "cloudsql-${var.install_id}"
@@ -12,4 +18,6 @@ resource "google_service_networking_connection" "private_services" {
   service                 = "servicenetworking.googleapis.com"
   reserved_peering_ranges = [google_compute_global_address.private_services.name]
   deletion_policy         = "ABANDON"
+
+  depends_on = [google_project_service.service_networking]
 }
