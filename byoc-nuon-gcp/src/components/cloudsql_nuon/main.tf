@@ -1,3 +1,9 @@
+resource "google_project_service" "sqladmin" {
+  project            = var.project_id
+  service            = "sqladmin.googleapis.com"
+  disable_on_destroy = false
+}
+
 resource "google_sql_database_instance" "nuon" {
   project          = var.project_id
   name             = "nuon-${var.install_id}"
@@ -5,6 +11,8 @@ resource "google_sql_database_instance" "nuon" {
   database_version = "POSTGRES_15"
 
   deletion_protection = var.deletion_protection
+
+  depends_on = [google_project_service.sqladmin]
 
   settings {
     tier              = var.tier
