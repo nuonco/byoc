@@ -9,6 +9,11 @@ type        = "action"
 action_name = "ctl_api_query_workflows_by_type"
 
 [[steps]]
+name        = "Query recent builds"
+type        = "action"
+action_name = "ctl_api_query_builds"
+
+[[steps]]
 name        = "API status"
 type        = "action"
 action_name = "api_status"

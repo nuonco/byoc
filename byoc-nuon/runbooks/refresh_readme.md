@@ -13,3 +13,4 @@ Runs every action that populates a section of the install README, so the rendere
 | `healthcheck_temporal` | Temporal healthcheck indicator |
 | `temporal_status` | Active Temporal workflows by namespace |
 | `ctl_api_query_workflows_by_type` | Workflows table |
+| `ctl_api_query_builds` | Recent builds table |

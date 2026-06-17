@@ -276,6 +276,56 @@
   </div>
 </div>
 
+{{ $buildsOutputs := dict }}{{ with (index (default dict .nuon.actions.workflows) "ctl_api_query_builds") }}{{ with .outputs }}{{ $buildsOutputs = . }}{{ end }}{{ end }}
+
+<div style="display:flex;align-items:baseline;gap:0.75rem;"><h3 style="margin:0;">Recent builds</h3><a href="/{{ $.nuon.org.id }}/installs/{{ $.nuon.install.id }}/runbooks/inspect_builds" style="font-size:0.85em;">See more →</a>{{ with dig "updated_at" "" $buildsOutputs }}<span style="margin-left:auto;font-size:0.85em;">Last updated <nuon-time time="{{ . }}" format="relative"></nuon-time></span>{{ end }}</div>
+
+{{ with (index (default dict .nuon.actions.workflows) "ctl_api_query_builds") }}
+{{ $buildsData := dict }}{{ with .outputs }}{{ $buildsData = . }}{{ end }} {{ $buildRows := dig "builds" (list) $buildsData }}
+{{ if and .populated (eq .status "finished") (gt (len $buildRows) 0) }}
+
+<table>
+  <thead>
+    <tr>
+      <th>Status</th>
+      <th>Component</th>
+      <th>Source</th>
+      <th>Created By</th>
+      <th>Created</th>
+    </tr>
+  </thead>
+  <tbody>
+  {{ $topBuilds := $buildRows }}{{ if gt (len $buildRows) 5 }}{{ $topBuilds = slice $buildRows 0 5 }}{{ end }}
+  {{ range $b := $topBuilds }}
+    {{ $bStatus := dig "build_status" "" $b }}
+    {{ $bEmail := dig "created_by_email" "" $b }}
+    {{ $bComponent := dig "component_name" "" $b }}
+    {{ $bSrcRef := dig "source_ref" "" $b }}{{ $bGitRef := dig "git_ref" "" $b }}{{ $bResolvedTag := dig "resolved_tag" "" $b }}
+    <tr>
+      <td>{{ if $bStatus }}<nuon-status status="{{ $bStatus }}" variant="badge"></nuon-status>{{ else }}—{{ end }}</td>
+      <td style="white-space:nowrap;">{{ default "—" $bComponent }}</td>
+      <td style="white-space:nowrap;">{{ if $bSrcRef }}<code>{{ $bSrcRef }}</code>{{ with $bResolvedTag }}<br><small style="opacity:0.6;">→ {{ . }}</small>{{ end }}{{ else if $bGitRef }}<code>{{ $bGitRef }}</code>{{ else }}—{{ end }}</td>
+      <td style="white-space:nowrap;">{{ if $bEmail }}{{ $bEmail }}{{ else }}—{{ end }}</td>
+      <td>{{ with dig "build_created_at" "" $b }}<nuon-time time="{{ printf "%sZ" (substr 0 19 .) }}" format="relative"></nuon-time>{{ else }}—{{ end }}</td>
+    </tr>
+  {{ end }}
+  </tbody>
+</table>
+
+{{ else if and .populated (eq .status "finished") }}
+
+<nuon-banner theme="info">No builds returned by the last run of ctl_api_query_builds.</nuon-banner>
+
+{{ else }}
+
+<nuon-banner theme="warn">Waiting on ctl_api_query_builds. Run it to populate this section.</nuon-banner>
+
+{{ end }} {{ else }}
+
+<nuon-banner theme="warn">Waiting on ctl_api_query_builds. Run it to populate this section.</nuon-banner>
+
+{{ end }}
+
 </nuon-tab>
 <nuon-tab name="Services">
 

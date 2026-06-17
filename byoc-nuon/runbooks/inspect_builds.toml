@@ -1,0 +1,14 @@
+name        = "inspect_builds"
+description = "Inspect component builds — queries ctl-api for recent builds and renders each build's status history and resolved source."
+readme      = "./runbooks/inspect_builds.md"
+labels      = { service = "ctl-api", type = "debug" }
+
+[[steps]]
+name        = "Query recent builds"
+type        = "action"
+action_name = "ctl_api_query_builds"
+
+[[steps]]
+name        = "Query build"
+type        = "action"
+action_name = "ctl_api_query_build"
