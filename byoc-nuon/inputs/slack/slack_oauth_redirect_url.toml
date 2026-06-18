@@ -5,4 +5,4 @@ display_name = "Slack OAuth Redirect URL"
 required     = false
 group        = "slack"
 
-user_configurable = false
+user_configurable = true
