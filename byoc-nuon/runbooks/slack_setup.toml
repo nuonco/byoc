@@ -1,0 +1,14 @@
+name        = "slack_setup"
+description = "Set up the Slack integration for this install: create the Slack app, provision and populate the central secret, set the install inputs, then sync the secrets into the ctl-api namespace and verify."
+readme      = "./runbooks/slack_setup.md"
+labels      = { service = "slack", type = "setup" }
+
+[[steps]]
+name        = "Slack: Sync slack secrets"
+type        = "action"
+action_name = "sync_slack_secrets"
+
+[[steps]]
+name        = "Slack: Verify"
+type        = "action"
+action_name = "verify_slack"
