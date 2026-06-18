@@ -9,6 +9,21 @@
 <img class="mt-0 block dark:hidden" src="https://mintlify.s3-us-west-1.amazonaws.com/nuoninc/logo/light.svg" style="margin:0;padding:0;"/>
 <img class="mt-0 hidden dark:block" src="https://mintlify.s3-us-west-1.amazonaws.com/nuoninc/logo/dark.svg" style="margin:0;padding:0;"/>
 
+{{/* Setup runbooks (config label: type=setup). The README template can't read runbook labels at
+     render time, so list each type=setup runbook here with its completion check. Keep in sync as
+     setup runbooks are added/removed. */}}
+{{ $slackDone := false }}{{ with index (default dict .nuon.actions.workflows) "sync_slack_secrets" }}{{ if eq .status "finished" }}{{ $slackDone = true }}{{ end }}{{ end }}
+{{ $setupRunbooks := list (dict "name" "slack_setup" "label" "Slack" "complete" $slackDone) }}
+{{ $incomplete := list }}{{ range $setupRunbooks }}{{ if not .complete }}{{ $incomplete = append $incomplete . }}{{ end }}{{ end }}
+{{ if gt (len $incomplete) 0 }}
+<nuon-banner theme="warn">
+<strong>Some setup is still required.</strong> Once the install is provisioned, finish the setup runbook(s) below:
+<ul>
+{{ range $incomplete }}<li><a href="/{{ $.nuon.org.id }}/installs/{{ $.nuon.install.id }}/runbooks/{{ .name }}">{{ .label }}</a> <nuon-run-runbook name="{{ .name }}"></nuon-run-runbook></li>
+{{ end }}</ul>
+</nuon-banner>
+{{ end }}
+
 <nuon-tabs>
 <nuon-tab name="Application">
 
