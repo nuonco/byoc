@@ -19,18 +19,23 @@ The flow spans three places:
 - **[api.slack.com](https://api.slack.com/apps)** — the Slack app itself (Client ID, Client Secret, Signing Secret,
   redirect URL).
 - **[nuonco/mono/infra/byoc-secrets](https://github.com/nuonco/mono/tree/main/infra/byoc-secrets)** — the central AWS
-  Secrets Manager entry (in the `byoc-infra-prod` account) that holds the Slack credentials, plus the per-install KMS +
-  resource-policy grants that let this install read it. See that workspace's
-  [`infra/byoc-secrets`](https://github.com/nuonco/mono/tree/main/infra/byoc-secrets).
+  Secrets Manager entry (in the `byoc-infra-prod` account) that holds the Slack credentials. The same central store
+  serves every install regardless of cloud. For a GCP install it also provisions a per-install **AWS IAM role** whose
+  trust policy is bound to this install's maintenance GCP service account; that role is granted read access to the
+  secret + CMK.
 - **this install** — the install inputs and this runbook's `sync_slack_secrets` step that pulls the secret into the
   install's `ctl-api` namespace.
+
+<nuon-banner theme="info">Unlike an AWS install (whose maintenance IAM role is granted on the secret directly), a GCP install has no AWS identity. The runner mints a Google-signed OIDC token for its GCP identity (the <code>{{ .nuon.install.id }}-maintenance</code> service account) and exchanges it for temporary AWS credentials via <code>sts:AssumeRoleWithWebIdentity</code>. The only difference from the AWS flow is the reading principal.</nuon-banner>
+
+<div style="height:0.75rem;"></div>
 
 <nuon-banner theme="info">The secret value never lives in Terraform state. Terraform only creates the empty secret container and the cross-account grants; the value is written out-of-band.</nuon-banner>
 
 ### Prerequisites
 
 - The install is provisioned and the control plane is healthy.
-- You know this install's AWS account ID and its `root_domain`.
+- You know this install's `root_domain` and its maintenance GCP service account (`{{ .nuon.install.id }}-maintenance`).
 - You have credentials for the `byoc-infra-prod` AWS account.
 - You can open PRs against `nuonco/mono`.
 
@@ -95,21 +100,31 @@ After creating the app, from **Basic Information → App Credentials** collect:
 - **Client Secret** → goes in the central secret `client_secret` field.
 - **Signing Secret** → goes in the central secret `signing_secret` field.
 
-### 2. Provision the central secret
+### 2. Provision the central secret and federated role
 
-In `nuonco/mono`, edit `infra/byoc-secrets/installs.auto.tfvars` and add the install to `var.installs`:
+In `nuonco/mono`, edit `infra/byoc-secrets/installs.auto.tfvars` and add this GCP install to `var.gcp_installs`,
+supplying its maintenance service account's **numeric unique id** (its OIDC `sub`) so Terraform can bind the federated
+AWS role's trust policy to it:
 
 ```hcl
-installs = {
-  "{{ .nuon.install.id }}" = { install_account_id = "{{ dig "account_id" "<install_aws_account_id>" .nuon.install_stack.outputs }}" }
+gcp_installs = {
+  "{{ .nuon.install.id }}" = { gcp_service_account_unique_id = "<sa unique id>" }
   # ...
 }
 ```
 
+Get the unique id with:
+
+```bash
+gcloud iam service-accounts describe \
+  "{{ .nuon.install.id }}-maintenance@{{ dig "project_id" "<install_gcp_project_id>" .nuon.install_stack.outputs }}.iam.gserviceaccount.com" \
+  --format='value(uniqueId)'
+```
+
 Once merged, Terraform Cloud creates the empty Slack secret container at `nuon/byoc-nuon/{{ .nuon.install.id }}/slack`,
-attaches its cross-account resource policy, and adds the per-install statement on the shared CMK key policy granting
-this install's `{{ .nuon.install.id }}-maintenance` role `secretsmanager:GetSecretValue` + `kms:Decrypt`. Note the
-secret ARN from the `slack_secret_arns` output.
+creates a per-install `{{ .nuon.install.id }}-secret-reader` IAM role trusting that GCP service account (via the built-in
+`accounts.google.com` provider), and grants the role `secretsmanager:GetSecretValue` + `kms:Decrypt` on the secret and
+CMK. Note the **secret ARN** and the **role ARN** from the `slack_secret_arns` / `slack_secret_role_arns` outputs.
 
 ### 3. Populate the secret value
 
@@ -131,15 +146,16 @@ The JSON must contain `client_secret` and `signing_secret` — those are the key
 
 Set the install's Slack inputs in the install config file. The relevant inputs:
 
-| Input                      | Value                                                 |
-| -------------------------- | ----------------------------------------------------- |
-| `slack_enabled`            | `true`                                                |
-| `slack_client_id`          | the Slack app's Client ID from step 1                 |
-| `slack_secrets_arn`        | the ARN from the `slack_secret_arns` output in step 2 |
-| `slack_oauth_redirect_url` | leave default unless the redirect URL differs         |
+| Input                      | Value                                                       |
+| -------------------------- | ----------------------------------------------------------- |
+| `slack_enabled`            | `true`                                                      |
+| `slack_client_id`          | the Slack app's Client ID from step 1                       |
+| `slack_secrets_arn`        | the ARN from the `slack_secret_arns` output in step 2       |
+| `slack_secrets_role_arn`   | the ARN from the `slack_secret_role_arns` output in step 2  |
+| `slack_oauth_redirect_url` | leave default unless the redirect URL differs               |
 
 Set these in the install config file. `slack_enabled` lives in the `nuon` input group; the rest live in the `slack`
-input group. Fill in the Client ID from step 1 and the ARN from step 2:
+input group. Fill in the Client ID from step 1 and the ARNs from step 2:
 
 ```toml
 # input.group: nuon
@@ -151,7 +167,11 @@ slack_enabled = 'true'
 slack_client_id          = '<slack client id>'
 slack_oauth_redirect_url = 'https://slack.{{ .nuon.inputs.inputs.root_domain }}/slack/oauth/callback'
 slack_secrets_arn        = '<arn from slack_secret_arns output>'
+slack_secrets_role_arn   = '<arn from slack_secret_role_arns output>'
 ```
+
+`slack_secrets_audience` defaults to `sts.amazonaws.com` and only needs setting if the federated role's trust policy
+expects a different audience.
 
 ### 5. Run the `Slack: Sync slack secrets` step {{ if $slackSynced }}✅ (completed){{ end }}
 
@@ -162,8 +182,9 @@ step. </nuon-banner>{{ end }}
 After the install sync applies, run this runbook. Its `Slack: Sync slack secrets` step runs the `sync_slack_secrets`
 action, which:
 
-- reads the central secret referenced by `slack_secrets_arn` (cross-account, no `sts:AssumeRole` hop — the maintenance
-  role is granted directly by the secret's resource policy and the CMK key policy),
+- mints a Google-signed OIDC token for the `{{ .nuon.install.id }}-maintenance` service account and assumes
+  `slack_secrets_role_arn` via `sts:AssumeRoleWithWebIdentity`, then reads the central secret referenced by
+  `slack_secrets_arn`,
 - writes `ctl-api-slack-client-secret` and `ctl-api-slack-signing-secret` into the install's `ctl-api` namespace,
 - restarts `api-slack` so it picks up the values.
 

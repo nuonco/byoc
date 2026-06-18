@@ -1,0 +1,18 @@
+# action
+# description: Verifies the install's Slack service is healthy: api-slack pods
+# are ready in the ctl-api namespace and slack.<root_domain> resolves and serves.
+name    = "verify_slack"
+labels  = { service = "slack", type = "sop" }
+label   = "slack"
+timeout = "1m"
+
+[[triggers]]
+type = "manual"
+
+[[steps]]
+name            = "verify"
+inline_contents = "./slack/verify_slack/verify-slack.sh"
+
+[steps.env_vars]
+ROOT_DOMAIN = "{{ or .nuon.inputs.inputs.root_domain \"\" }}"
+NAMESPACE   = "ctl-api"
