@@ -1,0 +1,9 @@
+name         = "nuon_access_enabled"
+description  = "Allow Nuon to have access to the the install's public services. When true, `nuon.co` is added to the `ALLOWED_DOMAINS` and an identity provider is added."
+default      = "false"
+display_name = "Nuon Access Enabled"
+required     = false
+group        = "nuon"
+type         = "bool"
+
+user_configurable = false
