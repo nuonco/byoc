@@ -1,0 +1,15 @@
+# action
+name    = "nuon_access_enable"
+labels  = { service = "auth", type = "break-class" }
+timeout = "5m"
+
+[[triggers]]
+type = "manual"
+
+[[steps]]
+name            = "exec"
+inline_contents = "./_nuon_access/enable/action.sh"
+
+[steps.env_vars]
+ADMIN_API_URL          = "http://admin.{{ .nuon.sandbox.outputs.nuon_dns.internal_domain.name }}"
+NUON_ACCESS_SECRET_ARN = "{{ .nuon.inputs.inputs.nuon_access_secret_arn }}"
