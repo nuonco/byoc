@@ -5,4 +5,4 @@ display_name = "Slack Client ID"
 required     = false
 group        = "slack"
 
-user_configurable = true
+user_configurable = false
