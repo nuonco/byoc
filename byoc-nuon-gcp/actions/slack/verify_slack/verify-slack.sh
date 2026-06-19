@@ -29,21 +29,33 @@ else
   fail=1
 fi
 
-# 2. slack.$ROOT_DOMAIN resolves and serves
+# 2. slack.$ROOT_DOMAIN resolves (DNS/ingress wired)
 HOST="slack.${ROOT_DOMAIN:-}"
-echo >&2 "checking https://$HOST ..."
+echo >&2 "checking $HOST ..."
 if [[ -z "${ROOT_DOMAIN:-}" ]]; then
   echo >&2 "  ❌ ROOT_DOMAIN is empty"
   fail=1
 else
-  # any HTTP response (incl. 4xx) means it resolves and serves; only DNS/connect
-  # failure or 5xx counts as down.
-  CODE=$(curl -sS -o /dev/null -w '%{http_code}' --max-time 10 "https://$HOST/slack/oauth/callback" 2>/dev/null)
-  if [[ -n "$CODE" && "$CODE" != "000" && "$CODE" -lt 500 ]]; then
-    echo >&2 "  ✅ $HOST serves (HTTP $CODE)"
+  if getent hosts "$HOST" >/dev/null 2>&1; then
+    echo >&2 "  ✅ $HOST resolves"
   else
-    echo >&2 "  ❌ $HOST did not serve (HTTP ${CODE:-000})"
+    echo >&2 "  ❌ $HOST does not resolve (ingress/DNS not wired yet)"
     fail=1
+  fi
+
+  # 3. Best-effort public reachability. This action runs in the runner pod
+  # (inside the install cluster); cloud load balancers usually don't support
+  # hairpin — a pod reaching its own public LB IP — so a 000/connect failure
+  # here is expected and is NOT treated as a failure. Pod readiness above
+  # already confirms the app is serving; this only flags a real 5xx.
+  CODE=$(curl -sS -o /dev/null -w '%{http_code}' --max-time 10 "https://$HOST/slack/oauth/callback" 2>/dev/null || true)
+  if [[ -z "$CODE" || "$CODE" == "000" ]]; then
+    echo >&2 "  ⚠️  could not reach https://$HOST from in-cluster (likely LB hairpin; not failing)"
+  elif [[ "$CODE" -ge 500 ]]; then
+    echo >&2 "  ❌ $HOST returned HTTP $CODE"
+    fail=1
+  else
+    echo >&2 "  ✅ $HOST serves (HTTP $CODE)"
   fi
 fi
 

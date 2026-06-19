@@ -1,8 +1,0 @@
-name         = "slack_oauth_redirect_url"
-description  = "The Slack OAuth callback URL. Must exactly match a Redirect URL configured in the Slack app's OAuth & Permissions page."
-default      = "https://slack.{{.nuon.inputs.inputs.root_domain}}/slack/oauth/callback"
-display_name = "Slack OAuth Redirect URL"
-required     = false
-group        = "slack"
-
-user_configurable = false

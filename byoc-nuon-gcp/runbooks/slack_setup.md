@@ -152,7 +152,6 @@ Set the install's Slack inputs in the install config file. The relevant inputs:
 | `slack_client_id`          | the Slack app's Client ID from step 1                       |
 | `slack_secrets_arn`        | the ARN from the `slack_secret_arns` output in step 2       |
 | `slack_secrets_role_arn`   | the ARN from the `slack_secret_role_arns` output in step 2  |
-| `slack_oauth_redirect_url` | leave default unless the redirect URL differs               |
 
 Set these in the install config file. `slack_enabled` lives in the `nuon` input group; the rest live in the `slack`
 input group. Fill in the Client ID from step 1 and the ARNs from step 2:
@@ -164,11 +163,13 @@ slack_enabled = 'true'
 
 # input.group: slack
 [[inputs]]
-slack_client_id          = '<slack client id>'
-slack_oauth_redirect_url = 'https://slack.{{ .nuon.inputs.inputs.root_domain }}/slack/oauth/callback'
-slack_secrets_arn        = '<arn from slack_secret_arns output>'
-slack_secrets_role_arn   = '<arn from slack_secret_role_arns output>'
+slack_client_id        = '<slack client id>'
+slack_secrets_arn      = '<arn from slack_secret_arns output>'
+slack_secrets_role_arn = '<arn from slack_secret_role_arns output>'
 ```
+
+The OAuth redirect URL is **not** an input — ctl-api derives it as
+`https://slack.<root_domain>/slack/oauth/callback`, which matches the URL registered in the Slack app manifest (step 1).
 
 `slack_secrets_audience` defaults to `sts.amazonaws.com` and only needs setting if the federated role's trust policy
 expects a different audience.

@@ -59,7 +59,10 @@ env:
   SLACK_HTTP_PORT: !!string 8089
   SLACK_MIDDLEWARES: "tracer,public_metrics,error,size,log,headers,cors,config,panicker"
   SLACK_CLIENT_ID: '{{ or .nuon.inputs.inputs.slack_client_id "" }}'
-  SLACK_OAUTH_REDIRECT_URL: '{{ or .nuon.inputs.inputs.slack_oauth_redirect_url "" }}'
+  # Derived from the install's domain (same host the slack service is published
+  # on). Not an input: the callback is always slack.<root_domain>/slack/oauth/callback,
+  # and it must match the URL registered in the Slack app manifest.
+  SLACK_OAUTH_REDIRECT_URL: "https://slack.{{ .nuon.inputs.inputs.root_domain }}/slack/oauth/callback"
 
   INTERNAL_SLACK_WEBHOOK_URL: |-
     https://hooks.slack.com/services/xxxxxxxxxxx/xxxxxxxxxxx/xxxxxxxxxxxxxxxxxxxxxxxx
