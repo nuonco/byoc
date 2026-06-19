@@ -1,0 +1,19 @@
+# action
+# description: Prints the numeric uniqueId (OIDC 'sub') of the install's runner
+# GCP service account — the value for gcp_service_account_unique_id in
+# mono/infra/byoc-secrets' gcp_installs, used to bind the federated AWS reader
+# role's trust policy.
+name    = "runner_sa_unique_id"
+labels  = { service = "slack", type = "setup" }
+label   = "gcp"
+timeout = "1m"
+
+[[triggers]]
+type = "manual"
+
+[[steps]]
+name            = "describe"
+inline_contents = "./gcp/runner_sa_unique_id/runner-sa-unique-id.sh"
+
+[steps.env_vars]
+RUNNER_SA_EMAIL = "{{ .nuon.install_stack.outputs.runner_service_account_email }}"
