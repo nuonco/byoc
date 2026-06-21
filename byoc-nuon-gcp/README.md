@@ -402,7 +402,7 @@ those details to configure your domain in your registrar to use the AWS nameserv
 <!-- prettier-ignore-start -->
 | Value     | Record Type | priority |
 | --------- | ----------- | -------- |
-{{ range $i, $ns := .nuon.sandbox.outputs.nuon_dns.public_domain.nameservers }}| {{ $ns }} | NS          | {{$i}}   |
+{{ range $i, $ns := dig "nuon_dns" "public_domain" "nameservers" (list) (default dict .nuon.sandbox.outputs) }}| {{ $ns }} | NS          | {{$i}}   |
 {{ end }}
 <!-- prettier-ignore-end -->
 
@@ -412,19 +412,20 @@ those details to configure your domain in your registrar to use the AWS nameserv
 
 {{ end }}
 
-{{ if (and .nuon.components .nuon.components.management) }}
+{{ $dnsZone := dig "dns_zone" dict (default dict (default dict .nuon.components.management).outputs) }}
+{{ if $dnsZone }}
 
 ##### Nuon DNS Delegation Domain
 
-| Attribute   | Value                                                      |
-| ----------- | ---------------------------------------------------------- |
-| Domain Name | {{ .nuon.components.management.outputs.dns_zone.domain }}  |
-| Zone ID     | {{ .nuon.components.management.outputs.dns_zone.zone_id }} |
+| Attribute   | Value                                       |
+| ----------- | ------------------------------------------- |
+| Domain Name | {{ dig "domain" "" $dnsZone }}  |
+| Zone ID     | {{ dig "zone_id" "" $dnsZone }} |
 
 <!-- prettier-ignore-start -->
 | Value     | Record Type | priority |
 | --------- | ----------- | -------- |
-{{ range $i, $ns := .nuon.components.management.outputs.dns_zone.nameservers }}| {{ $ns }} | NS          | {{$i}}   |
+{{ range $i, $ns := dig "nameservers" (list) $dnsZone }}| {{ $ns }} | NS          | {{$i}}   |
 {{ end }}
 <!-- prettier-ignore-end -->
 
@@ -451,15 +452,16 @@ The AWS S3 Bucket can be created using the following values in the tfvars.
 
 ```hcl
 install_id           = "{{ .nuon.install.id }}"
-region               = "{{ .nuon.inputs.inputs.install_stack_template_bucket_region }}"
-{{if .nuon.components.ctl_api_wi.populated }}
-ctl_api_sa_unique_id = "{{ .nuon.components.ctl_api_wi.outputs.service_account_unique_id}}"
+region               = "{{ dig "install_stack_template_bucket_region" "" $inputs }}"
+{{ $ctlApiSaUniqueID := dig "service_account_unique_id" "" (default dict .nuon.components.ctl_api_wi.outputs) }}
+{{ if $ctlApiSaUniqueID }}
+ctl_api_sa_unique_id = "{{ $ctlApiSaUniqueID }}"
 {{ else }}
 ctl_api_sa_unique_id = "" # awaiting ctl_api_wi deployment
 {{ end }}
 ```
 
-{{if not .nuon.components.ctl_api_wi.populated }}
+{{ if not $ctlApiSaUniqueID }}
 
 <!-- prettier-ignore-start -->
 > [!WARNING]
