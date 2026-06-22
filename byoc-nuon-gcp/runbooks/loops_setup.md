@@ -74,7 +74,7 @@ rotated key. </nuon-banner>{{ else }}<nuon-banner theme="info"> Not run yet. Run
 After the install sync applies, run this runbook. Its `Loops: Sync loops secret` step runs the `sync_loops_secret`
 action, which:
 
-- mints a Google-signed OIDC token for the `{{ .nuon.install.id }}-maintenance` service account and assumes
+- mints a Google-signed OIDC token for the runner service account and assumes
   `secrets_role_arn` via `sts:AssumeRoleWithWebIdentity`, then reads the central secret referenced by
   `loops_secret_arn`,
 - writes `ctl-api-loops-api-key` into the install's `ctl-api` namespace,
