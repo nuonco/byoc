@@ -5,7 +5,7 @@
 # database that backs the entire Nuon install.
 #
 # Checks:
-#   - deletion_protection must be enabled               (warn -> deny)
+#   - deletion_protection must be enabled               (deny)
 #   - automated backups must be enabled                  (deny)
 #   - point-in-time recovery should be enabled           (warn)
 #   - the instance must not get a public IPv4 address    (deny)
@@ -37,11 +37,10 @@ is_sql_instance_change(rc) if {
 # ──────────────────────────────────────────────────────────────────────────────
 # CloudSQL deletion protection.
 #
-# Warns so installs that have not yet enabled deletion protection are not
-# blocked. TODO: promote to `deny` once every CloudSQL component sets
-# deletion_protection = true.
+# Every CloudSQL component now sets deletion_protection = true, so this is a
+# hard deny: the control-plane database must never be deployable without it.
 # ──────────────────────────────────────────────────────────────────────────────
-warn contains msg if {
+deny contains msg if {
 	some rc in input.plan.resource_changes
 	is_sql_instance_change(rc)
 	rc.change.after.deletion_protection == false

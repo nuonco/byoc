@@ -27,5 +27,5 @@ variable "disk_size" {
 
 variable "deletion_protection" {
   type    = bool
-  default = false
+  default = true
 }
