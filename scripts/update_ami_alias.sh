@@ -1,19 +1,20 @@
 #!/bin/bash
 
 # Script to update the Karpenter EC2NodeClass AMI alias version
-# Usage: ./update_ami_alias.sh <file_path> <version>
-# Example: ./update_ami_alias.sh "byoc-nuon/src/components/karpenter-nodepools/templates/nodeclass.tpl" "v20260520"
+# Usage: ./update_ami_alias.sh <version>
+# Example: ./update_ami_alias.sh "v20260520"
 
 set -euo pipefail
 
-if [ $# -ne 2 ]; then
-    echo "Usage: $0 <file_path> <version>"
-    echo "Example: $0 \"byoc-nuon/src/components/karpenter-nodepools/templates/nodeclass.tpl\" \"v20260520\""
+FILE_PATH="byoc-nuon/inputs/karpenter/karpenter_ami_alias.toml"
+
+if [ $# -ne 1 ]; then
+    echo "Usage: $0 <version>"
+    echo "Example: $0 \"v20260520\""
     exit 1
 fi
 
-FILE_PATH="$1"
-VERSION="$2"
+VERSION="$1"
 
 if [ ! -f "$FILE_PATH" ]; then
     echo "Error: File '$FILE_PATH' not found!"
@@ -27,10 +28,10 @@ if ! echo "$VERSION" | grep -qE '^v[0-9]{8}$'; then
 fi
 
 if [[ "$OSTYPE" == "darwin"* ]]; then
-    sed -i.tmp -E "s|(alias:[[:space:]]*\"al2023@)v[0-9]{8}(\")|\1${VERSION}\2|" "$FILE_PATH"
+    sed -i.tmp -E "s|(default[[:space:]]*=[[:space:]]*\"al2023@)v[0-9]{8}(\")|\1${VERSION}\2|" "$FILE_PATH"
     rm -f "${FILE_PATH}.tmp"
 else
-    sed -i -E "s|(alias:[[:space:]]*\"al2023@)v[0-9]{8}(\")|\1${VERSION}\2|" "$FILE_PATH"
+    sed -i -E "s|(default[[:space:]]*=[[:space:]]*\"al2023@)v[0-9]{8}(\")|\1${VERSION}\2|" "$FILE_PATH"
 fi
 
 if grep -q "al2023@${VERSION}" "$FILE_PATH"; then
