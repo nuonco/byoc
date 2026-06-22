@@ -1,0 +1,9 @@
+name        = "loops_setup"
+description = "Set up the Loops integration for this install: provision and populate the central secret, set the loops_secret_arn input, then sync the API key into the ctl-api namespace."
+readme      = "./runbooks/loops_setup.md"
+labels      = { service = "email", type = "setup" }
+
+[[steps]]
+name        = "Loops: Sync loops secret"
+type        = "action"
+action_name = "sync_loops_secret"

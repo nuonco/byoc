@@ -172,8 +172,8 @@ sequenceDiagram
 2. In `mono/infra/byoc-secrets`, add the install to `var.gcp_installs` with that
    id, and apply. This creates/updates the OIDC provider's `client_id_list`, the
    `…-secret-reader` role, and the secret grants.
-3. Set the install inputs `slack_secrets_arn` and `slack_secrets_role_arn` (from
-   the workspace outputs `slack_secret_arns` / `slack_secret_role_arns`).
+3. Set the install inputs `slack_secrets_arn` and `secrets_role_arn` (from
+   the workspace outputs `slack_secret_arns` / `secret_reader_role_arns`).
 4. Run the `slack_setup` runbook.
 
 See [`runbooks/slack_setup.md`](../runbooks/slack_setup.md) for the full
