@@ -124,9 +124,9 @@ The action mints its token from the metadata server's `default` service
 account, which — under GKE Workload Identity — is the **runner** service
 account (`runner_service_account_email` in the install stack outputs), not the
 `…-maintenance` SA. The trust policy and the OIDC `client_id_list` must be
-bound to the runner SA's numeric `uniqueId`. Get it by running the
-`runner_sa_unique_id` action on the install, or by decoding a token the runner
-mints.
+bound to the runner SA's numeric `uniqueId`, which the install stack exports as
+the `runner_service_account_unique_id` output (the setup runbooks interpolate it
+directly into the `gcp_installs` TFVars block).
 
 ## Sequence
 
@@ -168,7 +168,9 @@ sequenceDiagram
 
 ## Onboarding a GCP install (summary)
 
-1. Get the runner SA's numeric id — run the `runner_sa_unique_id` action.
+1. Get the runner SA's numeric id — read the `runner_service_account_unique_id`
+   install stack output (the setup runbooks interpolate it for you). If it's
+   empty, re-apply the install stack so it reports the value.
 2. In `mono/infra/byoc-secrets`, add the install to `var.gcp_installs` with that
    id, and apply. This creates/updates the OIDC provider's `client_id_list`, the
    `…-secret-reader` role, and the secret grants.

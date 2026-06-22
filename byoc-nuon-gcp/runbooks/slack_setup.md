@@ -21,12 +21,12 @@ The flow spans three places:
 - **[nuonco/mono/infra/byoc-secrets](https://github.com/nuonco/mono/tree/main/infra/byoc-secrets)** — the central AWS
   Secrets Manager entry (in the `byoc-infra-prod` account) that holds the Slack credentials. The same central store
   serves every install regardless of cloud. For a GCP install it also provisions a per-install **AWS IAM role** whose
-  trust policy is bound to this install's maintenance GCP service account; that role is granted read access to the
+  trust policy is bound to this install's runner GCP service account; that role is granted read access to the
   secret + CMK.
 - **this install** — the install inputs and this runbook's `sync_slack_secrets` step that pulls the secret into the
   install's `ctl-api` namespace.
 
-<nuon-banner theme="info">Unlike an AWS install (whose maintenance IAM role is granted on the secret directly), a GCP install has no AWS identity. The runner mints a Google-signed OIDC token for its GCP identity (the <code>{{ .nuon.install.id }}-maintenance</code> service account) and exchanges it for temporary AWS credentials via <code>sts:AssumeRoleWithWebIdentity</code>. The only difference from the AWS flow is the reading principal.</nuon-banner>
+<nuon-banner theme="info">Unlike an AWS install (whose maintenance IAM role is granted on the secret directly), a GCP install has no AWS identity. The runner mints a Google-signed OIDC token for its GCP identity (the runner service account, <code>{{ .nuon.install_stack.outputs.runner_service_account_email }}</code>) and exchanges it for temporary AWS credentials via <code>sts:AssumeRoleWithWebIdentity</code>. The only difference from the AWS flow is the reading principal.</nuon-banner>
 
 <div style="height:0.75rem;"></div>
 
@@ -35,7 +35,7 @@ The flow spans three places:
 ### Prerequisites
 
 - The install is provisioned and the control plane is healthy.
-- You know this install's `root_domain` and its maintenance GCP service account (`{{ .nuon.install.id }}-maintenance`).
+- You know this install's `root_domain` and its runner GCP service account (`{{ .nuon.install_stack.outputs.runner_service_account_email }}`).
 - You have credentials for the `byoc-infra-prod` AWS account.
 - You can open PRs against `nuonco/mono`.
 
@@ -102,23 +102,20 @@ After creating the app, from **Basic Information → App Credentials** collect:
 
 ### 2. Provision the central secret and federated role
 
-In `nuonco/mono`, edit `infra/byoc-secrets/installs.auto.tfvars` and add this GCP install to `var.gcp_installs`,
-supplying its maintenance service account's **numeric unique id** (its OIDC `sub`) so Terraform can bind the federated
-AWS role's trust policy to it:
+{{ $runnerUID := dig "runner_service_account_unique_id" "" .nuon.install_stack.outputs }}In `nuonco/mono`, edit
+`infra/byoc-secrets/installs.auto.tfvars` and add this GCP install to `var.gcp_installs`, supplying its **runner**
+service account's numeric unique id (its OIDC `sub`) so Terraform can bind the federated AWS role's trust policy to it.
+The value below is interpolated from this install's stack outputs:
+
+{{ if not $runnerUID }}<nuon-banner theme="warn">This install's stack outputs don't include
+<code>runner_service_account_unique_id</code> yet, so the value below renders empty. Re-apply the install stack so it
+reports the runner service account's numeric id, then reload this runbook.</nuon-banner>{{ end }}
 
 ```hcl
 gcp_installs = {
-  "{{ .nuon.install.id }}" = { gcp_service_account_unique_id = "<sa unique id>" }
+  "{{ .nuon.install.id }}" = { gcp_service_account_unique_id = "{{ $runnerUID }}" }
   # ...
 }
-```
-
-Get the unique id with:
-
-```bash
-gcloud iam service-accounts describe \
-  "{{ .nuon.install.id }}-maintenance@{{ dig "project_id" "<install_gcp_project_id>" .nuon.install_stack.outputs }}.iam.gserviceaccount.com" \
-  --format='value(uniqueId)'
 ```
 
 Once merged, Terraform Cloud creates the empty Slack secret container at `nuon/byoc-nuon/{{ .nuon.install.id }}/slack`,
@@ -184,7 +181,7 @@ step. </nuon-banner>{{ end }}
 After the install sync applies, run this runbook. Its `Slack: Sync slack secrets` step runs the `sync_slack_secrets`
 action, which:
 
-- mints a Google-signed OIDC token for the `{{ .nuon.install.id }}-maintenance` service account and assumes
+- mints a Google-signed OIDC token for the runner service account and assumes
   `secrets_role_arn` via `sts:AssumeRoleWithWebIdentity`, then reads the central secret referenced by
   `slack_secrets_arn`,
 - writes `ctl-api-slack-client-secret` and `ctl-api-slack-signing-secret` into the install's `ctl-api` namespace,
