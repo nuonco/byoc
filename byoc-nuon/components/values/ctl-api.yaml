@@ -40,10 +40,6 @@ env:
   NUON_AUTH_REDIRECT_URL: "https://auth.{{ .nuon.sandbox.outputs.nuon_dns.public_domain.name }}/auth"
   NUON_AUTH_ALLOWED_DOMAINS: '{{ or .nuon.inputs.inputs.nuon_auth_allowed_domains "" }}'
   NUON_AUTH_ALLOW_ALL_USERS: '{{ or .nuon.inputs.inputs.nuon_auth_allow_all_users "false" }}'
-  # NOTE(fd): these defaults are only necessary because they are required
-  # when all users are using nuon auth, we can remove them from this env section
-  NUON_AUTH_CLIENT_SECRET: "dne"
-  NUON_AUTH_SESSION_KEY: "dne"
 
   EVALUATION_JOURNEY_ENABLED: "false"
 
