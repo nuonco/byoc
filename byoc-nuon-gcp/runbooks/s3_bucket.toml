@@ -1,0 +1,9 @@
+name        = "s3_bucket"
+description = "Inspects the AWS S3 install-stack template bucket (install_stack_template_bucket): bucket name, region, versioning and default encryption, and lists up to 5 objects."
+readme      = "./runbooks/s3_bucket.md"
+labels      = { service = "s3", type = "setup" }
+
+[[steps]]
+name        = "Inspect S3 bucket"
+type        = "action"
+action_name = "s3_bucket"

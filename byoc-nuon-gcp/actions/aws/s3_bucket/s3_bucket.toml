@@ -1,0 +1,25 @@
+# action
+# description: inspects the AWS S3 install-stack template bucket
+# (install_stack_template_bucket) — federating this GCP install's identity into
+# AWS via web identity and assuming install_stack_template_bucket_role_arn — and
+# prints the bucket name, region, a little metadata (versioning + encryption),
+# and lists up to 5 objects. Skips cleanly when install_stack_template_bucket is
+# empty.
+name    = "s3_bucket"
+labels  = { service = "s3", type = "debug" }
+label   = "aws"
+timeout = "2m"
+
+[[triggers]]
+type = "manual"
+
+[[steps]]
+name            = "inspect"
+inline_contents = "./aws/s3_bucket/inspect.sh"
+
+[steps.env_vars]
+BUCKET        = "{{ or .nuon.inputs.inputs.install_stack_template_bucket \"\" }}"
+BUCKET_REGION = "{{ or .nuon.inputs.inputs.install_stack_template_bucket_region \"\" }}"
+ROLE_ARN      = "{{ or .nuon.inputs.inputs.install_stack_template_bucket_role_arn \"\" }}"
+AUDIENCE      = "sts.amazonaws.com"
+INSTALL_ID    = "{{ .nuon.install.id }}"
