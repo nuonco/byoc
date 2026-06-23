@@ -72,6 +72,7 @@ env:
   # Bucket
   # This bucket will be used for the install templates and the custom cloudformation stacks
   AWS_CLOUDFORMATION_STACK_TEMPLATE_BUCKET: "{{ .nuon.inputs.inputs.install_stack_template_bucket }}"
+  AWS_CLOUDFORMATION_STACK_TEMPLATE_BASE_URL: "https://{{ .nuon.inputs.inputs.install_stack_template_bucket }}.s3.{{ .nuon.inputs.inputs.install_stack_template_bucket_region }}.amazonaws.com"
   AWS_CLOUDFORMATION_STACK_TEMPLATE_BUCKET_REGION: "{{ .nuon.inputs.inputs.install_stack_template_bucket_region }}"
   AWS_CLOUDFORMATION_STACK_TEMPLATE_ROLE_ARN: "{{.nuon.inputs.inputs.install_stack_template_bucket_role_arn}}"
 
