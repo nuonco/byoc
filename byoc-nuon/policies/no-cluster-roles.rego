@@ -19,5 +19,14 @@ import future.keywords.in
 
 deny contains msg if {
 	input.review.kind.kind in {"ClusterRole", "ClusterRoleBinding"}
+	not is_deletion
 	msg := sprintf("%s '%s' is not allowed: this component must use namespaced RBAC (Role/RoleBinding), not cluster-wide RBAC.", [input.review.kind.kind, input.review.object.metadata.name])
+}
+
+# Objects being removed (e.g. a helm uninstall / teardown) are exempt: tearing
+# down existing cluster-wide RBAC reduces blast radius and must not be blocked.
+# Only an explicit DELETE operation suppresses the rule; an unknown/absent
+# operation fails safe and is still treated as a creation.
+is_deletion if {
+	input.review.operation == "DELETE"
 }
