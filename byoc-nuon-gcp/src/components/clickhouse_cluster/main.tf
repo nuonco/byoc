@@ -91,6 +91,36 @@ resource "kubectl_manifest" "clickhouse_installation" {
           {
             name = "default"
             spec = {
+              # never co-locate the two replicas on the same node, and best-effort
+              # spread them across zones. the label is applied automatically by the CRD.
+              # NOTE: unlike the AWS install there is no dedicated tainted node pool on GCP
+              # (single autoscaling regional pool "main"), so we set no nodeSelector/tolerations.
+              affinity = {
+                podAntiAffinity = {
+                  requiredDuringSchedulingIgnoredDuringExecution = [
+                    {
+                      labelSelector = {
+                        matchLabels = {
+                          "clickhouse.altinity.com/chi" = "clickhouse-installation"
+                        }
+                      }
+                      topologyKey = "kubernetes.io/hostname"
+                    }
+                  ]
+                }
+              }
+              topologySpreadConstraints = [
+                {
+                  maxSkew           = 1
+                  topologyKey       = "topology.kubernetes.io/zone"
+                  whenUnsatisfiable = "ScheduleAnyway"
+                  labelSelector = {
+                    matchLabels = {
+                      "clickhouse.altinity.com/chi" = "clickhouse-installation"
+                    }
+                  }
+                }
+              ]
               containers = [
                 {
                   name  = "clickhouse"

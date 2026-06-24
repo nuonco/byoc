@@ -62,6 +62,40 @@ resource "kubectl_manifest" "clickhouse_keeper_installation" {
                 "fsGroup"   = 101
                 "runAsUser" = 101
               }
+              # spread the 3 keeper replicas onto distinct nodes so a single node failure
+              # cannot take out the raft quorum. the regional pool has >=1 node per zone
+              # (3 zones), so DoNotSchedule/minDomains=3 is satisfiable and naturally
+              # spreads the quorum across zones. label is applied automatically by the CRD.
+              # NOTE: no nodeSelector/tolerations on GCP (single autoscaling pool, no taints).
+              "topologySpreadConstraints" = [
+                # hard: the 3 keeper replicas must land on distinct nodes.
+                {
+                  "maxSkew"           = 1
+                  "topologyKey"       = "kubernetes.io/hostname"
+                  "whenUnsatisfiable" = "DoNotSchedule"
+                  "minDomains"        = 3
+                  "labelSelector" = {
+                    "matchLabels" = {
+                      # verified against live pods; the AWS install's "app=clickhouse-keeper"
+                      # label does not exist on this keeper CRD version.
+                      "clickhouse-keeper.altinity.com/chk" = "clickhouse-keeper"
+                    }
+                  }
+                },
+                # soft: strongly prefer one replica per zone so a single zonal outage
+                # cannot take out raft quorum (observed pre-fix: 2 of 3 keepers in one zone).
+                # soft (not DoNotSchedule) so a capacity-constrained zone can't strand a replica.
+                {
+                  "maxSkew"           = 1
+                  "topologyKey"       = "topology.kubernetes.io/zone"
+                  "whenUnsatisfiable" = "ScheduleAnyway"
+                  "labelSelector" = {
+                    "matchLabels" = {
+                      "clickhouse-keeper.altinity.com/chk" = "clickhouse-keeper"
+                    }
+                  }
+                }
+              ]
               "containers" = [
                 {
                   "image"           = "${var.keeper_image_repository}:${var.keeper_image_tag}"
