@@ -2,6 +2,7 @@
 name              = "dashboard_ui_role"
 type              = "terraform_module"
 terraform_version = "1.11.3"
+role              = "{{.nuon.install.id}}-provision"
 
 [public_repo]
 repo      = "nuonco/byoc"
