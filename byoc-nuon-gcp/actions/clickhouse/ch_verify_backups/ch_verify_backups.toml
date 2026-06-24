@@ -1,0 +1,19 @@
+# action
+# description: verifies the ClickHouse GCS backup pipeline — HMAC secret + cronjob exist,
+# a triggered run completes, and backup objects are present in the bucket.
+name    = "ch_verify_backups"
+labels  = { service = "clickhouse", type = "debug" }
+label   = "gcp"
+timeout = "8m"
+role    = "{{.nuon.install.id}}-provision"
+
+[[triggers]]
+type = "manual"
+
+[[steps]]
+name            = "verify_backups"
+inline_contents = "./clickhouse/ch_verify_backups/ch_verify_backups.sh"
+
+[steps.env_vars]
+BUCKET_NAME  = "{{ .nuon.components.gcs_buckets.outputs.clickhouse_bucket.name }}"
+BACKUP_TABLE = "ctl_api.otel_log_records"

@@ -1,0 +1,13 @@
+# action
+# description: verifies ClickHouse pod anti-affinity — server and keeper replicas are
+# spread across distinct nodes (and reports distinct keeper zones).
+name    = "ch_verify_pod_spread"
+labels  = { service = "clickhouse", type = "debug" }
+timeout = "2m"
+
+[[triggers]]
+type = "manual"
+
+[[steps]]
+name            = "verify_pod_spread"
+inline_contents = "./clickhouse/ch_verify_pod_spread/ch_verify_pod_spread.sh"

@@ -1,0 +1,24 @@
+name        = "verify_clickhouse"
+description = "Verify ClickHouse durability & resilience — volumes persist across recreation, pods are spread across nodes, and GCS backups run."
+readme      = "./runbooks/verify_clickhouse.md"
+labels      = { service = "clickhouse", type = "debug" }
+
+[[steps]]
+name        = "Verify storage"
+type        = "action"
+action_name = "ch_verify_storage"
+
+[[steps]]
+name        = "Verify pod spread"
+type        = "action"
+action_name = "ch_verify_pod_spread"
+
+[[steps]]
+name        = "Verify backups"
+type        = "action"
+action_name = "ch_verify_backups"
+
+[[steps]]
+name        = "Replica status"
+type        = "action"
+action_name = "ch_cluster_replicas"

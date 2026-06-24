@@ -18,7 +18,8 @@ resource "kubectl_manifest" "clickhouse_installation" {
     spec = {
       defaults = {
         templates = {
-          podTemplate = "default"
+          podTemplate             = "default"
+          dataVolumeClaimTemplate = "data-volume-template"
         }
       }
       configuration = {
@@ -51,8 +52,8 @@ resource "kubectl_manifest" "clickhouse_installation" {
           ]
         }
         settings = {
-          "logger/level"   = "warning"
-          "logger/console" = true
+          "logger/level"                    = "warning"
+          "logger/console"                  = true
           "prometheus/endpoint"             = "/metrics"
           "prometheus/port"                 = 9363
           "prometheus/metrics"              = true
@@ -90,12 +91,62 @@ resource "kubectl_manifest" "clickhouse_installation" {
           {
             name = "default"
             spec = {
+              # never co-locate the two replicas on the same node, and best-effort
+              # spread them across zones. the label is applied automatically by the CRD.
+              # NOTE: unlike the AWS install there is no dedicated tainted node pool on GCP
+              # (single autoscaling regional pool "main"), so we set no nodeSelector/tolerations.
+              affinity = {
+                podAntiAffinity = {
+                  requiredDuringSchedulingIgnoredDuringExecution = [
+                    {
+                      labelSelector = {
+                        matchLabels = {
+                          "clickhouse.altinity.com/chi" = "clickhouse-installation"
+                        }
+                      }
+                      topologyKey = "kubernetes.io/hostname"
+                    }
+                  ]
+                }
+              }
+              topologySpreadConstraints = [
+                {
+                  maxSkew           = 1
+                  topologyKey       = "topology.kubernetes.io/zone"
+                  whenUnsatisfiable = "ScheduleAnyway"
+                  labelSelector = {
+                    matchLabels = {
+                      "clickhouse.altinity.com/chi" = "clickhouse-installation"
+                    }
+                  }
+                }
+              ]
               containers = [
                 {
                   name  = "clickhouse"
                   image = "${var.cluster_image_repository}:${var.cluster_image_tag}"
+                  volumeMounts = [
+                    {
+                      name      = "data-volume-template"
+                      mountPath = "/var/lib/clickhouse"
+                    }
+                  ]
                 }
               ]
+            }
+          }
+        ]
+        volumeClaimTemplates = [
+          {
+            name = "data-volume-template"
+            spec = {
+              storageClassName = "ssd"
+              accessModes      = ["ReadWriteOnce"]
+              resources = {
+                requests = {
+                  storage = "20Gi"
+                }
+              }
             }
           }
         ]
