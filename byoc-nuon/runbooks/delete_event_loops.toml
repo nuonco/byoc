@@ -4,6 +4,11 @@ readme      = "./runbooks/delete_event_loops.md"
 labels      = { service = "temporal", type = "tool" }
 
 [[steps]]
+name        = "Check EventLoop workflows"
+type        = "action"
+action_name = "temporal_check_event_loops"
+
+[[steps]]
 name        = "Delete EventLoop workflows"
 type        = "action"
 action_name = "temporal_delete_event_loops"
