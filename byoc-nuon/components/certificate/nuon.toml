@@ -5,7 +5,7 @@ terraform_version = "1.11.3"
 
 [public_repo]
 repo      = "nuonco/byoc"
-directory = "byoc-nuon/src/components/certificate"
+directory = "byoc-nuon/components/certificate"
 branch    = "main"
 
 [vars]

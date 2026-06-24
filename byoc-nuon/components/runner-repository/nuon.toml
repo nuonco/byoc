@@ -5,7 +5,7 @@ terraform_version = "1.11.3"
 
 [public_repo]
 repo      = "nuonco/byoc"
-directory = "byoc-nuon/src/components/runner-repository"
+directory = "byoc-nuon/components/runner-repository"
 branch    = "main"
 
 [vars]

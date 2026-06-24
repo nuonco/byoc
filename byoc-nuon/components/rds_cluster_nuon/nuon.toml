@@ -8,7 +8,7 @@ drift_schedule = "0 0 * * *"
 
 [public_repo]
 repo      = "nuonco/byoc"
-directory = "byoc-nuon/src/components/rds_cluster_nuon"
+directory = "byoc-nuon/components/rds_cluster_nuon"
 branch    = "main"
 
 [vars]

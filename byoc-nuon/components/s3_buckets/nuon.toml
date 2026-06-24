@@ -5,7 +5,7 @@ terraform_version = "1.11.3"
 
 [public_repo]
 repo      = "nuonco/byoc"
-directory = "byoc-nuon/src/components/s3_buckets"
+directory = "byoc-nuon/components/s3_buckets"
 branch    = "main"
 
 [vars]

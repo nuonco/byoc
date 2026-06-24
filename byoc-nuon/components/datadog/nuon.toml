@@ -5,7 +5,7 @@ dependencies      = ["temporal", "ctl_api", "dashboard_ui"]
 
 [public_repo]
 repo      = "nuonco/byoc"
-directory = "byoc-nuon/src/components/datadog"
+directory = "byoc-nuon/components/datadog"
 branch    = "main"
 
 [vars]
