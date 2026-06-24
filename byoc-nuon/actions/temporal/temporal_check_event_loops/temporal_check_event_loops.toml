@@ -1,0 +1,13 @@
+# action
+# description: checks for running EventLoop workflows across Temporal namespaces.
+name    = "temporal_check_event_loops"
+labels  = { service = "temporal", type = "debug" }
+label   = "temporal"
+timeout = "5m"
+
+[[triggers]]
+type = "manual"
+
+[[steps]]
+name            = "check event loops"
+inline_contents = "./temporal/temporal_check_event_loops/check_event_loops.sh"
