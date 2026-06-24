@@ -1,0 +1,17 @@
+# action
+# description: verifies ClickHouse persistent storage — PVCs bound, data dir on a real
+# disk, and (optionally) that data survives a StatefulSet restart.
+name    = "ch_verify_storage"
+labels  = { service = "clickhouse", type = "debug" }
+timeout = "6m"
+
+[[triggers]]
+type = "manual"
+
+[[steps]]
+name            = "verify_storage"
+inline_contents = "./clickhouse/ch_verify_storage/ch_verify_storage.sh"
+
+[steps.env_vars]
+# set to "true" to run the disruptive write -> restart -> read durability test
+RUN_RESTART_TEST = "false"
