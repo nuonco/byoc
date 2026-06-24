@@ -1,0 +1,55 @@
+name        = "promote_and_reset_queues"
+description = "Deploys Nuon's ctl-api and dashboard-ui: syncs and rolls the CTL API, then the dashboard UI."
+readme      = "./runbooks/deploy_control_plane.md"
+
+[[steps]]
+name           = "Sync Image: dashboard-ui"
+type           = "deploy"
+component_name = "img_nuon_dashboard_ui"
+
+[[steps]]
+name           = "Sync Image: ctl-api"
+type           = "deploy"
+component_name = "img_nuon_ctl_api"
+
+[[steps]]
+name            = "Deploy Nuon: ctl-api"
+type            = "deploy"
+component_name  = "ctl_api"
+deploy_triggers = "true"
+
+[[steps]]
+name        = "Post Promotion: Startup"
+type        = "action"
+action_name = "ctl_api_post_deploy_startup"
+
+[[steps]]
+name        = "Post Promotion: All"
+type        = "action"
+action_name = "ctl_api_post_deploy"
+
+[[steps]]
+name        = "Orgs: Migrate Queues"
+type        = "action"
+action_name = "orgs_migrate_queues"
+
+[[steps]]
+name        = "Orgs: Restart Queues"
+type        = "action"
+action_name = "orgs_restart_queues"
+
+[[steps]]
+name        = "Orgs: Reprovision"
+type        = "action"
+action_name = "orgs_reprovision"
+
+[[steps]]
+name        = "Runners: Restart Processes"
+type        = "action"
+action_name = "runners_restart"
+
+[[steps]]
+name            = "Deploy Nuon: dashboard-ui"
+type            = "deploy"
+component_name  = "dashboard_ui"
+deploy_triggers = "true"
