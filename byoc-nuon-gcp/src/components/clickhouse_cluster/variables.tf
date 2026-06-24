@@ -1,9 +1,25 @@
+locals {
+  backups = {
+    tables = [
+      "ctl_api.otel_log_records",
+      # omitted
+      # "ctl_api.runner_heart_beats",
+      # "ctl_api.runner_health_checks",
+    ]
+  }
+}
+
 variable "install_id" {
   type = string
 }
 
 variable "project_id" {
   type = string
+}
+
+variable "clickhouse_bucket_name" {
+  type        = string
+  description = "Name of the GCS bucket used for ClickHouse backups."
 }
 
 variable "region" {

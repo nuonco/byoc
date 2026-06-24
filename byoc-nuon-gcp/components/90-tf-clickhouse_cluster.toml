@@ -3,7 +3,7 @@ name              = "clickhouse_cluster"
 type              = "terraform_module"
 terraform_version = "1.11.3"
 
-dependencies = ["crd_clickhouse_operator"]
+dependencies = ["crd_clickhouse_operator", "gcs_buckets"]
 
 [public_repo]
 repo      = "nuonco/byoc"
@@ -11,8 +11,9 @@ directory = "byoc-nuon-gcp/src/components/clickhouse_cluster"
 branch    = "main"
 
 [vars]
-install_id = "{{ .nuon.install.id }}"
-project_id = "{{ .nuon.install_stack.outputs.project_id }}"
+install_id             = "{{ .nuon.install.id }}"
+project_id             = "{{ .nuon.install_stack.outputs.project_id }}"
+clickhouse_bucket_name = "{{ .nuon.components.gcs_buckets.outputs.clickhouse_bucket.name }}"
 region     = "{{ .nuon.install_stack.outputs.region }}"
 zone       = "{{ .nuon.install.sandbox.outputs.nuon_dns.internal_domain.name }}"
 
