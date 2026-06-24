@@ -31,3 +31,11 @@ deletion_protection                 = "false"  # until we're out of dev
 allocated_storage = "100"
 apply_immediately = "true"
 storage_encrypted = "true"
+
+[[operation_roles]]
+operation = "deploy"
+role      = "{{.nuon.install.id}}-provision"
+
+[[operation_roles]]
+operation = "teardown"
+role      = "{{.nuon.install.id}}-deprovision"

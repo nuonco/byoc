@@ -15,3 +15,11 @@ region     = "{{ .nuon.install_stack.outputs.region }}"
 
 [[var_file]]
 contents = "./values/runner-repository.tfvars"
+
+[[operation_roles]]
+operation = "deploy"
+role      = "{{.nuon.install.id}}-provision"
+
+[[operation_roles]]
+operation = "teardown"
+role      = "{{.nuon.install.id}}-deprovision"

@@ -16,3 +16,11 @@ rds_subnet_display_name = "RDS Subnet {{ .nuon.install.id }}"
 # aws details
 region             = "{{ .nuon.sandbox.outputs.account.region }}"
 private_subnet_ids = "{{ index .nuon.sandbox.outputs.vpc.private_subnet_ids 0}},{{ index .nuon.sandbox.outputs.vpc.private_subnet_ids 1 }},{{ index .nuon.sandbox.outputs.vpc.private_subnet_ids 2 }}"
+
+[[operation_roles]]
+operation = "deploy"
+role      = "{{.nuon.install.id}}-provision"
+
+[[operation_roles]]
+operation = "teardown"
+role      = "{{.nuon.install.id}}-deprovision"

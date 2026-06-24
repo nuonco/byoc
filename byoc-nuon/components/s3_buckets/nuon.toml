@@ -13,3 +13,11 @@ install_name          = "{{ .nuon.install.name }}"
 region                = "{{ .nuon.install_stack.outputs.region }}"
 install_id            = "{{ .nuon.install.id }}"
 cluster_oidc_provider = "{{ .nuon.install.sandbox.outputs.cluster.oidc_provider }}"
+
+[[operation_roles]]
+operation = "deploy"
+role      = "{{.nuon.install.id}}-provision"
+
+[[operation_roles]]
+operation = "teardown"
+role      = "{{.nuon.install.id}}-deprovision"
