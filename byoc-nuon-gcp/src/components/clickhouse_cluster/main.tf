@@ -18,7 +18,8 @@ resource "kubectl_manifest" "clickhouse_installation" {
     spec = {
       defaults = {
         templates = {
-          podTemplate = "default"
+          podTemplate             = "default"
+          dataVolumeClaimTemplate = "data-volume-template"
         }
       }
       configuration = {
@@ -51,8 +52,8 @@ resource "kubectl_manifest" "clickhouse_installation" {
           ]
         }
         settings = {
-          "logger/level"   = "warning"
-          "logger/console" = true
+          "logger/level"                    = "warning"
+          "logger/console"                  = true
           "prometheus/endpoint"             = "/metrics"
           "prometheus/port"                 = 9363
           "prometheus/metrics"              = true
@@ -94,8 +95,28 @@ resource "kubectl_manifest" "clickhouse_installation" {
                 {
                   name  = "clickhouse"
                   image = "${var.cluster_image_repository}:${var.cluster_image_tag}"
+                  volumeMounts = [
+                    {
+                      name      = "data-volume-template"
+                      mountPath = "/var/lib/clickhouse"
+                    }
+                  ]
                 }
               ]
+            }
+          }
+        ]
+        volumeClaimTemplates = [
+          {
+            name = "data-volume-template"
+            spec = {
+              storageClassName = "ssd"
+              accessModes      = ["ReadWriteOnce"]
+              resources = {
+                requests = {
+                  storage = "20Gi"
+                }
+              }
             }
           }
         ]
