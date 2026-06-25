@@ -383,9 +383,10 @@
 
 {{ if gt (len $databases) 0 }}
 
-<table>
+<table style="table-layout:fixed;width:100%;">
+  <colgroup><col style="width:36%;"><col style="width:16%;"><col style="width:16%;"><col style="width:16%;"><col style="width:16%;"></colgroup>
   <thead>
-    <tr><th>Postgres (RDS) · 1h avg</th><th>CPU</th><th>Mem</th><th>Disk</th><th>DB load</th></tr>
+    <tr><th>Postgres</th><th>CPU</th><th>Mem</th><th>Disk</th><th>DB load</th></tr>
   </thead>
   <tbody>
   {{ range $label, $r := $databases }}
@@ -404,17 +405,19 @@
 
 {{ if gt (len $clickhouse) 0 }}
 
-<table>
+<table style="table-layout:fixed;width:100%;">
+  <colgroup><col style="width:36%;"><col style="width:16%;"><col style="width:16%;"><col style="width:16%;"><col style="width:16%;"></colgroup>
   <thead>
-    <tr><th>ClickHouse · snapshot</th><th>CPU</th><th>Mem</th><th>Disk</th></tr>
+    <tr><th>ClickHouse</th><th>CPU</th><th>Mem</th><th>Disk</th><th></th></tr>
   </thead>
   <tbody>
   {{ range $label, $r := $clickhouse }}
     <tr>
-      <td>{{ $label }}</td>
+      <td style="overflow:hidden;text-overflow:ellipsis;">{{ $label }}</td>
       <td>{{ $v := dig "cpu_pct" nil $r }}{{ if kindIs "invalid" $v }}—{{ else }}{{ $v }}%{{ end }}</td>
       <td>{{ $v := dig "mem_used_pct" nil $r }}{{ if kindIs "invalid" $v }}—{{ else }}{{ $v }}%{{ end }}</td>
       <td>{{ $v := dig "disk_used_pct" nil $r }}{{ if kindIs "invalid" $v }}—{{ else }}{{ $v }}%{{ end }}</td>
+      <td></td>
     </tr>
   {{ end }}
   </tbody>
@@ -430,4 +433,3 @@
 
 </nuon-tab>
 </nuon-tabs>
-

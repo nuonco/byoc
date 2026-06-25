@@ -25,6 +25,6 @@ inline_contents = "./aws/inspect_databases/inspect_databases.sh"
 
 [steps.env_vars]
 DBS = """
-ctl-api (nuon)|{{ .nuon.components.rds_cluster_nuon.outputs.db_instance_resource_id }}
+ctl-api|{{ .nuon.components.rds_cluster_nuon.outputs.db_instance_resource_id }}
 temporal|{{ .nuon.components.rds_cluster_temporal.outputs.db_instance_resource_id }}
 """

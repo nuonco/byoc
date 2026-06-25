@@ -53,7 +53,7 @@
 
 <div style="padding-top:1rem;"></div>
 
-<nuon-banner theme="info">Averages over the last hour from Performance Insights. Memory "used" excludes cache and buffers. A cell shows — when the metric returned no data (e.g. Performance Insights disabled).</nuon-banner>
+<nuon-banner theme="info">Averages over the last hour from Performance Insights..</nuon-banner>
 
 {{ else }}
 
@@ -84,8 +84,8 @@
     <tr>
       <th>Pod</th>
       <th>CPU (of node)</th>
-      <th>Memory (used / total)</th>
-      <th>Disk (used / total)</th>
+      <th>Memory</th>
+      <th>Disk</th>
     </tr>
   </thead>
   <tbody>
@@ -102,7 +102,7 @@
 
 <div style="padding-top:1rem;"></div>
 
-<nuon-banner theme="info">Point-in-time snapshot from the kubelet Summary API (no ClickHouse query). CPU is relative to the node; memory and disk are relative to the pod limit / data volume. IOPS and DB load are not available without querying ClickHouse.</nuon-banner>
+<nuon-banner theme="info">Point-in-time snapshot from the kubelet Summary API.</nuon-banner>
 
 {{ else }}
 
