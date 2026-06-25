@@ -9,6 +9,8 @@ Runs every action that populates a section of the install README, so the rendere
 | `inspect_runners` | Runners section |
 | `inspect_installs` | Installs section |
 | `inspect_migrations` | Migrations section |
+| `inspect_postgres` | Databases section — Postgres (RDS) table |
+| `inspect_clickhouse` | Databases section — ClickHouse table |
 | `inspect_apps` | Apps section |
 | `inspect_orgs` | Orgs section |
 | `healthcheck_temporal` | Temporal healthcheck indicator |

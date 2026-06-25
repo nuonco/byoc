@@ -1,9 +1,0 @@
-name        = "cloudsql_inspect_temporal"
-description = "Inspects the Temporal Cloud SQL instance: instance configuration plus the most recent operations against the instance, in table format."
-readme      = "./runbooks/cloudsql_inspect_temporal.md"
-labels      = { service = "cloudsql", type = "debug" }
-
-[[steps]]
-name        = "Inspect Temporal Cloud SQL"
-type        = "action"
-action_name = "cloudsql_inspect_temporal"

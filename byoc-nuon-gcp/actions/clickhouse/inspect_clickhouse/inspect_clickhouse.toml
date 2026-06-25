@@ -1,0 +1,25 @@
+# action
+# description: snapshot of CPU / memory / disk for the ClickHouse replica pods,
+# from the kubelet Summary API (no ClickHouse query, no exec). One row per pod.
+name    = "inspect_clickhouse"
+labels  = { service = "clickhouse", type = "debug" }
+timeout = "2m"
+
+[[triggers]]
+type = "manual"
+
+[[steps]]
+name = "timestamp"
+inline_contents = '''
+#!/usr/bin/env bash
+set -euo pipefail
+jq -nc --arg ts "$(TZ=UTC date +%Y-%m-%dT%H:%M:%SZ)" '{updated_at: $ts}' >> $NUON_ACTIONS_OUTPUT_FILEPATH
+'''
+
+[[steps]]
+name            = "clickhouse"
+inline_contents = "./clickhouse/inspect_clickhouse/inspect.sh"
+
+[steps.env_vars]
+NAMESPACE   = "clickhouse"
+CH_SELECTOR = "clickhouse.altinity.com/chi=clickhouse-installation"
