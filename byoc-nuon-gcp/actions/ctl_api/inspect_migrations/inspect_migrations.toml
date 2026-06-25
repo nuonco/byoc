@@ -1,0 +1,69 @@
+# action
+# description: lists ctl-api schema migrations (last 20 by updated_at) for the
+# README Migrations section, via the admin API.
+name    = "inspect_migrations"
+labels  = { service = "ctl-api", type = "report" }
+timeout = "5m"
+
+[[triggers]]
+type = "manual"
+
+[[steps]]
+name = "timestamp"
+inline_contents = '''
+#!/usr/bin/env bash
+set -euo pipefail
+jq -nc --arg ts "$(TZ=UTC date +%Y-%m-%dT%H:%M:%SZ)" '{updated_at: $ts}' >> $NUON_ACTIONS_OUTPUT_FILEPATH
+'''
+
+[[steps]]
+name = "migrations"
+inline_contents = '''
+#!/usr/bin/env bash
+#
+# Inspect ctl-api schema migrations via the admin API (GET /v1/general/migrations).
+# Emits one JSON object per migration keyed by "<created_at>_<id>" so the README
+# map-range renders them oldest -> newest; any error / in-progress migration is
+# naturally the most recent (last) row. Limited to the last 20 by created_at.
+
+set -e
+set -o pipefail
+set -u
+
+admin_api_addr="$ADMIN_API_URL"
+
+echo "[inspect_migrations] GET $admin_api_addr/v1/general/migrations"
+body_file=$(mktemp)
+http_code=$(curl --max-time 30 -q -s -o "$body_file" -w '%{http_code}' \
+  "$admin_api_addr/v1/general/migrations" \
+  -H 'accept: application/json' \
+  -H 'X-Nuon-Admin-Email: jon@nuon.co')
+migrations=$(cat "$body_file")
+rm -f "$body_file"
+
+echo "[inspect_migrations] -> $http_code"
+if [ "$http_code" != "200" ]; then
+  echo "[inspect_migrations] non-200 response: $migrations" >&2
+  exit 1
+fi
+
+if ! echo "$migrations" | jq -e 'type == "array"' >/dev/null 2>&1; then
+  echo "[inspect_migrations] expected JSON array, got: $migrations" >&2
+  exit 1
+fi
+
+count=$(echo "$migrations" | jq 'length')
+echo "[inspect_migrations] $count migration(s) returned"
+
+echo "$migrations" | jq -c '
+  [ .[] | { id, name, status: (.status // "unknown"), created_at, updated_at } ]
+  | sort_by(.created_at)
+  | .[-20:][]
+  | { ("\(.created_at)_\(.id)"): . }
+' >> "$NUON_ACTIONS_OUTPUT_FILEPATH"
+
+echo "[inspect_migrations] done"
+'''
+
+[steps.env_vars]
+ADMIN_API_URL = "http://admin.{{ .nuon.sandbox.outputs.nuon_dns.internal_domain.name }}"

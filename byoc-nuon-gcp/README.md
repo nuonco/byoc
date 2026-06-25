@@ -338,6 +338,35 @@ section.</nuon-banner>{{ end }}
   </div>
 </div>
 
+{{ $migAction := default dict (index (default dict .nuon.actions.workflows) "inspect_migrations") }}
+{{ $migOutputs := default dict (dig "outputs" dict $migAction) }}
+{{ $migSteps := dig "steps" dict $migOutputs }}
+{{ $migrations := dig "migrations" (dict) $migSteps }}
+
+<div style="display:flex;align-items:baseline;gap:0.75rem;margin-top:1.5rem;"><h3 style="margin:0;">Migrations</h3><a href="/{{ $.nuon.org.id }}/installs/{{ $.nuon.install.id }}/runbooks/inspect_migrations" style="font-size:0.85em;">See more →</a>{{ with dig "updated_at" "" $migOutputs }}<span style="margin-left:auto;font-size:0.85em;">Last updated <nuon-time time="{{ . }}" format="relative"></nuon-time></span>{{ end }}</div>
+
+{{ if gt (len $migrations) 0 }}
+{{ $themeMap := dict "applied" "success" "in_progress" "info" "error" "error" "unknown" "neutral" }}
+
+<table>
+  <thead><tr><th>Name</th><th>Status</th><th>Created</th></tr></thead>
+  <tbody>
+  {{ range $_, $m := $migrations }}
+    {{ $status := dig "status" "" $m }}
+    <tr>
+      <td>{{ dig "name" "—" $m }}<br><small style="opacity:0.6;"><code>{{ dig "id" "—" $m }}</code></small></td>
+      <td>{{ if $status }}<nuon-label-badge theme="{{ dig (lower $status) "neutral" $themeMap }}" label="{{ $status }}"></nuon-label-badge>{{ else }}—{{ end }}</td>
+      <td>{{ with dig "created_at" "" $m }}<nuon-time time="{{ printf "%sZ" (substr 0 19 .) }}" format="short-datetime"></nuon-time>{{ else }}—{{ end }}</td>
+    </tr>
+  {{ end }}
+  </tbody>
+</table>
+
+{{ else if not (dig "updated_at" "" $migOutputs) }}<nuon-banner theme="warn">Waiting on inspect_migrations. Run it to populate this section.</nuon-banner>{{ else }}<nuon-banner theme="info">No migrations reported.</nuon-banner>{{ end }}
+
+</nuon-tab>
+<nuon-tab name="Infrastructure">
+
 <div style="padding-top:1rem;"></div>
 
 <div style="display:flex;gap:1.5rem;align-items:flex-start;">
