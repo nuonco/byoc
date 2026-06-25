@@ -1,0 +1,31 @@
+# action
+# description: inspects the Cloud SQL (Postgres) instances — ctl-api and temporal
+# — printing 1-hour average CPU / memory / disk / IOPS from Cloud Monitoring, one
+# row each, in table format. DB load has no Cloud SQL equivalent.
+name    = "inspect_postgres"
+labels  = { service = "cloudsql", type = "debug" }
+label   = "gcp"
+timeout = "2m"
+role    = "{{.nuon.install.id}}-provision"
+
+[[triggers]]
+type = "manual"
+
+[[steps]]
+name = "timestamp"
+inline_contents = '''
+#!/usr/bin/env bash
+set -euo pipefail
+jq -nc --arg ts "$(TZ=UTC date +%Y-%m-%dT%H:%M:%SZ)" '{updated_at: $ts}' >> $NUON_ACTIONS_OUTPUT_FILEPATH
+'''
+
+[[steps]]
+name            = "databases"
+inline_contents = "./gcp/inspect_postgres/inspect_postgres.sh"
+
+[steps.env_vars]
+PROJECT_ID = "{{ .nuon.install_stack.outputs.project_id }}"
+DBS = """
+ctl-api|{{ .nuon.components.cloudsql_nuon.outputs.db_instance_name }}
+temporal|{{ .nuon.components.cloudsql_temporal.outputs.db_instance_name }}
+"""
