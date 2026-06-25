@@ -5,7 +5,7 @@ terraform_version = "1.11.3"
 
 [public_repo]
 repo      = "nuonco/byoc"
-directory = "byoc-nuon/src/components/ctl_api_role"
+directory = "byoc-nuon/components/ctl_api_role"
 branch    = "main"
 
 [vars]
@@ -13,3 +13,11 @@ install_id              = "{{ .nuon.install.id }}"
 region                  = "{{ .nuon.install_stack.outputs.region }}"
 cluster_name            = "{{ .nuon.install.sandbox.outputs.cluster.name }}"
 db_instance_resource_id = "{{ .nuon.components.rds_cluster_nuon.outputs.db_instance_resource_id }}"
+
+[[operation_roles]]
+operation = "deploy"
+role      = "{{.nuon.install.id}}-provision"
+
+[[operation_roles]]
+operation = "teardown"
+role      = "{{.nuon.install.id}}-deprovision"

@@ -5,8 +5,16 @@ terraform_version = "1.11.3"
 
 [public_repo]
 repo      = "nuonco/byoc"
-directory = "byoc-nuon/src/components/management"
+directory = "byoc-nuon/components/management"
 branch    = "main"
 
 [[var_file]]
 contents = "./values/management.tfvars"
+
+[[operation_roles]]
+operation = "deploy"
+role      = "{{.nuon.install.id}}-provision"
+
+[[operation_roles]]
+operation = "teardown"
+role      = "{{.nuon.install.id}}-deprovision"

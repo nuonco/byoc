@@ -5,10 +5,18 @@ terraform_version = "1.11.3"
 
 [public_repo]
 repo      = "nuonco/byoc"
-directory = "byoc-nuon/src/components/dashboard_ui_role"
+directory = "byoc-nuon/components/dashboard_ui_role"
 branch    = "main"
 
 [vars]
 install_id   = "{{ .nuon.install.id }}"
 region       = "{{ .nuon.install_stack.outputs.region }}"
 cluster_name = "{{ .nuon.install.sandbox.outputs.cluster.name }}"
+
+[[operation_roles]]
+operation = "deploy"
+role      = "{{.nuon.install.id}}-provision"
+
+[[operation_roles]]
+operation = "teardown"
+role      = "{{.nuon.install.id}}-deprovision"
