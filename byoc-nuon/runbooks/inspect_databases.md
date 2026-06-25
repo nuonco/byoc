@@ -14,7 +14,7 @@
 
 <h3 style="margin:0;">Postgres (RDS)</h3>
 
-<nuon-group gap="2" align="center" justify="start"><nuon-label-badge label="window: last 1h (avg)"></nuon-label-badge>{{ with dig "updated_at" "" $dbOutputs }}<span style="margin-left:auto;font-size:0.85em;">Last updated by <a href="/{{ $.nuon.org.id }}/installs/{{ $.nuon.install.id }}/actions/{{ $dbActionID }}">inspect_databases</a> <nuon-time time="{{ . }}" format="relative"></nuon-time></span>{{ end }}</nuon-group>
+<nuon-group gap="2" align="center" justify="start">{{ with dig "updated_at" "" $dbOutputs }}<span style="margin-left:auto;font-size:0.85em;">Last updated by <a href="/{{ $.nuon.org.id }}/installs/{{ $.nuon.install.id }}/actions/{{ $dbActionID }}">inspect_databases</a> <nuon-time time="{{ . }}" format="relative"></nuon-time></span>{{ end }}</nuon-group>
 
 <div style="padding-bottom:1rem;"></div>
 
@@ -71,7 +71,7 @@
 
 <h3 style="margin:0;">ClickHouse</h3>
 
-<nuon-group gap="2" align="center" justify="start"><nuon-label-badge label="snapshot (per pod)"></nuon-label-badge>{{ with dig "updated_at" "" $chOutputs }}<span style="margin-left:auto;font-size:0.85em;">Last updated by <a href="/{{ $.nuon.org.id }}/installs/{{ $.nuon.install.id }}/actions/{{ $chActionID }}">ch_inspect</a> <nuon-time time="{{ . }}" format="relative"></nuon-time></span>{{ end }}</nuon-group>
+<nuon-group gap="2" align="center" justify="start">{{ with dig "updated_at" "" $chOutputs }}<span style="margin-left:auto;font-size:0.85em;">Last updated by <a href="/{{ $.nuon.org.id }}/installs/{{ $.nuon.install.id }}/actions/{{ $chActionID }}">ch_inspect</a> <nuon-time time="{{ . }}" format="relative"></nuon-time></span>{{ end }}</nuon-group>
 
 <div style="padding-bottom:1rem;"></div>
 
