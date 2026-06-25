@@ -4,7 +4,7 @@
 # Emits one JSON object per migration to $NUON_ACTIONS_OUTPUT_FILEPATH, keyed by
 # "<created_at>_<id>" so the README map-range renders them oldest -> newest.
 # Migrations run in sequence, so any error / in-progress migration is naturally
-# the most recent (last) row. Limited to the last 20 by created_at.
+# the most recent (last) row. Limited to the last 10 by created_at.
 
 set -e
 set -o pipefail
@@ -26,7 +26,7 @@ echo "[inspect_migrations] $count migration(s) returned"
 echo "$migrations" | jq -c '
   [ .[] | { id, name, status: (.status // "unknown"), created_at, updated_at } ]
   | sort_by(.created_at)
-  | .[-20:][]
+  | .[-10:][]
   | { ("\(.created_at)_\(.id)"): . }
 ' >> "$NUON_ACTIONS_OUTPUT_FILEPATH"
 
