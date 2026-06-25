@@ -1,0 +1,14 @@
+name        = "inspect_databases"
+description = "Health metrics for the databases: 1-hour Performance Insights averages for the Postgres RDS instances (ctl-api, temporal), plus a kubelet snapshot of the ClickHouse pods."
+readme      = "./runbooks/inspect_databases.md"
+labels      = { service = "rds", type = "debug" }
+
+[[steps]]
+name        = "Inspect: databases"
+type        = "action"
+action_name = "inspect_databases"
+
+[[steps]]
+name        = "Inspect: clickhouse"
+type        = "action"
+action_name = "ch_inspect"

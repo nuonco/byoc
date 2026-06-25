@@ -372,6 +372,62 @@
   </div>
 </div>
 
+{{ $dbAction := default dict (index (default dict .nuon.actions.workflows) "inspect_databases") }}
+{{ $dbOutputs := default dict (dig "outputs" dict $dbAction) }}
+{{ $databases := dig "databases" (dict) (dig "steps" dict $dbOutputs) }}
+{{ $chAction := default dict (index (default dict .nuon.actions.workflows) "ch_inspect") }}
+{{ $chOutputs := default dict (dig "outputs" dict $chAction) }}
+{{ $clickhouse := dig "clickhouse" (dict) (dig "steps" dict $chOutputs) }}
+
+<div style="display:flex;align-items:baseline;gap:0.75rem;margin-top:1.5rem;"><h3 style="margin:0;">Databases</h3><a href="/{{ $.nuon.org.id }}/installs/{{ $.nuon.install.id }}/runbooks/inspect_databases" style="font-size:0.85em;">See more →</a>{{ with dig "updated_at" "" $dbOutputs }}<span style="margin-left:auto;font-size:0.85em;">Last updated <nuon-time time="{{ . }}" format="relative"></nuon-time></span>{{ end }}</div>
+
+{{ if gt (len $databases) 0 }}
+
+<table>
+  <thead>
+    <tr><th>Postgres (RDS) · 1h avg</th><th>CPU</th><th>Mem</th><th>Disk</th><th>DB load</th></tr>
+  </thead>
+  <tbody>
+  {{ range $label, $r := $databases }}
+    <tr>
+      <td>{{ $label }}</td>
+      <td>{{ $v := dig "cpu_pct" nil $r }}{{ if kindIs "invalid" $v }}—{{ else }}{{ $v }}%{{ end }}</td>
+      <td>{{ $v := dig "mem_used_pct" nil $r }}{{ if kindIs "invalid" $v }}—{{ else }}{{ $v }}%{{ end }}</td>
+      <td>{{ $v := dig "disk_used_pct" nil $r }}{{ if kindIs "invalid" $v }}—{{ else }}{{ $v }}%{{ end }}</td>
+      <td>{{ $v := dig "db_load" nil $r }}{{ if kindIs "invalid" $v }}—{{ else }}{{ $v }}{{ end }}</td>
+    </tr>
+  {{ end }}
+  </tbody>
+</table>
+
+{{ end }}
+
+{{ if gt (len $clickhouse) 0 }}
+
+<table>
+  <thead>
+    <tr><th>ClickHouse · snapshot</th><th>CPU</th><th>Mem</th><th>Disk</th></tr>
+  </thead>
+  <tbody>
+  {{ range $label, $r := $clickhouse }}
+    <tr>
+      <td>{{ $label }}</td>
+      <td>{{ $v := dig "cpu_pct" nil $r }}{{ if kindIs "invalid" $v }}—{{ else }}{{ $v }}%{{ end }}</td>
+      <td>{{ $v := dig "mem_used_pct" nil $r }}{{ if kindIs "invalid" $v }}—{{ else }}{{ $v }}%{{ end }}</td>
+      <td>{{ $v := dig "disk_used_pct" nil $r }}{{ if kindIs "invalid" $v }}—{{ else }}{{ $v }}%{{ end }}</td>
+    </tr>
+  {{ end }}
+  </tbody>
+</table>
+
+{{ end }}
+
+{{ if and (eq (len $databases) 0) (eq (len $clickhouse) 0) }}
+
+<nuon-banner theme="warn">Run <a href="/{{ $.nuon.org.id }}/installs/{{ $.nuon.install.id }}/runbooks/inspect_databases">inspect_databases</a> to populate this section.</nuon-banner>
+
+{{ end }}
+
 </nuon-tab>
 </nuon-tabs>
 

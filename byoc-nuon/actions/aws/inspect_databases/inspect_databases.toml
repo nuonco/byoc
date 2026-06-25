@@ -1,0 +1,30 @@
+# action
+# description: prints 1-hour average health metrics (CPU, memory, disk, IOPS, DB
+# load) for the Postgres RDS instances — ctl-api and temporal — from Performance
+# Insights, one row each, in table format.
+name    = "inspect_databases"
+labels  = { service = "rds", type = "debug" }
+label   = "aws"
+timeout = "2m"
+role    = "{{.nuon.install.id}}-provision"
+
+[[triggers]]
+type = "manual"
+
+[[steps]]
+name = "timestamp"
+inline_contents = '''
+#!/usr/bin/env bash
+set -euo pipefail
+jq -nc --arg ts "$(TZ=UTC date +%Y-%m-%dT%H:%M:%SZ)" '{updated_at: $ts}' >> $NUON_ACTIONS_OUTPUT_FILEPATH
+'''
+
+[[steps]]
+name            = "databases"
+inline_contents = "./aws/inspect_databases/inspect_databases.sh"
+
+[steps.env_vars]
+DBS = """
+ctl-api (nuon)|{{ .nuon.components.rds_cluster_nuon.outputs.db_instance_resource_id }}
+temporal|{{ .nuon.components.rds_cluster_temporal.outputs.db_instance_resource_id }}
+"""
