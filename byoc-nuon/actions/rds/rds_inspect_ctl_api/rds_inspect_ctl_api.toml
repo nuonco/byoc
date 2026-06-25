@@ -12,7 +12,7 @@ type = "manual"
 
 [[steps]]
 name            = "Inspect ctl-api RDS"
-inline_contents = "./aws/rds_inspect/rds_inspect.sh"
+inline_contents = "./rds/rds_inspect/rds_inspect.sh"
 
 [steps.env_vars]
 DB_RESOURCE_ID = "{{ .nuon.components.rds_cluster_nuon.outputs.db_instance_resource_id }}"

@@ -1,0 +1,28 @@
+name        = "deprovision"
+description = "Deprovision steps that must run explicitly, outside the Terraform teardown. For each RDS instance (ctl-api + Temporal), detaches it from Terraform state and then deletes it via the AWS API (taking a final snapshot); more deprovision steps will be added here over time."
+readme      = "./runbooks/deprovision.md"
+labels      = { type = "sop" }
+
+# For each database, detach it from Terraform state BEFORE deleting it, so
+# Terraform never observes the deletion as drift. Each delete takes a final
+# snapshot as part of the deletion, so the database remains recoverable.
+
+[[steps]]
+name        = "Detach ctl-api RDS from state"
+type        = "action"
+action_name = "rds_state_rm_ctl_api"
+
+[[steps]]
+name        = "Delete ctl-api RDS"
+type        = "action"
+action_name = "rds_delete_ctl_api"
+
+[[steps]]
+name        = "Detach Temporal RDS from state"
+type        = "action"
+action_name = "rds_state_rm_temporal"
+
+[[steps]]
+name        = "Delete Temporal RDS"
+type        = "action"
+action_name = "rds_delete_temporal"

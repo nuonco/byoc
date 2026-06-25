@@ -1,0 +1,20 @@
+# action
+# description: deletes the ctl-api (nuon) RDS instance via the AWS API, taking a
+# final snapshot as part of the deletion. Explicit destruction step of the
+# ctl-api RDS teardown — deliberately decoupled from the Terraform teardown job.
+name    = "rds_delete_ctl_api"
+labels  = { service = "rds", type = "sop" }
+label   = "aws"
+timeout = "30m"
+role    = "{{.nuon.install.id}}-rds-operations"
+
+[[triggers]]
+type = "manual"
+
+[[steps]]
+name            = "Delete ctl-api RDS"
+inline_contents = "./rds/rds_delete/rds_delete.sh"
+
+[steps.env_vars]
+DB_RESOURCE_ID = "{{ .nuon.components.rds_cluster_nuon.outputs.db_instance_resource_id }}"
+DB_LABEL       = "ctl-api (nuon)"

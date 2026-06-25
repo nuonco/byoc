@@ -9,14 +9,14 @@ type = "manual"
 
 [[steps]]
 name            = "disk"
-inline_contents = "./aws/rds_monitor/disk_metrics.sh"
+inline_contents = "./rds/rds_monitor/disk_metrics.sh"
 
 [steps.env_vars]
 DB_IDENTIFIER = "{{.nuon.components.rds_cluster_temporal.outputs.db_instance_name}}"
 
 [[steps]]
 name            = "status"
-inline_contents = "./aws/rds_monitor/instance_status.sh"
+inline_contents = "./rds/rds_monitor/instance_status.sh"
 
 [steps.env_vars]
 DB_IDENTIFIER = "temporal-{{.nuon.install.id}}" # <- TODO(fd): modify the clusters so they emit this
