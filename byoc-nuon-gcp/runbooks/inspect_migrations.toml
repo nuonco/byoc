@@ -1,0 +1,9 @@
+name        = "inspect_migrations"
+description = "Inspect ctl-api schema migrations — the last 20 by created_at, with status."
+readme      = "./runbooks/inspect_migrations.md"
+labels      = { service = "ctl-api", type = "debug" }
+
+[[steps]]
+name        = "Inspect: migrations"
+type        = "action"
+action_name = "inspect_migrations"
