@@ -9,6 +9,8 @@ after a deploy, or any time the README looks stale.
 | `dashboard_status`                | Dashboard status badge, version/git labels                   |
 | `inspect_runners`                 | Runners section                                              |
 | `inspect_installs`                | Installs section                                             |
+| `inspect_postgres`                | Databases section — Postgres (Cloud SQL) table               |
+| `inspect_clickhouse`              | Databases section — ClickHouse table                         |
 | `inspect_apps`                    | Apps section                                                 |
 | `inspect_orgs`                    | Orgs section                                                 |
 | `healthcheck_temporal`            | Temporal healthcheck indicator                               |

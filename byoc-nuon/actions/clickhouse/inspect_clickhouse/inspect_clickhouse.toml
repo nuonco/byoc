@@ -1,7 +1,7 @@
 # action
 # description: snapshot of CPU / memory / disk for the ClickHouse replica pods,
 # from the kubelet Summary API (no ClickHouse query, no exec). One row per pod.
-name    = "ch_inspect"
+name    = "inspect_clickhouse"
 labels  = { service = "clickhouse", type = "debug" }
 timeout = "2m"
 
@@ -18,7 +18,7 @@ jq -nc --arg ts "$(TZ=UTC date +%Y-%m-%dT%H:%M:%SZ)" '{updated_at: $ts}' >> $NUO
 
 [[steps]]
 name            = "clickhouse"
-inline_contents = "./clickhouse/ch_inspect/inspect.sh"
+inline_contents = "./clickhouse/inspect_clickhouse/inspect.sh"
 
 [steps.env_vars]
 NAMESPACE   = "clickhouse"

@@ -29,11 +29,11 @@ type        = "action"
 action_name = "inspect_installs"
 
 [[steps]]
-name        = "Inspect: databases"
+name        = "Inspect: postgres"
 type        = "action"
-action_name = "inspect_databases"
+action_name = "inspect_postgres"
 
 [[steps]]
 name        = "Inspect: clickhouse"
 type        = "action"
-action_name = "ch_inspect"
+action_name = "inspect_clickhouse"

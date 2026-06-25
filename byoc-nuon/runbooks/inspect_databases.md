@@ -1,10 +1,10 @@
-{{ $dbAction := default dict (index (default dict .nuon.actions.workflows) "inspect_databases") }}
+{{ $dbAction := default dict (index (default dict .nuon.actions.workflows) "inspect_postgres") }}
 {{ $dbOutputs := default dict (dig "outputs" dict $dbAction) }}
 {{ $dbActionID := dig "id" "" $dbAction }}
 {{ $dbSteps := dig "steps" dict $dbOutputs }}
 {{ $databases := dig "databases" (dict) $dbSteps }}
 
-{{ $chAction := default dict (index (default dict .nuon.actions.workflows) "ch_inspect") }}
+{{ $chAction := default dict (index (default dict .nuon.actions.workflows) "inspect_clickhouse") }}
 {{ $chOutputs := default dict (dig "outputs" dict $chAction) }}
 {{ $chActionID := dig "id" "" $chAction }}
 {{ $chSteps := dig "steps" dict $chOutputs }}
@@ -14,7 +14,7 @@
 
 <h3 style="margin:0;">Postgres (RDS)</h3>
 
-<nuon-group gap="2" align="center" justify="start">{{ with dig "updated_at" "" $dbOutputs }}<span style="margin-left:auto;font-size:0.85em;">Last updated by <a href="/{{ $.nuon.org.id }}/installs/{{ $.nuon.install.id }}/actions/{{ $dbActionID }}">inspect_databases</a> <nuon-time time="{{ . }}" format="relative"></nuon-time></span>{{ end }}</nuon-group>
+<nuon-group gap="2" align="center" justify="start">{{ with dig "updated_at" "" $dbOutputs }}<span style="margin-left:auto;font-size:0.85em;">Last updated by <a href="/{{ $.nuon.org.id }}/installs/{{ $.nuon.install.id }}/actions/{{ $dbActionID }}">inspect_postgres</a> <nuon-time time="{{ . }}" format="relative"></nuon-time></span>{{ end }}</nuon-group>
 
 <div style="padding-bottom:1rem;"></div>
 
@@ -63,7 +63,7 @@
 
 {{ else }}
 
-<nuon-banner theme="warn">Waiting on inspect_databases action. Run it to populate this runbook.</nuon-banner>
+<nuon-banner theme="warn">Waiting on inspect_postgres action. Run it to populate this runbook.</nuon-banner>
 
 {{ end }}
 
@@ -71,7 +71,7 @@
 
 <h3 style="margin:0;">ClickHouse</h3>
 
-<nuon-group gap="2" align="center" justify="start">{{ with dig "updated_at" "" $chOutputs }}<span style="margin-left:auto;font-size:0.85em;">Last updated by <a href="/{{ $.nuon.org.id }}/installs/{{ $.nuon.install.id }}/actions/{{ $chActionID }}">ch_inspect</a> <nuon-time time="{{ . }}" format="relative"></nuon-time></span>{{ end }}</nuon-group>
+<nuon-group gap="2" align="center" justify="start">{{ with dig "updated_at" "" $chOutputs }}<span style="margin-left:auto;font-size:0.85em;">Last updated by <a href="/{{ $.nuon.org.id }}/installs/{{ $.nuon.install.id }}/actions/{{ $chActionID }}">inspect_clickhouse</a> <nuon-time time="{{ . }}" format="relative"></nuon-time></span>{{ end }}</nuon-group>
 
 <div style="padding-bottom:1rem;"></div>
 
@@ -112,6 +112,6 @@
 
 {{ else }}
 
-<nuon-banner theme="warn">Waiting on ch_inspect action. Run it to populate this section.</nuon-banner>
+<nuon-banner theme="warn">Waiting on inspect_clickhouse action. Run it to populate this section.</nuon-banner>
 
 {{ end }}

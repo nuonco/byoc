@@ -2,7 +2,7 @@
 # description: prints 1-hour average health metrics (CPU, memory, disk, IOPS, DB
 # load) for the Postgres RDS instances — ctl-api and temporal — from Performance
 # Insights, one row each, in table format.
-name    = "inspect_databases"
+name    = "inspect_postgres"
 labels  = { service = "rds", type = "debug" }
 label   = "aws"
 timeout = "2m"
@@ -21,7 +21,7 @@ jq -nc --arg ts "$(TZ=UTC date +%Y-%m-%dT%H:%M:%SZ)" '{updated_at: $ts}' >> $NUO
 
 [[steps]]
 name            = "databases"
-inline_contents = "./aws/inspect_databases/inspect_databases.sh"
+inline_contents = "./aws/inspect_postgres/inspect_postgres.sh"
 
 [steps.env_vars]
 DBS = """

@@ -372,10 +372,10 @@
   </div>
 </div>
 
-{{ $dbAction := default dict (index (default dict .nuon.actions.workflows) "inspect_databases") }}
+{{ $dbAction := default dict (index (default dict .nuon.actions.workflows) "inspect_postgres") }}
 {{ $dbOutputs := default dict (dig "outputs" dict $dbAction) }}
 {{ $databases := dig "databases" (dict) (dig "steps" dict $dbOutputs) }}
-{{ $chAction := default dict (index (default dict .nuon.actions.workflows) "ch_inspect") }}
+{{ $chAction := default dict (index (default dict .nuon.actions.workflows) "inspect_clickhouse") }}
 {{ $chOutputs := default dict (dig "outputs" dict $chAction) }}
 {{ $clickhouse := dig "clickhouse" (dict) (dig "steps" dict $chOutputs) }}
 
