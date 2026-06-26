@@ -1,9 +1,0 @@
-name        = "cloudsql_inspect_ctl_api"
-description = "Inspects the ctl-api (nuon) Cloud SQL instance: instance configuration plus the most recent operations against the instance, in table format."
-readme      = "./runbooks/cloudsql_inspect_ctl_api.md"
-labels      = { service = "cloudsql", type = "debug" }
-
-[[steps]]
-name        = "Inspect ctl-api Cloud SQL"
-type        = "action"
-action_name = "cloudsql_inspect_ctl_api"
