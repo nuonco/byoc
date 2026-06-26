@@ -10,6 +10,31 @@ admin_email="jon@nuon.co"
 
 RESPONSE_COUNTS='{"orgs": {}, "installs": {}}'
 
+# wait_for_admin polls the admin API until it answers, tolerating curl-level
+# failures (DNS not resolvable yet = exit 6, connection refused = exit 7,
+# timeout = exit 28). Without this the first list-runners curl below fails
+# under set -e/pipefail and the whole step errors out.
+wait_for_admin() {
+  attempts=0
+  max_attempts=30   # ~5 min at 10s
+  while [ "$attempts" -lt "$max_attempts" ]; do
+    attempts=$((attempts + 1))
+    rc=0
+    code=$(curl -s --max-time 10 -o /dev/null -w '%{http_code}' \
+      "$admin_api_url/v1/runners?type=org&limit=1&offset=0") || rc=$?
+    if [ "$rc" -eq 0 ] && [ "$code" -ge 200 ] && [ "$code" -lt 500 ]; then
+      echo "admin API reachable ($admin_api_url, http $code) after $attempts attempt(s)"
+      return 0
+    fi
+    echo "waiting for admin API ($admin_api_url): attempt $attempts/$max_attempts (curl rc=$rc, http=$code)"
+    sleep 10
+  done
+  echo "ERROR: admin API never became reachable at $admin_api_url after $max_attempts attempts" >&2
+  return 1
+}
+
+wait_for_admin
+
 echo "getting RUNNER_CONTAINER_IMAGE_TAG from ctl-api configmap"
 RUNNER_CONTAINER_IMAGE_TAG=$(kubectl get -n ctl-api configmaps ctl-api -o yaml |\
   grep RUNNER_CONTAINER_IMAGE_TAG |\
@@ -70,17 +95,38 @@ update_runners() {
 offset="0"
 limit="100"
 
+# list_runner_ids fetches the runner ids for a given type. This step runs
+# right after restart-deployments rolls the ctl-api pods, so a transient
+# curl failure here is expected; we retry, and if we still fail we print
+# the exact curl exit code instead of dying blind. Sets the global
+# RUNNER_IDS.
+list_runner_ids() {
+  list_type="$1"
+  url="$admin_api_url/v1/runners?type=$list_type&limit=$limit&offset=$offset"
+  attempts=0
+  max_attempts=10
+  while [ "$attempts" -lt "$max_attempts" ]; do
+    attempts=$((attempts + 1))
+    rc=0
+    body=$(curl -s --max-time 15 "$url") || rc=$?
+    if [ "$rc" -eq 0 ]; then
+      RUNNER_IDS=$(printf '%s' "$body" | jq -r '.[].id')
+      return 0
+    fi
+    echo "  curl for $list_type runners failed (exit $rc) at $url; attempt $attempts/$max_attempts" >&2
+    sleep 6
+  done
+  echo "ERROR: could not list $list_type runners after $max_attempts attempts (last curl exit $rc) at $url" >&2
+  return 1
+}
+
 # update org runners
 echo "getting org runners"
-url="$admin_api_url/v1/runners?type=org&limit=$limit&offset=$offset"
-org_runner_ids=`curl -s --max-time 5 -X GET "$url" | jq -r '.[].id'`
-
-update_runners "orgs" "$org_runner_ids"
+list_runner_ids "org"
+update_runners "orgs" "$RUNNER_IDS"
 
 echo "getting install runners"
-url="$admin_api_url/v1/runners?type=install&limit=$limit&offset=$offset"
-install_runner_ids=`curl -s --max-time 5 -X GET "$url" | jq -r '.[].id'`
-
-update_runners "installs" "$install_runner_ids"
+list_runner_ids "install"
+update_runners "installs" "$RUNNER_IDS"
 
 echo "{\"responses\": $RESPONSE_COUNTS}" | jq -c . >> $NUON_ACTIONS_OUTPUT_FILEPATH
