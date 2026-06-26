@@ -53,6 +53,22 @@ fmt_pair() {
   if [ "$1" = "null" ] || [ "$2" = "null" ]; then echo "n/a"; else echo "${1}/${2}Gi"; fi
 }
 
+# fetch static instance config from the Cloud SQL Admin API.
+fetch_config() {
+  local inst="$1"
+  curl -s "https://sqladmin.googleapis.com/v1/projects/${project}/instances/${inst}" \
+    -H "Authorization: Bearer ${token}" \
+  | jq -c '{
+      instance_id:  .name,
+      class:        .settings.tier,
+      status:       .state,
+      storage_type: .settings.dataDiskType,
+      allocated_gb: (.settings.dataDiskSizeGb | tonumber),
+      multi_az:     (.settings.availabilityType == "REGIONAL"),
+      az:           .gceZone
+    } | with_entries(select(.value != null))'
+}
+
 M='cloudsql.googleapis.com/database'
 
 while IFS= read -r entry; do
@@ -119,6 +135,12 @@ while IFS= read -r entry; do
     "$(fmt_num "$wr_d")" \
     "$(fmt_num "$tot")" \
     "n/a"
+
+  config=$(fetch_config "$inst")
+  row=$(echo "$row" | jq -c --argjson cfg "$config" '. + {config: $cfg}')
+
+  echo "$config" | jq -r '"  \(.instance_id // "n/a")  \(.class // "n/a")  \(.storage_type // "n/a") \(.allocated_gb // "?")GB  multi-az=\(if .multi_az then "yes" else "no" end)  az=\(.az // "n/a")"'
+  echo
 
   echo "$row" | jq -c '{(.label): .}' >> "$NUON_ACTIONS_OUTPUT_FILEPATH"
 done <<< "$DBS"

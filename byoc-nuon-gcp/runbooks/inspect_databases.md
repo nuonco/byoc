@@ -51,6 +51,36 @@
   </tbody>
 </table>
 
+<div style="padding-top:1.5rem;"></div>
+
+<table>
+  <thead>
+    <tr>
+      <th>Database</th>
+      <th>Instance</th>
+      <th>Class</th>
+      <th>Status</th>
+      <th>Storage</th>
+      <th>Multi-AZ</th>
+      <th>AZ</th>
+    </tr>
+  </thead>
+  <tbody>
+  {{ range $label, $r := $databases }}
+    {{ $c := dig "config" (dict) $r }}
+    <tr>
+      <td>{{ $label }}</td>
+      <td><code>{{ dig "instance_id" "—" $c }}</code></td>
+      <td>{{ dig "class" "—" $c }}</td>
+      <td>{{ dig "status" "—" $c }}</td>
+      <td>{{ dig "storage_type" "—" $c }}{{ $ag := dig "allocated_gb" nil $c }}{{ if not (kindIs "invalid" $ag) }} / {{ $ag }}GB{{ end }}</td>
+      <td>{{ $v := dig "multi_az" nil $c }}{{ if kindIs "invalid" $v }}—{{ else if $v }}Yes{{ else }}No{{ end }}</td>
+      <td>{{ dig "az" "—" $c }}</td>
+    </tr>
+  {{ end }}
+  </tbody>
+</table>
+
 <div style="padding-top:1rem;"></div>
 
 <nuon-banner theme="info">Averages over the last hour from Cloud Monitoring. DB load has no Cloud SQL equivalent (no average-active-sessions metric), so it shows —.</nuon-banner>

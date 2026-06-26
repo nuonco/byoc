@@ -23,6 +23,25 @@ echo
 FMT='%-16s %-7s %-10s %-16s %-11s %-16s %-11s %-12s %-12s %-9s\n'
 printf "$FMT" DATABASE CPU% MEM_USED% MEM_Gi DISK_USED% DISK_Gi READ_IOPS WRITE_IOPS TOTAL_IOPS DB_LOAD
 
+# fetch static instance config from describe-db-instances, keyed by DbiResourceId.
+# emits a compact JSON object with string/bool/number fields.
+fetch_config() {
+  local resource_id="$1"
+  aws rds describe-db-instances \
+    --query "DBInstances[?DbiResourceId=='${resource_id}'] | [0]" \
+    --output json \
+  | jq -c '{
+      instance_id:      .DBInstanceIdentifier,
+      class:            .DBInstanceClass,
+      status:           .DBInstanceStatus,
+      storage_type:     .StorageType,
+      allocated_gb:     .AllocatedStorage,
+      provisioned_iops: .Iops,
+      multi_az:         .MultiAZ,
+      az:               .AvailabilityZone
+    } | with_entries(select(.value != null))'
+}
+
 # compute the per-DB metrics from a PI get-resource-metrics response. emits a
 # compact JSON object with numeric fields (or null when a metric is missing).
 compute_row() {
@@ -109,7 +128,8 @@ while IFS= read -r entry; do
     --start-time "$one_hour_ago" --end-time "$now" \
     --period-in-seconds 3600)
 
-  row=$(echo "$metrics" | compute_row "$label")
+  config=$(fetch_config "$resource_id")
+  row=$(echo "$metrics" | compute_row "$label" | jq -c --argjson cfg "$config" '. + {config: $cfg}')
 
   read -r cpu mem_pct mem_used mem_total disk_pct disk_used disk_total rd wr tot load < <(
     echo "$row" | jq -r '[
@@ -129,6 +149,9 @@ while IFS= read -r entry; do
     "$(fmt_num "$wr")" \
     "$(fmt_num "$tot")" \
     "$(fmt_num "$load")"
+
+  echo "$config" | jq -r '"  \(.instance_id // "n/a")  \(.class // "n/a")  \(.storage_type // "n/a") \(.allocated_gb // "?")GB  multi-az=\(if .multi_az then "yes" else "no" end)  az=\(.az // "n/a")"'
+  echo
 
   # structured output for the readme to render: key by label so the per-DB
   # objects merge into a map (outputs.steps.databases) rather than overwriting
