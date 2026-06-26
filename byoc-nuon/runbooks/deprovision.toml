@@ -26,3 +26,16 @@ action_name = "rds_state_rm_temporal"
 name        = "Delete Temporal RDS"
 type        = "action"
 action_name = "rds_delete_temporal"
+
+# S3 buckets: detach the buckets + KMS key from state, then empty + delete them
+# via the AWS API (irreversible — no snapshot). aws_s3_bucket has
+# prevent_destroy and is policy-critical, so this must be explicit.
+[[steps]]
+name        = "Detach s3_buckets from state"
+type        = "action"
+action_name = "s3_state_rm"
+
+[[steps]]
+name        = "Delete s3 buckets"
+type        = "action"
+action_name = "s3_delete"

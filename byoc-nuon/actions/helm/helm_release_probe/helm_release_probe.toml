@@ -1,0 +1,21 @@
+# action
+# description: lists Helm release storage objects (ConfigMaps/Secrets labeled
+# owner=helm) across the cluster so you can see whether a component has a
+# recorded Helm release, in which namespace, and with what status. Useful for
+# debugging teardown "no prior release" conditions (e.g. karpenter_nodepools).
+name    = "helm_release_probe"
+labels  = { service = "helm", type = "debug" }
+label   = "aws"
+timeout = "5m"
+role    = "{{.nuon.install.id}}-provision"
+
+[[triggers]]
+type = "manual"
+
+[[steps]]
+name            = "Probe Helm release storage"
+inline_contents = "./helm/helm_release_probe/helm_release_probe.sh"
+
+[steps.env_vars]
+# Substring highlighted in the "Matches" section; override per investigation.
+RELEASE_FILTER = "karpenter"
