@@ -14,7 +14,7 @@ type = "manual"
 
 [[steps]]
 name            = "Detach ctl-api RDS from state"
-inline_contents = "./rds/rds_state_rm/rds_state_rm.sh"
+inline_contents = "./tf/state_rm/state_rm.sh"
 
 [steps.env_vars]
 INSTALL_COMPONENT_ID = "{{ .nuon.components.rds_cluster_nuon.install_component_id }}"

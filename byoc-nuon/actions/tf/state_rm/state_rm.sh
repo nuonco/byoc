@@ -4,21 +4,23 @@ set -e
 set -o pipefail
 set -u
 
-# Removes one or more resources from a component's Terraform state WITHOUT
-# destroying them, by talking directly to the Nuon HTTP state backend with the
-# Terraform CLI. This is the third step of an RDS teardown: after the instance
-# has been backed up and deleted out-of-band via the AWS API, its address is
-# still in Terraform state, so a normal teardown plan would try to destroy it
-# and be blocked by the block-destructive-changes policy. Detaching it here lets
-# the remaining (non-critical) resources tear down cleanly.
+# Removes one or more resources (or whole modules) from a component's Terraform
+# state WITHOUT destroying them, by driving the Terraform CLI against the Nuon
+# HTTP state backend. Used as a teardown step: after a critical resource has been
+# deleted out-of-band via the cloud API, its address is still in Terraform state,
+# so a normal teardown plan would try to destroy it and be blocked (by the
+# block-destructive-changes policy and/or a lifecycle prevent_destroy). Detaching
+# it here lets the remaining (non-critical) resources tear down cleanly.
 #
 # Required env:
 #   INSTALL_COMPONENT_ID  the install-component id that owns the terraform
 #                         workspace (set in the action from install_component_id)
-#   STATE_ADDRESSES       space/comma-separated Terraform addresses to remove
+#   STATE_ADDRESSES       space/comma-separated Terraform addresses to remove.
+#                         May be individual resources (aws_s3_bucket.blob) or
+#                         whole modules (module.clickhouse_bucket).
 # Optional env:
 #   TF_VERSION            terraform version to use (default 1.11.3, match component)
-#   DB_LABEL              human-friendly label for log output
+#   LABEL / DB_LABEL      human-friendly label for log output
 #
 # Endpoint is read from the standard action environment (RUNNER_API_URL). The
 # runner API token is not exported into the action env, so we mint one the same
@@ -29,10 +31,10 @@ set -u
 # until a first-class "terraform state rm" runbook step exists.
 
 tf_version="${TF_VERSION:-1.11.3}"
-db_label="${DB_LABEL:-component}"
+label="${LABEL:-${DB_LABEL:-component}}"
 
 echo "==================================================================="
-echo " Terraform state rm: ${db_label}"
+echo " Terraform state rm: ${label}"
 echo "==================================================================="
 
 # ── preflight ──────────────────────────────────────────────────────────────
@@ -71,8 +73,6 @@ if [ -z "${RUNNER_API_TOKEN:-}" ] || [ "$RUNNER_API_TOKEN" = "null" ]; then
 fi
 
 # ── resolve the component's terraform workspace id ───────────────────────────
-# The runner API lists the org's terraform workspaces; match the one owned by
-# this install component.
 echo "Looking up terraform workspace for install component ${INSTALL_COMPONENT_ID}..."
 ws_json=$(curl -fsS -H "Authorization: Bearer ${RUNNER_API_TOKEN}" \
   "${RUNNER_API_URL}/v1/terraform-workspaces")
@@ -99,7 +99,7 @@ fi
 echo "Workspace: ${workspace_id}"
 
 # ── ensure a terraform binary is available ───────────────────────────────────
-workdir="$(pwd)/.rds_state_rm"
+workdir="$(pwd)/.tf_state_rm"
 mkdir -p "$workdir"
 
 if command -v terraform >/dev/null 2>&1; then
@@ -141,17 +141,22 @@ echo "Initializing http backend..."
     -backend-config="unlock_method=POST" >/dev/null
 )
 
-# ── remove each requested address (idempotent: skip if not in state) ─────────
-in_state=$(cd "$workdir" && "$tf" state list)
-
+# ── remove each requested address (idempotent: tolerate already-absent) ──────
+# Works for individual resources AND whole modules (module.<name>). We attempt
+# the rm and treat "no matching" as a no-op so re-runs and partial state are safe.
 for addr_to_rm in $addresses; do
-  if printf '%s\n' "$in_state" | grep -Fxq "$addr_to_rm"; then
-    echo "Removing from state: ${addr_to_rm}"
-    (cd "$workdir" && "$tf" state rm "$addr_to_rm")
+  if out=$(cd "$workdir" && "$tf" state rm "$addr_to_rm" 2>&1); then
+    echo "Removed from state: ${addr_to_rm}"
   else
-    echo "Not in state (already removed?), skipping: ${addr_to_rm}"
+    case "$out" in
+      *"No matching"* | *"no matching"* | *"not found"* | *"No instance"*)
+        echo "Not in state (already removed?), skipping: ${addr_to_rm}" ;;
+      *)
+        echo "$out" >&2
+        exit 1 ;;
+    esac
   fi
 done
 
 echo ""
-echo "State detach complete for ${db_label}."
+echo "State detach complete for ${label}."

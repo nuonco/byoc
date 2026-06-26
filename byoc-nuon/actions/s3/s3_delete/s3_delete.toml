@@ -1,0 +1,23 @@
+# action
+# description: empties and deletes the s3_buckets component's three buckets
+# (blob, clickhouse, install-templates) via the AWS API and schedules the
+# clickhouse KMS key for deletion. Explicit, irreversible destruction step —
+# deliberately decoupled from the Terraform teardown.
+name    = "s3_delete"
+labels  = { service = "s3", type = "sop" }
+label   = "aws"
+timeout = "30m"
+role    = "{{.nuon.install.id}}-deprovision"
+
+[[triggers]]
+type = "manual"
+
+[[steps]]
+name            = "Delete s3 buckets + schedule KMS key"
+inline_contents = "./s3/s3_delete/s3_delete.sh"
+
+[steps.env_vars]
+BLOB_BUCKET       = "{{ .nuon.components.s3_buckets.outputs.blob_bucket.id }}"
+CLICKHOUSE_BUCKET = "{{ .nuon.components.s3_buckets.outputs.clickhouse_bucket.id }}"
+TEMPLATES_BUCKET  = "{{ .nuon.components.s3_buckets.outputs.install_template_bucket.id }}"
+KMS_PENDING_WINDOW_DAYS = "7"
