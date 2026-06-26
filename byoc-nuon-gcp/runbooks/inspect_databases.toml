@@ -1,0 +1,14 @@
+name        = "inspect_databases"
+description = "Health metrics for the databases: 1-hour Cloud Monitoring averages for the Cloud SQL instances (ctl-api, temporal), plus a kubelet snapshot of the ClickHouse pods."
+readme      = "./runbooks/inspect_databases.md"
+labels      = { service = "cloudsql", type = "debug" }
+
+[[steps]]
+name        = "Inspect: postgres"
+type        = "action"
+action_name = "inspect_postgres"
+
+[[steps]]
+name        = "Inspect: clickhouse"
+type        = "action"
+action_name = "inspect_clickhouse"

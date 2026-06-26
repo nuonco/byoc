@@ -27,3 +27,13 @@ action_name = "inspect_runners"
 name        = "Inspect: installs"
 type        = "action"
 action_name = "inspect_installs"
+
+[[steps]]
+name        = "Inspect: postgres"
+type        = "action"
+action_name = "inspect_postgres"
+
+[[steps]]
+name        = "Inspect: clickhouse"
+type        = "action"
+action_name = "inspect_clickhouse"
