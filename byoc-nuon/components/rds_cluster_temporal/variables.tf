@@ -72,7 +72,7 @@ variable "iam_database_authentication_enabled" {
 variable "deletion_protection" {
   type        = string
   description = "Whether or not the enable deletion protection."
-  default     = "false"
+  default     = "true"
 }
 
 variable "apply_immediately" {

@@ -12,7 +12,7 @@ type = "manual"
 
 [[steps]]
 name            = "AAS by waits"
-inline_contents = "./aws/rds_aas/aas_breakdown.sh"
+inline_contents = "./rds/rds_aas/aas_breakdown.sh"
 
 [steps.env_vars]
 DB_RESOURCE_ID = "{{ .nuon.components.rds_cluster_nuon.outputs.db_instance_resource_id }}"
@@ -21,7 +21,7 @@ MODE           = "waits"
 
 [[steps]]
 name            = "AAS by queries"
-inline_contents = "./aws/rds_aas/aas_breakdown.sh"
+inline_contents = "./rds/rds_aas/aas_breakdown.sh"
 
 [steps.env_vars]
 DB_RESOURCE_ID = "{{ .nuon.components.rds_cluster_nuon.outputs.db_instance_resource_id }}"
@@ -30,7 +30,7 @@ MODE           = "queries"
 
 [[steps]]
 name            = "AAS by locks"
-inline_contents = "./aws/rds_aas/aas_breakdown.sh"
+inline_contents = "./rds/rds_aas/aas_breakdown.sh"
 
 [steps.env_vars]
 DB_RESOURCE_ID = "{{ .nuon.components.rds_cluster_nuon.outputs.db_instance_resource_id }}"

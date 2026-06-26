@@ -1,0 +1,19 @@
+# action
+# description: takes a deliberate manual snapshot of the ctl-api (nuon) RDS
+# instance and waits for it to complete. First step of the ctl-api RDS teardown.
+name    = "rds_backup_ctl_api"
+labels  = { service = "rds", type = "sop" }
+label   = "aws"
+timeout = "60m"
+role    = "{{.nuon.install.id}}-rds-operations"
+
+[[triggers]]
+type = "manual"
+
+[[steps]]
+name            = "Backup ctl-api RDS"
+inline_contents = "./rds/rds_backup/rds_backup.sh"
+
+[steps.env_vars]
+DB_RESOURCE_ID = "{{ .nuon.components.rds_cluster_nuon.outputs.db_instance_resource_id }}"
+DB_LABEL       = "ctl-api (nuon)"

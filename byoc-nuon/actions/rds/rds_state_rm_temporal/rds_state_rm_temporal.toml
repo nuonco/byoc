@@ -1,0 +1,23 @@
+# action
+# description: removes the Temporal RDS instance from its Terraform component
+# state (without destroying it) so the remaining resources can tear down without
+# tripping the block-destructive-changes policy. Run after the instance has been
+# backed up and deleted via the AWS API.
+name    = "rds_state_rm_temporal"
+labels  = { service = "rds", type = "sop" }
+label   = "aws"
+timeout = "15m"
+role    = "{{.nuon.install.id}}-rds-operations"
+
+[[triggers]]
+type = "manual"
+
+[[steps]]
+name            = "Detach Temporal RDS from state"
+inline_contents = "./rds/rds_state_rm/rds_state_rm.sh"
+
+[steps.env_vars]
+INSTALL_COMPONENT_ID = "{{ .nuon.components.rds_cluster_temporal.install_component_id }}"
+STATE_ADDRESSES      = "module.db.module.db_instance.aws_db_instance.this[0]"
+TF_VERSION           = "1.11.3"
+DB_LABEL             = "temporal"

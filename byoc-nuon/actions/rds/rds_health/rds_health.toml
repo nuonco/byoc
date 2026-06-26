@@ -11,7 +11,7 @@ type = "manual"
 
 [[steps]]
 name = "rds health"
-inline_contents = "./aws/rds_health/rds_health.sh"
+inline_contents = "./rds/rds_health/rds_health.sh"
 
 [steps.env_vars]
 DB_TARGET = "temporal"
