@@ -1,0 +1,17 @@
+type                 = "custom"
+name                 = "{{ .nuon.install.id }}-s3-operations"
+description          = "S3 bucket teardown operations (empty/delete buckets, schedule KMS key deletion) for BYOC Nuon"
+display_name         = "s3-operations"
+permissions_boundary = "./boundaries/s3_operations_boundary.json"
+
+# Custom operational role scoped to tearing down this install's S3 buckets: list
+# and delete every object version, delete the buckets themselves, and schedule
+# the clickhouse bucket's KMS key for deletion (delete its alias + schedule-key-
+# deletion). Bucket/object actions are scoped to this install's three buckets by
+# ARN prefix; KMS actions are scoped to this install by the install.nuon.co/id
+# resource tag (and the alias by name). Like rds-operations, this role is
+# disabled by default and must be enabled by the customer before a deprovision
+# can delete these resources.
+[[policies]]
+name     = "{{ .nuon.install.id }}-s3-operations-destruction"
+contents = "./policies/s3-operations-destruction.json"

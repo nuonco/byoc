@@ -8,7 +8,7 @@ dependencies = ["crd_clickhouse_operator", "karpenter_nodepools"]
 [public_repo]
 repo      = "nuonco/byoc"
 directory = "byoc-nuon/components/clickhouse_cluster"
-branch    = "main"
+branch    = "ja/aws-teardown"
 
 [vars]
 install_id = "{{ .nuon.install.id }}"

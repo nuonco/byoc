@@ -1,0 +1,39 @@
+# action
+# description: pre-teardown hook for the Temporal RDS component. Runs
+# automatically right before the component's Terraform destroy: detach the
+# instance from Terraform state, then delete it via the AWS API (taking a final
+# snapshot and waiting for completion). Detaching from state first means the
+# subsequent Terraform destroy never observes the deletion as drift and never
+# trips prevent_destroy / block-destructive-changes; the final snapshot keeps
+# the database recoverable.
+#
+# Gated by the -rds-operations role, which is disabled by default: unless the
+# customer has explicitly enabled it, these steps fail with AccessDenied and the
+# database is never deleted.
+name    = "rds_teardown_temporal"
+labels  = { service = "rds", type = "step" }
+label   = "aws"
+timeout = "60m"
+role    = "{{.nuon.install.id}}-rds-operations"
+
+[[triggers]]
+type           = "pre-teardown-component"
+component_name = "rds_cluster_temporal"
+
+[[steps]]
+name            = "Detach Temporal RDS from state"
+inline_contents = "./tf/state_rm/state_rm.sh"
+
+[steps.env_vars]
+INSTALL_COMPONENT_ID = "{{ .nuon.components.rds_cluster_temporal.install_component_id }}"
+STATE_ADDRESSES      = "module.db.module.db_instance.aws_db_instance.this[0]"
+TF_VERSION           = "1.11.3"
+DB_LABEL             = "temporal"
+
+[[steps]]
+name            = "Delete Temporal RDS"
+inline_contents = "./rds/rds_delete/rds_delete.sh"
+
+[steps.env_vars]
+DB_RESOURCE_ID = "{{ .nuon.components.rds_cluster_temporal.outputs.db_instance_resource_id }}"
+DB_LABEL       = "temporal"

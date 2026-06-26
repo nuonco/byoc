@@ -1,4 +1,11 @@
-Steps to deprovision this install.
+Break-glass steps to deprovision this install by hand.
+
+> [!IMPORTANT] **This runbook is a manual fallback.** During a normal deprovision, each stateful component deletes its
+> own resources automatically via a `pre-teardown-component` hook (`rds_teardown_ctl_api`, `rds_teardown_temporal`,
+> `s3_teardown`) that runs immediately before that component's Terraform destroy. Those hooks are gated by the
+> `-rds-operations` / `-s3-operations` roles, which are **disabled by default** — the customer must enable them before a
+> deprovision can delete these resources, so deletion can never happen by accident. Use the steps below only to drive the
+> same actions by hand if a hook fails mid-teardown.
 
 Nuon BYOC on AWS uses Postgres on RDS for the control-plane (`ctl-api`) and Temporal databases. These stateful databases
 must be removed **before** you can run a tear-down job on their components — the `block-destructive-changes` policy
