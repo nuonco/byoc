@@ -22,6 +22,38 @@
 
 {{ if gt (len $databases) 0 }}
 
+{{ $ca := dig "ctl-api" (dict) $databases }}{{ $cac := dig "config" (dict) $ca }}
+{{ $tp := dig "temporal" (dict) $databases }}{{ $tpc := dig "config" (dict) $tp }}
+
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;margin-bottom:2rem;">
+  <div>
+    <strong>ctl-api</strong>
+    <table style="margin-top:0.75rem;">
+      <tbody>
+        <tr><td>Instance</td><td><code>{{ dig "instance_id" "—" $cac }}</code></td></tr>
+        <tr><td>Class</td><td>{{ dig "class" "—" $cac }}</td></tr>
+        <tr><td>Status</td><td>{{ dig "status" "—" $cac }}</td></tr>
+        <tr><td>Storage</td><td>{{ dig "storage_type" "—" $cac }}{{ $ag := dig "allocated_gb" nil $cac }}{{ if not (kindIs "invalid" $ag) }} / {{ $ag }}GB{{ end }}</td></tr>
+        <tr><td>Multi-AZ</td><td>{{ $v := dig "multi_az" nil $cac }}{{ if kindIs "invalid" $v }}—{{ else if $v }}Yes{{ else }}No{{ end }}</td></tr>
+        <tr><td>AZ</td><td>{{ dig "az" "—" $cac }}</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div>
+    <strong>temporal</strong>
+    <table style="margin-top:0.75rem;">
+      <tbody>
+        <tr><td>Instance</td><td><code>{{ dig "instance_id" "—" $tpc }}</code></td></tr>
+        <tr><td>Class</td><td>{{ dig "class" "—" $tpc }}</td></tr>
+        <tr><td>Status</td><td>{{ dig "status" "—" $tpc }}</td></tr>
+        <tr><td>Storage</td><td>{{ dig "storage_type" "—" $tpc }}{{ $ag := dig "allocated_gb" nil $tpc }}{{ if not (kindIs "invalid" $ag) }} / {{ $ag }}GB{{ end }}</td></tr>
+        <tr><td>Multi-AZ</td><td>{{ $v := dig "multi_az" nil $tpc }}{{ if kindIs "invalid" $v }}—{{ else if $v }}Yes{{ else }}No{{ end }}</td></tr>
+        <tr><td>AZ</td><td>{{ dig "az" "—" $tpc }}</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
 <table>
   <thead>
     <tr>
@@ -46,36 +78,6 @@
       <td>{{ $v := dig "write_iops" nil $r }}{{ if kindIs "invalid" $v }}—{{ else }}{{ $v }}{{ end }}</td>
       <td>{{ $v := dig "total_iops" nil $r }}{{ if kindIs "invalid" $v }}—{{ else }}{{ $v }}{{ end }}</td>
       <td>{{ $v := dig "db_load" nil $r }}{{ if kindIs "invalid" $v }}—{{ else }}{{ $v }}{{ end }}</td>
-    </tr>
-  {{ end }}
-  </tbody>
-</table>
-
-<div style="padding-top:1.5rem;"></div>
-
-<table>
-  <thead>
-    <tr>
-      <th>Database</th>
-      <th>Instance</th>
-      <th>Class</th>
-      <th>Status</th>
-      <th>Storage</th>
-      <th>Multi-AZ</th>
-      <th>AZ</th>
-    </tr>
-  </thead>
-  <tbody>
-  {{ range $label, $r := $databases }}
-    {{ $c := dig "config" (dict) $r }}
-    <tr>
-      <td>{{ $label }}</td>
-      <td><code>{{ dig "instance_id" "—" $c }}</code></td>
-      <td>{{ dig "class" "—" $c }}</td>
-      <td>{{ dig "status" "—" $c }}</td>
-      <td>{{ dig "storage_type" "—" $c }}{{ $ag := dig "allocated_gb" nil $c }}{{ if not (kindIs "invalid" $ag) }} / {{ $ag }}GB{{ end }}</td>
-      <td>{{ $v := dig "multi_az" nil $c }}{{ if kindIs "invalid" $v }}—{{ else if $v }}Yes{{ else }}No{{ end }}</td>
-      <td>{{ dig "az" "—" $c }}</td>
     </tr>
   {{ end }}
   </tbody>
