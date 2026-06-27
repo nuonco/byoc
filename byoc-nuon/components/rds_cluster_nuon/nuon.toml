@@ -9,7 +9,7 @@ drift_schedule = "0 0 * * *"
 [public_repo]
 repo      = "nuonco/byoc"
 directory = "byoc-nuon/components/rds_cluster_nuon"
-branch    = "main"
+branch    = "ja/aws-teardown"
 
 [vars]
 identifier      = "nuon-{{ .nuon.install.id }}"
