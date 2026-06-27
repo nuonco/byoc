@@ -1,0 +1,20 @@
+# action
+name    = "db_access_query"
+labels  = { service = "ctl-api", type = "break-glass" }
+timeout = "5m"
+role    = "{{.nuon.install.id}}-db-access"
+
+[[triggers]]
+type = "manual"
+
+[[steps]]
+name            = "Query the DB"
+inline_contents = "./db_access/db_access_query/query.sh"
+
+[steps.env_vars]
+DB_USER  = "ctl_api"
+DB_NAME  = "ctl_api"
+DB_ADDR  = "{{ .nuon.components.rds_cluster_nuon.outputs.address }}"
+DB_PORT  = "5432"
+REGION   = "{{ .nuon.install_stack.outputs.region }}"
+QUERY    = "select count(id) from installs;"

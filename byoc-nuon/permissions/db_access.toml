@@ -1,0 +1,11 @@
+type             = "custom"
+name             = "{{ .nuon.install.id }}-db-access"
+description      = "Break-glass role for querying the ctl-api Postgres database via the db-tools pod. Disabled by default; customer must enable in their install stack."
+display_name     = "db-access"
+enabled_in_stack = false
+
+permissions_boundary = "./boundaries/db_access_boundary.json"
+
+[[policies]]
+name     = "{{ .nuon.install.id }}-db-access"
+contents = "./policies/db-access.json"
