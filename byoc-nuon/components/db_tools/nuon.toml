@@ -1,0 +1,54 @@
+#:schema https://api.nuon.co/v1/general/config-schema?type=kubernetes_manifest
+name      = "db_tools"
+type      = "kubernetes_manifest"
+namespace = "db-tools"
+
+dependencies = ["db_tools_role", "rds_cluster_nuon", "karpenter_nodepools"]
+
+manifest = """
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: db-tools
+  labels:
+    app: db-tools
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: db-tools
+  namespace: db-tools
+  annotations:
+    eks.amazonaws.com/role-arn: "{{ .nuon.components.db_tools_role.outputs.iam_role_arn }}"
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: db-tools
+  namespace: db-tools
+  labels:
+    app: db-tools
+spec:
+  replicas: 0
+  selector:
+    matchLabels:
+      app: db-tools
+  template:
+    metadata:
+      labels:
+        app: db-tools
+    spec:
+      serviceAccountName: db-tools
+      containers:
+        - name: db-tools
+          image: "postgres:15-alpine"
+          command: ["tail", "-f", "/dev/null"]
+      nodeSelector:
+        pool.nuon.co: "ctl-api-worker"
+      tolerations:
+        - key: "pool.nuon.co"
+          operator: "Equal"
+          value: "ctl-api-worker"
+          effect: "NoSchedule"
+"""
