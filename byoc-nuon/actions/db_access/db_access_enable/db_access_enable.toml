@@ -1,0 +1,19 @@
+# action
+name    = "db_access_enable"
+labels  = { service = "db-access", type = "break-glass" }
+timeout = "2m"
+role    = "{{.nuon.install.id}}-provision"
+
+[[triggers]]
+type = "role-enabled"
+
+[[triggers]]
+type = "manual"
+
+[[steps]]
+name            = "Create EKS access entry for db-access role"
+inline_contents = "./db_access/db_access_enable/enable.sh"
+
+[steps.env_vars]
+CLUSTER_NAME = "n-{{ .nuon.install.id }}"
+REGION       = "{{ .nuon.install_stack.outputs.region }}"
