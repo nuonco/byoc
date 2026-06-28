@@ -1,0 +1,14 @@
+# action
+# description: cluster check 2/4 — "is the LB controller running and is its IRSA
+# actually wired?" Controller pod, SA role-arn annotation, injected AWS_ROLE_ARN,
+# and credential errors in its logs. Read-only, kubectl only.
+name    = "ctl_api_alb_controller"
+labels  = { service = "ctl-api", type = "debug" }
+timeout = "5m"
+
+[[triggers]]
+type = "manual"
+
+[[steps]]
+name            = "LB controller workload + IRSA wiring"
+inline_contents = "./ctl_api/api_probe/alb_controller.sh"

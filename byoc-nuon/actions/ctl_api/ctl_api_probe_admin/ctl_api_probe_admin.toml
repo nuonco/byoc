@@ -1,0 +1,22 @@
+# action
+# description: per-endpoint health probe for the ctl-api ADMIN API
+# (admin.<internal_domain>, http, internal-scheme ALB, private Route53 zone).
+# Reachability + DNS + ingress/ALB. Read-only, kubectl/curl only.
+name    = "ctl_api_probe_admin"
+labels  = { service = "ctl-api", type = "debug" }
+timeout = "5m"
+
+[[triggers]]
+type = "manual"
+
+[[steps]]
+name            = "Probe ctl-api admin endpoint"
+inline_contents = "./ctl_api/api_probe/endpoint_probe.sh"
+
+[steps.env_vars]
+NAMESPACE    = "ctl-api"
+INGRESS_NAME = "ctl-api-admin"
+HOSTNAME     = "admin.{{ .nuon.sandbox.outputs.nuon_dns.internal_domain.name }}"
+ZONE         = "internal"
+SCHEME       = "http"
+HEALTH_PATH  = "/readyz"

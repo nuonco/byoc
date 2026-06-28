@@ -1,0 +1,17 @@
+# action
+# description: cluster check 1/4 — "are ALBs being built for the ctl-api
+# ingresses at all?" Lists each ingress's ALB address + FailedBuildModel count.
+# Read-only, kubectl only.
+name    = "ctl_api_alb_ingress_status"
+labels  = { service = "ctl-api", type = "debug" }
+timeout = "5m"
+
+[[triggers]]
+type = "manual"
+
+[[steps]]
+name            = "ALB ingress build status"
+inline_contents = "./ctl_api/api_probe/alb_ingress_status.sh"
+
+[steps.env_vars]
+NAMESPACE = "ctl-api"
