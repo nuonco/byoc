@@ -8,7 +8,7 @@ name    = "s3_state_rm"
 labels  = { service = "s3", type = "sop" }
 label   = "aws"
 timeout = "15m"
-role    = "{{.nuon.install.id}}-deprovision"
+role    = "{{.nuon.install.id}}-s3-operations"
 
 [[triggers]]
 type = "manual"
@@ -21,6 +21,6 @@ inline_contents = "./tf/state_rm/state_rm.sh"
 INSTALL_COMPONENT_ID = "{{ .nuon.components.s3_buckets.install_component_id }}"
 # blob bucket (+ its sub-resources), both module buckets (whole modules), and
 # the clickhouse KMS key + alias — every critical / prevent_destroy address.
-STATE_ADDRESSES = "aws_s3_bucket.blob,aws_s3_bucket_versioning.blob,aws_s3_bucket_ownership_controls.blob,aws_s3_bucket_policy.blob,module.clickhouse_bucket,module.install_template_bucket,aws_kms_key.clickhouse_bucket,aws_kms_alias.clickhouse_bucket"
+STATE_ADDRESSES = "aws_s3_bucket.blob,aws_s3_bucket_versioning.blob,aws_s3_bucket_ownership_controls.blob,aws_s3_bucket_policy.blob,module.clickhouse_bucket,module.install_template_bucket,aws_s3_bucket_policy.install_templates,aws_kms_key.clickhouse_bucket,aws_kms_alias.clickhouse_bucket"
 TF_VERSION      = "1.11.3"
 LABEL           = "s3_buckets"

@@ -1,0 +1,45 @@
+# action
+# description: pre-teardown hook for the s3_buckets component. Runs automatically
+# right before the component's Terraform destroy: detach the buckets + KMS key
+# from Terraform state, then empty + delete the three buckets and schedule the
+# clickhouse KMS key for deletion via the AWS API. Detaching from state first
+# (consistent with the RDS hooks and the break-glass runbook) means the destroy
+# never observes the deletion as drift and never trips prevent_destroy /
+# block-destructive-changes.
+#
+# Ordering note: s3_buckets is torn down AFTER clickhouse_cluster (which depends
+# on it), so the clickhouse backups bucket still exists while clickhouse_cluster
+# is destroyed — this hook is what finally deletes it.
+#
+# Gated by the -s3-operations role, which is disabled by default: unless the
+# customer has explicitly enabled it, these steps fail with AccessDenied and the
+# buckets are never deleted (irreversible — S3 has no snapshot).
+name    = "s3_teardown"
+labels  = { service = "s3", type = "step" }
+label   = "aws"
+timeout = "45m"
+role    = "{{.nuon.install.id}}-s3-operations"
+
+[[triggers]]
+type           = "pre-teardown-component"
+component_name = "s3_buckets"
+
+[[steps]]
+name            = "Detach s3_buckets resources from state"
+inline_contents = "./tf/state_rm/state_rm.sh"
+
+[steps.env_vars]
+INSTALL_COMPONENT_ID = "{{ .nuon.components.s3_buckets.install_component_id }}"
+STATE_ADDRESSES = "aws_s3_bucket.blob,aws_s3_bucket_versioning.blob,aws_s3_bucket_ownership_controls.blob,aws_s3_bucket_policy.blob,module.clickhouse_bucket,module.install_template_bucket,aws_s3_bucket_policy.install_templates,aws_kms_key.clickhouse_bucket,aws_kms_alias.clickhouse_bucket"
+TF_VERSION      = "1.11.3"
+LABEL           = "s3_buckets"
+
+[[steps]]
+name            = "Delete s3 buckets + schedule KMS key"
+inline_contents = "./s3/s3_delete/s3_delete.sh"
+
+[steps.env_vars]
+BLOB_BUCKET             = "{{ .nuon.components.s3_buckets.outputs.blob_bucket.id }}"
+CLICKHOUSE_BUCKET       = "{{ .nuon.components.s3_buckets.outputs.clickhouse_bucket.id }}"
+TEMPLATES_BUCKET        = "{{ .nuon.components.s3_buckets.outputs.install_template_bucket.id }}"
+KMS_PENDING_WINDOW_DAYS = "7"

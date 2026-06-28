@@ -7,7 +7,7 @@ name    = "s3_delete"
 labels  = { service = "s3", type = "sop" }
 label   = "aws"
 timeout = "30m"
-role    = "{{.nuon.install.id}}-deprovision"
+role    = "{{.nuon.install.id}}-s3-operations"
 
 [[triggers]]
 type = "manual"
