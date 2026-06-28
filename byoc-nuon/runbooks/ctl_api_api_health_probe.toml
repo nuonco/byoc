@@ -1,0 +1,50 @@
+name        = "ctl_api_api_health_probe"
+description = "Diagnose why a ctl-api HTTP endpoint (public/admin/runner/auth) is unreachable. Runs the shared cluster ALB/IRSA/OIDC/cert backbone once, then probes each endpoint (reachability -> DNS -> ingress/ALB) to isolate the broken link. Read-only."
+readme      = "./runbooks/ctl_api_api_health_probe.md"
+labels      = { service = "ctl-api", type = "debug" }
+
+# Steps 1-4 are the cluster-wide backbone: if the LB controller can't build
+# ALBs (IRSA / OIDC / trust policy) or the wildcard cert isn't issued, EVERY
+# endpoint's ALB fails — so run them first, symptom -> root cause. Steps 5-8
+# then probe each endpoint individually. All steps are read-only and all run
+# even if an earlier one finds the fault.
+
+[[steps]]
+name        = "Are ALBs being built at all?"
+type        = "action"
+action_name = "ctl_api_alb_ingress_status"
+
+[[steps]]
+name        = "Is the LB controller running + IRSA wired?"
+type        = "action"
+action_name = "ctl_api_alb_controller"
+
+[[steps]]
+name        = "Can the controller assume its role?"
+type        = "action"
+action_name = "ctl_api_alb_irsa_trust"
+
+[[steps]]
+name        = "Is the wildcard TLS cert issued?"
+type        = "action"
+action_name = "ctl_api_acm_cert"
+
+[[steps]]
+name        = "Probe public endpoint"
+type        = "action"
+action_name = "ctl_api_probe_public"
+
+[[steps]]
+name        = "Probe admin endpoint"
+type        = "action"
+action_name = "ctl_api_probe_admin"
+
+[[steps]]
+name        = "Probe runner endpoint"
+type        = "action"
+action_name = "ctl_api_probe_runner"
+
+[[steps]]
+name        = "Probe auth endpoint"
+type        = "action"
+action_name = "ctl_api_probe_auth"

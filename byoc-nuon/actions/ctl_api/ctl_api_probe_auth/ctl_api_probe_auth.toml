@@ -1,0 +1,22 @@
+# action
+# description: per-endpoint health probe for the ctl-api AUTH API
+# (auth.<public_domain>, https, internet-facing ALB). Reachability + DNS +
+# ingress/ALB. Read-only, kubectl/curl only.
+name    = "ctl_api_probe_auth"
+labels  = { service = "ctl-api", type = "debug" }
+timeout = "5m"
+
+[[triggers]]
+type = "manual"
+
+[[steps]]
+name            = "Probe ctl-api auth endpoint"
+inline_contents = "./ctl_api/api_probe/endpoint_probe.sh"
+
+[steps.env_vars]
+NAMESPACE    = "ctl-api"
+INGRESS_NAME = "ctl-api-auth"
+HOSTNAME     = "auth.{{ .nuon.sandbox.outputs.nuon_dns.public_domain.name }}"
+ZONE         = "public"
+SCHEME       = "https"
+HEALTH_PATH  = "/readyz"

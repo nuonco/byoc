@@ -1,0 +1,17 @@
+# action
+# description: cluster check 3/4 — "can the controller actually assume its role?"
+# Compares the cluster OIDC issuer, registered IAM OIDC providers, and the
+# alb-controller role's trust policy. Read-only; needs admin AWS perms.
+name    = "ctl_api_alb_irsa_trust"
+labels  = { service = "ctl-api", type = "debug" }
+label   = "aws"
+timeout = "5m"
+# reads IAM/EKS; needs admin AWS perms
+role    = "{{.nuon.install.id}}-provision"
+
+[[triggers]]
+type = "manual"
+
+[[steps]]
+name            = "IRSA trust chain (OIDC provider + role trust policy)"
+inline_contents = "./ctl_api/api_probe/alb_irsa_trust.sh"
