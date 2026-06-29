@@ -1,5 +1,5 @@
 name        = "s3_bucket"
-description = "Inspects the AWS S3 install-stack template bucket (install_stack_template_bucket): bucket name, region, versioning and default encryption, and lists up to 5 objects."
+description = "Enable and inspect the AWS S3 install-templates bucket integration. The README documents enabling it (add the install to mono's infra/byoc-s3-buckets, set the three install_stack_template_bucket* inputs from its outputs, redeploy ctl-api); the Inspect S3 bucket step then reads the bucket (name, region, versioning/encryption, up to 5 objects) to verify."
 readme      = "./runbooks/s3_bucket.md"
 labels      = { service = "s3", type = "setup" }
 
