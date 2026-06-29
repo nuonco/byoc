@@ -21,8 +21,11 @@ gcp_permissions = [
 
 # Instance destruction (GCP equivalent of the AWS tag-scoped RDS destruction policy; GCP IAM has
 # no tag-conditional scoping for CloudSQL, so this is limited to the delete verb instead).
+# cloudsql.backups.createBackup is required so the teardown delete can take a FINAL BACKUP
+# (--enable-final-backup) — the only backup that survives instance deletion on GCP.
 [[policies]]
 name            = "{{ .nuon.install.id }}-cloudsql-operations-destruction"
 gcp_permissions = [
   "cloudsql.instances.delete",
+  "cloudsql.backups.createBackup",
 ]
