@@ -1,8 +1,8 @@
 name         = "install_stack_template_bucket_region"
-description  = "The region of the bucket for the install tempaltes used in cloudformation for AWS installs."
+description  = "The region of the bucket for the install templates used in cloudformation for AWS installs."
 default      = ""
 display_name = "Install Stack Template Bucket Region"
-required     = true
+required     = false
 group        = "nuon"
 type         = "string"
 

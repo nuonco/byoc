@@ -1,5 +1,5 @@
 name         = "install_stack_template_bucket"
-description  = "The bucket for the install tempaltes used in cloudformation for AWS installs."
+description  = "The bucket for the install templates used in cloudformation for AWS installs."
 default      = ""
 display_name = "Install Stack Template Bucket"
 required     = false
