@@ -1,7 +1,7 @@
 # action
 name    = "ctl_api_init_db"
 labels  = { service = "ctl-api", type = "step" }
-timeout = "5m"
+timeout = "10m"
 
 [[triggers]]
 type           = "pre-deploy-component"

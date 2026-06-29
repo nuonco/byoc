@@ -9,6 +9,34 @@ db_user="$DB_USER"
 db_addr="$DB_ADDR"
 db_port="$DB_PORT"
 
+# Wait for the GKE API server to be reachable before doing anything else. This
+# is a pre-deploy-component hook, so it's often the first kubectl call against a
+# freshly-provisioned cluster — the control-plane endpoint and its networking
+# can lag a few seconds behind the cluster reporting ready, so the first kubectl
+# call may i/o-timeout even though the cluster is healthy. Poll a lightweight
+# endpoint until it answers instead.
+wait_for_apiserver() {
+  attempts=24
+  i=1
+  while true; do
+    if kubectl get --raw='/healthz' --request-timeout=10s >/dev/null 2>&1; then
+      echo "[ctl_api init] API server reachable (attempt ${i})."
+      return 0
+    fi
+    if [ "$i" -ge "$attempts" ]; then
+      echo "[ctl_api init] ERROR: API server not reachable after ${attempts} attempts (~4m)." >&2
+      kubectl get --raw='/healthz' --request-timeout=10s || true # surface the real error
+      return 1
+    fi
+    echo "[ctl_api init] API server not reachable yet (attempt ${i}/${attempts}), retrying in 10s..."
+    i=$((i + 1))
+    sleep 10
+  done
+}
+
+echo "[ctl_api init] waiting for the API server"
+wait_for_apiserver
+
 # TODO: make the cluster's default/admin db and the ctl-api db distinct
 
 echo "[ctl_api init] kubectl auth whoami"
