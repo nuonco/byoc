@@ -1,0 +1,15 @@
+# action
+# description: unpauses ctl-api worker HPAs by re-applying them from the backup configmap, letting the worker deployments scale back up automatically. Reverses ctl_api_pause_worker_hpas.
+name    = "ctl_api_unpause_worker_hpas"
+label   = "kubectl"
+timeout = "2m"
+
+[[triggers]]
+type = "manual"
+
+[[steps]]
+name = "unpause worker hpas"
+inline_contents = "./ctl_api/ctl_api_unpause_worker_hpas/unpause_worker_hpas.sh"
+
+[steps.env_vars]
+BACKUP_CM = "ctl-api-worker-hpa-backup"
