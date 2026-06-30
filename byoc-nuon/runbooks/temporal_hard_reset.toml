@@ -3,6 +3,16 @@ description = "Temporal hard-reset SoP: drop and recreate the Temporal DB, resto
 readme      = "./runbooks/temporal_hard_reset.md"
 
 [[steps]]
+name        = "Scale ctl-api worker deployments down"
+type        = "action"
+action_name = "temporal_hard_reset_scale_down_ctl_api_workers"
+
+[[steps]]
+name        = "Scale temporal deployments down"
+type        = "action"
+action_name = "temporal_hard_reset_scale_down_temporal"
+
+[[steps]]
 name        = "Drop Temporal DB"
 type        = "action"
 action_name = "temporal_hard_reset_drop_db"
@@ -21,6 +31,11 @@ action_name = "temporal_hard_reset_scale_up_temporal"
 name        = "Ensure Temporal namespaces"
 type        = "action"
 action_name = "temporal_hard_reset_ensure_namespaces"
+
+[[steps]]
+name        = "Scale ctl-api worker deployments up"
+type        = "action"
+action_name = "temporal_hard_reset_scale_up_ctl_api_workers"
 
 [[steps]]
 name        = "Restart org queues"

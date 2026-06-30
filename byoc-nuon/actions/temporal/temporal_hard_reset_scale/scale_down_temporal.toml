@@ -1,0 +1,11 @@
+# action
+name    = "temporal_hard_reset_scale_down_temporal"
+labels  = { service = "temporal", type = "step" }
+timeout = "1m30s"
+
+[[triggers]]
+type = "manual"
+
+[[steps]]
+name            = "Scale Down temporal deployments"
+inline_contents = "./temporal/temporal_hard_reset_scale/scale_down_temporal.sh"
