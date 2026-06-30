@@ -34,6 +34,39 @@ wait_for_apiserver() {
   done
 }
 
+# Run a kubectl command, retrying ONLY on transient GKE control-plane
+# connectivity errors. Even after wait_for_apiserver passes, the public API
+# endpoint can drop a connection mid-deploy (endpoint warm-up, brief LB/SNAT
+# reconvergence), so any single kubectl call can i/o-timeout. Real errors (auth
+# failures, psql errors, missing resources) don't match the connectivity
+# patterns, so they fail fast on the first attempt and are never masked.
+kubectl_retry() {
+  attempts=5
+  i=1
+  while true; do
+    out=$(kubectl "$@" 2>&1) && { printf '%s\n' "$out"; return 0; }
+    status=$?
+    case "$out" in
+      *"Unable to connect to the server"* | *"i/o timeout"* | *"dial tcp"* | \
+      *"TLS handshake timeout"* | *"connection refused"* | *"unexpected EOF"* | \
+      *"http2: client connection lost"* | *"EOF"*)
+        if [ "$i" -ge "$attempts" ]; then
+          printf '%s\n' "$out" >&2
+          echo "[ctl_api init] ERROR: 'kubectl $*' failed after ${attempts} attempts (transient API-server connectivity)." >&2
+          return "$status"
+        fi
+        echo "[ctl_api init] transient API-server error on 'kubectl $*' (attempt ${i}/${attempts}), retrying in 5s..." >&2
+        i=$((i + 1))
+        sleep 5
+        ;;
+      *)
+        printf '%s\n' "$out" >&2
+        return "$status"
+        ;;
+    esac
+  done
+}
+
 echo "[ctl_api init] waiting for the API server"
 wait_for_apiserver
 
@@ -41,18 +74,18 @@ wait_for_apiserver
 
 echo "[ctl_api init] kubectl auth whoami"
 echo "pwd: "`pwd`
-kubectl auth whoami -o json | jq -c
+kubectl_retry auth whoami -o json | jq -c
 
 echo "[ctl_api init] scale up the deployment"
-kubectl scale -n ctl-api --replicas=1 deployment/ctl-api-init
-kubectl wait deployment -n ctl-api ctl-api-init --for condition=Available=True --timeout=300s
+kubectl_retry scale -n ctl-api --replicas=1 deployment/ctl-api-init
+kubectl_retry wait deployment -n ctl-api ctl-api-init --for condition=Available=True --timeout=300s
 
 echo "[ctl_api init] get a pod from the deployment"
-pod=`kubectl -n ctl-api get pods --selector app=ctl-api-init -o json | jq -r '.items[0].metadata.name'`
+pod=`kubectl_retry -n ctl-api get pods --selector app=ctl-api-init -o json | jq -r '.items[0].metadata.name'`
 
 echo "[ctl_api init] reading db access secrets from k8s"
-admin_username=$(kubectl get -n ctl-api secret nuon-db -o jsonpath='{.data.username}' | base64 -d)
-admin_password=$(kubectl get -n ctl-api secret nuon-db -o jsonpath='{.data.password}' | base64 -d)
+admin_username=$(kubectl_retry get -n ctl-api secret nuon-db -o jsonpath='{.data.username}' | base64 -d)
+admin_password=$(kubectl_retry get -n ctl-api secret nuon-db -o jsonpath='{.data.password}' | base64 -d)
 
 echo "[ctl_api init] sanity check"
 echo "these two should match"
@@ -62,7 +95,7 @@ echo "username=$admin_username"
 echo "[ctl_api init] preparing to initialize"
 function run_cmd() {
   echo " > cmd: $@"
-  kubectl \
+  kubectl_retry \
     --namespace=ctl-api \
     exec  -i \
     $pod -- \
@@ -97,7 +130,7 @@ echo "[ctl_api init] hstore"
 run_cmd "ctl_api" "/var/init-config/create_hstore.sql"
 
 echo "[ctl_api init] validate"
-kubectl \
+kubectl_retry \
   --namespace=ctl-api \
   exec  -i \
   $pod -- \
@@ -105,4 +138,4 @@ kubectl \
   psql --no-psqlrc -d "ctl_api" -c "\du"
 
 echo "[ctl_api init] scale down the deployment"
-kubectl scale -n ctl-api --current-replicas=1 --replicas=0 deployment/ctl-api-init
+kubectl_retry scale -n ctl-api --current-replicas=1 --replicas=0 deployment/ctl-api-init
