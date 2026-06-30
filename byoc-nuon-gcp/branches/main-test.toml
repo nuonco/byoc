@@ -1,0 +1,24 @@
+# testing out a stage > prod promotion flow
+
+name = "main-test"
+
+[public_repo]
+repo      = "nuonco/byoc"
+directory = "byoc-nuon-gcp"
+branch    = "main"
+
+[[install_groups]]
+name           = "stage"
+order          = 1
+use_for_previews = true
+
+[install_groups.label_selector]
+env = "stage"
+
+[[install_groups]]
+name           = "prod"
+order          = 2
+use_for_previews = false
+
+[install_groups.label_selector]
+env = "prod"
