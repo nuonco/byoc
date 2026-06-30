@@ -91,7 +91,6 @@ env:
   BLOB_STORAGE_REGION: "{{ .nuon.install_stack.outputs.region }}"
 
   SEGMENT_WRITE_KEY: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-  LOOPS_API_KEY: "{{ .nuon.inputs.inputs.loops_api_key }}"
 
   # GCP management
   MANAGEMENT_GAR_REPOSITORY_URL: "{{ .nuon.components.management.outputs.gar.repository_url }}"
@@ -139,6 +138,11 @@ envSecrets:
     optional: true
     valueFrom:
       name: ctl-api-slack-state-jwt-secret
+      key: value
+  - name: "LOOPS_API_KEY"
+    optional: true
+    valueFrom:
+      name: ctl-api-loops-api-key
       key: value
 
 image:
