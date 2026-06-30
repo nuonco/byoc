@@ -9,18 +9,20 @@
 <img class="mt-0 block dark:hidden" src="https://mintlify.s3-us-west-1.amazonaws.com/nuoninc/logo/light.svg" style="margin:0;padding:0;"/>
 <img class="mt-0 hidden dark:block" src="https://mintlify.s3-us-west-1.amazonaws.com/nuoninc/logo/dark.svg" style="margin:0;padding:0;"/>
 
-{{/* Setup runbooks (config label: type=setup). The README template can't read runbook labels at
-     render time, so list each type=setup runbook here with its completion check. Keep in sync as
-     setup runbooks are added/removed. */}}
+{{/* Feature & setup runbooks. The README template can't read runbook labels at render time, so
+     mirror them here: each type=feature runbook goes in $featureRunbooks (Features tab) and each
+     type=setup runbook in $setupRunbooks (Setup tab), with its completion check. Keep in sync as
+     these runbooks are added/removed. */}}
 {{ $slackDone := false }}{{ with index (default dict .nuon.actions.workflows) "sync_slack_secrets" }}{{ if eq .status "finished" }}{{ $slackDone = true }}{{ end }}{{ end }}
-{{ $setupRunbooks := list (dict "name" "slack_setup" "label" "Slack" "complete" $slackDone) }}
-{{ $incomplete := list }}{{ range $setupRunbooks }}{{ if not .complete }}{{ $incomplete = append $incomplete . }}{{ end }}{{ end }}
+{{ $loopsDone := false }}{{ with index (default dict .nuon.actions.workflows) "sync_loops_secret" }}{{ if eq .status "finished" }}{{ $loopsDone = true }}{{ end }}{{ end }}
+{{ $s3Done := false }}{{ with index (default dict .nuon.actions.workflows) "s3_bucket" }}{{ if eq .status "finished" }}{{ $s3Done = true }}{{ end }}{{ end }}
+{{ $dnsDone := false }}{{ if dig "dns_zone" "" (default dict (default dict .nuon.components.management).outputs) }}{{ $dnsDone = true }}{{ end }}
+{{ $featureRunbooks := list (dict "name" "slack_setup" "label" "Slack" "complete" $slackDone) }}
+{{ $setupRunbooks := list (dict "name" "dns_setup" "label" "DNS" "complete" $dnsDone) (dict "name" "s3_bucket" "label" "S3 Bucket" "complete" $s3Done) (dict "name" "loops_setup" "label" "Loops" "complete" $loopsDone) }}
+{{ $incomplete := list }}{{ range (concat $featureRunbooks $setupRunbooks) }}{{ if not .complete }}{{ $incomplete = append $incomplete . }}{{ end }}{{ end }}
 {{ if gt (len $incomplete) 0 }}
 <nuon-banner theme="warn">
-<strong>Some setup is still required.</strong> Once the install is provisioned, finish the setup runbook(s) below:
-<ul>
-{{ range $incomplete }}<li><a href="/{{ $.nuon.org.id }}/installs/{{ $.nuon.install.id }}/runbooks/{{ .name }}">{{ .label }}</a> <nuon-run-runbook name="{{ .name }}"></nuon-run-runbook></li>
-{{ end }}</ul>
+<strong>Some setup is still required.</strong> Once the install is provisioned, finish the runbook(s) in the Features and Setup tabs below.
 </nuon-banner>
 {{ end }}
 
@@ -469,6 +471,52 @@ ctl_api_sa_unique_id = "" # awaiting ctl_api_wi deployment
 <!-- prettier-ignore-end -->
 
 {{ end }}
+
+</nuon-tab>
+
+<nuon-tab name="Features">
+
+<div style="padding-top:1rem;"></div>
+
+### Feature runbooks
+
+Optional integrations you can enable for this install.
+
+<table>
+  <thead><tr><th>Runbook</th><th>Status</th><th>Run</th></tr></thead>
+  <tbody>
+  {{ range $featureRunbooks }}
+    <tr>
+      <td><a href="/{{ $.nuon.org.id }}/installs/{{ $.nuon.install.id }}/runbooks/{{ .name }}">{{ .label }}</a></td>
+      <td>{{ if .complete }}<nuon-status status="finished" variant="badge"></nuon-status>{{ else }}<nuon-status status="pending" variant="badge"></nuon-status>{{ end }}</td>
+      <td><nuon-run-runbook name="{{ .name }}"></nuon-run-runbook></td>
+    </tr>
+  {{ end }}
+  </tbody>
+</table>
+
+</nuon-tab>
+
+<nuon-tab name="Setup">
+
+<div style="padding-top:1rem;"></div>
+
+### Setup runbooks
+
+Once the install is provisioned, finish the setup runbook(s) below.
+
+<table>
+  <thead><tr><th>Runbook</th><th>Status</th><th>Run</th></tr></thead>
+  <tbody>
+  {{ range $setupRunbooks }}
+    <tr>
+      <td><a href="/{{ $.nuon.org.id }}/installs/{{ $.nuon.install.id }}/runbooks/{{ .name }}">{{ .label }}</a></td>
+      <td>{{ if .complete }}<nuon-status status="finished" variant="badge"></nuon-status>{{ else }}<nuon-status status="pending" variant="badge"></nuon-status>{{ end }}</td>
+      <td><nuon-run-runbook name="{{ .name }}"></nuon-run-runbook></td>
+    </tr>
+  {{ end }}
+  </tbody>
+</table>
 
 </nuon-tab>
 
