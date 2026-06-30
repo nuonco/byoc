@@ -19,27 +19,6 @@ inline_contents = "https://raw.githubusercontent.com/nuonco/actions/refs/heads/m
 NAMESPACE = "ctl-api"
 
 [[steps]]
-name            = "runners-update-version"
-inline_contents = "./ctl_api/ctl_api_post_deploy/update-version.sh"
-
-[steps.env_vars]
-ADMIN_API_URL = "http://admin.{{ .nuon.sandbox.outputs.nuon_dns.internal_domain.name }}"
-
-[[steps]]
-name            = "promote-callback"
-inline_contents = "./ctl_api/ctl_api_post_deploy/promote.sh"
-
-[steps.env_vars]
-ADMIN_API_URL = "http://admin.{{ .nuon.sandbox.outputs.nuon_dns.internal_domain.name }}"
-
-[[steps]]
-name            = "get-migrations-callback"
-inline_contents = "./ctl_api/ctl_api_post_deploy/get-migrations.sh"
-
-[steps.env_vars]
-ADMIN_API_URL = "http://admin.{{ .nuon.sandbox.outputs.nuon_dns.internal_domain.name }}"
-
-[[steps]]
 name            = "public-route-healthcheck"
 inline_contents = "./ctl_api/ctl_api_post_deploy/healthcheck.sh"
 
@@ -62,3 +41,24 @@ inline_contents = "./ctl_api/ctl_api_post_deploy/healthcheck.sh"
 [steps.env_vars]
 ROUTE_NAME      = "ctl-api-admin"
 ROUTE_NAMESPACE = "ctl-api"
+
+[[steps]]
+name            = "runners-update-version"
+inline_contents = "./ctl_api/ctl_api_post_deploy/update-version.sh"
+
+[steps.env_vars]
+ADMIN_API_URL = "http://admin.{{ .nuon.sandbox.outputs.nuon_dns.internal_domain.name }}"
+
+[[steps]]
+name            = "promote-callback"
+inline_contents = "./ctl_api/ctl_api_post_deploy/promote.sh"
+
+[steps.env_vars]
+ADMIN_API_URL = "http://admin.{{ .nuon.sandbox.outputs.nuon_dns.internal_domain.name }}"
+
+[[steps]]
+name            = "get-migrations-callback"
+inline_contents = "./ctl_api/ctl_api_post_deploy/get-migrations.sh"
+
+[steps.env_vars]
+ADMIN_API_URL = "http://admin.{{ .nuon.sandbox.outputs.nuon_dns.internal_domain.name }}"
