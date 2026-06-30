@@ -38,9 +38,9 @@ type        = "action"
 action_name = "temporal_init_db"
 
 [[steps]]
-name           = "Deploy Temporal component"
-type           = "component_deploy"
-component_name = "temporal"
+name        = "Scale up Temporal server"
+type        = "action"
+action_name = "temporal_hard_reset_scale_up_temporal"
 
 [[steps]]
 name        = "Ensure Temporal namespaces"
