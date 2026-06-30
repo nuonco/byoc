@@ -3,11 +3,9 @@ description = "Break-glass deprovision steps that must run explicitly, outside t
 readme      = "./runbooks/deprovision.md"
 labels      = { type = "sop" }
 
-# Phase 1 — detach each critical resource from Terraform state. Safe and
-# reversible (nothing in the cloud is touched), so the subsequent sandbox
-# deprovision can tear the components down without tripping
-# block-destructive-changes / prevent_destroy. The live cloud resources survive
-# (they are deleted, optionally, in phase 3).
+# Phase 1 — detach each critical resource from Terraform state. This is
+# reversible, nothing in the cloud is touched. The live cloud resources
+# survive, and can be optionally deleted in phase 3).
 
 [[steps]]
 name        = "Detach ctl-api Cloud SQL from state"
@@ -24,20 +22,21 @@ name        = "Detach gcs_buckets from state"
 type        = "action"
 action_name = "gcs_state_rm"
 
-# Phase 2 — deprovision the sandbox. Tears down the install (components + the
-# sandbox: GKE cluster, networking, runner infrastructure). The Cloud SQL
-# instances and GCS buckets were detached from state in phase 1, so they survive
-# this and are deleted in phase 3.
+# Phase 2 — deprovision install components and sandbox.
+
+# Add a `component_tear_down_all` step type, then uncomment this.
+# [[steps]]
+# name = "Tear down components"
+# type = "component_tear_down_all"
 
 [[steps]]
 name = "Deprovision sandbox"
 type = "sandbox_deprovision"
 
 # Phase 3 — delete the detached cloud resources. OPTIONAL: these permanently
-# destroy the live resources that survived phases 1-2 and may not always be
-# wanted (e.g. tear everything down but keep the databases/buckets, or delete
-# out-of-band). Each delete derives its instance/bucket names from install.id.
-# Cloud SQL deletes take a final backup; GCS deletes are irreversible.
+# destroy the RDS and S3 resources. Each delete derives its instance/bucket
+# names from install.id, since the component states have all been deleted
+# by the time these steps run.
 
 [[steps]]
 name        = "Delete ctl-api Cloud SQL"
