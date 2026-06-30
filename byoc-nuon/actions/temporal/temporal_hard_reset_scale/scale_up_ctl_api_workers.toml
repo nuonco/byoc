@@ -1,0 +1,14 @@
+# action
+name    = "temporal_hard_reset_scale_up_ctl_api_workers"
+labels  = { service = "temporal", type = "step" }
+timeout = "1m30s"
+
+[[triggers]]
+type = "manual"
+
+[[steps]]
+name            = "Scale Up ctl-api workers"
+inline_contents = "./temporal/temporal_hard_reset_scale/scale_up_ctl_api_workers.sh"
+
+[steps.env_vars]
+SCALE_TARGET = "1"
