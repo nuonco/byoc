@@ -1,0 +1,19 @@
+name        = "gateway_fault_debug"
+description = "Diagnose a route returning Envoy 'fault filter abort' (or other gateway/route failures) for this install. Probes the public routes to confirm the symptom, locates any HTTP fault injection (Istio VirtualService / EnvoyFilter / HTTPRoute filters), and shows route + backend health. Read-only."
+readme      = "./runbooks/gateway_fault_debug.md"
+labels      = { service = "gateway", type = "debug" }
+
+[[steps]]
+name        = "Probe public routes"
+type        = "action"
+action_name = "gateway_probe_routes"
+
+[[steps]]
+name        = "Locate fault injection"
+type        = "action"
+action_name = "gateway_locate_faults"
+
+[[steps]]
+name        = "Route + backend health"
+type        = "action"
+action_name = "gateway_route_health"

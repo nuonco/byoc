@@ -1,0 +1,15 @@
+# action
+# description: locates HTTP fault injection ("fault filter abort") in the cluster
+# — Istio VirtualService fault stanzas, EnvoyFilters, and Gateway API HTTPRoute
+# filters. Read-only; kubectl only, no cloud role.
+name    = "gateway_locate_faults"
+labels  = { service = "gateway", type = "debug" }
+label   = "gcp"
+timeout = "5m"
+
+[[triggers]]
+type = "manual"
+
+[[steps]]
+name            = "Locate fault injection"
+inline_contents = "./gcp/gateway_locate_faults/locate-faults.sh"

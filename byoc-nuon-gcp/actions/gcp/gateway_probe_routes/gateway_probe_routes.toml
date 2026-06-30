@@ -1,0 +1,19 @@
+# action
+# description: probes each public ctl-api/dashboard route (app/api/auth/runner +
+# internal admin) and reports status, serving proxy, and whether the response is
+# an Envoy "fault filter abort". Read-only; curl only, no cloud role.
+name    = "gateway_probe_routes"
+labels  = { service = "gateway", type = "debug" }
+label   = "gcp"
+timeout = "5m"
+
+[[triggers]]
+type = "manual"
+
+[[steps]]
+name            = "Probe public routes"
+inline_contents = "./gcp/gateway_probe_routes/probe-routes.sh"
+
+[steps.env_vars]
+PUBLIC_DOMAIN   = "{{ .nuon.sandbox.outputs.nuon_dns.public_domain.name }}"
+INTERNAL_DOMAIN = "{{ .nuon.sandbox.outputs.nuon_dns.internal_domain.name }}"
