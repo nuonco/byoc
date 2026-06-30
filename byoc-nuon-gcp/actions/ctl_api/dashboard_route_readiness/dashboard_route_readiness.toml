@@ -1,0 +1,25 @@
+# waits for the app (dashboard-ui) route to serve a healthy HTTP
+# response after deploy, so a fresh provision does not complete while the route
+# is still in its post-deploy window returning 5xx / "fault filter abort". Polls
+# https://app.<public_domain> until it returns 2xx-4xx (normally a 302 to auth)
+# with a non-abort body. Read-only; curl only, no cloud role.
+name    = "dashboard_route_readiness"
+labels  = { service = "ctl-api", type = "step" }
+timeout = "10m"
+
+# Runs after dashboard_ui_restart (index 1) so it waits on the restarted pods,
+# and before dashboard_status (index 5) so the status check sees a serving route.
+[[triggers]]
+type           = "post-deploy-component"
+component_name = "dashboard_ui"
+index          = 2
+
+[[triggers]]
+type = "manual"
+
+[[steps]]
+name            = "Wait for app route to serve"
+inline_contents = "./ctl_api/dashboard_route_readiness/app-readiness.sh"
+
+[steps.env_vars]
+APP_URL = "https://app.{{ .nuon.sandbox.outputs.nuon_dns.public_domain.name }}"
