@@ -1,0 +1,41 @@
+# action
+# description: generic break-glass "terraform state rm" — detach one or more
+# resources (or whole modules) from a Terraform workspace's state WITHOUT
+# destroying them, by driving the Terraform CLI against the Nuon HTTP state
+# backend. Run ad-hoc to unwedge a stuck deprovision (e.g. a namespace whose
+# delete hangs on finalizers): remove the offending address from state so the
+# destroy can skip it. Fill in the env vars when you run it.
+#
+# Pick a workspace selector (precedence: WORKSPACE_ID > WORKSPACE_OWNER_TYPE >
+# INSTALL_COMPONENT_ID):
+#   WORKSPACE_ID          explicit workspace id from the "Use Terraform CLI"
+#                         modal (e.g. tfw...). Use this for the sandbox workspace,
+#                         which the runner's workspace list does not surface.
+#   WORKSPACE_OWNER_TYPE  match by owner_type (components are "install_deploy").
+#   INSTALL_COMPONENT_ID  match a component workspace by owner_id.
+# STATE_ADDRESSES is required: comma/space-separated TF addresses, e.g.
+#   kubernetes_namespace_v1.main["clickhouse"]
+#
+# No cloud role: state removal only talks to the Nuon Terraform HTTP backend
+# using the runner's own credentials — it never calls a cloud API.
+name    = "state_rm"
+labels  = { service = "terraform", type = "sop" }
+label   = "tf"
+timeout = "15m"
+
+[[triggers]]
+type = "manual"
+
+[[steps]]
+name            = "Terraform state rm"
+inline_contents = "./tf/state_rm/state_rm.sh"
+
+# Defaults are empty — supply WORKSPACE_ID (or a selector) and STATE_ADDRESSES
+# when triggering the action.
+[steps.env_vars]
+WORKSPACE_ID         = ""
+WORKSPACE_OWNER_TYPE = ""
+INSTALL_COMPONENT_ID = ""
+STATE_ADDRESSES      = ""
+TF_VERSION           = "1.11.3"
+LABEL                = "ad-hoc state rm"

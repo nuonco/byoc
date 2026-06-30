@@ -13,12 +13,24 @@ set -u
 # it here lets the remaining (non-critical) resources tear down cleanly.
 #
 # Required env:
-#   INSTALL_COMPONENT_ID  the install-component id that owns the terraform
-#                         workspace (set in the action from install_component_id)
 #   STATE_ADDRESSES       space/comma-separated Terraform addresses to remove.
 #                         May be individual resources (google_storage_bucket.blob)
 #                         or whole modules (module.foo).
+#   plus ONE workspace selector (see below).
+#
+# Workspace selector (pick one; precedence is top-to-bottom):
+#   WORKSPACE_ID          explicit terraform workspace id (e.g. tfw...). Skips the
+#                         lookup entirely — use the id from the "Use Terraform CLI"
+#                         modal when you already have it.
+#   WORKSPACE_OWNER_TYPE  match the workspace by owner_type. Use this to target the
+#                         sandbox: owner_type "install_sandbox_run". The runner's
+#                         workspace list is install-scoped, so there is exactly one
+#                         sandbox workspace. (Components are "install_deploy".)
+#   INSTALL_COMPONENT_ID  match the workspace by owner_id == this id — i.e. a
+#                         component's workspace (owner_type "install_deploy"). What
+#                         the cloudsql_state_rm / gcs_state_rm actions use.
 # Optional env:
+#   WORKSPACE_OWNER_ID    explicit owner_id to match (defaults to INSTALL_COMPONENT_ID).
 #   TF_VERSION            terraform version to use (default 1.11.3, match component)
 #   LABEL / DB_LABEL      human-friendly label for log output
 #
@@ -41,8 +53,15 @@ echo "==================================================================="
 
 # ── preflight ──────────────────────────────────────────────────────────────
 : "${RUNNER_API_URL:?RUNNER_API_URL not present in environment}"
-: "${INSTALL_COMPONENT_ID:?INSTALL_COMPONENT_ID is required}"
 : "${STATE_ADDRESSES:?STATE_ADDRESSES is required}"
+
+# resolve the owner_id to match (explicit WORKSPACE_OWNER_ID, else the component id)
+match_owner_id="${WORKSPACE_OWNER_ID:-${INSTALL_COMPONENT_ID:-}}"
+match_owner_type="${WORKSPACE_OWNER_TYPE:-}"
+if [ -z "${WORKSPACE_ID:-}" ] && [ -z "$match_owner_id" ] && [ -z "$match_owner_type" ]; then
+  echo "ERROR: provide a workspace selector: WORKSPACE_ID, WORKSPACE_OWNER_TYPE, or INSTALL_COMPONENT_ID." >&2
+  exit 1
+fi
 
 # normalize address separators to whitespace
 addresses=$(echo "$STATE_ADDRESSES" | tr ',' ' ')
@@ -74,29 +93,39 @@ if [ -z "${RUNNER_API_TOKEN:-}" ] || [ "$RUNNER_API_TOKEN" = "null" ]; then
   exit 1
 fi
 
-# ── resolve the component's terraform workspace id ───────────────────────────
-echo "Looking up terraform workspace for install component ${INSTALL_COMPONENT_ID}..."
-ws_json=$(curl -fsS -H "Authorization: Bearer ${RUNNER_API_TOKEN}" \
-  "${RUNNER_API_URL}/v1/terraform-workspaces")
-
-if command -v jq >/dev/null 2>&1; then
-  workspace_id=$(printf '%s' "$ws_json" \
-    | jq -r --arg oid "$INSTALL_COMPONENT_ID" '.[] | select(.owner_id==$oid) | .id' \
-    | head -n1)
-elif command -v python3 >/dev/null 2>&1; then
-  workspace_id=$(printf '%s' "$ws_json" | python3 -c '
-import sys, json, os
-oid = os.environ["INSTALL_COMPONENT_ID"]
-ws = json.load(sys.stdin)
-print(next((w["id"] for w in ws if w.get("owner_id") == oid), ""))')
+# ── resolve the terraform workspace id ───────────────────────────────────────
+# Precedence: explicit WORKSPACE_ID > match by owner_type / owner_id in the list.
+if [ -n "${WORKSPACE_ID:-}" ]; then
+  workspace_id="$WORKSPACE_ID"
+  echo "Using explicit workspace id: ${workspace_id}"
 else
-  echo "ERROR: need jq or python3 to parse the workspace list." >&2
-  exit 1
-fi
+  echo "Looking up terraform workspace (owner_id='${match_owner_id:-<any>}' owner_type='${match_owner_type:-<any>}')..."
+  ws_json=$(curl -fsS -H "Authorization: Bearer ${RUNNER_API_TOKEN}" \
+    "${RUNNER_API_URL}/v1/terraform-workspaces")
 
-if [ -z "${workspace_id:-}" ] || [ "$workspace_id" = "null" ]; then
-  echo "ERROR: no terraform workspace found with owner_id=${INSTALL_COMPONENT_ID}." >&2
-  exit 1
+  if command -v jq >/dev/null 2>&1; then
+    workspace_id=$(printf '%s' "$ws_json" \
+      | jq -r --arg oid "$match_owner_id" --arg otype "$match_owner_type" \
+        '.[] | select(($oid=="" or .owner_id==$oid) and ($otype=="" or .owner_type==$otype)) | .id' \
+      | head -n1)
+  elif command -v python3 >/dev/null 2>&1; then
+    workspace_id=$(printf '%s' "$ws_json" | MATCH_OID="$match_owner_id" MATCH_OTYPE="$match_owner_type" python3 -c '
+import sys, json, os
+oid = os.environ.get("MATCH_OID", "")
+otype = os.environ.get("MATCH_OTYPE", "")
+ws = json.load(sys.stdin)
+print(next((w["id"] for w in ws
+            if (oid == "" or w.get("owner_id") == oid)
+            and (otype == "" or w.get("owner_type") == otype)), ""))')
+  else
+    echo "ERROR: need jq or python3 to parse the workspace list." >&2
+    exit 1
+  fi
+
+  if [ -z "${workspace_id:-}" ] || [ "$workspace_id" = "null" ]; then
+    echo "ERROR: no terraform workspace found matching owner_id='${match_owner_id}' owner_type='${match_owner_type}'." >&2
+    exit 1
+  fi
 fi
 echo "Workspace: ${workspace_id}"
 
