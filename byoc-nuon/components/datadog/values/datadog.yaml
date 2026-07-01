@@ -2,14 +2,20 @@
 targetSystem: "linux"
 datadog:
   site: us5.datadoghq.com
+  remoteConfiguration:
+    enabled: true
   confd:
     "temporal.yaml": |-
       init_config:
       instances:
-        - openmetrics_endpoint: "http://temporal-frontend-headless.temporal.svc.cluster.local:9090/metrics"
-        - openmetrics_endpoint: "http://temporal-worker-headless.temporal.svc.cluster.local:9090/metrics"
-        - openmetrics_endpoint: "http://temporal-matching-headless.temporal.svc.cluster.local:9090/metrics"
-        - openmetrics_endpoint: "http://temporal-history-headless.temporal.svc.cluster.local:9090/metrics"
+        - openmetrics_endpoint: "http://temporal-frontend-headless.temporal.svc.cluster.local.:9090/metrics"
+        - openmetrics_endpoint: "http://temporal-worker-headless.temporal.svc.cluster.local.:9090/metrics"
+        - openmetrics_endpoint: "http://temporal-matching-headless.temporal.svc.cluster.local.:9090/metrics"
+        - openmetrics_endpoint: "http://temporal-history-headless.temporal.svc.cluster.local.:9090/metrics"
+    "network.yaml": |-
+      init_config:
+      instances:
+        - collect_aws_ena_metrics: true
   logs:
     enabled: true
     containerCollectAll: true
@@ -23,7 +29,7 @@ datadog:
   systemProbe:
     enableTCPQueueLength: false
     enableOOMKill: true
-    collectDNSStats: false
+    collectDNSStats: true
   dogstatsd:
     useHostPort: true
     port: 8125
