@@ -2,29 +2,27 @@
 {{ $root_domain := (dig "root_domain" "" $inputs) }}
 {{ $public_domain  := (dig "outputs" "nuon_dns" "public_domain"  "name" $root_domain .nuon.sandbox) }}
 
+{{/* Feature & setup runbooks. The README template can't read runbook labels at render time, so
+     mirror them here: each type=feature runbook goes in $featureRunbooks (Features tab) and each
+     type=setup runbook in $setupRunbooks (Setup tab), with its completion check. Keep in sync as
+     these runbooks are added/removed. */}} {{ $slackDone := false }}{{ with index (default dict .nuon.actions.workflows) "sync_slack_secrets" }}{{ if eq .status "finished" }}{{ $slackDone = true }}{{ end }}{{ end }}
+{{ $loopsDone := false }}{{ with index (default dict .nuon.actions.workflows) "sync_loops_secret" }}{{ if eq .status "finished" }}{{ $loopsDone = true }}{{ end }}{{ end }}
+{{ $s3Done := false }}{{ with index (default dict .nuon.actions.workflows) "s3_bucket" }}{{ if eq .status "finished" }}{{ $s3Done = true }}{{ end }}{{ end }}
+{{ $dnsDone := false }}{{ if dig "dns_zone" "" (default dict (default dict .nuon.components.management).outputs) }}{{ $dnsDone = true }}{{ end }}
+{{ $featureRunbooks := list (dict "name" "slack_setup" "label" "Slack" "complete" $slackDone "desc" "Set up the Slack integration: create the Slack app, provision and populate the central secret, set the install inputs, then sync the secrets into the ctl-api namespace and verify.") }}
+{{ $setupRunbooks := list (dict "name" "dns_setup" "label" "DNS" "complete" $dnsDone "desc" "Show the DNS delegation records (nameservers) to share with the customer so they can delegate their domain to this install.") (dict "name" "s3_bucket" "label" "S3 Bucket" "complete" $s3Done "desc" "Enable and inspect the AWS S3 install-templates bucket integration used for install templates.") (dict "name" "loops_setup" "label" "Loops" "complete" $loopsDone "desc" "Set up the Loops integration: provision and populate the central secret, set the loops_secret_arn input, then sync the API key into the ctl-api namespace.") }}
+{{ $incomplete := list }}{{ range (concat $featureRunbooks $setupRunbooks) }}{{ if not .complete }}{{ $incomplete = append $incomplete . }}{{ end }}{{ end }}
+{{ if gt (len $incomplete) 0 }}<nuon-banner theme="warn"> <strong>Setup is incomplete.</strong> Complete the runbooks in
+the Setup tab. </nuon-banner>
+
+<div style="padding-bottom:1.5rem;"></div>{{ end }}
+
 <div style="float:right;">
   <nuon-run-runbook name="refresh_readme"></nuon-run-runbook>
 </div>
 
 <img class="mt-0 block dark:hidden" src="https://mintlify.s3-us-west-1.amazonaws.com/nuoninc/logo/light.svg" style="margin:0;padding:0;"/>
 <img class="mt-0 hidden dark:block" src="https://mintlify.s3-us-west-1.amazonaws.com/nuoninc/logo/dark.svg" style="margin:0;padding:0;"/>
-
-{{/* Feature & setup runbooks. The README template can't read runbook labels at render time, so
-     mirror them here: each type=feature runbook goes in $featureRunbooks (Features tab) and each
-     type=setup runbook in $setupRunbooks (Setup tab), with its completion check. Keep in sync as
-     these runbooks are added/removed. */}}
-{{ $slackDone := false }}{{ with index (default dict .nuon.actions.workflows) "sync_slack_secrets" }}{{ if eq .status "finished" }}{{ $slackDone = true }}{{ end }}{{ end }}
-{{ $loopsDone := false }}{{ with index (default dict .nuon.actions.workflows) "sync_loops_secret" }}{{ if eq .status "finished" }}{{ $loopsDone = true }}{{ end }}{{ end }}
-{{ $s3Done := false }}{{ with index (default dict .nuon.actions.workflows) "s3_bucket" }}{{ if eq .status "finished" }}{{ $s3Done = true }}{{ end }}{{ end }}
-{{ $dnsDone := false }}{{ if dig "dns_zone" "" (default dict (default dict .nuon.components.management).outputs) }}{{ $dnsDone = true }}{{ end }}
-{{ $featureRunbooks := list (dict "name" "slack_setup" "label" "Slack" "complete" $slackDone) }}
-{{ $setupRunbooks := list (dict "name" "dns_setup" "label" "DNS" "complete" $dnsDone) (dict "name" "s3_bucket" "label" "S3 Bucket" "complete" $s3Done) (dict "name" "loops_setup" "label" "Loops" "complete" $loopsDone) }}
-{{ $incomplete := list }}{{ range (concat $featureRunbooks $setupRunbooks) }}{{ if not .complete }}{{ $incomplete = append $incomplete . }}{{ end }}{{ end }}
-{{ if gt (len $incomplete) 0 }}
-<nuon-banner theme="warn">
-<strong>Some setup is still required.</strong> Once the install is provisioned, finish the runbook(s) in the Features and Setup tabs below.
-</nuon-banner>
-{{ end }}
 
 <nuon-tabs>
 <nuon-tab name="Application">
@@ -297,7 +295,7 @@
 </div>
 
 </nuon-tab>
-<nuon-tab name="Services">
+<nuon-tab name="System">
 
 {{ $api  := dict }}{{ $apiActionID  := "" }}{{ with index .nuon.actions.workflows "api_status"       }}{{ with .outputs }}{{ $api  = . }}{{ end }}{{ $apiActionID  = dig "id" "" . }}{{ end }}
 {{ $dash := dict }}{{ $dashActionID := "" }}{{ with index .nuon.actions.workflows "dashboard_status" }}{{ with .outputs }}{{ $dash = . }}{{ end }}{{ $dashActionID = dig "id" "" . }}{{ end }}
@@ -339,9 +337,6 @@ section.</nuon-banner>{{ end }}
 
   </div>
 </div>
-
-</nuon-tab>
-<nuon-tab name="Infrastructure">
 
 <div style="padding-top:1rem;"></div>
 
@@ -385,111 +380,22 @@ section.</nuon-banner>{{ end }}
 
 </nuon-tab>
 
-<nuon-tab name="DNS">
-
-#### Current DNS Configurations
-
-When an install is created, a Route53 zone will be created for each of the domains. When these are ready, you can use
-those details to configure your domain in your registrar to use the AWS nameservers.
-
-{{ if (and .nuon.sandbox.populated .nuon.sandbox.outputs) }}
-
-##### Root Domain
-
-| Attribute   | Value                                                                                          |
-| ----------- | ---------------------------------------------------------------------------------------------- |
-| Domain Name | {{ $public_domain }}                                                                           |
-| Zone ID     | {{ dig "outputs" "nuon_dns" "public_domain" "zone_id" "Z00XXXXXXXXXXXXXXXXXX" .nuon.sandbox }} |
-
-<!-- prettier-ignore-start -->
-| Value     | Record Type | priority |
-| --------- | ----------- | -------- |
-{{ range $i, $ns := dig "nuon_dns" "public_domain" "nameservers" (list) (default dict .nuon.sandbox.outputs) }}| {{ $ns }} | NS          | {{$i}}   |
-{{ end }}
-<!-- prettier-ignore-end -->
-
-{{ else }}
-
-> [!WARNING] Waiting on Sandbox Provision. Once the Sandbox is ready, results will be visible here.
-
-{{ end }}
-
-{{ $dnsZone := dig "dns_zone" dict (default dict (default dict .nuon.components.management).outputs) }}
-{{ if $dnsZone }}
-
-##### Nuon DNS Delegation Domain
-
-| Attribute   | Value                                       |
-| ----------- | ------------------------------------------- |
-| Domain Name | {{ dig "domain" "" $dnsZone }}  |
-| Zone ID     | {{ dig "zone_id" "" $dnsZone }} |
-
-<!-- prettier-ignore-start -->
-| Value     | Record Type | priority |
-| --------- | ----------- | -------- |
-{{ range $i, $ns := dig "nameservers" (list) $dnsZone }}| {{ $ns }} | NS          | {{$i}}   |
-{{ end }}
-<!-- prettier-ignore-end -->
-
-{{ else }}
-
-<!-- prettier-ignore-start -->
-> [!WARNING]
-> Waiting on Sandbox Provision. Once the Sandbox is ready, results will be visible here.
-<!-- prettier-ignore-end -->
-
-{{ end }}
-
-Additional Documentation
-
-- [Creating a subdomain that uses Amazon Route 53 as the DNS service without migrating the parent domain](https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/CreatingNewSubdomain.html)
-
-</nuon-tab>
-
-<nuon-tab name="S3 Bucket">
-
-# AWS S3 Bucket
-
-The AWS S3 Bucket can be created using the following values in the tfvars.
-
-```hcl
-install_id           = "{{ .nuon.install.id }}"
-region               = "{{ dig "install_stack_template_bucket_region" "" $inputs }}"
-{{ $ctlApiSaUniqueID := dig "service_account_unique_id" "" (default dict .nuon.components.ctl_api_wi.outputs) }}
-{{ if $ctlApiSaUniqueID }}
-ctl_api_sa_unique_id = "{{ $ctlApiSaUniqueID }}"
-{{ else }}
-ctl_api_sa_unique_id = "" # awaiting ctl_api_wi deployment
-{{ end }}
-```
-
-{{ if not $ctlApiSaUniqueID }}
-
-<!-- prettier-ignore-start -->
-> [!WARNING]
-> The `ctl_api_wi` component has not been applied yet.
-<!-- prettier-ignore-end -->
-
-{{ end }}
-
-</nuon-tab>
-
 <nuon-tab name="Features">
 
 <div style="padding-top:1rem;"></div>
 
-### Feature runbooks
+### Features
 
-Optional integrations you can enable for this install.
+Optional features that can be enabled for this install.
 
 <table>
-  <thead><tr><th>Runbook</th><th>Status</th><th>Run</th></tr></thead>
+  <thead><tr><th>Status</th><th>Runbook</th><th>Description</th></tr></thead>
   <tbody>
   {{ range $featureRunbooks }}
     <tr>
-      <td><a href="/{{ $.nuon.org.id }}/installs/{{ $.nuon.install.id }}/runbooks/{{ .name }}">{{ .label }}</a></td>
       <td>{{ if .complete }}<nuon-status status="finished" variant="badge"></nuon-status>{{ else }}<nuon-status status="pending" variant="badge"></nuon-status>{{ end }}</td>
-      <td><nuon-run-runbook name="{{ .name }}"></nuon-run-runbook></td>
+      <td><a href="/{{ $.nuon.org.id }}/installs/{{ $.nuon.install.id }}/runbooks/{{ .name }}">{{ .label }}</a></td>
+      <td>{{ .desc }}</td>
     </tr>
   {{ end }}
   </tbody>
@@ -501,18 +407,18 @@ Optional integrations you can enable for this install.
 
 <div style="padding-top:1rem;"></div>
 
-### Setup runbooks
+### Setup
 
-Once the install is provisioned, finish the setup runbook(s) below.
+Tasks required to make this install of Nuon BYOC on GCP fully operational.
 
 <table>
-  <thead><tr><th>Runbook</th><th>Status</th><th>Run</th></tr></thead>
+  <thead><tr><th>Status</th><th>Runbook</th><th>Description</th></tr></thead>
   <tbody>
   {{ range $setupRunbooks }}
     <tr>
-      <td><a href="/{{ $.nuon.org.id }}/installs/{{ $.nuon.install.id }}/runbooks/{{ .name }}">{{ .label }}</a></td>
       <td>{{ if .complete }}<nuon-status status="finished" variant="badge"></nuon-status>{{ else }}<nuon-status status="pending" variant="badge"></nuon-status>{{ end }}</td>
-      <td><nuon-run-runbook name="{{ .name }}"></nuon-run-runbook></td>
+      <td><a href="/{{ $.nuon.org.id }}/installs/{{ $.nuon.install.id }}/runbooks/{{ .name }}">{{ .label }}</a></td>
+      <td>{{ .desc }}</td>
     </tr>
   {{ end }}
   </tbody>

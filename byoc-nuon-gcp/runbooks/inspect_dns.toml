@@ -1,0 +1,9 @@
+name        = "inspect_dns"
+description = "Inspect DNS — public root-domain zone and the Nuon DNS delegation domain, with the nameserver (NS) records to configure at the registrar."
+readme      = "./runbooks/inspect_dns.md"
+labels      = { service = "dns", type = "debug" }
+
+[[steps]]
+name        = "Inspect: installs"
+type        = "action"
+action_name = "inspect_installs"
