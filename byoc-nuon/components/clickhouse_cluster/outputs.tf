@@ -7,5 +7,5 @@ output "clickhouse_backups_bucket" {
 }
 
 output "service" {
-  value = "clickhouse.clickhouse.svc.cluster.local"
+  value = "clickhouse.clickhouse.svc.cluster.local."
 }
