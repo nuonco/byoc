@@ -1,6 +1,6 @@
 name         = "temporal_db_instance_tier"
 description  = "Cloud SQL machine tier for the Temporal database (e.g. db-custom-2-8192)."
-display_name = "Temporal DB Instance Tier"
+display_name = "Temporal DB instance tier"
 default      = "db-custom-2-8192"
 group        = "cloudsql_temporal"
 

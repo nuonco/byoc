@@ -1,0 +1,9 @@
+name         = "install_stack_template_bucket"
+description  = "The S3 bucket used to store install stack templates for AWS and Azure installs. Required to create Cloudformation quickcreate links."
+default      = ""
+display_name = "Install stack template bucket"
+required     = false
+group        = "install_stack_template_bucket"
+type         = "string"
+
+user_configurable = false

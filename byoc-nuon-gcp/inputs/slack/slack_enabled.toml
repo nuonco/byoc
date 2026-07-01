@@ -1,0 +1,9 @@
+name         = "slack_enabled"
+description  = "Enable the Nuon Slack integration."
+default      = "false"
+display_name = "Slack enabled"
+required     = false
+group        = "slack"
+type         = "bool"
+
+user_configurable = false

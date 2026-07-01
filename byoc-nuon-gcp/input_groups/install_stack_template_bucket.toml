@@ -1,0 +1,3 @@
+name         = "install_stack_template_bucket"
+description  = "Configure the AWS S3 bucket this install reads install stack templates from. Set after provisioning via the s3_bucket runbook."
+display_name = "Install stack template bucket"

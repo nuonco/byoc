@@ -1,7 +1,7 @@
 name         = "github_app_client_id"
 description  = "The github app client id."
 default      = "please-provide-a-value"
-display_name = "GitHub App Client ID"
+display_name = "GitHub app client ID"
 group        = "github"
 required     = true
 
