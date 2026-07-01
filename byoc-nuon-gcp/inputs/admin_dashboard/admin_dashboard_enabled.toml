@@ -1,9 +1,9 @@
 name         = "admin_dashboard_enabled"
 description  = "Enable the Nuon admin dashboard. When true, the admin dashboard service will be deployed."
 default      = "false"
-display_name = "Admin Dashboard Enabled"
+display_name = "Admin dashboard enabled"
 required     = false
-group        = "nuon"
+group        = "admin_dashboard"
 type         = "bool"
 
 user_configurable = false

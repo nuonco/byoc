@@ -1,6 +1,6 @@
 name         = "root_domain"
 description  = "The root domain. Services will be made available at subdomains of this root domain."
-display_name = "Root Domain"
+display_name = "Root domain"
 required     = true
 group        = "dns"
 

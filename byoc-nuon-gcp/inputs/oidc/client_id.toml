@@ -1,7 +1,7 @@
 name         = "nuon_auth_client_id"
 description  = "OIDC Client ID from your identity provider."
 default      = "please-provide-a-value"
-display_name = "Auth Client ID"
+display_name = "Auth client ID"
 required     = false
 group        = "oidc"
 

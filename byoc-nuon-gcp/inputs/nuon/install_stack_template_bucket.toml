@@ -1,9 +1,0 @@
-name         = "install_stack_template_bucket"
-description  = "The bucket for the install templates used in cloudformation for AWS installs."
-default      = ""
-display_name = "Install Stack Template Bucket"
-required     = false
-group        = "nuon"
-type         = "string"
-
-user_configurable = false

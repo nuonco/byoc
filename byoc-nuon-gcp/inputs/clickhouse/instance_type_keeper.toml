@@ -1,7 +1,7 @@
 name         = "ch_instance_type_keeper"
 description  = "What GCE machine type should each clickhouse cluster node deploy on?"
 default      = "e2-medium"
-display_name = "Keeper Instance Type"
+display_name = "Keeper instance type"
 group        = "clickhouse"
 
 user_configurable = false

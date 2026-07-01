@@ -1,0 +1,9 @@
+name         = "install_stack_template_bucket_role_arn"
+description  = "The AWS IAM Role used to access the install stack template bucket."
+default      = ""
+display_name = "Install stack template bucket role ARN"
+required     = false
+group        = "install_stack_template_bucket"
+type         = "string"
+
+user_configurable = false

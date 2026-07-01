@@ -150,17 +150,14 @@ Set the install's Slack inputs in the install config file. The relevant inputs:
 | `slack_secrets_arn` | the ARN from the `slack_secret_arns` output in step 2             |
 | `secrets_role_arn`  | the ARN from the `secret_reader_role_arns` output in step 2       |
 
-Set these in the install config file. `slack_enabled` lives in the `nuon` input group; `slack_client_id` and
+Set these in the install config file. `slack_enabled`, `slack_client_id`, and
 `slack_secrets_arn` live in the `slack` input group; `secrets_role_arn` lives in the `secrets` input group (it is the
 shared central-secrets federation role, not Slack-specific). Fill in the Client ID from step 1 and the ARNs from step 2:
 
 ```toml
-# input.group: nuon
-[[inputs]]
-slack_enabled = 'true'
-
 # input.group: slack
 [[inputs]]
+slack_enabled     = 'true'
 slack_client_id   = '<slack client id>'
 slack_secrets_arn = '<arn from slack_secret_arns output>'
 

@@ -1,7 +1,7 @@
 name         = "nuon_auth_issuer_url"
 description  = "OIDC Issuer URL. Not required for Google OAuth - leave empty. Required for generic OIDC providers."
 default      = "please-provide-a-value"
-display_name = "Auth Issuer URL"
+display_name = "Auth issuer URL"
 required     = false
 group        = "oidc"
 

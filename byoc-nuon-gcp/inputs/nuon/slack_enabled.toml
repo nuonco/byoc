@@ -1,9 +1,0 @@
-name         = "slack_enabled"
-description  = "Enable the Nuon Slack integration. When true, the slack service is deployed and exposed on slack.<root_domain>."
-default      = "false"
-display_name = "Slack Enabled"
-required     = false
-group        = "nuon"
-type         = "bool"
-
-user_configurable = false
