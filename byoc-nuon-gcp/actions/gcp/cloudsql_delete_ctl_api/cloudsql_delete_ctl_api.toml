@@ -1,0 +1,24 @@
+# action
+# description: deletes the ctl-api (nuon) Cloud SQL instance via the gcloud API,
+# taking a final backup as part of the deletion. Explicit destruction step of the
+# ctl-api Cloud SQL teardown — deliberately decoupled from the Terraform teardown
+# job. GCP equivalent of the AWS rds_delete_ctl_api action.
+name    = "cloudsql_delete_ctl_api"
+labels  = { service = "cloudsql", type = "sop" }
+label   = "gcp"
+timeout = "30m"
+role    = "{{.nuon.install.id}}-cloudsql-operations"
+
+[[triggers]]
+type = "manual"
+
+[[steps]]
+name            = "Delete ctl-api Cloud SQL"
+inline_contents = "./gcp/cloudsql_delete/cloudsql_delete.sh"
+
+[steps.env_vars]
+# Derived from install.id (cloudsql_nuon names the instance "nuon-<install_id>"),
+# not the component output — so this still resolves after the component is torn down.
+DB_INSTANCE_NAME = "nuon-{{ .nuon.install.id }}"
+PROJECT_ID       = "{{ .nuon.install_stack.outputs.project_id }}"
+DB_LABEL         = "ctl-api (nuon)"

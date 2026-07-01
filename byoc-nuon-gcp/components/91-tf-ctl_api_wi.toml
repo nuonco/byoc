@@ -10,6 +10,7 @@ directory = "byoc-nuon-gcp/src/components/ctl_api_wi"
 branch    = "main"
 
 [vars]
-install_id             = "{{ .nuon.install.id }}"
-project_id             = "{{ .nuon.install_stack.outputs.project_id }}"
-cloudsql_instance_name = "{{ .nuon.components.cloudsql_nuon.outputs.db_instance_name }}"
+install_id                   = "{{ .nuon.install.id }}"
+project_id                   = "{{ .nuon.install_stack.outputs.project_id }}"
+cloudsql_instance_name       = "{{ .nuon.components.cloudsql_nuon.outputs.db_instance_name }}"
+runner_service_account_email = "{{ .nuon.install_stack.outputs.runner_service_account_email }}"

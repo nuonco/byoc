@@ -3,29 +3,38 @@
 # s3_bucket / inspect (GCP)
 #
 # Inspects the AWS S3 install-stack template bucket
-# (install_stack_template_bucket) — the bucket the ctl-api uses to hold the
-# CloudFormation install-stack templates for the AWS installs this control
-# plane manages. Prints the bucket name, region, a little metadata (versioning
-# + default encryption), and lists up to 5 objects.
+# (install_stack_template_bucket) — the bucket ctl-api uploads CloudFormation
+# install-stack templates to for the AWS installs this GCP control plane
+# manages. Prints the bucket name, region, a little metadata (versioning +
+# default encryption), and lists up to 5 objects.
 #
-# A GCP install has no AWS identity, so — exactly like the sync_slack_secrets
-# action — it federates: the runner mints a Google-signed OIDC token for its
-# GCP identity (via the metadata server) and exchanges it for temporary AWS
-# credentials via sts:AssumeRoleWithWebIdentity against the bucket's role
-# (install_stack_template_bucket_role_arn). That role must grant
-# s3:GetBucket*/s3:ListBucket on the bucket for this action to succeed;
-# otherwise the AWS calls fail with AccessDenied.
-# See docs/aws-gcp-identity-federation.md.
+# IDENTITY: a GCP install has no AWS identity, so it federates — mint a
+# Google-signed OIDC token, exchange it via sts:AssumeRoleWithWebIdentity for
+# temporary AWS credentials against install_stack_template_bucket_role_arn.
+# That role's trust policy is scoped to the *ctl-api* service account's
+# unique_id (from ctl_api_wi) — because in production it's ctl-api, not the
+# runner, that uploads templates. This action runs on the runner, whose own
+# identity (runner_service_account_email) is NOT trusted by the role.
+#
+# So we IMPERSONATE ctl-api: the runner SA is granted token-creator on the
+# ctl-api SA (ctl_api_wi.runner_impersonate_ctl_api), and we ask the IAM
+# Credentials API to mint an OIDC ID token AS ctl-api (sub = ctl-api's
+# unique_id). That token matches the role's trust policy, so the assume-role
+# succeeds — verifying the exact federation path ctl-api uses in production.
+#
+# The role must grant s3:GetBucket*/s3:ListBucket on the bucket; otherwise the
+# AWS calls fail with AccessDenied.
 #
 # Required env:
-#   BUCKET         - the S3 bucket name. Empty => skip (no-op).
-#   ROLE_ARN       - AWS IAM role to assume via web identity
-#                    (install_stack_template_bucket_role_arn). Empty => error.
-#   AUDIENCE       - OIDC audience the role's trust policy expects (sts.amazonaws.com).
-#   INSTALL_ID     - used for the STS role session name.
+#   BUCKET            - the S3 bucket name. Empty => skip (no-op).
+#   ROLE_ARN          - install_stack_template_bucket_role_arn. Empty => error.
+#   CTL_API_SA_EMAIL  - ctl-api service account email (ctl_api_wi output) to
+#                       impersonate. Empty => error.
+#   AUDIENCE          - OIDC audience the role's trust policy expects (sts.amazonaws.com).
+#   INSTALL_ID        - used for the STS role session name.
 # Optional env:
-#   BUCKET_REGION  - the bucket's region (from install_stack_template_bucket_region).
-#                    Used for the initial API region; falls back to us-east-1.
+#   BUCKET_REGION     - the bucket's region (install_stack_template_bucket_region).
+#                       Used for the initial API region; falls back to us-east-1.
 set -euo pipefail
 set -o errtrace
 
@@ -41,21 +50,34 @@ if [[ -z "${ROLE_ARN:-}" ]]; then
   exit 1
 fi
 
+if [[ -z "${CTL_API_SA_EMAIL:-}" ]]; then
+  echo "CTL_API_SA_EMAIL is empty; cannot impersonate ctl-api to mint a trusted token. Deploy ctl_api_wi first." >&2
+  exit 1
+fi
+
 # Region used for the initial STS/S3 calls. S3 is global for naming but the API
 # wants a region; the bucket's real region is reported below via get-bucket-location.
 region="${BUCKET_REGION:-us-east-1}"
 [[ -z "$region" ]] && region="us-east-1"
 
-# 1. Mint a Google-signed OIDC identity token for this runner's GCP identity.
-echo "minting GCP identity token (audience: $AUDIENCE)"
-WEB_IDENTITY_TOKEN=$(curl -sf -H "Metadata-Flavor: Google" \
-  "http://metadata.google.internal/computeMetadata/v1/instance/service-accounts/default/identity?audience=${AUDIENCE}&format=full")
+# ── 1. mint a Google OIDC token AS ctl-api (impersonation) ────────────────────
+# The runner SA calls IAM Credentials generateIdToken on the ctl-api SA; the
+# resulting token's sub is ctl-api's unique_id — what the role trusts.
+echo "minting OIDC token as ctl-api SA via impersonation (audience: $AUDIENCE)"
+echo "  ctl-api SA: $CTL_API_SA_EMAIL"
+WEB_IDENTITY_TOKEN=$(gcloud auth print-identity-token \
+  --impersonate-service-account="$CTL_API_SA_EMAIL" \
+  --audiences="$AUDIENCE" \
+  --include-email 2>/dev/null || true)
+
 if [[ -z "$WEB_IDENTITY_TOKEN" ]]; then
-  echo "failed to mint GCP identity token from the metadata server" >&2
+  echo "ERROR: failed to mint an identity token as ctl-api." >&2
+  echo "Check that ctl_api_wi has been deployed (it grants the runner SA" >&2
+  echo "roles/iam.serviceAccountTokenCreator on $CTL_API_SA_EMAIL)." >&2
   exit 1
 fi
 
-# 2. Exchange it for temporary AWS credentials (no pre-existing AWS creds needed).
+# ── 2. exchange the ctl-api token for temporary AWS credentials ───────────────
 echo "assuming AWS role via web identity"
 echo "  role:   $ROLE_ARN"
 echo "  region: $region"

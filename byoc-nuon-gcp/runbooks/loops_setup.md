@@ -63,7 +63,9 @@ in step 1. Leave it empty to keep Loops disabled.
 loops_secret_arn = '<arn from loops_secret_arns output>'
 ```
 
-`sync_loops_secret` uses the `secrets_role_arn` input to federate into AWS.
+`sync_loops_secret` uses the `secrets_role_arn` input to federate into AWS. The `loops_api_key` value itself is a
+Nuon secret (default `dne` = disabled); the sync step writes the central value into the `ctl-api-loops-api-key` k8s
+secret, which `ctl-api` reads as the `LOOPS_API_KEY` env var.
 
 ### 4. Run the `Loops: Sync loops secret` step {{ if $loopsSynced }}✅ (completed){{ end }}
 

@@ -1,0 +1,27 @@
+# action
+# description: removes the gcs_buckets component's three buckets (and the
+# public-read IAM member) from Terraform state without destroying them, so the
+# component teardown isn't blocked by lifecycle.prevent_destroy or the
+# block-destructive-changes policy. Run after the buckets have been emptied and
+# deleted via the gcloud API. GCP equivalent of the AWS s3_state_rm action.
+#
+# No cloud role: state removal only talks to the Nuon Terraform HTTP backend
+# using the runner's own credentials — it never calls a GCP API — so it does not
+# need the -gcs-operations role. (Piloted on GCP, to be ported back to AWS.)
+name    = "gcs_state_rm"
+labels  = { service = "gcs", type = "sop" }
+label   = "gcp"
+timeout = "15m"
+
+[[triggers]]
+type = "manual"
+
+[[steps]]
+name            = "Detach gcs_buckets resources from state"
+inline_contents = "./tf/state_rm/state_rm.sh"
+
+[steps.env_vars]
+INSTALL_COMPONENT_ID = "{{ .nuon.components.gcs_buckets.install_component_id }}"
+STATE_ADDRESSES      = "google_storage_bucket.clickhouse,google_storage_bucket.install_templates,google_storage_bucket_iam_member.install_templates_public_read,google_storage_bucket.blob"
+TF_VERSION           = "1.11.3"
+LABEL                = "gcs_buckets"

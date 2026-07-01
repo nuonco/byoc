@@ -13,7 +13,8 @@ name            = "Cancel shutdown runner jobs"
 inline_contents = "./runners/temporal_hard_reset_cancel_shutdown_runner_jobs/cancel-shutdown-runner-jobs.sh"
 
 [steps.env_vars]
-DB_USER = "{{ .nuon.components.cloudsql_nuon.outputs.db_instance_username }}"
+DB_USER          = "{{ .nuon.components.ctl_api_wi.outputs.db_user }}"
+CTL_API_SA_EMAIL = "{{ .nuon.components.ctl_api_wi.outputs.service_account_email }}"
 DB_NAME = "ctl_api"
 DB_ADDR = "{{ .nuon.components.cloudsql_nuon.outputs.address }}"
 DB_PORT = "5432"

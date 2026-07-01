@@ -1,0 +1,54 @@
+name        = "deprovision"
+description = "Break-glass deprovision steps that must run explicitly, outside the Terraform teardown. Phase 1: detach each stateful resource (Cloud SQL ctl-api + Temporal, GCS buckets) from Terraform state. Phase 2: deprovision the sandbox. Phase 3 (optional): delete the detached cloud resources via the gcloud API (Cloud SQL with a final backup; GCS irreversibly). Normally the detach+delete run automatically as pre-teardown-component hooks — use this runbook only to drive them by hand if a hook fails mid-teardown."
+readme      = "./runbooks/deprovision.md"
+labels      = { type = "sop" }
+
+# Phase 1 — detach each critical resource from Terraform state. This is
+# reversible, nothing in the cloud is touched. The live cloud resources
+# survive, and can be optionally deleted in phase 3).
+
+[[steps]]
+name        = "Detach ctl-api Cloud SQL from state"
+type        = "action"
+action_name = "cloudsql_state_rm_ctl_api"
+
+[[steps]]
+name        = "Detach Temporal Cloud SQL from state"
+type        = "action"
+action_name = "cloudsql_state_rm_temporal"
+
+[[steps]]
+name        = "Detach gcs_buckets from state"
+type        = "action"
+action_name = "gcs_state_rm"
+
+# Phase 2 — deprovision install components and sandbox.
+
+# Add a `component_tear_down_all` step type, then uncomment this.
+# [[steps]]
+# name = "Tear down components"
+# type = "component_tear_down_all"
+
+[[steps]]
+name = "Deprovision sandbox"
+type = "sandbox_deprovision"
+
+# Phase 3 — delete the detached cloud resources. OPTIONAL: these permanently
+# destroy the RDS and S3 resources. Each delete derives its instance/bucket
+# names from install.id, since the component states have all been deleted
+# by the time these steps run.
+
+[[steps]]
+name        = "Delete ctl-api Cloud SQL"
+type        = "action"
+action_name = "cloudsql_delete_ctl_api"
+
+[[steps]]
+name        = "Delete Temporal Cloud SQL"
+type        = "action"
+action_name = "cloudsql_delete_temporal"
+
+[[steps]]
+name        = "Delete gcs buckets"
+type        = "action"
+action_name = "gcs_delete"

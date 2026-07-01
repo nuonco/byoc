@@ -1,0 +1,45 @@
+# action
+# description: pre-teardown hook for the Temporal Cloud SQL component. Runs
+# automatically right before the component's Terraform destroy: detach the
+# instance (and its database/user) from Terraform state, then delete it via the
+# gcloud API taking a FINAL BACKUP. Detaching from state first means the
+# subsequent Terraform destroy never observes the deletion as drift and never
+# trips prevent_destroy / block-destructive-changes; the final backup keeps the
+# database recoverable after the instance is gone (GCP deletes ordinary backups
+# with the instance, so a final backup is the only surviving artifact).
+#
+# Gated by the -cloudsql-operations role, which is disabled by default: unless
+# the customer has explicitly enabled it, these steps fail with a permission
+# error and the database is never deleted. This is the safety mechanism —
+# deleting the DB requires a deliberate, customer-enabled role, not just a
+# component teardown. GCP equivalent of the AWS rds_teardown_temporal hook.
+name    = "cloudsql_teardown_temporal"
+labels  = { service = "cloudsql", type = "step" }
+label   = "gcp"
+timeout = "60m"
+role    = "{{.nuon.install.id}}-cloudsql-operations"
+
+[[triggers]]
+type           = "pre-teardown-component"
+component_name = "cloudsql_temporal"
+
+[[steps]]
+name            = "Detach Temporal Cloud SQL from state"
+inline_contents = "./tf/state_rm/state_rm.sh"
+
+[steps.env_vars]
+INSTALL_COMPONENT_ID = "{{ .nuon.components.cloudsql_temporal.install_component_id }}"
+STATE_ADDRESSES      = "google_sql_database_instance.temporal,google_sql_database.temporaladmin,google_sql_user.temporaladmin"
+TF_VERSION           = "1.11.3"
+DB_LABEL             = "temporal"
+
+[[steps]]
+name            = "Delete Temporal Cloud SQL"
+inline_contents = "./gcp/cloudsql_delete/cloudsql_delete.sh"
+
+[steps.env_vars]
+# Derived from install.id (instance is "temporal-<install_id>"), not the component
+# output — robust even if the output is unavailable at teardown time.
+DB_INSTANCE_NAME = "temporal-{{ .nuon.install.id }}"
+PROJECT_ID       = "{{ .nuon.install_stack.outputs.project_id }}"
+DB_LABEL         = "temporal"

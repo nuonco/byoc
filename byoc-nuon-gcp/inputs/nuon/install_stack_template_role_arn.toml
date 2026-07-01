@@ -1,8 +1,8 @@
 name         = "install_stack_template_bucket_role_arn"
-description  = "The AWS IAM Role with access to the bucket for the install tempaltes used in cloudformation for AWS installs."
+description  = "The AWS IAM Role with access to the bucket for the install templates used in cloudformation for AWS installs."
 default      = ""
 display_name = "Install Stack Template Bucket Role ARN"
-required     = true
+required     = false
 group        = "nuon"
 type         = "string"
 

@@ -16,11 +16,17 @@ name            = "Query workflows grouped by type"
 inline_contents = "./ctl_api/ctl_api_query_workflows_by_type/query-workflows-by-type.sh"
 
 [steps.env_vars]
-DB_USER = "{{ .nuon.components.cloudsql_nuon.outputs.db_instance_username }}"
-DB_NAME = "ctl_api"
-DB_ADDR = "{{ .nuon.components.cloudsql_nuon.outputs.address }}"
-DB_PORT = "5432"
-LIMIT   = "25"
+# The install_workflows table (and the other ctl-api tables) are owned by the
+# ctl-api IAM database role, so we must query as that role — the Cloud SQL admin
+# user (nuon-db) gets "permission denied". DB_USER is the IAM DB user;
+# CTL_API_SA_EMAIL is the SA the runner impersonates to mint a Cloud SQL login
+# token (Cloud SQL IAM auth).
+DB_USER          = "{{ .nuon.components.ctl_api_wi.outputs.db_user }}"
+CTL_API_SA_EMAIL = "{{ .nuon.components.ctl_api_wi.outputs.service_account_email }}"
+DB_NAME          = "ctl_api"
+DB_ADDR          = "{{ .nuon.components.cloudsql_nuon.outputs.address }}"
+DB_PORT          = "5432"
+LIMIT            = "25"
 
 [[steps]]
 name            = "timestamp"

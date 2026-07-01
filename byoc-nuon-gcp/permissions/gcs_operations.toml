@@ -1,0 +1,23 @@
+type           = "custom"
+name           = "{{ .nuon.install.id }}-gcs-operations"
+description    = "GCS bucket teardown operations (empty/delete buckets) for BYOC Nuon"
+display_name   = "gcs-operations"
+cloud_platform = "gcp"
+
+# Custom operational role scoped to tearing down this install's GCS buckets: list
+# and delete every object (including noncurrent/versioned objects), and delete the
+# buckets themselves. GCP equivalent of the AWS s3-operations role — but with no
+# KMS policy, since the buckets use Google-managed encryption (there is no
+# customer key to schedule for deletion). GCP IAM has no tag/label-conditional
+# scoping for storage, so this is scoped by verb; like cloudsql-operations it is
+# disabled by default and must be enabled by the customer before a deprovision
+# can delete these resources.
+[[policies]]
+name            = "{{ .nuon.install.id }}-gcs-operations-destruction"
+gcp_permissions = [
+  "storage.buckets.get",
+  "storage.buckets.delete",
+  "storage.objects.list",
+  "storage.objects.get",
+  "storage.objects.delete",
+]

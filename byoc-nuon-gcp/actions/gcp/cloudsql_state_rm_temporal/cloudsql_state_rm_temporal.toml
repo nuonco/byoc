@@ -1,0 +1,27 @@
+# action
+# description: removes the Temporal Cloud SQL instance (and its database/user)
+# from its Terraform component state without destroying it, so the remaining
+# resources can tear down without tripping the block-destructive-changes policy.
+# Run after the instance has been deleted via the gcloud API. GCP equivalent of
+# the AWS rds_state_rm_temporal action.
+#
+# No cloud role: state removal only talks to the Nuon Terraform HTTP backend
+# using the runner's own credentials — it never calls a GCP API — so it does not
+# need the -cloudsql-operations role. (Piloted on GCP, to be ported back to AWS.)
+name    = "cloudsql_state_rm_temporal"
+labels  = { service = "cloudsql", type = "sop" }
+label   = "gcp"
+timeout = "15m"
+
+[[triggers]]
+type = "manual"
+
+[[steps]]
+name            = "Detach Temporal Cloud SQL from state"
+inline_contents = "./tf/state_rm/state_rm.sh"
+
+[steps.env_vars]
+INSTALL_COMPONENT_ID = "{{ .nuon.components.cloudsql_temporal.install_component_id }}"
+STATE_ADDRESSES      = "google_sql_database_instance.temporal,google_sql_database.temporaladmin,google_sql_user.temporaladmin"
+TF_VERSION           = "1.11.3"
+DB_LABEL             = "temporal"

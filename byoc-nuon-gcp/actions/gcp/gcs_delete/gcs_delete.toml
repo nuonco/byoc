@@ -1,0 +1,26 @@
+# action
+# description: empties and deletes the gcs_buckets component's three buckets
+# (blob, clickhouse, install-templates) via the gcloud API. Explicit,
+# irreversible destruction step — deliberately decoupled from the Terraform
+# teardown (GCS has no snapshot). GCP equivalent of the AWS s3_delete action (no
+# KMS step: buckets use Google-managed encryption).
+name    = "gcs_delete"
+labels  = { service = "gcs", type = "sop" }
+label   = "gcp"
+timeout = "30m"
+role    = "{{.nuon.install.id}}-gcs-operations"
+
+[[triggers]]
+type = "manual"
+
+[[steps]]
+name            = "Delete gcs buckets"
+inline_contents = "./gcp/gcs_delete/gcs_delete.sh"
+
+[steps.env_vars]
+# Derived from install.id (gcs_buckets names them "<install_id>-..."), not the
+# component outputs — so these still resolve after the component is torn down.
+BLOB_BUCKET       = "{{ .nuon.install.id }}-byoc-nuon-install-blob"
+CLICKHOUSE_BUCKET = "{{ .nuon.install.id }}-nuon-clickhouse"
+TEMPLATES_BUCKET  = "{{ .nuon.install.id }}-byoc-nuon-install-templates"
+PROJECT_ID        = "{{ .nuon.install_stack.outputs.project_id }}"

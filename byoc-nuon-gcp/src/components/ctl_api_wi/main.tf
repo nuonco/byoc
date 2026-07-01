@@ -10,6 +10,16 @@ resource "google_service_account_iam_member" "ctl_api_workload_identity" {
   member             = "serviceAccount:${var.project_id}.svc.id.goog[ctl-api/ctl-api]"
 }
 
+# Let the runner impersonate ctl-api (mint OIDC tokens as ctl-api). The S3
+# install-templates role trust policy is scoped to ctl-api's SA, so the
+# s3_bucket inspect action — which runs on the runner — must present a token
+# minted as ctl-api to verify that federation path.
+resource "google_service_account_iam_member" "runner_impersonate_ctl_api" {
+  service_account_id = google_service_account.ctl_api.name
+  role               = "roles/iam.serviceAccountTokenCreator"
+  member             = "serviceAccount:${var.runner_service_account_email}"
+}
+
 resource "google_project_iam_member" "ctl_api_cloudsql_client" {
   project = var.project_id
   role    = "roles/cloudsql.client"

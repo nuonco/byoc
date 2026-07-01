@@ -1,0 +1,49 @@
+# action
+# description: pre-teardown hook for the gcs_buckets component. Runs
+# automatically right before the component's Terraform destroy: detach the three
+# buckets (and the public-read IAM member) from Terraform state, then empty +
+# delete them via the gcloud API. Detaching from state first (consistent with
+# the cloudsql hooks and the break-glass deprovision runbook) means the destroy
+# never observes the deletion as drift and never trips prevent_destroy /
+# block-destructive-changes.
+#
+# Ordering note: gcs_buckets is torn down AFTER clickhouse_cluster (which depends
+# on it), so the clickhouse backups bucket still exists while clickhouse_cluster
+# is destroyed — this hook is what finally deletes it.
+#
+# Gated by the -gcs-operations role, which is disabled by default: unless the
+# customer has explicitly enabled it, these steps fail with a permission error
+# and the buckets are never deleted (irreversible — GCS has no snapshot). GCP
+# equivalent of the AWS s3_teardown hook (no KMS step: buckets use
+# Google-managed encryption).
+name    = "gcs_teardown"
+labels  = { service = "gcs", type = "step" }
+label   = "gcp"
+timeout = "45m"
+role    = "{{.nuon.install.id}}-gcs-operations"
+
+[[triggers]]
+type           = "pre-teardown-component"
+component_name = "gcs_buckets"
+
+[[steps]]
+name            = "Detach gcs_buckets resources from state"
+inline_contents = "./tf/state_rm/state_rm.sh"
+
+[steps.env_vars]
+INSTALL_COMPONENT_ID = "{{ .nuon.components.gcs_buckets.install_component_id }}"
+STATE_ADDRESSES      = "google_storage_bucket.clickhouse,google_storage_bucket.install_templates,google_storage_bucket_iam_member.install_templates_public_read,google_storage_bucket.blob"
+TF_VERSION           = "1.11.3"
+LABEL                = "gcs_buckets"
+
+[[steps]]
+name            = "Delete gcs buckets"
+inline_contents = "./gcp/gcs_delete/gcs_delete.sh"
+
+[steps.env_vars]
+# Derived from install.id (buckets are "<install_id>-..."), not the component
+# outputs — robust even if the outputs are unavailable at teardown time.
+BLOB_BUCKET       = "{{ .nuon.install.id }}-byoc-nuon-install-blob"
+CLICKHOUSE_BUCKET = "{{ .nuon.install.id }}-nuon-clickhouse"
+TEMPLATES_BUCKET  = "{{ .nuon.install.id }}-byoc-nuon-install-templates"
+PROJECT_ID        = "{{ .nuon.install_stack.outputs.project_id }}"

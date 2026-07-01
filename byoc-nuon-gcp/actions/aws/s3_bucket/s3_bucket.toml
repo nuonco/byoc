@@ -8,7 +8,7 @@
 name    = "s3_bucket"
 labels  = { service = "s3", type = "debug" }
 label   = "aws"
-timeout = "2m"
+timeout = "3m"
 
 [[triggers]]
 type = "manual"
@@ -18,8 +18,9 @@ name            = "inspect"
 inline_contents = "./aws/s3_bucket/inspect.sh"
 
 [steps.env_vars]
-BUCKET        = "{{ or .nuon.inputs.inputs.install_stack_template_bucket \"\" }}"
-BUCKET_REGION = "{{ or .nuon.inputs.inputs.install_stack_template_bucket_region \"\" }}"
-ROLE_ARN      = "{{ or .nuon.inputs.inputs.install_stack_template_bucket_role_arn \"\" }}"
-AUDIENCE      = "sts.amazonaws.com"
-INSTALL_ID    = "{{ .nuon.install.id }}"
+BUCKET           = "{{ or .nuon.inputs.inputs.install_stack_template_bucket \"\" }}"
+BUCKET_REGION    = "{{ or .nuon.inputs.inputs.install_stack_template_bucket_region \"\" }}"
+ROLE_ARN         = "{{ or .nuon.inputs.inputs.install_stack_template_bucket_role_arn \"\" }}"
+CTL_API_SA_EMAIL = "{{ .nuon.components.ctl_api_wi.outputs.service_account_email }}"
+AUDIENCE         = "sts.amazonaws.com"
+INSTALL_ID       = "{{ .nuon.install.id }}"
