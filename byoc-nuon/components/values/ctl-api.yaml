@@ -236,7 +236,7 @@ worker:
           value: "50"
     - namespace: runners
       minReplicas: 4
-      maxReplicas: 4
+      maxReplicas: 6
       command: ["/bin/service", "worker", "--namespace=runners"]
       resources:
         requests:
