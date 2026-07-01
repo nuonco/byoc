@@ -20,9 +20,20 @@ db_addr="$DB_ADDR"
 echo "[cancel-queued-workflows] kubectl auth whoami"
 kubectl auth whoami -o json | jq -c
 
-echo "[cancel-queued-workflows] loading db credentials from k8s"
-admin_username=$(kubectl get -n ctl-api secret nuon-db -o jsonpath='{.data.username}' | base64 -d)
-admin_password=$(kubectl get -n ctl-api secret nuon-db -o jsonpath='{.data.password}' | base64 -d)
+# Update as the ctl-api IAM role (the table owner) via Cloud SQL IAM auth. The
+# nuon-db admin user is NOT the owner and gets "permission denied". Impersonate
+# the ctl-api SA on the runner (ctl_api_wi grants the runner token-creator on it)
+# to mint a sqlservice.login-scoped token, used as the DB password over SSL.
+: "${DB_USER:?DB_USER is required (ctl_api_wi.db_user, the IAM database user)}"
+: "${CTL_API_SA_EMAIL:?CTL_API_SA_EMAIL is required (ctl_api_wi.service_account_email)}"
+echo "[cancel-queued-workflows] minting a Cloud SQL login token as ${CTL_API_SA_EMAIL}"
+db_token=$(gcloud auth print-access-token \
+  --impersonate-service-account="$CTL_API_SA_EMAIL" \
+  --scopes=https://www.googleapis.com/auth/sqlservice.login)
+if [[ -z "$db_token" ]]; then
+  echo "[cancel-queued-workflows] ERROR: failed to mint a login token as $CTL_API_SA_EMAIL." >&2
+  exit 1
+fi
 
 echo "[cancel-queued-workflows] scale up ctl-api-init"
 kubectl scale -n ctl-api --replicas=1 deployment/ctl-api-init
@@ -53,7 +64,7 @@ RETURNING w.id;
 
 echo "[cancel-queued-workflows] running update"
 kubectl --namespace=ctl-api exec -i "$pod" -- \
-  env "PGHOST=$db_addr" "PGPORT=$db_port" "PGUSER=$admin_username" "PGPASSWORD=$admin_password" \
+  env "PGHOST=$db_addr" "PGPORT=$db_port" "PGUSER=$DB_USER" "PGPASSWORD=$db_token" "PGSSLMODE=require" \
   psql --no-psqlrc -d "$db_name" -c "$sql"
 
 echo "[cancel-queued-workflows] scale down ctl-api-init"

@@ -27,9 +27,19 @@ kubectl wait deployment -n ctl-api ctl-api-init --for condition=Available=True -
 pod=$(kubectl -n ctl-api get pods --selector app=ctl-api-init -o json | jq -r '.items[0].metadata.name')
 echo "[query phone-home] using pod: $pod"
 
-echo "[query phone-home] loading db credentials from k8s"
-admin_username=$(kubectl get -n ctl-api secret nuon-db -o jsonpath='{.data.username}' | base64 -d)
-admin_password=$(kubectl get -n ctl-api secret nuon-db -o jsonpath='{.data.password}' | base64 -d)
+# Query as the ctl-api IAM role (the table owner) via Cloud SQL IAM auth. The
+# nuon-db admin user is NOT the owner and gets "permission denied". Impersonate
+# the ctl-api SA on the runner (ctl_api_wi grants the runner token-creator on it)
+# to mint a sqlservice.login-scoped token, used as the DB password over SSL.
+: "${CTL_API_SA_EMAIL:?CTL_API_SA_EMAIL is required (ctl_api_wi.service_account_email)}"
+echo "[query phone-home] minting a Cloud SQL login token as ${CTL_API_SA_EMAIL}"
+db_token=$(gcloud auth print-access-token \
+  --impersonate-service-account="$CTL_API_SA_EMAIL" \
+  --scopes=https://www.googleapis.com/auth/sqlservice.login)
+if [[ -z "$db_token" ]]; then
+  echo "[query phone-home] ERROR: failed to mint a login token as $CTL_API_SA_EMAIL." >&2
+  exit 1
+fi
 
 sql="
 SET default_transaction_read_only = on;
@@ -63,7 +73,7 @@ SELECT json_build_object(
 
 echo "[query phone-home] running query"
 output=$(kubectl --namespace=ctl-api exec -i "$pod" -- \
-  env "PGHOST=$db_addr" "PGPORT=$db_port" "PGUSER=$admin_username" "PGPASSWORD=$admin_password" \
+  env "PGHOST=$db_addr" "PGPORT=$db_port" "PGUSER=$db_user" "PGPASSWORD=$db_token" "PGSSLMODE=require" \
   psql --no-psqlrc -d "$db_name" -A -t -c "$sql" | tr -d '\r' | grep -v '^$' | tail -n 1)
 
 echo "[query phone-home] scale down ctl-api-init"

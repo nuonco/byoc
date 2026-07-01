@@ -24,14 +24,19 @@ kubectl wait deployment -n ctl-api ctl-api-init --for condition=Available=True -
 echo "[ctl_api query] get a pod from the deployment"
 pod=`kubectl -n ctl-api get pods --selector app=ctl-api-init -o json | jq -r '.items[0].metadata.name'`
 
-echo "[ctl_api query] reading db access secrets from k8s"
-admin_username=$(kubectl get -n ctl-api secret nuon-db -o jsonpath='{.data.username}' | base64 -d)
-admin_password=$(kubectl get -n ctl-api secret nuon-db -o jsonpath='{.data.password}' | base64 -d)
-
-echo "[ctl_api query] sanity check"
-echo "these two should match"
-echo "db_user=$db_user"
-echo "username=$admin_username"
+# Query as the ctl-api IAM role (the table owner) via Cloud SQL IAM auth. The
+# nuon-db admin user is NOT the owner and gets "permission denied". Impersonate
+# the ctl-api SA on the runner (ctl_api_wi grants the runner token-creator on it)
+# to mint a sqlservice.login-scoped token, used as the DB password over SSL.
+: "${CTL_API_SA_EMAIL:?CTL_API_SA_EMAIL is required (ctl_api_wi.service_account_email)}"
+echo "[ctl_api query] minting a Cloud SQL login token as ${CTL_API_SA_EMAIL}"
+db_token=$(gcloud auth print-access-token \
+  --impersonate-service-account="$CTL_API_SA_EMAIL" \
+  --scopes=https://www.googleapis.com/auth/sqlservice.login)
+if [[ -z "$db_token" ]]; then
+  echo "[ctl_api query] ERROR: failed to mint a login token as $CTL_API_SA_EMAIL." >&2
+  exit 1
+fi
 
 echo "[ctl_api query] preparing to initialize"
 function execute_query() {
@@ -40,7 +45,7 @@ function execute_query() {
     --namespace=ctl-api \
     exec  -i \
     $pod -- \
-    env "PGHOST=$db_addr" "PGPORT=$db_port" "PGUSER=$admin_username" "PGPASSWORD=$admin_password" \
+    env "PGHOST=$db_addr" "PGPORT=$db_port" "PGUSER=$db_user" "PGPASSWORD=$db_token" "PGSSLMODE=require" \
     psql --no-psqlrc -d "ctl_api" -c "SET default_transaction_read_only = on; $1"
 }
 # sleep so logs have time to flush?

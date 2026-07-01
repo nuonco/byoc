@@ -4,7 +4,16 @@
 # (across all types), joined with `accounts` so we can see which user ran
 # each workflow.
 #
+# The ctl-api tables (install_workflows, etc.) are owned by the ctl-api IAM
+# database role, so we query as that role via Cloud SQL IAM auth. The Cloud SQL
+# admin user (nuon-db) is NOT the table owner and gets "permission denied for
+# table install_workflows". We authenticate as ctl-api by impersonating its SA
+# on the runner (roles/iam.serviceAccountTokenCreator, granted by ctl_api_wi) to
+# mint a sqlservice.login-scoped token, used as the DB password over SSL.
+#
 # Env vars:
+#   DB_USER          (required)  the IAM database user (ctl_api_wi.db_user)
+#   CTL_API_SA_EMAIL (required)  ctl-api SA to impersonate (ctl_api_wi.service_account_email)
 #   LIMIT       (optional)  max rows to return; defaults to 25
 #   DB_NAME     (optional)  defaults to "ctl_api"
 #   DB_PORT     (optional)  defaults to "5432"
@@ -43,9 +52,25 @@ fi
 echo "[query workflows] db_addr=$db_addr"
 echo "[query workflows] limit=$limit"
 
-echo "[query workflows] loading db credentials from k8s"
-admin_username=$(kubectl get -n ctl-api secret nuon-db -o jsonpath='{.data.username}' | base64 -d)
-admin_password=$(kubectl get -n ctl-api secret nuon-db -o jsonpath='{.data.password}' | base64 -d)
+: "${DB_USER:?DB_USER is required (ctl_api_wi.db_user, the IAM database user)}"
+: "${CTL_API_SA_EMAIL:?CTL_API_SA_EMAIL is required (ctl_api_wi.service_account_email)}"
+
+# Mint a Cloud SQL login token AS the ctl-api service account. The ctl-api-init
+# pod is NOT workload-identity-bound to ctl-api (its metadata identity is the WI
+# pool, not the ctl-api GSA), so we can't use the pod's own token. Instead the
+# runner impersonates the ctl-api SA — the runner SA is granted
+# roles/iam.serviceAccountTokenCreator on it (ctl_api_wi.runner_impersonate_ctl_api),
+# same grant the s3_bucket inspect action uses. The token is scoped to
+# sqlservice.login, which Cloud SQL requires for direct (non-proxy) IAM auth.
+echo "[query workflows] minting a Cloud SQL login token as ${CTL_API_SA_EMAIL}"
+db_token=$(gcloud auth print-access-token \
+  --impersonate-service-account="$CTL_API_SA_EMAIL" \
+  --scopes=https://www.googleapis.com/auth/sqlservice.login)
+if [[ -z "$db_token" ]]; then
+  echo "[query workflows] ERROR: failed to mint a login token as $CTL_API_SA_EMAIL." >&2
+  echo "[query workflows] (does the runner SA have roles/iam.serviceAccountTokenCreator on it? redeploy ctl_api_wi.)" >&2
+  exit 1
+fi
 
 echo "[query workflows] scale up ctl-api-init"
 kubectl scale -n ctl-api --replicas=1 deployment/ctl-api-init
@@ -161,7 +186,7 @@ FROM (
 
 echo "[query workflows] running query"
 workflows_json=$(kubectl --namespace=ctl-api exec -i "$pod" -- \
-  env "PGHOST=$db_addr" "PGPORT=$db_port" "PGUSER=$admin_username" "PGPASSWORD=$admin_password" \
+  env "PGHOST=$db_addr" "PGPORT=$db_port" "PGUSER=$DB_USER" "PGPASSWORD=$db_token" "PGSSLMODE=require" \
   psql --no-psqlrc -d "$db_name" -A -t -q -c "$sql" \
   | tr -d '\r' | { grep -E '^[[\{]' || true; } | tail -n 1)
 
