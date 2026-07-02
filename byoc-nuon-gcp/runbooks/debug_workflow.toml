@@ -1,0 +1,19 @@
+name        = "debug_workflow"
+description = "Inspect a single install workflow by ID — queries ctl-api for its step groups, steps, and attached queue signals, and renders them as a table."
+readme      = "./runbooks/debug_workflow.md"
+labels      = { service = "ctl-api", type = "debug" }
+
+[[input]]
+name         = "workflow_id"
+display_name = "Workflow ID"
+description  = "The ctl-api install workflow ID to inspect (e.g. inwh3px7j15xbeey92mv0bbghk). Copy it from the Recent Workflows table in the inspect_workflows runbook."
+required     = true
+type         = "string"
+
+[[steps]]
+name        = "Query workflow steps"
+type        = "action"
+action_name = "ctl_api_query_workflow_steps"
+
+[steps.env_vars]
+WORKFLOW_ID = "{{ .runbook_inputs.workflow_id }}"
