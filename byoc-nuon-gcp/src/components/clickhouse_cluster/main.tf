@@ -93,8 +93,17 @@ resource "kubectl_manifest" "clickhouse_installation" {
             spec = {
               # never co-locate the two replicas on the same node, and best-effort
               # spread them across zones. the label is applied automatically by the CRD.
-              # NOTE: unlike the AWS install there is no dedicated tainted node pool on GCP
-              # (single autoscaling regional pool "main"), so we set no nodeSelector/tolerations.
+              # pin onto the dedicated clickhouse-installation node pool (created by the
+              # clickhouse_nodepools component) via its pool.nuon.co taint/label, mirroring AWS.
+              nodeSelector = {
+                "pool.nuon.co" = "clickhouse-installation"
+              }
+              tolerations = [{
+                key      = "pool.nuon.co"
+                operator = "Equal"
+                value    = "clickhouse-installation"
+                effect   = "NoSchedule"
+              }]
               affinity = {
                 podAntiAffinity = {
                   requiredDuringSchedulingIgnoredDuringExecution = [
