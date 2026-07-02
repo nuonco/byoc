@@ -1,5 +1,5 @@
 name        = "inspect_workflows"
-description = "Inspect workflows — queries ctl-api for recent install workflows and renders each step group as a table."
+description = "Inspect workflows — queries ctl-api for recent install workflows and renders them as a table. To drill into a single workflow's step groups and steps, run the debug_workflow runbook with its ID."
 readme      = "./runbooks/inspect_workflows.md"
 labels      = { service = "ctl-api", type = "debug" }
 
@@ -7,8 +7,3 @@ labels      = { service = "ctl-api", type = "debug" }
 name        = "Query recent workflows"
 type        = "action"
 action_name = "ctl_api_query_workflows_by_type"
-
-[[steps]]
-name        = "Query workflow steps"
-type        = "action"
-action_name = "ctl_api_query_workflow_steps"
