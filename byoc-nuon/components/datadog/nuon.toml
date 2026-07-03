@@ -2,6 +2,8 @@ name              = "datadog"
 type              = "terraform_module"
 terraform_version = "1.11.3"
 dependencies      = ["temporal", "ctl_api", "dashboard_ui"]
+toggleable        = true
+default_enabled   = true
 
 [public_repo]
 repo      = "nuonco/byoc"
@@ -19,6 +21,5 @@ install_id   = "{{ .nuon.install.id }}"
 org_id       = "{{ .nuon.org.id }}"
 org_name     = "{{ .nuon.org.name }}"
 
-datadog_enabled = "{{ .nuon.inputs.inputs.datadog_enabled }}"
 datadog_api_key = "{{ .nuon.inputs.inputs.datadog_api_key }}"
 datadog_app_key = "{{ .nuon.inputs.inputs.datadog_app_key }}"
