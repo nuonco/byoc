@@ -59,7 +59,7 @@ resource "kubectl_manifest" "clickhouse_backup_crons" {
                     {
                       // this is the service url
                       "name"  = "CLICKHOUSE_URL"
-                      "value" = "clickhouse.clickhouse.svc.cluster.local"
+                      "value" = "clickhouse.clickhouse.svc.cluster.local."
                     },
                     {
                       "name"  = "CLICKHOUSE_USERNAME"
