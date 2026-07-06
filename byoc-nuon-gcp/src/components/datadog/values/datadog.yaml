@@ -21,6 +21,7 @@ datadog:
     enabled: true
     processCollection: false
   systemProbe:
+    enableDefaultKernelHeadersPaths: false
     enableTCPQueueLength: false
     enableOOMKill: true
     collectDNSStats: false
