@@ -5,5 +5,3 @@ display_name = "Datadog Network Monitoring Enabled"
 required     = false
 group        = "datadog"
 type         = "bool"
-
-user_configurable = true
