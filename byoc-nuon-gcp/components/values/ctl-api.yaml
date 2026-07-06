@@ -89,6 +89,7 @@ env:
 
   BLOB_STORAGE_BUCKET: "{{ .nuon.components.gcs_buckets.outputs.blob_bucket.name }}"
   BLOB_STORAGE_REGION: "{{ .nuon.install_stack.outputs.region }}"
+  BLOB_STORAGE_PROVIDER: gcs
 
   SEGMENT_WRITE_KEY: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 
