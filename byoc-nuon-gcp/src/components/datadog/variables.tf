@@ -25,6 +25,12 @@ variable "datadog_api_key" {
   type = string
 }
 
+variable "network_monitoring_enabled" {
+  type        = bool
+  default     = false
+  description = "Enable DNS and network metrics collection (system-probe DNS stats)."
+}
+
 variable "datadog_app_key" {
   type = string
 }

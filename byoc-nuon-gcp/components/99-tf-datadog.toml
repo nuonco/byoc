@@ -6,7 +6,7 @@ dependencies      = ["temporal", "ctl_api", "dashboard_ui"]
 [public_repo]
 repo      = "nuonco/byoc"
 directory = "byoc-nuon-gcp/src/components/datadog"
-branch    = "main"
+branch    = "sk/ft-dd-network-input"
 
 [vars]
 project_id = "{{ .nuon.install_stack.outputs.project_id }}"
@@ -23,3 +23,7 @@ org_name     = "{{ .nuon.org.name }}"
 datadog_enabled = "{{ .nuon.inputs.inputs.datadog_enabled }}"
 datadog_api_key = "{{ .nuon.inputs.inputs.datadog_api_key }}"
 datadog_app_key = "{{ .nuon.inputs.inputs.datadog_app_key }}"
+
+network_monitoring_enabled = "{{ .nuon.inputs.inputs.datadog_network_monitoring_enabled }}"
+
+

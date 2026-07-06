@@ -7,8 +7,4 @@ datadog:
         - collect_aws_ena_metrics: true
   systemProbe:
     collectDNSStats: true
-    # GKE nodes run Container-Optimized OS with a read-only root fs, so the host
-    # /usr/src and /lib/modules kernel-header mounts fail to create ("mkdir
-    # /usr/src: read-only file system"). Datadog ships prebuilt CO-RE eBPF
-    # probes, so these mounts are not needed.
     enableDefaultKernelHeadersPaths: false

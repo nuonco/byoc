@@ -1,0 +1,7 @@
+name         = "datadog_network_monitoring_enabled"
+description  = "Enable Datadog DNS and network metrics collection (system-probe DNS stats)."
+default      = "false"
+display_name = "Datadog Network Monitoring Enabled"
+required     = false
+group        = "datadog"
+type         = "bool"
