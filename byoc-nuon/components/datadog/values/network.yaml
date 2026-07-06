@@ -7,4 +7,3 @@ datadog:
         - collect_aws_ena_metrics: true
   systemProbe:
     collectDNSStats: true
-    enableDefaultKernelHeadersPaths: false
