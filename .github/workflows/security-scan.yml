@@ -1,0 +1,59 @@
+name: Security Scan
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+jobs:
+  security-scan:
+    name: Security Scan
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      security-events: write
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install OPA
+        run: |
+          curl -sL -o /usr/local/bin/opa https://openpolicyagent.org/downloads/v0.68.0/opa_linux_amd64_static
+          chmod +x /usr/local/bin/opa
+          opa version
+
+      # Layer 1: OPA policy tests — validates that all Rego policies (both
+      # existing and new) are correct and haven't regressed. Tests construct
+      # mock Terraform plan / Helm review inputs and assert deny/warn behavior.
+      - name: OPA policy tests (AWS)
+        run: opa test byoc-nuon/policies/ -v
+
+      - name: OPA policy tests (GCP)
+        if: always()
+        run: opa test byoc-nuon-gcp/policies/ -v
+
+      # Layer 2: Config file checks — covers Nuon platform configuration
+      # (TOML permission files, JSON boundary documents) that aren't Terraform
+      # resources and can't be caught by plan-time Rego policies.
+      - name: Config file checks
+        if: always()
+        run: ./scripts/security-scan.sh
+
+      # Layer 3: Trivy IaC scan — broad static analysis of Terraform HCL
+      # for CIS/AWS/GCP misconfigurations. Produces SARIF for inline PR annotations.
+      - name: Trivy IaC scan
+        if: always()
+        uses: aquasecurity/trivy-action@master
+        with:
+          scan-type: config
+          scan-ref: .
+          format: sarif
+          output: trivy-results.sarif
+          severity: HIGH,CRITICAL
+          trivyignores: .trivyignore
+
+      - name: Upload Trivy SARIF
+        if: always()
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: trivy-results.sarif

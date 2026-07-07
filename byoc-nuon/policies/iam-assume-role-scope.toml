@@ -1,0 +1,4 @@
+type       = "terraform_module"
+engine     = "opa"
+contents   = "./iam-assume-role-scope.rego"
+components = ["*"]

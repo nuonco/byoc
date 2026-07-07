@@ -1,0 +1,7 @@
+# Trivy IaC scan — suppressed findings
+#
+# Add Trivy rule IDs here to suppress known false positives or accepted risks.
+# Format: one rule ID per line, with an optional comment.
+#
+# Example:
+# AVD-AWS-0107  # S3 bucket logging — not required for install-templates bucket
