@@ -1,0 +1,56 @@
+# Nuon App Config Linter Configuration
+
+[settings]
+min_severity = "info"
+
+[rules]
+
+# Require labels on all components, actions, and runbooks
+[rules.require-labels]
+enabled = true
+severity = "warning"
+
+# Disallow admin/owner IAM policies
+[rules.no-admin-permissions]
+enabled = true
+severity = "error"
+
+# Components should have a nuon.toml in their source directory
+[rules.component-nuon-toml]
+enabled = true
+severity = "warning"
+
+# Expected directories exist for referenced resources
+[rules.expected-directories]
+enabled = true
+severity = "warning"
+
+# Sandbox should use a pinned tag, not a branch
+[rules.sandbox-use-tag]
+enabled = true
+severity = "warning"
+
+# Runner init script should match the platform
+[rules.runner-init-script]
+enabled = true
+severity = "warning"
+
+# Permissions boundary must not grant Action:* Resource:* (SEC-002)
+[rules.permissions-boundary-scope]
+enabled = true
+severity = "error"
+
+# Policy/boundary JSON must not contain service-wide wildcard actions (SEC-003)
+[rules.no-wildcard-actions]
+enabled = true
+severity = "warning"
+
+# Permission roles must have a permissions_boundary (SEC-004)
+[rules.require-permissions-boundary]
+enabled = true
+severity = "warning"
+
+# OPA/Rego policies must have corresponding test files
+[rules.require-policy-tests]
+enabled = true
+severity = "warning"
