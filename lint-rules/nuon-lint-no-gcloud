@@ -1,0 +1,52 @@
+#!/usr/bin/env bash
+# nuon-lint-no-gcloud — Ensure AWS app configs do not reference GCP CLI tools.
+#
+# Scans action TOML files and referenced shell scripts for gcloud, gsutil,
+# and bq (BigQuery CLI) usage, which indicates wrong-platform tooling.
+
+set -euo pipefail
+
+APP_DIR="$1"
+
+findings="[]"
+
+add_finding() {
+  local file="$1" msg="$2"
+  findings=$(echo "$findings" | jq --arg rid "custom:no-gcloud" \
+    --arg sev "error" \
+    --arg msg "$msg" \
+    --arg file "$file" \
+    '. + [{"rule_id": $rid, "severity": $sev, "message": $msg, "file": $file}]')
+}
+
+# Scan all TOML files under actions/ for gcloud/gsutil/bq references
+if [[ -d "$APP_DIR/actions" ]]; then
+  while IFS= read -r -d '' f; do
+    rel="${f#"$APP_DIR/"}"
+    if grep -qE '\bgcloud\b|\bgsutil\b|\bbq\b' "$f" 2>/dev/null; then
+      match=$(grep -nE '\bgcloud\b|\bgsutil\b|\bbq\b' "$f" | head -1 | sed 's/:.*//')
+      add_finding "$rel" "action references GCP CLI tool (gcloud/gsutil/bq) — wrong platform for AWS config"
+    fi
+  done < <(find "$APP_DIR/actions" -name '*.toml' -print0 2>/dev/null)
+fi
+
+# Scan shell scripts referenced by actions
+if [[ -d "$APP_DIR/actions" ]]; then
+  while IFS= read -r -d '' f; do
+    rel="${f#"$APP_DIR/"}"
+    if grep -qE '\bgcloud\b|\bgsutil\b|\bbq\b' "$f" 2>/dev/null; then
+      add_finding "$rel" "script references GCP CLI tool (gcloud/gsutil/bq) — wrong platform for AWS config"
+    fi
+  done < <(find "$APP_DIR/actions" -name '*.sh' -print0 2>/dev/null)
+fi
+
+# Also scan runner.toml and sandbox.toml for GCP references
+for cfg in runner.toml sandbox.toml; do
+  if [[ -f "$APP_DIR/$cfg" ]]; then
+    if grep -qE '\bgcloud\b|\bgsutil\b|\bgoogle-cloud\b' "$APP_DIR/$cfg" 2>/dev/null; then
+      add_finding "$cfg" "config references GCP tooling — wrong platform for AWS config"
+    fi
+  fi
+done
+
+echo "{\"findings\": $findings}"

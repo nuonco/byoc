@@ -1,0 +1,55 @@
+# AWS App Config Linter Configuration
+
+[settings]
+custom_rules_path = "./lint-rules"
+min_severity = "info"
+
+[rules]
+
+[rules.require-labels]
+enabled = true
+severity = "warning"
+
+[rules.no-admin-permissions]
+enabled = true
+severity = "error"
+
+[rules.component-nuon-toml]
+enabled = true
+severity = "warning"
+
+[rules.expected-directories]
+enabled = true
+severity = "warning"
+
+[rules.sandbox-use-tag]
+enabled = true
+severity = "warning"
+
+[rules.runner-init-script]
+enabled = true
+severity = "warning"
+
+[rules.permissions-boundary-scope]
+enabled = true
+severity = "error"
+
+[rules.no-wildcard-actions]
+enabled = true
+severity = "warning"
+
+[rules.require-permissions-boundary]
+enabled = true
+severity = "warning"
+
+[rules.require-policy-tests]
+enabled = true
+severity = "warning"
+
+# AWS-specific: no GCP CLI tools in actions
+[rules."custom:no-gcloud"]
+enabled = true
+
+# GCP rule not applicable to AWS
+[rules."custom:no-awscli"]
+enabled = false
