@@ -1,6 +1,7 @@
 locals {
   datadog = {
-    value_file = "values/datadog.yaml"
+    value_file         = "values/datadog.yaml"
+    network_value_file = "values/network.yaml"
   }
 }
 
@@ -15,20 +16,23 @@ resource "helm_release" "datadog" {
   chart      = "datadog"
   version    = "3.54.2"
 
-  values = [
-    file(local.datadog.value_file),
-    yamlencode({
-      datadog = {
-        apiKey = var.datadog_api_key
-        tags = [
-          "env:byoc",
-          "install.id:${var.install_id}",
-          "install.name:${var.install_name}",
-          "org.id:${var.org_id}",
-          "org.name:${var.org_name}",
-        ]
-        clusterName = var.cluster_name
-      }
-    })
-  ]
+  values = concat(
+    [
+      file(local.datadog.value_file),
+      yamlencode({
+        datadog = {
+          apiKey = var.datadog_api_key
+          tags = [
+            "env:byoc",
+            "install.id:${var.install_id}",
+            "install.name:${var.install_name}",
+            "org.id:${var.org_id}",
+            "org.name:${var.org_name}",
+          ]
+          clusterName = var.cluster_name
+        }
+      })
+    ],
+    var.network_monitoring_enabled ? [file(local.datadog.network_value_file)] : []
+  )
 }

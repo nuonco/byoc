@@ -1,0 +1,5 @@
+---
+datadog:
+  systemProbe:
+    collectDNSStats: true
+    enableDefaultKernelHeadersPaths: false

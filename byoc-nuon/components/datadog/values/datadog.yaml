@@ -12,10 +12,6 @@ datadog:
         - openmetrics_endpoint: "http://temporal-worker-headless.temporal.svc.cluster.local.:9090/metrics"
         - openmetrics_endpoint: "http://temporal-matching-headless.temporal.svc.cluster.local.:9090/metrics"
         - openmetrics_endpoint: "http://temporal-history-headless.temporal.svc.cluster.local.:9090/metrics"
-    "network.yaml": |-
-      init_config:
-      instances:
-        - collect_aws_ena_metrics: true
   logs:
     enabled: true
     containerCollectAll: true
@@ -30,7 +26,7 @@ datadog:
     enableDefaultKernelHeadersPaths: false
     enableTCPQueueLength: false
     enableOOMKill: true
-    collectDNSStats: true
+    collectDNSStats: false
   dogstatsd:
     useHostPort: true
     port: 8125

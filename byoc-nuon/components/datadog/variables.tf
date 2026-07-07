@@ -15,6 +15,12 @@ variable "datadog_app_key" {
   description = "The datadog app key"
 }
 
+variable "network_monitoring_enabled" {
+  type        = bool
+  default     = false
+  description = "Enable DNS and network metrics collection (system-probe DNS stats and AWS ENA metrics)."
+}
+
 variable "install_id" {
   type        = string
   description = "Install ID"
