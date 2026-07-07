@@ -47,3 +47,12 @@ variable "keeper_disk_size_gb" {
   type    = number
   default = 50
 }
+
+variable "keeper_node_count" {
+  type = number
+  # Per-zone count on the regional cluster, so 1 => 3 nodes (one per zone),
+  # matching the keeper's minDomains=3 topology spread. See the static-pool
+  # note on google_container_node_pool.clickhouse_keeper in main.tf.
+  description = "Per-zone node count for the clickhouse-keeper node pool."
+  default     = 1
+}

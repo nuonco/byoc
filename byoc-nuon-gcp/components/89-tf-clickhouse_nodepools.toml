@@ -6,7 +6,7 @@ terraform_version = "1.11.3"
 [public_repo]
 repo      = "nuonco/byoc"
 directory = "byoc-nuon-gcp/src/components/clickhouse_nodepools"
-branch    = "main"
+branch    = "ja/gke-standard"
 
 [vars]
 install_id       = "{{ .nuon.install.id }}"
@@ -14,3 +14,5 @@ project_id       = "{{ .nuon.install_stack.outputs.project_id }}"
 region           = "{{ .nuon.install_stack.outputs.region }}"
 cluster_name     = "{{ .nuon.sandbox.outputs.cluster.name }}"
 cluster_location = "{{ .nuon.sandbox.outputs.cluster.location }}"
+
+keeper_node_count = "{{ .nuon.inputs.inputs.ch_keeper_node_count }}"

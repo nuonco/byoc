@@ -1,0 +1,7 @@
+name         = "ch_keeper_node_count"
+description  = "Per-zone node count for the clickhouse-keeper node pool (1 => 3 nodes on a regional cluster)."
+default      = "1"
+display_name = "Keeper node count"
+group        = "clickhouse"
+
+user_configurable = false

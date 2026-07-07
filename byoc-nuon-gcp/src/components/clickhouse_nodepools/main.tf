@@ -91,7 +91,7 @@ resource "google_container_node_pool" "clickhouse_keeper" {
   location = var.cluster_location
   cluster  = var.cluster_name
 
-  node_count = 1
+  node_count = var.keeper_node_count
 
   management {
     auto_repair  = true
