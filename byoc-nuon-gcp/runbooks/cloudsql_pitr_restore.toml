@@ -1,0 +1,46 @@
+name        = "cloudsql_pitr_restore"
+description = "Recover ONE control-plane Cloud SQL instance (ctl-api/nuon OR temporal, chosen by the target_component input) to a point in time and repoint its app at the recovered instance. Step 1 clones the source's transaction logs up to the chosen timestamp into a BRAND NEW instance (PITR is not in-place; the live instance is untouched). The operator then sets the override input to the recovered private IP (reported by step 1). Step 2 redeploys the chosen component, which picks up the override. Clear the input and redeploy to revert."
+readme      = "./runbooks/cloudsql_pitr_restore.md"
+labels      = { service = "cloudsql", type = "sop" }
+
+[[input]]
+name         = "target_component"
+display_name = "Target component"
+description  = "Which control-plane database to restore. Use \"ctl_api\" for the ctl-api (nuon) instance, or \"temporal\" for the temporal instance. This selects both the source instance cloned in step 1 and the component redeployed in step 2."
+required     = true
+type         = "string"
+
+[[input]]
+name         = "point_in_time"
+display_name = "Point in time"
+description  = "RFC 3339 UTC timestamp to restore to, e.g. 2026-07-06T14:30:00Z. Must fall within the source's transaction_log_retention_days window (default 7 days) and not be in the future."
+required     = true
+type         = "string"
+
+[[input]]
+name         = "pitr_target_instance_name"
+display_name = "Recovered instance name (optional)"
+description  = "Name for the new recovered instance. Leave blank to default to \"<source>-pitr-<timestamp>\"."
+required     = false
+type         = "string"
+
+# Step 1 — clone the selected instance to a point in time (creates a new instance).
+[[steps]]
+name        = "PITR clone Cloud SQL"
+type        = "action"
+action_name = "cloudsql_pitr_restore"
+
+# ── operator step (between step 1 and step 2, see README) ────────────────────
+# Using the address reported by step 1, set the install input:
+#   target_component = ctl_api  -> db_host_override          = <recovered IP>
+#   target_component = temporal -> temporal_db_host_override = <recovered IP>
+# Then run step 2 (or re-run it if the runbook ran straight through before the
+# input was set).
+
+# Step 2 — repoint: redeploy the selected component so its DB host resolves to
+# the override (the recovered instance). component_name is templated from the
+# same target_component input that drove the clone.
+[[steps]]
+name           = "Repoint app at recovered instance"
+type           = "component_deploy"
+component_name = "{{ .runbook_inputs.target_component }}"

@@ -1,0 +1,38 @@
+# action
+# description: restores a control-plane Cloud SQL instance (ctl-api/nuon or
+# temporal, selected by the target_component runbook input) to a point in time
+# using point-in-time recovery. PITR restore is NOT in-place — it clones the
+# source's archived transaction logs up to the requested timestamp into a BRAND
+# NEW instance, leaving the live instance untouched. Repointing the application
+# at the recovered instance is a separate, deliberate step (the runbook's
+# repoint step, driven by the same target_component input).
+#
+# Designed to run from the cloudsql_pitr_restore runbook, which supplies the
+# runbook inputs referenced below. target_component selects which instance:
+#   "ctl_api"  -> cloudsql_nuon      (repoint via db_host_override)
+#   "temporal" -> cloudsql_temporal  (repoint via temporal_db_host_override)
+#
+# Gated by the -cloudsql-operations role, which is disabled by default: creating
+# a recovered instance is a deliberate, customer-enabled action, not a routine
+# debug read.
+name    = "cloudsql_pitr_restore"
+labels  = { service = "cloudsql", type = "step" }
+label   = "gcp"
+timeout = "60m"
+role    = "{{.nuon.install.id}}-cloudsql-operations"
+
+[[triggers]]
+type = "manual"
+
+[[steps]]
+name            = "PITR restore Cloud SQL"
+inline_contents = "./gcp/cloudsql_pitr_restore/cloudsql_pitr_restore.sh"
+
+[steps.env_vars]
+# Source instance + labels are selected from the target_component runbook input.
+SOURCE_INSTANCE_NAME = "{{ if eq .runbook_inputs.target_component \"temporal\" }}{{ .nuon.components.cloudsql_temporal.outputs.db_instance_name }}{{ else }}{{ .nuon.components.cloudsql_nuon.outputs.db_instance_name }}{{ end }}"
+DB_LABEL             = "{{ if eq .runbook_inputs.target_component \"temporal\" }}temporal{{ else }}ctl-api (nuon){{ end }}"
+OVERRIDE_INPUT_NAME  = "{{ if eq .runbook_inputs.target_component \"temporal\" }}temporal_db_host_override{{ else }}db_host_override{{ end }}"
+PROJECT_ID           = "{{ .nuon.install_stack.outputs.project_id }}"
+POINT_IN_TIME        = "{{ .runbook_inputs.point_in_time }}"
+TARGET_INSTANCE_NAME = "{{ or .runbook_inputs.pitr_target_instance_name \"\" }}"

@@ -7,8 +7,12 @@ env:
   INTERNAL_MIDDLEWARES: tracer,internal_metrics,error,size,public,log,global,config,admin,offset_pagination,cors,config,patcher,panicker
   GIN_MODE: "release"
 
-  DB_REPLICA_HOST: "{{ .nuon.components.cloudsql_nuon.outputs.address }}"
-  DB_HOST: "{{ .nuon.components.cloudsql_nuon.outputs.address }}"
+  # db_host_override lets an operator repoint ctl-api at a recovered Cloud SQL
+  # instance (e.g. a PITR clone) without TF state surgery: set the install input
+  # to the recovered instance's private IP and redeploy. Clear it to revert to
+  # the Terraform-managed instance. See the cloudsql_pitr_restore_ctl_api runbook.
+  DB_REPLICA_HOST: "{{ or .nuon.inputs.inputs.db_host_override .nuon.components.cloudsql_nuon.outputs.address }}"
+  DB_HOST: "{{ or .nuon.inputs.inputs.db_host_override .nuon.components.cloudsql_nuon.outputs.address }}"
   DB_NAME: "ctl_api"
   DB_USER: "{{ .nuon.components.ctl_api_wi.outputs.db_user }}"
   DB_USE_SSL: "true"

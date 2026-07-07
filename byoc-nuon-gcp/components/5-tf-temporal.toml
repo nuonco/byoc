@@ -19,7 +19,11 @@ cluster_certificate_authority_data = "{{ .nuon.install.sandbox.outputs.cluster.c
 codec_endpoint = "https://app.{{ .nuon.install.sandbox.outputs.nuon_dns.public_domain.name }}/admin/temporal-codec"
 ctl_api_host   = "api.{{ .nuon.install.sandbox.outputs.nuon_dns.public_domain.name }}"
 
-db_instance_address    = "{{ .nuon.components.cloudsql_temporal.outputs.address }}"
+# temporal_db_host_override repoints temporal at a recovered Cloud SQL instance
+# (e.g. a PITR clone) without TF state surgery: set the install input to the
+# recovered instance's private IP and redeploy. Clear it to revert. Mirrors
+# ctl-api's db_host_override. See the cloudsql_pitr_restore runbook.
+db_instance_address    = "{{ or .nuon.inputs.inputs.temporal_db_host_override .nuon.components.cloudsql_temporal.outputs.address }}"
 db_instance_port       = "{{ .nuon.components.cloudsql_temporal.outputs.db_instance_port }}"
 temporal_web_image_repository = "{{ .nuon.components.img_temporal_ui.outputs.image.repository }}"
 temporal_web_image_tag        = "{{ .nuon.components.img_temporal_ui.outputs.image.tag }}"
