@@ -8,7 +8,7 @@ default_enabled   = true
 [public_repo]
 repo      = "nuonco/byoc"
 directory = "byoc-nuon/components/datadog"
-branch    = "sk/ft-dd-network-input"
+branch    = "main"
 
 [vars]
 cluster_name                       = "{{ .nuon.install.sandbox.outputs.cluster.name }}"
