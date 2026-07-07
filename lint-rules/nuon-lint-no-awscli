@@ -1,0 +1,51 @@
+#!/usr/bin/env bash
+# nuon-lint-no-awscli — Ensure GCP app configs do not reference AWS CLI tools.
+#
+# Scans action TOML files and referenced shell scripts for aws CLI,
+# aws-cli, and boto usage, which indicates wrong-platform tooling.
+
+set -euo pipefail
+
+APP_DIR="$1"
+
+findings="[]"
+
+add_finding() {
+  local file="$1" msg="$2"
+  findings=$(echo "$findings" | jq --arg rid "custom:no-awscli" \
+    --arg sev "error" \
+    --arg msg "$msg" \
+    --arg file "$file" \
+    '. + [{"rule_id": $rid, "severity": $sev, "message": $msg, "file": $file}]')
+}
+
+# Scan all TOML files under actions/ for aws CLI references
+if [[ -d "$APP_DIR/actions" ]]; then
+  while IFS= read -r -d '' f; do
+    rel="${f#"$APP_DIR/"}"
+    if grep -qE '\baws\b|\baws-cli\b|\bboto\b' "$f" 2>/dev/null; then
+      add_finding "$rel" "action references AWS CLI tool (aws/boto) — wrong platform for GCP config"
+    fi
+  done < <(find "$APP_DIR/actions" -name '*.toml' -print0 2>/dev/null)
+fi
+
+# Scan shell scripts referenced by actions
+if [[ -d "$APP_DIR/actions" ]]; then
+  while IFS= read -r -d '' f; do
+    rel="${f#"$APP_DIR/"}"
+    if grep -qE '\baws\b|\baws-cli\b|\bboto\b' "$f" 2>/dev/null; then
+      add_finding "$rel" "script references AWS CLI tool (aws/boto) — wrong platform for GCP config"
+    fi
+  done < <(find "$APP_DIR/actions" -name '*.sh' -print0 2>/dev/null)
+fi
+
+# Also scan runner.toml and sandbox.toml for AWS references
+for cfg in runner.toml sandbox.toml; do
+  if [[ -f "$APP_DIR/$cfg" ]]; then
+    if grep -qE '\baws\b|\baws-cli\b|\bs3://\b' "$APP_DIR/$cfg" 2>/dev/null; then
+      add_finding "$cfg" "config references AWS tooling — wrong platform for GCP config"
+    fi
+  fi
+done
+
+echo "{\"findings\": $findings}"
