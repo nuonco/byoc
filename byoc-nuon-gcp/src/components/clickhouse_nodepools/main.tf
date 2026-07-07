@@ -76,16 +76,22 @@ resource "google_container_node_pool" "clickhouse_installation" {
 
 # clickhouse-keeper pool: exactly 3 replicas, one per zone, to keep the raft
 # quorum spread across zones (matches the keeper topologySpreadConstraints).
+#
+# STATIC pool (node_count, no autoscaling): the keeper podTemplate uses a
+# minDomains=3 / DoNotSchedule topology spread. The cluster autoscaler bootstraps
+# a pool from 0 by simulating a single new node and checking the pod would then
+# schedule -- but one node gives 1 domain < minDomains=3, so the predicate fails
+# and the autoscaler refuses to ever add the first node (deadlock: pool stuck at
+# 0, keeper pods Pending forever). A static pool sidesteps the autoscaler
+# entirely and comes up with all 3 nodes at create time. node_count is per-zone
+# on a regional cluster, so 1 => 3 nodes, one per zone.
 resource "google_container_node_pool" "clickhouse_keeper" {
   name     = "clickhouse-keeper"
   project  = var.project_id
   location = var.cluster_location
   cluster  = var.cluster_name
 
-  autoscaling {
-    total_min_node_count = 3
-    total_max_node_count = 3
-  }
+  node_count = 1
 
   management {
     auto_repair  = true
