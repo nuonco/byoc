@@ -27,3 +27,8 @@ action_name = "inspect_runners"
 name        = "Inspect: installs"
 type        = "action"
 action_name = "inspect_installs"
+
+[[steps]]
+name        = "Inspect: migrations"
+type        = "action"
+action_name = "inspect_migrations"
