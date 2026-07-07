@@ -63,9 +63,11 @@ in step 1. Leave it empty to keep Loops disabled.
 loops_secret_arn = '<arn from loops_secret_arns output>'
 ```
 
-`sync_loops_secret` uses the `secrets_role_arn` input to federate into AWS. The `loops_api_key` value itself is a
-Nuon secret (default `dne` = disabled); the sync step writes the central value into the `ctl-api-loops-api-key` k8s
-secret, which `ctl-api` reads as the `LOOPS_API_KEY` env var.
+`sync_loops_secret` uses the `secrets_role_arn` input to federate into AWS. The `ctl-api-loops-api-key` k8s secret
+(which `ctl-api` reads as the `LOOPS_API_KEY` env var) is no longer an app-level Nuon secret — the `ensure_loops_secret`
+pre-deploy-component step seeds it with a `dne` placeholder (= disabled) the first time `ctl_api` deploys, and this
+sync step overwrites it with the real central value out-of-band. Neither step ever runs Loops config through
+Terraform, so it never appears in a customer-downloadable tfvars file.
 
 ### 4. Run the `Loops: Sync loops secret` step {{ if $loopsSynced }}✅ (completed){{ end }}
 
