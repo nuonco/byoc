@@ -1,0 +1,13 @@
+# action
+# description: checks for stale EventLoop workflows and deletes them if found.
+name    = "temporal_delete_event_loops"
+labels  = { service = "temporal", type = "tool" }
+label   = "temporal"
+timeout = "15m"
+
+[[triggers]]
+type = "manual"
+
+[[steps]]
+name            = "delete event loops"
+inline_contents = "./temporal/temporal_delete_event_loops/delete_event_loops.sh"
