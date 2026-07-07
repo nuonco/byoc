@@ -80,25 +80,29 @@ existing_id=$(echo "$identity_providers" | jq -r \
   --arg pt "$provider_type" \
   'map(select(.provider_type == $pt)) | (.[0].id // "")')
 
+# the request body is the full secret payload with enabled forced to true. this way updating
+# the secret (e.g. the redirect url) propagates to the db on the next run, and we only ever
+# override the enabled flag.
+body=$(echo "$payload" | jq -c '.enabled = true')
+
 if [[ -n "$existing_id" ]]; then
-  # provider exists: PATCH it by id to enable it
-  echo "[nuon-access] provider exists (id=$existing_id), enabling"
+  # provider exists: PATCH it by id with the secret payload, enabling it
+  echo "[nuon-access] provider exists (id=$existing_id), updating and enabling"
   response=$(curl -sS -f -X PATCH \
     -H 'accept: application/json' \
     -H 'Content-Type: application/json' \
     -H "X-Nuon-Admin-Email: $admin_email" \
-    -d '{"enabled": true}' \
+    -d "$body" \
     "$url/$existing_id")
   created=false
 else
   # provider does not exist: POST the secret payload, always forcing enabled=true
   echo "[nuon-access] provider does not exist, creating"
-  create_body=$(echo "$payload" | jq -c '.enabled = true')
   response=$(curl -sS -f -X POST \
     -H 'accept: application/json' \
     -H 'Content-Type: application/json' \
     -H "X-Nuon-Admin-Email: $admin_email" \
-    -d "$create_body" \
+    -d "$body" \
     "$url")
   created=true
 fi
