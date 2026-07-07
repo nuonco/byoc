@@ -11,7 +11,7 @@
 {{ $dnsDone := false }}{{ if dig "dns_zone" "" (default dict (default dict .nuon.components.management).outputs) }}{{ $dnsDone = true }}{{ end }}
 {{ $featureRunbooks := list (dict "name" "slack_setup" "label" "Slack" "complete" $slackDone "desc" "Set up the Slack integration: create the Slack app, provision and populate the central secret, set the install inputs, then sync the secrets into the ctl-api namespace and verify.") }}
 {{ $setupRunbooks := list (dict "name" "dns_setup" "label" "DNS" "complete" $dnsDone "desc" "Show the DNS delegation records (nameservers) to share with the customer so they can delegate their domain to this install.") (dict "name" "s3_bucket" "label" "S3 Bucket" "complete" $s3Done "desc" "Enable and inspect the AWS S3 install-templates bucket integration used for install templates.") (dict "name" "loops_setup" "label" "Loops" "complete" $loopsDone "desc" "Set up the Loops integration: provision and populate the central secret, set the loops_secret_arn input, then sync the API key into the ctl-api namespace.") }}
-{{ $incomplete := list }}{{ range (concat $featureRunbooks $setupRunbooks) }}{{ if not .complete }}{{ $incomplete = append $incomplete . }}{{ end }}{{ end }}
+{{ $incomplete := list }}{{ range $setupRunbooks }}{{ if not .complete }}{{ $incomplete = append $incomplete . }}{{ end }}{{ end }}
 {{ if gt (len $incomplete) 0 }}<nuon-banner theme="warn"> <strong>Setup is incomplete.</strong> Complete the runbooks in
 the Setup tab. </nuon-banner>
 
