@@ -1,5 +1,4 @@
 ---
 datadog:
-  systemProbe:
-    collectDNSStats: true
-    enableDefaultKernelHeadersPaths: false
+  networkMonitoring:
+    enabled: true
