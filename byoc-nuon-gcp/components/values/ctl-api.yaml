@@ -247,9 +247,7 @@ api:
   dashboard_admin:
     enabled: {{ or .nuon.inputs.inputs.admin_dashboard_enabled "false" }}
     port: 8087
-    alb:
-      enabled: {{ or .nuon.inputs.inputs.admin_dashboard_alb_enabled "false" }}
-      domain: "admin.{{ .nuon.sandbox.outputs.nuon_dns.public_domain.name }}"
+    domain: "admin.{{ .nuon.sandbox.outputs.nuon_dns.public_domain.name }}"
       # domain_certificate: ""
     autoscaling:
       minReplicas: 2
