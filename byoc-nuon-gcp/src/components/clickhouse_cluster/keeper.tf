@@ -63,10 +63,21 @@ resource "kubectl_manifest" "clickhouse_keeper_installation" {
                 "runAsUser" = 101
               }
               # spread the 3 keeper replicas onto distinct nodes so a single node failure
-              # cannot take out the raft quorum. the regional pool has >=1 node per zone
-              # (3 zones), so DoNotSchedule/minDomains=3 is satisfiable and naturally
-              # spreads the quorum across zones. label is applied automatically by the CRD.
-              # NOTE: no nodeSelector/tolerations on GCP (single autoscaling pool, no taints).
+              # cannot take out the raft quorum. the dedicated clickhouse-keeper pool runs
+              # exactly 3 nodes (one per zone), so DoNotSchedule/minDomains=3 is satisfiable
+              # and naturally spreads the quorum across zones. label is applied automatically
+              # by the CRD.
+              # pin onto the dedicated clickhouse-keeper node pool (created by the
+              # clickhouse_nodepools component) via its pool.nuon.co taint/label, mirroring AWS.
+              "nodeSelector" = {
+                "pool.nuon.co" = "clickhouse-keeper"
+              }
+              "tolerations" = [{
+                "key"      = "pool.nuon.co"
+                "operator" = "Equal"
+                "value"    = "clickhouse-keeper"
+                "effect"   = "NoSchedule"
+              }]
               "topologySpreadConstraints" = [
                 # hard: the 3 keeper replicas must land on distinct nodes.
                 {
