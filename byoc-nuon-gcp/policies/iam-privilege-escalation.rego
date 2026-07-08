@@ -59,12 +59,10 @@ warn contains msg if {
 # ──────────────────────────────────────────────────────────────────────────────
 # roles/iam.serviceAccountTokenCreator lets the SA mint OAuth/OIDC tokens as
 # ANY service account in the project. Combined with a privileged SA, this is
-# an impersonation escalation path.
-#
-# Warned because it's currently required for GCS signed URL generation.
-# TODO: move to SA-scoped token creator (on the specific SA, not project-level).
+# an impersonation escalation path. GCS URL signing uses an SA-scoped token
+# creator grant instead.
 # ──────────────────────────────────────────────────────────────────────────────
-warn contains msg if {
+deny contains msg if {
 	some rc in input.plan.resource_changes
 	rc.type in project_iam_resources
 	rc.change.actions[_] in ["create", "update"]

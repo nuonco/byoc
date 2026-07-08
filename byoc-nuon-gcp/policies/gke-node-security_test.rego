@@ -30,14 +30,19 @@ has_warn_containing(substr) if {
 	contains(msg, substr)
 }
 
-# ── Warn: Secure Boot disabled ────────────────────────────────────────────────
-
-test_warn_secure_boot_disabled if {
-	has_warn_containing("Secure Boot") with input as mock_node_pool(false, [])
+has_deny_containing(substr) if {
+	some msg in deny
+	contains(msg, substr)
 }
 
-test_no_warn_secure_boot_enabled if {
-	not has_warn_containing("Secure Boot") with input as mock_node_pool(true, [])
+# ── Deny: Secure Boot disabled ────────────────────────────────────────────────
+
+test_deny_secure_boot_disabled if {
+	has_deny_containing("Secure Boot") with input as mock_node_pool(false, [])
+}
+
+test_no_deny_secure_boot_enabled if {
+	not has_deny_containing("Secure Boot") with input as mock_node_pool(true, [])
 }
 
 # ── Warn: Binary Authorization disabled ──────────────────────────────────────

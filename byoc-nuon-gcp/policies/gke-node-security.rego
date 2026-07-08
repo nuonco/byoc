@@ -22,7 +22,7 @@ import future.keywords.in
 # Secure Boot prevents rootkit/bootkit attacks at the firmware level. Disabling
 # it is unrelated to NET_ADMIN or any container-level capability.
 # ──────────────────────────────────────────────────────────────────────────────
-warn contains msg if {
+deny contains msg if {
 	some rc in input.plan.resource_changes
 	rc.type == "google_container_node_pool"
 	rc.change.actions[_] in ["create", "update"]
