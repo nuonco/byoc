@@ -38,3 +38,13 @@ variable "chart_version" {
   type        = string
   default     = "1.20.0"
 }
+
+variable "public_zone_name" {
+  type    = string
+  default = ""
+}
+
+variable "internal_zone_name" {
+  type    = string
+  default = ""
+}
