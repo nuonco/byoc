@@ -45,6 +45,12 @@ locals {
       node_count   = var.ch_keeper_node_count
       disk_size_gb = var.ch_keeper_disk_size_gb
     }
+    # dedicated pool for the components worker, which runs in-process
+    # control-plane builds; isolated so it can't starve the shared worker pool.
+    ctl-api-workers-components = {
+      machine_type = var.ctl_api_workers_components_machine_type
+      max_nodes    = var.ctl_api_workers_components_max_nodes
+    }
   }
 }
 

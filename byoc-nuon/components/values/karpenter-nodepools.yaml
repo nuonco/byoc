@@ -181,3 +181,18 @@ nodepools:
       consolidateAfter: "5m"
       budgets:
         - nodes: "25%"
+
+  # dedicated pool for the components worker, which runs in-process
+  # control-plane builds. c5.2xlarge bin-packs two 3c/6Gi worker pods per node.
+  - name: ctl-api-workers-components
+    public: false
+    instance_types:
+      - c5.2xlarge  # 8 cpu, 16 gb ram
+    limits:  # supports 5 c5.2xlarge
+      cpu: 40
+      memory: "160Gi"
+    expireAfter: "732h"
+    disruption:
+      consolidateAfter: "5m"
+      budgets:
+        - nodes: "25%"
