@@ -23,6 +23,9 @@ gcp_permissions = [
 name            = "{{ .nuon.install.id }}-provision-network"
 gcp_permissions = [
   "compute.globalAddresses.create",
+  "compute.globalAddresses.createInternal",
+  "compute.globalAddresses.deleteInternal",
+  "compute.globalAddresses.setLabels",
   "compute.globalAddresses.delete",
   "compute.globalAddresses.get",
   "compute.globalAddresses.list",
@@ -38,6 +41,7 @@ gcp_permissions = [
   "compute.networks.list",
   "compute.networks.removePeering",
   "compute.networks.update",
+  "compute.networks.use",
   "compute.regionOperations.get",
   "compute.routers.create",
   "compute.routers.delete",
