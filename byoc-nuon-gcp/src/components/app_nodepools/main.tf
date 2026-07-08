@@ -11,7 +11,7 @@ locals {
     }
     ctl-api = {
       machine_type = var.ctl_api_machine_type
-      max_nodes    = 10
+      max_nodes    = 18
     }
   }
 }
