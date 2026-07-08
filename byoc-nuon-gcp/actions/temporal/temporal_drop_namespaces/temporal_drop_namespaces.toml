@@ -14,4 +14,4 @@ command = "./temporal/drop_namespaces.sh"
 [steps.public_repo]
 repo      = "nuonco/byoc"
 directory = "shared/src/actions"
-branch    = "main"
+branch    = "am/gcp-scoped-roles"

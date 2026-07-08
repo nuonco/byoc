@@ -6,7 +6,7 @@ terraform_version = "1.11.3"
 [public_repo]
 directory = "."
 repo      = "nuonco/gcp-gke-sandbox"
-branch    = "main"
+branch    = "am/secure-boot"
 
 [vars]
 nuon_id              = "{{ .nuon.install.id }}"

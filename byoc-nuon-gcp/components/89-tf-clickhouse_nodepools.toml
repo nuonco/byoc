@@ -6,7 +6,7 @@ terraform_version = "1.11.3"
 [public_repo]
 repo      = "nuonco/byoc"
 directory = "byoc-nuon-gcp/src/components/clickhouse_nodepools"
-branch    = "main"
+branch    = "am/gcp-scoped-roles"
 
 [vars]
 install_id       = "{{ .nuon.install.id }}"

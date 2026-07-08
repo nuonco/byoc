@@ -7,7 +7,7 @@ namespace      = "temporal"
 [public_repo]
 repo      = "nuonco/byoc"
 directory = "shared/src/components/temporal_init_db"
-branch    = "main"
+branch    = "am/gcp-scoped-roles"
 
 [[values_file]]
 contents = "./values/temporal-init.yaml"

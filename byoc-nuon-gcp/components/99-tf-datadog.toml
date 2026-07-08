@@ -6,7 +6,7 @@ dependencies      = ["temporal", "ctl_api", "dashboard_ui"]
 [public_repo]
 repo      = "nuonco/byoc"
 directory = "byoc-nuon-gcp/src/components/datadog"
-branch    = "main"
+branch    = "am/gcp-scoped-roles"
 
 [vars]
 project_id = "{{ .nuon.install_stack.outputs.project_id }}"
