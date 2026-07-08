@@ -7,9 +7,11 @@ locals {
   pools = {
     temporal = {
       machine_type = var.temporal_machine_type
+      max_nodes    = 4
     }
     ctl-api = {
       machine_type = var.ctl_api_machine_type
+      max_nodes    = 10
     }
   }
 }
@@ -24,7 +26,7 @@ resource "google_container_node_pool" "app" {
 
   autoscaling {
     total_min_node_count = 1
-    total_max_node_count = 4
+    total_max_node_count = each.value.max_nodes
   }
 
   management {
