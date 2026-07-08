@@ -1,11 +1,11 @@
 # action
-# description: inspects the ctl-api (nuon) Cloud SQL instance — prints instance
-# configuration and the most recent operations against it.
+# description: inspects the ctl-api (nuon) Cloud SQL instance — prints instance config,
+# recent operations, and Cloud Monitoring OS metrics (CPU / memory / IOPS) for the last hour.
 name    = "cloudsql_inspect_ctl_api"
 labels  = { service = "cloudsql", type = "debug" }
 label   = "gcp"
 timeout = "2m"
-role    = "{{.nuon.install.id}}-provision"
+role    = "{{.nuon.install.id}}-observability"
 
 [[triggers]]
 type = "manual"

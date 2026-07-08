@@ -8,6 +8,8 @@ set -u
 #   1. a one-line summary (instance name, tier, state)
 #   2. the instance configuration (tier, engine, storage, AZ, ...)
 #   3. the most recent operations against the instance
+#   4. OS-level metrics from Cloud Monitoring for the last hour (CPU, memory,
+#      disk, IOPS, network, connections)
 #
 # Required env:
 #   DB_INSTANCE_NAME  the Cloud SQL instance name (cloudsql_*.outputs.db_instance_name)
@@ -59,3 +61,96 @@ gcloud sql operations list \
   --instance "$db_instance_name" \
   --project "$project_id" \
   --limit 10
+
+# OS metrics from Cloud Monitoring (needs roles/monitoring.viewer). Gauges use
+# ALIGN_MEAN; DELTA counters (IOPS, network bytes) use ALIGN_RATE for per-second values.
+echo
+echo "### OS metrics (Cloud Monitoring, last hour @ 60s)"
+
+now=$(date -u +%Y-%m-%dT%H:%M:%SZ)
+one_hour_ago=$(date -u -v-1H +%Y-%m-%dT%H:%M:%SZ 2>/dev/null \
+            || date -u -d '1 hour ago' +%Y-%m-%dT%H:%M:%SZ)
+
+if ! command -v curl >/dev/null; then
+  echo "curl is not available on the runner; skipping OS metric table."
+  exit 0
+fi
+
+token=$(gcloud auth print-access-token 2>/dev/null || true)
+if [ -z "$token" ]; then
+  echo "could not obtain an access token; skipping OS metric table."
+  exit 0
+fi
+
+database_id="${project_id}:${db_instance_name}"
+
+# Fetch one metric's aligned time-series as a compact {endTime: value} map.
+# API errors are printed to stderr instead of silently returning no data.
+fetch_map() {
+  local metric="$1" aligner="$2" resp
+  resp=$(curl -sG "https://monitoring.googleapis.com/v3/projects/${project_id}/timeSeries" \
+    -H "Authorization: Bearer ${token}" \
+    --data-urlencode "filter=metric.type=\"${metric}\" AND resource.labels.database_id=\"${database_id}\"" \
+    --data-urlencode "interval.startTime=${one_hour_ago}" \
+    --data-urlencode "interval.endTime=${now}" \
+    --data-urlencode "aggregation.alignmentPeriod=60s" \
+    --data-urlencode "aggregation.perSeriesAligner=${aligner}") || {
+      echo >&2 "warn: request failed for ${metric}"
+      echo '{}'; return
+    }
+  if echo "$resp" | jq -e '.error' >/dev/null 2>&1; then
+    echo >&2 "warn: ${metric}: $(echo "$resp" | jq -r '.error.message')"
+    echo '{}'; return
+  fi
+  echo "$resp" | jq -c '[.timeSeries[]?.points[]?
+             | {key: .interval.endTime,
+                value: (.value.doubleValue // .value.int64Value // 0)}]
+           | from_entries' 2>/dev/null || echo '{}'
+}
+
+cpu=$(fetch_map   "cloudsql.googleapis.com/database/cpu/utilization"            ALIGN_MEAN)
+mem=$(fetch_map   "cloudsql.googleapis.com/database/memory/utilization"         ALIGN_MEAN)
+disk=$(fetch_map  "cloudsql.googleapis.com/database/disk/utilization"           ALIGN_MEAN)
+conns=$(fetch_map "cloudsql.googleapis.com/database/postgresql/num_backends"    ALIGN_MEAN)
+rdio=$(fetch_map  "cloudsql.googleapis.com/database/disk/read_ops_count"        ALIGN_RATE)
+wrio=$(fetch_map  "cloudsql.googleapis.com/database/disk/write_ops_count"       ALIGN_RATE)
+netrx=$(fetch_map "cloudsql.googleapis.com/database/network/received_bytes_count" ALIGN_RATE)
+nettx=$(fetch_map "cloudsql.googleapis.com/database/network/sent_bytes_count"   ALIGN_RATE)
+
+FMT='%-26s %-6s %-6s %-6s %-6s %-10s %-11s %-11s %-11s %-11s\n'
+printf "$FMT" TIMESTAMP CPU% MEM% DISK% CONNS READ_IOPS WRITE_IOPS TOTAL_IOPS NET_RX_MBs NET_TX_MBs
+
+rows=$(jq -nr \
+  --argjson cpu "$cpu" --argjson mem "$mem" --argjson disk "$disk" \
+  --argjson conns "$conns" --argjson rdio "$rdio" --argjson wrio "$wrio" \
+  --argjson netrx "$netrx" --argjson nettx "$nettx" '
+    # union of all sample timestamps across every metric
+    (($cpu + $mem + $disk + $conns + $rdio + $wrio + $netrx + $nettx) | keys) as $ts
+    | $ts[]
+    | . as $t
+    | ($rdio[$t] // 0)  as $rd
+    | ($wrio[$t] // 0)  as $wr
+    | [ $t,
+        (($cpu[$t]   // 0) * 100 | floor),
+        (($mem[$t]   // 0) * 100 | floor),
+        (($disk[$t]  // 0) * 100 | floor),
+        (($conns[$t] // 0) | floor),
+        (($rd) * 10 | round / 10),
+        (($wr) * 10 | round / 10),
+        (($rd + $wr) * 10 | round / 10),
+        ((($netrx[$t] // 0) / 1048576) * 10 | round / 10),
+        ((($nettx[$t] // 0) / 1048576) * 10 | round / 10)
+      ]
+    | @tsv
+  ' 2>/dev/null || true)
+
+if [ -z "$rows" ]; then
+  echo "(no Cloud Monitoring samples returned; check the warnings above — the acting"
+  echo " service account needs roles/monitoring.viewer and the monitoring.googleapis.com"
+  echo " API must be enabled. Fresh instances can also lag by a few minutes.)"
+  exit 0
+fi
+
+echo "$rows" | while IFS=$'\t' read -r ts cpu mem disk conns rd wr tot rx tx; do
+  printf "$FMT" "$ts" "${cpu}%" "${mem}%" "${disk}%" "$conns" "$rd" "$wr" "$tot" "$rx" "$tx"
+done

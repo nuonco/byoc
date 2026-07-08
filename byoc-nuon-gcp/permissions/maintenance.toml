@@ -103,6 +103,14 @@ gcp_permissions = [
   "iam.serviceAccounts.update",
 ]
 
+# Read-only metric access for the cloudsql inspect/aas runbook steps (Cloud
+# Monitoring timeSeries.list on cloudsql.googleapis.com/database/* series).
+[[policies]]
+name            = "{{ .nuon.install.id }}-maintenance-monitoring"
+gcp_permissions = [
+  "monitoring.timeSeries.list",
+]
+
 [[policies]]
 name            = "{{ .nuon.install.id }}-maintenance-cloudsql"
 gcp_permissions = [

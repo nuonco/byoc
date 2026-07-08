@@ -1,0 +1,19 @@
+# action
+# description: temporal Cloud SQL load breakdown via Query Insights (analog of rds_aas).
+name    = "cloudsql_aas_temporal"
+labels  = { service = "cloudsql", type = "sop" }
+label   = "gcp"
+timeout = "2m"
+role    = "{{.nuon.install.id}}-observability"
+
+[[triggers]]
+type = "manual"
+
+[[steps]]
+name            = "Query Insights load breakdown"
+inline_contents = "./gcp/cloudsql_aas/aas_breakdown.sh"
+
+[steps.env_vars]
+DB_INSTANCE_NAME = "{{ .nuon.components.cloudsql_temporal.outputs.db_instance_name }}"
+PROJECT_ID       = "{{ .nuon.install_stack.outputs.project_id }}"
+DB_LABEL         = "temporal"

@@ -1,0 +1,24 @@
+name        = "cloudsql_inspect"
+description = "Inspects the ctl-api (nuon) and Temporal Cloud SQL instances: instance configuration, recent operations, Cloud Monitoring OS metrics (CPU, memory, IOPS) for the last hour, and the Query Insights load breakdown, in table format."
+readme      = "./runbooks/cloudsql_inspect.md"
+labels      = { service = "cloudsql", type = "debug" }
+
+[[steps]]
+name        = "Inspect ctl-api Cloud SQL"
+type        = "action"
+action_name = "cloudsql_inspect_ctl_api"
+
+[[steps]]
+name        = "ctl-api load breakdown (Query Insights)"
+type        = "action"
+action_name = "cloudsql_aas_ctl_api"
+
+[[steps]]
+name        = "Inspect Temporal Cloud SQL"
+type        = "action"
+action_name = "cloudsql_inspect_temporal"
+
+[[steps]]
+name        = "Temporal load breakdown (Query Insights)"
+type        = "action"
+action_name = "cloudsql_aas_temporal"
