@@ -37,6 +37,12 @@ variable "ctl_api_worker_machine_type" {
   default     = "e2-custom-4-8192"
 }
 
+variable "ctl_api_workers_components_machine_type" {
+  type        = string
+  description = "Machine type for the dedicated components worker pool. ~AWS c5.2xlarge (8 vCPU/16GB); bin-packs two 3c/6Gi pods per node."
+  default     = "e2-custom-8-16384"
+}
+
 variable "temporal_max_nodes" {
   type    = number
   default = 10
@@ -50,4 +56,9 @@ variable "ctl_api_max_nodes" {
 variable "ctl_api_worker_max_nodes" {
   type    = number
   default = 40
+}
+
+variable "ctl_api_workers_components_max_nodes" {
+  type    = number
+  default = 4
 }

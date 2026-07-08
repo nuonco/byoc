@@ -17,6 +17,12 @@ locals {
       machine_type = var.ctl_api_worker_machine_type
       max_nodes    = var.ctl_api_worker_max_nodes
     }
+    # dedicated pool for the components worker, which runs in-process
+    # control-plane builds; isolated so it can't starve the shared worker pool.
+    ctl-api-workers-components = {
+      machine_type = var.ctl_api_workers_components_machine_type
+      max_nodes    = var.ctl_api_workers_components_max_nodes
+    }
   }
 }
 
