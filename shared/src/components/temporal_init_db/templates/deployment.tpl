@@ -20,6 +20,10 @@ spec:
         - name: temporal-init
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           command: [ "tail", "-f", "/dev/null" ]
+          securityContext:
+            runAsNonRoot: true
+            runAsUser: 1000
+            allowPrivilegeEscalation: false
           env:
           - name: SQL_HOST
             value: "{{ .Values.db.host }}"
@@ -97,6 +101,10 @@ spec:
         - name: temporal-psql
           image: "postgres:15-alpine3.20"
           command: [ "tail", "-f", "/dev/null" ]
+          securityContext:
+            runAsNonRoot: true
+            runAsUser: 70
+            allowPrivilegeEscalation: false
           env:
           - name: PGHOST
             value: "{{ .Values.db.host }}"
