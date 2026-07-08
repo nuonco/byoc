@@ -1,0 +1,19 @@
+# action
+name    = "temporal_query_db"
+labels  = { service = "temporal", type = "tool" }
+timeout = "30s"
+
+[[triggers]]
+type = "manual"
+
+[[steps]]
+name            = "Query the DB"
+inline_contents = "./temporal/temporal_query_db/query-db.sh"
+
+[steps.env_vars]
+DB_USER  = "{{ .nuon.components.cloudsql_temporal.outputs.db_instance_username }}"
+DB_PASS  = "{{ .nuon.components.cloudsql_temporal.outputs.db_password }}"
+DB_ADDR  = "{{ .nuon.components.cloudsql_temporal.outputs.address }}"
+DB_PORT  = "{{ .nuon.components.cloudsql_temporal.outputs.db_instance_port }}"
+DB_NAME  = "temporal"
+QUERY    = "select count(*) from executions;"

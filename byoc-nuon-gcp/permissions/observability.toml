@@ -1,0 +1,27 @@
+type           = "custom"
+name           = "{{ .nuon.install.id }}-observability"
+description    = "Read-only observability access (Cloud Monitoring metrics + logs) for BYOC Nuon metric/debug actions"
+display_name   = "observability"
+cloud_platform = "gcp"
+
+# Standing counterpart of the break-glass observability role in break_glass.toml.
+[[policies]]
+name                = "{{ .nuon.install.id }}-observability-monitoring"
+gcp_predefined_role = "roles/monitoring.viewer"
+
+[[policies]]
+name            = "{{ .nuon.install.id }}-observability-logging"
+gcp_permissions = [
+  "logging.buckets.get",
+  "logging.buckets.list",
+  "logging.logEntries.list",
+  "logging.logs.list",
+]
+
+# Instance reads for the cloudsql inspect/aas steps.
+[[policies]]
+name            = "{{ .nuon.install.id }}-observability-cloudsql"
+gcp_permissions = [
+  "cloudsql.instances.get",
+  "cloudsql.instances.list",
+]
