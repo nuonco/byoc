@@ -85,9 +85,11 @@ resource "google_project_iam_member" "ctl_api_container_admin" {
   member  = "serviceAccount:${google_service_account.ctl_api.email}"
 }
 
-# Required for signing GCS URLs (install stack template upload).
-resource "google_project_iam_member" "ctl_api_token_creator" {
-  project = var.project_id
-  role    = "roles/iam.serviceAccountTokenCreator"
-  member  = "serviceAccount:${google_service_account.ctl_api.email}"
+# Required for signing GCS URLs (install stack template upload). Scoped to
+# signing as itself — a project-level grant would let ctl-api mint tokens for
+# any SA in the project, including deprovision.
+resource "google_service_account_iam_member" "ctl_api_token_creator" {
+  service_account_id = google_service_account.ctl_api.name
+  role               = "roles/iam.serviceAccountTokenCreator"
+  member             = "serviceAccount:${google_service_account.ctl_api.email}"
 }
