@@ -7,15 +7,15 @@ locals {
   pools = {
     temporal = {
       machine_type = var.temporal_machine_type
-      max_nodes    = 4
+      max_nodes    = var.temporal_max_nodes
     }
     ctl-api = {
       machine_type = var.ctl_api_machine_type
-      max_nodes    = 4
+      max_nodes    = var.ctl_api_max_nodes
     }
     ctl-api-worker = {
       machine_type = var.ctl_api_worker_machine_type
-      max_nodes    = 25
+      max_nodes    = var.ctl_api_worker_max_nodes
     }
   }
 }

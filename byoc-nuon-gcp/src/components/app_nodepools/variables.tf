@@ -36,3 +36,18 @@ variable "ctl_api_worker_machine_type" {
   description = "Machine type for the ctl-api worker pool. ~AWS c5.xlarge; 2GB/vCPU matches the worker pods' request ratio."
   default     = "e2-custom-4-8192"
 }
+
+variable "temporal_max_nodes" {
+  type    = number
+  default = 10
+}
+
+variable "ctl_api_max_nodes" {
+  type    = number
+  default = 8
+}
+
+variable "ctl_api_worker_max_nodes" {
+  type    = number
+  default = 40
+}
