@@ -36,6 +36,10 @@ env:
 envSecrets:
 
 ui:
+  securityContext:
+    runAsNonRoot: true
+    runAsUser: 65532
+    allowPrivilegeEscalation: false
   port: 4000
   liveness_probe: /livez
   readiness_probe: /readyz
