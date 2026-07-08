@@ -1,3 +1,4 @@
+{{ $region := .nuon.install_stack.outputs.region }}
 {{ $inputs := (default dict (index (default dict .nuon.inputs) "inputs")) }}
 {{ $root_domain := (dig "root_domain" "" $inputs) }}
 {{ $public_domain  := (dig "outputs" "nuon_dns" "public_domain"  "name" $root_domain .nuon.sandbox) }}
@@ -8,6 +9,13 @@
 
 <img class="mt-0 block dark:hidden" src="https://mintlify.s3-us-west-1.amazonaws.com/nuoninc/logo/light.svg" style="margin:0;padding:0;"/>
 <img class="mt-0 hidden dark:block" src="https://mintlify.s3-us-west-1.amazonaws.com/nuoninc/logo/dark.svg" style="margin:0;padding:0;"/>
+<small>
+{{ if .nuon.install_stack.outputs }}
+AWS | {{ dig "account_id" "000000000000" .nuon.install_stack.outputs }} | {{ $region }} | {{ dig "vpc_id" "vpc-000000" .nuon.install_stack.outputs }}
+{{ else }}
+AWS | 000000000000 | xx-vvvv-00 | vpc-000000
+{{ end }}
+</small>
 
 {{/* Setup runbooks (config label: type=setup). The README template can't read runbook labels at
      render time, so list each type=setup runbook here with its completion check. Keep in sync as
@@ -112,7 +120,9 @@
 
       </td>
     </tr>
-  {{ end }}
+
+{{ end }}
+
   </tbody>
 </table>
 
@@ -136,8 +146,7 @@
 {{ $appsAction     := default dict (index (default dict .nuon.actions.workflows) "inspect_apps") }}
 {{ $runnersOutputs  := default dict (dig "outputs" dict $runnersAction) }}
 {{ $installsOutputs := default dict (dig "outputs" dict $installsAction) }}
-{{ $runnersSteps  := dig "steps" dict $runnersOutputs }}
-{{ $installsSteps := dig "steps" dict $installsOutputs }}
+{{ $runnersSteps  := dig "steps" dict $runnersOutputs }} {{ $installsSteps := dig "steps" dict $installsOutputs }}
 {{ $orgsSteps     := dig "steps" dict (default dict (dig "outputs" dict $orgsAction)) }}
 {{ $appsSteps     := dig "steps" dict (default dict (dig "outputs" dict $appsAction)) }}
 
@@ -150,8 +159,7 @@
 {{ range $_, $a := (dig "apps" (dict) $appsSteps) }}{{ $appsByID = set $appsByID (dig "id" "" $a) (dig "name" "" $a) }}{{ end }}
 {{ $installOrgsByID := dict }}
 {{ range $_, $o := (dig "orgs" (dict) $orgsSteps) }}{{ $installOrgsByID = set $installOrgsByID (dig "id" "" $o) (dig "name" "" $o) }}{{ end }}
-{{ $installList := values $installs }}
-{{ if gt (len $installList) 0 }}
+{{ $installList := values $installs }} {{ if gt (len $installList) 0 }}
 
 <table>
   <thead><tr><th>Name</th><th>Status</th><th>Updated</th><th>Details</th></tr></thead>
@@ -195,7 +203,9 @@
 
       </td>
     </tr>
-  {{ end }}
+
+{{ end }}
+
   </tbody>
 </table>
 
@@ -214,8 +224,7 @@
 {{ range $_, $i := (dig "installs" (dict) $installsSteps) }}{{ $ownerNames = set $ownerNames (dig "id" "" $i) (dig "name" "" $i) }}{{ end }}
 {{ range $_, $o := (dig "orgs" (dict) $orgsSteps) }}{{ $ownerNames = set $ownerNames (dig "id" "" $o) (dig "name" "" $o) }}{{ end }}
 {{ range $_, $a := (dig "apps" (dict) $appsSteps) }}{{ $ownerNames = set $ownerNames (dig "id" "" $a) (dig "name" "" $a) }}{{ end }}
-{{ $runnerList := values $runners }}
-{{ if gt (len $runnerList) 0 }}
+{{ $runnerList := values $runners }} {{ if gt (len $runnerList) 0 }}
 
 <table>
   <thead><tr><th>Owner</th><th>Healthcheck</th><th>Heartbeat</th><th>Details</th></tr></thead>
@@ -278,7 +287,9 @@
 
       </td>
     </tr>
-  {{ end }}
+
+{{ end }}
+
   </tbody>
 </table>
 
@@ -296,8 +307,7 @@
 
 {{ $api  := dict }}{{ $apiActionID  := "" }}{{ with index .nuon.actions.workflows "api_status"       }}{{ with .outputs }}{{ $api  = . }}{{ end }}{{ $apiActionID  = dig "id" "" . }}{{ end }}
 {{ $dash := dict }}{{ $dashActionID := "" }}{{ with index .nuon.actions.workflows "dashboard_status" }}{{ with .outputs }}{{ $dash = . }}{{ end }}{{ $dashActionID = dig "id" "" . }}{{ end }}
-{{ $apiSteps  := dig "steps" (dict) $api  }}
-{{ $dashSteps := dig "steps" (dict) $dash }}
+{{ $apiSteps  := dig "steps" (dict) $api  }} {{ $dashSteps := dig "steps" (dict) $dash }}
 
 <div style="display:flex;gap:1.5rem;align-items:flex-start;margin-top:1.5rem;">
   <div style="flex:1;min-width:0;">
@@ -306,9 +316,13 @@
 
 <nuon-card>
 
-<nuon-group gap="2" align="center" justify="start">{{ range $step := list "alb-healthcheck-ctl-api-public" "alb-healthcheck-ctl-api-admin" "alb-healthcheck-ctl-api-runner" }}{{ $indicator := dig $step "indicator" "" $apiSteps }}{{ if eq $indicator "🟢" }}<nuon-status status="active" variant="badge"></nuon-status>{{ else if eq $indicator "🔴" }}<nuon-status status="error" variant="badge"></nuon-status>{{ else }}<nuon-status status="pending" variant="badge"></nuon-status>{{ end }}{{ end }}<nuon-label-badge label="version:{{ dig "ctl_api_version" "unknown" $api }}"></nuon-label-badge><nuon-label-badge label="git:{{ dig "ctl_api_git_ref" "unknown" $api }}"></nuon-label-badge><a href="https://api.{{ $public_domain }}/docs/index.html">Open ↗</a></nuon-group>
+<nuon-group gap="2" align="center" justify="start">{{ range $step := list "alb-healthcheck-ctl-api-public" "alb-healthcheck-ctl-api-admin" "alb-healthcheck-ctl-api-runner" }}{{ $indicator := dig $step "indicator" "" $apiSteps }}{{ if eq $indicator "🟢" }}<nuon-status status="active" variant="badge"></nuon-status>{{ else if eq $indicator "🔴" }}<nuon-status status="error" variant="badge"></nuon-status>{{ else }}<nuon-status status="pending" variant="badge"></nuon-status>{{ end }}{{ end }}<nuon-label-badge
+label="version:{{ dig "ctl_api_version" "unknown" $api }}"></nuon-label-badge><nuon-label-badge
+label="git:{{ dig "ctl_api_git_ref" "unknown" $api }}"></nuon-label-badge><a href="https://api.{{ $public_domain }}/docs/index.html">Open
+↗</a></nuon-group>
 
-{{ if not (dig "updated_at" "" $api) }}<nuon-banner theme="warn">Waiting on api_status. Run it to populate this section.</nuon-banner>{{ end }}
+{{ if not (dig "updated_at" "" $api) }}<nuon-banner theme="warn">Waiting on api_status. Run it to populate this
+section.</nuon-banner>{{ end }}
 
 </nuon-card>
 
@@ -319,9 +333,13 @@
 
 <nuon-card>
 
-<nuon-group gap="2" align="center" justify="start">{{ $indicator := dig "alb-healthcheck-dashboard-ui" "indicator" "" $dashSteps }}{{ if eq $indicator "🟢" }}<nuon-status status="active" variant="badge"></nuon-status>{{ else if eq $indicator "🔴" }}<nuon-status status="error" variant="badge"></nuon-status>{{ else }}<nuon-status status="pending" variant="badge"></nuon-status>{{ end }}<nuon-label-badge label="version:{{ dig "dashboard_ui_version" "unknown" $dash }}"></nuon-label-badge><nuon-label-badge label="git:{{ dig "dashboard_ui_git_ref" "unknown" $dash }}"></nuon-label-badge><a href="https://app.{{ $public_domain }}">Open ↗</a></nuon-group>
+<nuon-group gap="2" align="center" justify="start">{{ $indicator := dig "alb-healthcheck-dashboard-ui" "indicator" "" $dashSteps }}{{ if eq $indicator "🟢" }}<nuon-status status="active" variant="badge"></nuon-status>{{ else if eq $indicator "🔴" }}<nuon-status status="error" variant="badge"></nuon-status>{{ else }}<nuon-status status="pending" variant="badge"></nuon-status>{{ end }}<nuon-label-badge
+label="version:{{ dig "dashboard_ui_version" "unknown" $dash }}"></nuon-label-badge><nuon-label-badge
+label="git:{{ dig "dashboard_ui_git_ref" "unknown" $dash }}"></nuon-label-badge><a href="https://app.{{ $public_domain }}">Open
+↗</a></nuon-group>
 
-{{ if not (dig "updated_at" "" $dash) }}<nuon-banner theme="warn">Waiting on dashboard_status. Run it to populate this section.</nuon-banner>{{ end }}
+{{ if not (dig "updated_at" "" $dash) }}<nuon-banner theme="warn">Waiting on dashboard_status. Run it to populate this
+section.</nuon-banner>{{ end }}
 
 </nuon-card>
 
@@ -382,8 +400,7 @@
 
 <div style="display:flex;align-items:baseline;gap:0.75rem;"><h3 style="margin:0;">Cluster</h3><a href="/{{ $.nuon.org.id }}/installs/{{ $.nuon.install.id }}/runbooks/inspect_cluster" style="font-size:0.85em;">See more →</a></div>
 
-{{ $sandboxStatus := dig "status" "" .nuon.sandbox }}
-{{ $cluster := dig "outputs" "cluster" (dict) .nuon.sandbox }}
+{{ $sandboxStatus := dig "status" "" .nuon.sandbox }} {{ $cluster := dig "outputs" "cluster" (dict) .nuon.sandbox }}
 
 <table>
   <tbody>
@@ -399,5 +416,65 @@
 </div>
 
 </nuon-tab>
-</nuon-tabs>
 
+<nuon-tab name="DNS">
+
+#### Current DNS Configurations
+
+When an install is created, a Route53 zone will be created for each of the domains. When these are ready, you can use
+those details to configure your domain in your registrar to use the AWS nameservers.
+
+{{ if (and .nuon.sandbox.populated .nuon.sandbox.outputs) }}
+
+##### Root Domain
+
+| Attribute   | Value                                                                                          |
+| ----------- | ---------------------------------------------------------------------------------------------- |
+| Domain Name | {{ $public_domain }}                                                                           |
+| Zone ID     | {{ dig "outputs" "nuon_dns" "public_domain" "zone_id" "Z00XXXXXXXXXXXXXXXXXX" .nuon.sandbox }} |
+
+<!-- prettier-ignore-start -->
+| Value     | Record Type | priority |
+| --------- | ----------- | -------- |
+{{ range $i, $ns := .nuon.sandbox.outputs.nuon_dns.public_domain.nameservers }}| {{ $ns }} | NS          | {{$i}}   |
+{{ end }}
+<!-- prettier-ignore-end -->
+
+{{ else }}
+
+> [!WARNING] Waiting on Sandbox Provision. Once the Sandbox is ready, results will be visible here.
+
+{{ end }}
+
+{{ if (and .nuon.components .nuon.components.management) }}
+
+##### Nuon DNS Delegation Domain
+
+| Attribute   | Value                                                          |
+| ----------- | -------------------------------------------------------------- |
+| Domain Name | {{ .nuon.components.management.outputs.route53_zone.domain }}  |
+| Zone ID     | {{ .nuon.components.management.outputs.route53_zone.zone_id }} |
+
+<!-- prettier-ignore-start -->
+| Value     | Record Type | priority |
+| --------- | ----------- | -------- |
+{{ range $i, $ns := .nuon.components.management.outputs.route53_zone.nameservers }}| {{ $ns }} | NS          | {{$i}}   |
+{{ end }}
+<!-- prettier-ignore-end -->
+
+{{ else }}
+
+<!-- prettier-ignore-start -->
+> [!WARNING]
+> Waiting on Sandbox Provision. Once the Sandbox is ready, results will be visible here.
+<!-- prettier-ignore-end -->
+
+{{ end }}
+
+Additional Documentation
+
+- [Creating a subdomain that uses Amazon Route 53 as the DNS service without migrating the parent domain](https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/CreatingNewSubdomain.html)
+
+</nuon-tab>
+
+</nuon-tabs>
