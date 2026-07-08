@@ -96,19 +96,18 @@ deny contains msg if {
 }
 
 # ──────────────────────────────────────────────────────────────────────────────
-# Enforce TLS for database connections via ip_configuration.ssl_mode.
-#
-# Warns during the TLS rollout. TODO: promote to `deny` once every CloudSQL
-# instance sets ssl_mode = "ENCRYPTED_ONLY" (or stricter).
+# Enforce TLS for database connections via ip_configuration.ssl_mode. An unset
+# ssl_mode defaults to ALLOW_UNENCRYPTED_AND_ENCRYPTED, so absence also denies.
 # ──────────────────────────────────────────────────────────────────────────────
-warn contains msg if {
+deny contains msg if {
 	some rc in input.plan.resource_changes
 	is_sql_instance_change(rc)
 	some settings in instance_settings(rc)
 	some ip_cfg in settings.ip_configuration
-	ip_cfg.ssl_mode == "ALLOW_UNENCRYPTED_AND_ENCRYPTED"
+	ssl := object.get(ip_cfg, "ssl_mode", "")
+	not ssl in ["ENCRYPTED_ONLY", "TRUSTED_CLIENT_CERTIFICATE_REQUIRED"]
 	msg := sprintf(
-		"CloudSQL instance '%s' sets ssl_mode=ALLOW_UNENCRYPTED_AND_ENCRYPTED, allowing unencrypted database connections. Set it to ENCRYPTED_ONLY (or stricter) to require TLS.",
-		[rc.address],
+		"CloudSQL instance '%s' does not require TLS (ssl_mode=%q). Set ssl_mode = \"ENCRYPTED_ONLY\" (or stricter).",
+		[rc.address, ssl],
 	)
 }

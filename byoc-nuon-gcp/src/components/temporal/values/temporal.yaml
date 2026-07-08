@@ -83,6 +83,11 @@ server:
           maxConns: 40
           maxIdleConns: 20
           maxQPS: 10000
+          # CloudSQL enforces ssl_mode=ENCRYPTED_ONLY; host verification stays
+          # off because the per-instance Google CA isn't in the trust store.
+          tls:
+            enabled: true
+            enableHostVerification: false
       visibility:
         driver: sql
         sql:
@@ -92,3 +97,6 @@ server:
           maxConns: 40
           maxIdleConns: 20
           maxQPS: 10000
+          tls:
+            enabled: true
+            enableHostVerification: false
