@@ -71,6 +71,11 @@ now=$(date -u +%Y-%m-%dT%H:%M:%SZ)
 one_hour_ago=$(date -u -v-1H +%Y-%m-%dT%H:%M:%SZ 2>/dev/null \
             || date -u -d '1 hour ago' +%Y-%m-%dT%H:%M:%SZ)
 
+if ! command -v curl >/dev/null; then
+  echo "curl is not available on the runner; skipping OS metric table."
+  exit 0
+fi
+
 token=$(gcloud auth print-access-token 2>/dev/null || true)
 if [ -z "$token" ]; then
   echo "could not obtain an access token; skipping OS metric table."
@@ -80,17 +85,24 @@ fi
 database_id="${project_id}:${db_instance_name}"
 
 # Fetch one metric's aligned time-series as a compact {endTime: value} map.
+# API errors are printed to stderr instead of silently returning no data.
 fetch_map() {
-  local metric="$1" aligner="$2"
-  curl -sG "https://monitoring.googleapis.com/v3/projects/${project_id}/timeSeries" \
+  local metric="$1" aligner="$2" resp
+  resp=$(curl -sG "https://monitoring.googleapis.com/v3/projects/${project_id}/timeSeries" \
     -H "Authorization: Bearer ${token}" \
     --data-urlencode "filter=metric.type=\"${metric}\" AND resource.labels.database_id=\"${database_id}\"" \
     --data-urlencode "interval.startTime=${one_hour_ago}" \
     --data-urlencode "interval.endTime=${now}" \
     --data-urlencode "aggregation.alignmentPeriod=60s" \
-    --data-urlencode "aggregation.perSeriesAligner=${aligner}" \
-    2>/dev/null \
-  | jq -c '[.timeSeries[]?.points[]?
+    --data-urlencode "aggregation.perSeriesAligner=${aligner}") || {
+      echo >&2 "warn: request failed for ${metric}"
+      echo '{}'; return
+    }
+  if echo "$resp" | jq -e '.error' >/dev/null 2>&1; then
+    echo >&2 "warn: ${metric}: $(echo "$resp" | jq -r '.error.message')"
+    echo '{}'; return
+  fi
+  echo "$resp" | jq -c '[.timeSeries[]?.points[]?
              | {key: .interval.endTime,
                 value: (.value.doubleValue // .value.int64Value // 0)}]
            | from_entries' 2>/dev/null || echo '{}'
@@ -133,7 +145,9 @@ rows=$(jq -nr \
   ' 2>/dev/null || true)
 
 if [ -z "$rows" ]; then
-  echo "(no Cloud Monitoring samples in the window; metrics may lag by a few minutes)"
+  echo "(no Cloud Monitoring samples returned; check the warnings above — the acting"
+  echo " service account needs roles/monitoring.viewer and the monitoring.googleapis.com"
+  echo " API must be enabled. Fresh instances can also lag by a few minutes.)"
   exit 0
 fi
 
