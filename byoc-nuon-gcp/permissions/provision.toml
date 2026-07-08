@@ -42,6 +42,7 @@ gcp_permissions = [
   "compute.networks.removePeering",
   "compute.networks.update",
   "compute.networks.use",
+  "compute.networks.updatePolicy",
   "compute.regionOperations.get",
   "compute.routers.create",
   "compute.routers.delete",
