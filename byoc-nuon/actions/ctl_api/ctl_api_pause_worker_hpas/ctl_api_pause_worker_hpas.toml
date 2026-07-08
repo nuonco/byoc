@@ -1,0 +1,18 @@
+# action
+# description: pauses ctl-api worker HPAs (backs them up to a configmap, deletes them) and scales the worker deployments to zero.
+# Reverse with ctl_api_unpause_worker_hpas.
+name    = "ctl_api_pause_worker_hpas"
+label   = "kubectl"
+timeout = "2m"
+
+[[triggers]]
+type = "manual"
+
+[[steps]]
+name = "pause worker hpas"
+inline_contents = "./ctl_api/ctl_api_pause_worker_hpas/pause_worker_hpas.sh"
+
+[steps.env_vars]
+# worker namespaces — one HPA + deployment per namespace: ctl-api-worker-<ns>
+WORKER_NAMESPACES = "actions apps components general installs orgs releases runners vcs emitters"
+BACKUP_CM         = "ctl-api-worker-hpa-backup"

@@ -13,4 +13,4 @@ name = "scale temporal"
 inline_contents = "./temporal/temporal_hard_reset_scale_up_temporal/scale_temporal.sh"
 
 [steps.env_vars]
-SCALE_TARGET = "1"
+SCALE_TARGET = "5"
