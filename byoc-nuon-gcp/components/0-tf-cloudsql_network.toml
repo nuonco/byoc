@@ -6,7 +6,7 @@ terraform_version = "1.11.3"
 [public_repo]
 repo      = "nuonco/byoc"
 directory = "byoc-nuon-gcp/src/components/cloudsql_network"
-branch    = "am/gcp-scoped-roles"
+branch    = "main"
 
 [vars]
 install_id = "{{ .nuon.install.id }}"

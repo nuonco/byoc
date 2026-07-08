@@ -10,7 +10,7 @@ dependencies = ["ctl_api", "certificate_wildcard_public", "external_dns", "app_n
 [public_repo]
 repo      = "nuonco/charts"
 directory = "charts/dashboard-ui"
-branch    = "am/dashboard-ui-security-context"
+branch    = "dashboard-ui-v0.1.2"
 
 [[values_file]]
 contents = "./values/dashboard-ui.yaml"

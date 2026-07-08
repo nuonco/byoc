@@ -8,7 +8,7 @@ drift_schedule = "0 0 * * *"
 [public_repo]
 repo      = "nuonco/byoc"
 directory = "byoc-nuon-gcp/src/components/cloudsql_nuon"
-branch    = "am/gcp-scoped-roles"
+branch    = "main"
 
 [vars]
 install_id          = "{{ .nuon.install.id }}"

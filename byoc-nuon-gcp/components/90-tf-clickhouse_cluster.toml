@@ -8,7 +8,7 @@ dependencies = ["crd_clickhouse_operator", "gcs_buckets", "clickhouse_nodepools"
 [public_repo]
 repo      = "nuonco/byoc"
 directory = "byoc-nuon-gcp/src/components/clickhouse_cluster"
-branch    = "am/gcp-scoped-roles"
+branch    = "main"
 
 [vars]
 install_id             = "{{ .nuon.install.id }}"

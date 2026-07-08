@@ -7,4 +7,4 @@ storage_driver = "configmap"
 [public_repo]
 repo      = "nuonco/byoc"
 directory = "byoc-nuon-gcp/src/components/storage_classes"
-branch    = "am/gcp-scoped-roles"
+branch    = "main"
