@@ -72,12 +72,6 @@ resource "google_project_iam_member" "ctl_api_sa_user" {
   member  = "serviceAccount:${google_service_account.ctl_api.email}"
 }
 
-resource "google_project_iam_member" "ctl_api_project_iam_admin" {
-  project = var.project_id
-  role    = "roles/resourcemanager.projectIamAdmin"
-  member  = "serviceAccount:${google_service_account.ctl_api.email}"
-}
-
 # Required for deploying org runner pods via Helm into the GKE cluster.
 resource "google_project_iam_member" "ctl_api_container_admin" {
   project = var.project_id
