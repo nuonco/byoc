@@ -27,6 +27,6 @@ variable "temporal_machine_type" {
 
 variable "ctl_api_machine_type" {
   type        = string
-  description = "Machine type for the ctl-api node pool. ~AWS c5.large."
-  default     = "e2-standard-2"
+  description = "Machine type for the ctl-api node pool. ~AWS c5.xlarge (ctl-api-worker pool); 2GB/vCPU matches the worker pods' request ratio."
+  default     = "e2-custom-4-8192"
 }
