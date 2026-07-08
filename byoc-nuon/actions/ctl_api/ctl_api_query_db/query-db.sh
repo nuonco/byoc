@@ -43,11 +43,6 @@ function execute_query() {
     --namespace=ctl-api \
     exec  -i \
     $pod -- \
-    apk add --no-cache postgresql-client
-  kubectl \
-    --namespace=ctl-api \
-    exec  -i \
-    $pod -- \
     env "PGHOST=$db_addr" "PGPORT=$db_port" "PGUSER=$admin_username" "PGPASSWORD=$admin_password" \
     psql --no-psqlrc -d "ctl_api" -c "SET default_transaction_read_only = on; $1"
 }
