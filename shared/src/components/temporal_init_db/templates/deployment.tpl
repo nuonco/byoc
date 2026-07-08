@@ -29,6 +29,10 @@ spec:
             value: "{{ .Values.db.username }}"
           - name: SQL_PLUGIN
             value: "{{ .Values.temporal.sql.plugin }}"
+          - name: SQL_TLS
+            value: "{{ .Values.db.tls | default false }}"
+          - name: SQL_TLS_DISABLE_HOST_VERIFICATION
+            value: "{{ .Values.db.tls | default false }}"
           - name: SQL_PASSWORD
             valueFrom:
               secretKeyRef:

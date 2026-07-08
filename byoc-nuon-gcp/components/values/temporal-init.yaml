@@ -7,6 +7,7 @@ db:
   host:     "{{ .nuon.components.cloudsql_temporal.outputs.address }}"
   port:     "{{ .nuon.components.cloudsql_temporal.outputs.db_instance_port }}"
   username: "{{ .nuon.components.cloudsql_temporal.outputs.db_instance_username }}"
+  tls:      true
 
 temporal:
   sql:
