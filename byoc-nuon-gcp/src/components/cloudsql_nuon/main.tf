@@ -27,6 +27,13 @@ resource "google_sql_database_instance" "nuon" {
       ssl_mode        = "ENCRYPTED_ONLY"
     }
 
+    insights_config {
+      query_insights_enabled  = true
+      query_string_length     = 1024
+      record_application_tags = true
+      record_client_address   = true
+    }
+
     backup_configuration {
       enabled                        = true
       point_in_time_recovery_enabled = true
