@@ -151,6 +151,13 @@ image:
   tag: "{{ .nuon.components.img_nuon_ctl_api.outputs.image.tag }}"
 
 worker:
+  nodeSelector:
+    pool.nuon.co: ctl-api
+  tolerations:
+    - key: pool.nuon.co
+      operator: Equal
+      value: ctl-api
+      effect: NoSchedule
   instances:
     - namespace: orgs
       minReplicas: 2
@@ -216,6 +223,13 @@ worker:
       memory: 256Mi
 
 api:
+  nodeSelector:
+    pool.nuon.co: ctl-api
+  tolerations:
+    - key: pool.nuon.co
+      operator: Equal
+      value: ctl-api
+      effect: NoSchedule
   liveness_probe: /livez
   readiness_probe: /readyz
 

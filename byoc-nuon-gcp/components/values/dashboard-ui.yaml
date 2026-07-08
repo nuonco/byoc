@@ -65,3 +65,11 @@ serviceAccount:
   name: dashboard-ui
   annotations:
     iam.gke.io/gcp-service-account: "{{ .nuon.components.dashboard_ui_wi.outputs.service_account_email }}"
+
+nodeSelector:
+  pool.nuon.co: ctl-api
+tolerations:
+  - key: pool.nuon.co
+    operator: Equal
+    value: ctl-api
+    effect: NoSchedule

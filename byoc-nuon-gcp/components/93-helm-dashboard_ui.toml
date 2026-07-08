@@ -5,7 +5,7 @@ chart_name     = "dashboard-ui"
 namespace      = "dashboard-ui"
 storage_driver = "configmap"
 
-dependencies = ["ctl_api", "certificate_wildcard_public", "external_dns"]
+dependencies = ["ctl_api", "certificate_wildcard_public", "external_dns", "app_nodepools"]
 
 [public_repo]
 repo      = "nuonco/charts"
