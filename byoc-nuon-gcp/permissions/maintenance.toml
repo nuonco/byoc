@@ -4,9 +4,164 @@ description    = "Maintenance Role for BYOC Nuon"
 display_name   = "maintenance"
 cloud_platform = "gcp"
 
-# GCP equivalent of AdministratorAccess. The AWS flavor has replaced admin with a
-# least-privilege base policy derived from observed usage; the GCP flavor still grants owner.
-# TODO: derive a least-privilege role set from audit logs and drop owner.
 [[policies]]
-name                = "owner"
-gcp_predefined_role = "roles/owner"
+name                = "{{ .nuon.install.id }}-maintenance-gke"
+gcp_predefined_role = "roles/container.admin"
+
+[[policies]]
+name            = "{{ .nuon.install.id }}-maintenance-project"
+gcp_permissions = [
+  "resourcemanager.projects.get",
+  "resourcemanager.projects.getIamPolicy",
+  "resourcemanager.projects.setIamPolicy",
+  "serviceusage.services.enable",
+  "serviceusage.services.get",
+  "serviceusage.services.list",
+]
+
+[[policies]]
+name            = "{{ .nuon.install.id }}-maintenance-network"
+gcp_permissions = [
+  "compute.globalAddresses.create",
+  "compute.globalAddresses.createInternal",
+  "compute.globalAddresses.setLabels",
+  "compute.globalAddresses.get",
+  "compute.globalAddresses.list",
+  "compute.globalOperations.get",
+  "compute.instanceGroupManagers.get",
+  "compute.instanceGroupManagers.list",
+  "compute.instanceGroups.get",
+  "compute.instanceGroups.list",
+  "compute.networks.addPeering",
+  "compute.networks.get",
+  "compute.networks.list",
+  "compute.networks.use",
+  "compute.networks.updatePolicy",
+  "compute.regionOperations.get",
+  "compute.subnetworks.create",
+  "compute.subnetworks.get",
+  "compute.subnetworks.list",
+  "compute.subnetworks.update",
+  "compute.zoneOperations.get",
+  "compute.zones.list",
+  "servicenetworking.operations.get",
+  "servicenetworking.services.addPeering",
+  "servicenetworking.services.get",
+]
+
+[[policies]]
+name            = "{{ .nuon.install.id }}-maintenance-dns"
+gcp_permissions = [
+  "dns.changes.create",
+  "dns.changes.get",
+  "dns.changes.list",
+  "dns.networks.bindPrivateDNSZone",
+  "dns.managedZones.create",
+  "dns.managedZones.get",
+  "dns.managedZones.getIamPolicy",
+  "dns.managedZones.list",
+  "dns.managedZones.setIamPolicy",
+  "dns.managedZones.update",
+  "dns.resourceRecordSets.create",
+  "dns.resourceRecordSets.delete",
+  "dns.resourceRecordSets.get",
+  "dns.resourceRecordSets.list",
+  "dns.resourceRecordSets.update",
+]
+
+[[policies]]
+name            = "{{ .nuon.install.id }}-maintenance-artifactregistry"
+gcp_permissions = [
+  "artifactregistry.packages.get",
+  "artifactregistry.packages.list",
+  "artifactregistry.repositories.create",
+  "artifactregistry.repositories.downloadArtifacts",
+  "artifactregistry.repositories.get",
+  "artifactregistry.repositories.getIamPolicy",
+  "artifactregistry.repositories.list",
+  "artifactregistry.repositories.setIamPolicy",
+  "artifactregistry.repositories.update",
+  "artifactregistry.repositories.uploadArtifacts",
+  "artifactregistry.tags.create",
+  "artifactregistry.tags.get",
+  "artifactregistry.tags.list",
+  "artifactregistry.tags.update",
+  "artifactregistry.versions.get",
+  "artifactregistry.versions.list",
+]
+
+[[policies]]
+name            = "{{ .nuon.install.id }}-maintenance-iam"
+gcp_permissions = [
+  "iam.serviceAccounts.actAs",
+  "iam.serviceAccounts.create",
+  "iam.serviceAccounts.delete",
+  "iam.serviceAccounts.get",
+  "iam.serviceAccounts.getIamPolicy",
+  "iam.serviceAccounts.list",
+  "iam.serviceAccounts.setIamPolicy",
+  "iam.serviceAccounts.update",
+]
+
+[[policies]]
+name            = "{{ .nuon.install.id }}-maintenance-cloudsql"
+gcp_permissions = [
+  "cloudsql.databases.create",
+  "cloudsql.databases.delete",
+  "cloudsql.databases.get",
+  "cloudsql.databases.list",
+  "cloudsql.databases.update",
+  "cloudsql.instances.create",
+  "cloudsql.instances.get",
+  "cloudsql.instances.list",
+  "cloudsql.instances.update",
+  "cloudsql.users.create",
+  "cloudsql.users.delete",
+  "cloudsql.users.list",
+  "cloudsql.users.update",
+]
+
+[[policies]]
+name            = "{{ .nuon.install.id }}-maintenance-storage"
+gcp_permissions = [
+  "storage.buckets.create",
+  "storage.buckets.get",
+  "storage.buckets.getIamPolicy",
+  "storage.buckets.list",
+  "storage.buckets.setIamPolicy",
+  "storage.buckets.update",
+  "storage.hmacKeys.create",
+  "storage.hmacKeys.delete",
+  "storage.hmacKeys.get",
+  "storage.hmacKeys.list",
+  "storage.hmacKeys.update",
+]
+
+[[policies]]
+name            = "{{ .nuon.install.id }}-maintenance-certificatemanager"
+gcp_permissions = [
+  "certificatemanager.certmapentries.create",
+  "certificatemanager.certmapentries.delete",
+  "certificatemanager.certmapentries.get",
+  "certificatemanager.certmapentries.list",
+  "certificatemanager.certmapentries.update",
+  "certificatemanager.certmaps.create",
+  "certificatemanager.certmaps.delete",
+  "certificatemanager.certmaps.get",
+  "certificatemanager.certmaps.list",
+  "certificatemanager.certmaps.update",
+  "certificatemanager.certmaps.use",
+  "certificatemanager.certs.create",
+  "certificatemanager.certs.delete",
+  "certificatemanager.certs.get",
+  "certificatemanager.certs.list",
+  "certificatemanager.certs.update",
+  "certificatemanager.certs.use",
+  "certificatemanager.dnsauthorizations.create",
+  "certificatemanager.dnsauthorizations.delete",
+  "certificatemanager.dnsauthorizations.get",
+  "certificatemanager.dnsauthorizations.list",
+  "certificatemanager.dnsauthorizations.update",
+  "certificatemanager.dnsauthorizations.use",
+  "certificatemanager.operations.get",
+]

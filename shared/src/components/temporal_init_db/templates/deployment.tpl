@@ -20,6 +20,10 @@ spec:
         - name: temporal-init
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           command: [ "tail", "-f", "/dev/null" ]
+          securityContext:
+            runAsNonRoot: true
+            runAsUser: 1000
+            allowPrivilegeEscalation: false
           env:
           - name: SQL_HOST
             value: "{{ .Values.db.host }}"
@@ -29,6 +33,10 @@ spec:
             value: "{{ .Values.db.username }}"
           - name: SQL_PLUGIN
             value: "{{ .Values.temporal.sql.plugin }}"
+          - name: SQL_TLS
+            value: "{{ .Values.db.tls | default false }}"
+          - name: SQL_TLS_DISABLE_HOST_VERIFICATION
+            value: "{{ .Values.db.tls | default false }}"
           - name: SQL_PASSWORD
             valueFrom:
               secretKeyRef:
@@ -93,6 +101,10 @@ spec:
         - name: temporal-psql
           image: "postgres:15-alpine3.20"
           command: [ "tail", "-f", "/dev/null" ]
+          securityContext:
+            runAsNonRoot: true
+            runAsUser: 70
+            allowPrivilegeEscalation: false
           env:
           - name: PGHOST
             value: "{{ .Values.db.host }}"

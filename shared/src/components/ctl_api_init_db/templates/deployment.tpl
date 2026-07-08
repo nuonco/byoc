@@ -20,6 +20,10 @@ spec:
         - name: ctl-api-init
           image: "postgres:15-alpine3.20"
           command: [ "tail", "-f", "/dev/null" ]
+          securityContext:
+            runAsNonRoot: true
+            runAsUser: 70
+            allowPrivilegeEscalation: false
           volumeMounts:
           - name: init-config
             mountPath: "/var/init-config"

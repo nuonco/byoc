@@ -4,8 +4,188 @@ description    = "Deprovision Role for BYOC Nuon"
 display_name   = "deprovision"
 cloud_platform = "gcp"
 
-# GCP equivalent of AdministratorAccess. TODO: enumerate the full destruction set as scoped
-# grants (mirroring the AWS deprovision-base policy) before dropping owner.
 [[policies]]
-name                = "owner"
-gcp_predefined_role = "roles/owner"
+name                = "{{ .nuon.install.id }}-deprovision-gke"
+gcp_predefined_role = "roles/container.admin"
+
+[[policies]]
+name            = "{{ .nuon.install.id }}-deprovision-project"
+gcp_permissions = [
+  "resourcemanager.projects.get",
+  "resourcemanager.projects.getIamPolicy",
+  "resourcemanager.projects.setIamPolicy",
+  "serviceusage.services.disable",
+  "serviceusage.services.enable",
+  "serviceusage.services.get",
+  "serviceusage.services.list",
+]
+
+[[policies]]
+name            = "{{ .nuon.install.id }}-deprovision-network"
+gcp_permissions = [
+  "compute.globalAddresses.create",
+  "compute.globalAddresses.createInternal",
+  "compute.globalAddresses.deleteInternal",
+  "compute.globalAddresses.setLabels",
+  "compute.globalAddresses.delete",
+  "compute.globalAddresses.get",
+  "compute.globalAddresses.list",
+  "compute.globalOperations.get",
+  "compute.instanceGroupManagers.get",
+  "compute.instanceGroupManagers.list",
+  "compute.instanceGroups.get",
+  "compute.instanceGroups.list",
+  "compute.networks.addPeering",
+  "compute.networks.create",
+  "compute.networks.delete",
+  "compute.networks.get",
+  "compute.networks.list",
+  "compute.networks.removePeering",
+  "compute.networks.update",
+  "compute.networks.use",
+  "compute.networks.updatePolicy",
+  "compute.regionOperations.get",
+  "compute.routers.create",
+  "compute.routers.delete",
+  "compute.routers.get",
+  "compute.routers.list",
+  "compute.routers.update",
+  "compute.subnetworks.create",
+  "compute.subnetworks.delete",
+  "compute.subnetworks.get",
+  "compute.subnetworks.list",
+  "compute.subnetworks.update",
+  "compute.zoneOperations.get",
+  "compute.zones.list",
+  "servicenetworking.operations.get",
+  "servicenetworking.services.addPeering",
+  "servicenetworking.services.deleteConnection",
+  "servicenetworking.services.get",
+]
+
+[[policies]]
+name            = "{{ .nuon.install.id }}-deprovision-dns"
+gcp_permissions = [
+  "dns.changes.create",
+  "dns.changes.get",
+  "dns.changes.list",
+  "dns.networks.bindPrivateDNSZone",
+  "dns.managedZones.create",
+  "dns.managedZones.delete",
+  "dns.managedZones.get",
+  "dns.managedZones.getIamPolicy",
+  "dns.managedZones.list",
+  "dns.managedZones.setIamPolicy",
+  "dns.managedZones.update",
+  "dns.resourceRecordSets.create",
+  "dns.resourceRecordSets.delete",
+  "dns.resourceRecordSets.get",
+  "dns.resourceRecordSets.list",
+  "dns.resourceRecordSets.update",
+]
+
+[[policies]]
+name            = "{{ .nuon.install.id }}-deprovision-artifactregistry"
+gcp_permissions = [
+  "artifactregistry.packages.delete",
+  "artifactregistry.packages.get",
+  "artifactregistry.packages.list",
+  "artifactregistry.repositories.create",
+  "artifactregistry.repositories.delete",
+  "artifactregistry.repositories.downloadArtifacts",
+  "artifactregistry.repositories.get",
+  "artifactregistry.repositories.getIamPolicy",
+  "artifactregistry.repositories.list",
+  "artifactregistry.repositories.setIamPolicy",
+  "artifactregistry.repositories.update",
+  "artifactregistry.repositories.uploadArtifacts",
+  "artifactregistry.tags.create",
+  "artifactregistry.tags.delete",
+  "artifactregistry.tags.get",
+  "artifactregistry.tags.list",
+  "artifactregistry.tags.update",
+  "artifactregistry.versions.delete",
+  "artifactregistry.versions.get",
+  "artifactregistry.versions.list",
+]
+
+[[policies]]
+name            = "{{ .nuon.install.id }}-deprovision-iam"
+gcp_permissions = [
+  "iam.serviceAccounts.actAs",
+  "iam.serviceAccounts.create",
+  "iam.serviceAccounts.delete",
+  "iam.serviceAccounts.get",
+  "iam.serviceAccounts.getIamPolicy",
+  "iam.serviceAccounts.list",
+  "iam.serviceAccounts.setIamPolicy",
+  "iam.serviceAccounts.update",
+]
+
+[[policies]]
+name            = "{{ .nuon.install.id }}-deprovision-cloudsql"
+gcp_permissions = [
+  "cloudsql.databases.create",
+  "cloudsql.databases.delete",
+  "cloudsql.databases.get",
+  "cloudsql.databases.list",
+  "cloudsql.databases.update",
+  "cloudsql.instances.create",
+  "cloudsql.instances.delete",
+  "cloudsql.instances.get",
+  "cloudsql.instances.list",
+  "cloudsql.instances.update",
+  "cloudsql.users.create",
+  "cloudsql.users.delete",
+  "cloudsql.users.list",
+  "cloudsql.users.update",
+]
+
+[[policies]]
+name            = "{{ .nuon.install.id }}-deprovision-storage"
+gcp_permissions = [
+  "storage.buckets.create",
+  "storage.buckets.delete",
+  "storage.buckets.get",
+  "storage.buckets.getIamPolicy",
+  "storage.buckets.list",
+  "storage.buckets.setIamPolicy",
+  "storage.buckets.update",
+  "storage.hmacKeys.create",
+  "storage.hmacKeys.delete",
+  "storage.hmacKeys.get",
+  "storage.hmacKeys.list",
+  "storage.hmacKeys.update",
+  "storage.objects.delete",
+  "storage.objects.get",
+  "storage.objects.list",
+]
+
+[[policies]]
+name            = "{{ .nuon.install.id }}-deprovision-certificatemanager"
+gcp_permissions = [
+  "certificatemanager.certmapentries.create",
+  "certificatemanager.certmapentries.delete",
+  "certificatemanager.certmapentries.get",
+  "certificatemanager.certmapentries.list",
+  "certificatemanager.certmapentries.update",
+  "certificatemanager.certmaps.create",
+  "certificatemanager.certmaps.delete",
+  "certificatemanager.certmaps.get",
+  "certificatemanager.certmaps.list",
+  "certificatemanager.certmaps.update",
+  "certificatemanager.certmaps.use",
+  "certificatemanager.certs.create",
+  "certificatemanager.certs.delete",
+  "certificatemanager.certs.get",
+  "certificatemanager.certs.list",
+  "certificatemanager.certs.update",
+  "certificatemanager.certs.use",
+  "certificatemanager.dnsauthorizations.create",
+  "certificatemanager.dnsauthorizations.delete",
+  "certificatemanager.dnsauthorizations.get",
+  "certificatemanager.dnsauthorizations.list",
+  "certificatemanager.dnsauthorizations.update",
+  "certificatemanager.dnsauthorizations.use",
+  "certificatemanager.operations.get",
+]

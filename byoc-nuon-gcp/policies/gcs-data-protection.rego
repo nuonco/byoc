@@ -82,6 +82,22 @@ deny contains msg if {
 }
 
 # ──────────────────────────────────────────────────────────────────────────────
+# Public access prevention blocks public ACLs/IAM on the bucket outright.
+# An unset value inherits the org policy, which is not guaranteed — require
+# the explicit enforced setting.
+# ──────────────────────────────────────────────────────────────────────────────
+deny contains msg if {
+	some rc in input.plan.resource_changes
+	is_bucket_change(rc)
+	not bucket_exempt(rc.address, intentionally_public_buckets)
+	object.get(rc.change.after, "public_access_prevention", "") != "enforced"
+	msg := sprintf(
+		"GCS bucket '%s' does not set public_access_prevention = \"enforced\". Buckets must block public access explicitly.",
+		[rc.address],
+	)
+}
+
+# ──────────────────────────────────────────────────────────────────────────────
 # Never grant bucket access to allUsers / allAuthenticatedUsers, unless the
 # bucket is intentionally public.
 # ──────────────────────────────────────────────────────────────────────────────

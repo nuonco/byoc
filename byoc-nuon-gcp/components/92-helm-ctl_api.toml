@@ -4,7 +4,7 @@ type           = "helm_chart"
 chart_name     = "ctl-api"
 namespace      = "ctl-api"
 storage_driver = "configmap"
-dependencies   = ["cloudsql_nuon", "clickhouse_cluster", "temporal", "management", "ctl_api_init_db", "ctl_api_wi", "certificate_wildcard_public", "external_dns"]
+dependencies   = ["cloudsql_nuon", "clickhouse_cluster", "temporal", "management", "ctl_api_init_db", "ctl_api_wi", "certificate_wildcard_public", "external_dns", "app_nodepools"]
 
 [public_repo]
 repo      = "nuonco/charts"

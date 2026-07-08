@@ -16,10 +16,10 @@ test_warn_sa_admin if {
 	count(warn) > 0 with input as mock_iam_member("roles/iam.serviceAccountAdmin", "serviceAccount:test@project.iam.gserviceaccount.com")
 }
 
-# ── Warn: serviceAccountTokenCreator ─────────────────────────────────────────
+# ── Deny: serviceAccountTokenCreator ─────────────────────────────────────────
 
-test_warn_token_creator if {
-	count(warn) > 0 with input as mock_iam_member("roles/iam.serviceAccountTokenCreator", "serviceAccount:test@project.iam.gserviceaccount.com")
+test_deny_token_creator if {
+	count(deny) > 0 with input as mock_iam_member("roles/iam.serviceAccountTokenCreator", "serviceAccount:test@project.iam.gserviceaccount.com")
 }
 
 # ── Allow: safe roles ────────────────────────────────────────────────────────

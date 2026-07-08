@@ -5,10 +5,21 @@ resource "google_service_account" "external_dns" {
   display_name = "external-dns for ${var.install_id}"
 }
 
+# Zone discovery needs a project-level list; writes are scoped to the two
+# install zones below instead of a project-wide dns.admin grant.
 resource "google_project_iam_member" "external_dns" {
   project = var.project_id
-  role    = "roles/dns.admin"
+  role    = "roles/dns.reader"
   member  = "serviceAccount:${google_service_account.external_dns.email}"
+}
+
+resource "google_dns_managed_zone_iam_member" "external_dns" {
+  for_each = toset(compact([var.public_zone_name, var.internal_zone_name]))
+
+  project      = var.project_id
+  managed_zone = each.value
+  role         = "roles/dns.admin"
+  member       = "serviceAccount:${google_service_account.external_dns.email}"
 }
 
 resource "google_service_account_iam_member" "external_dns_wi" {
@@ -35,6 +46,7 @@ resource "helm_release" "external_dns" {
     extraArgs = [
       "--google-project=${var.project_id}",
       "--google-zone-visibility=public",
+      "--zone-id-filter=${var.public_zone_id}",
     ]
 
     serviceAccount = {
@@ -78,6 +90,7 @@ resource "helm_release" "external_dns_internal" {
     extraArgs = [
       "--google-project=${var.project_id}",
       "--google-zone-visibility=private",
+      "--zone-id-filter=${var.internal_zone_id}",
     ]
 
     serviceAccount = {

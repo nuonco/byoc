@@ -5,7 +5,7 @@
 # for a control plane running in a customer project.
 #
 # Checks:
-#   - GKE API endpoint should not be public / unrestricted   (warn -> deny)
+#   - GKE API endpoint should not be public / unrestricted   (deny)
 #
 # Input: Terraform JSON plan from the sandbox run
 #        (input.plan.resource_changes).
@@ -36,13 +36,10 @@ is_cluster_change(rc) if {
 }
 
 # ──────────────────────────────────────────────────────────────────────────────
-# Warn when the GKE public endpoint is open to the entire internet.
-#
-# Warns so a sandbox that still uses a public endpoint is not blocked. TODO:
-# promote to `deny` once the cluster API is restricted to known CIDRs (or the
-# public endpoint is disabled).
+# Deny when the GKE public endpoint is open to the entire internet. The
+# sandbox runs with a private endpoint restricted to the install-stack VPC.
 # ──────────────────────────────────────────────────────────────────────────────
-warn contains msg if {
+deny contains msg if {
 	some rc in input.plan.resource_changes
 	is_cluster_change(rc)
 	some cfg in master_authorized_networks(rc)
@@ -55,10 +52,10 @@ warn contains msg if {
 }
 
 # ──────────────────────────────────────────────────────────────────────────────
-# Also warn when the public endpoint is enabled with no authorized-networks
+# Also deny when the public endpoint is enabled with no authorized-networks
 # restriction at all (an absent allowlist leaves the endpoint open to any IP).
 # ──────────────────────────────────────────────────────────────────────────────
-warn contains msg if {
+deny contains msg if {
 	some rc in input.plan.resource_changes
 	is_cluster_change(rc)
 	not private_endpoint_enabled(rc)

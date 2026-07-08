@@ -47,7 +47,7 @@ env:
   INTERNAL_HTTP_PORT: !!string 8082
   RUNNER_HTTP_PORT: !!string 8083
   GRACEFUL_SHUTDOWN_TIMEOUT: 10s
-  RUNNER_CONTAINER_IMAGE_TAG: "0.19.1041"
+  RUNNER_CONTAINER_IMAGE_TAG: "a3368a0"
   RUNNER_CONTAINER_IMAGE_URL: "public.ecr.aws/p7e3r5y0/runner"
 
   GITHUB_APP_ID: !!string {{ .nuon.inputs.inputs.github_app_id }}
@@ -151,6 +151,20 @@ image:
   tag: "{{ .nuon.components.img_nuon_ctl_api.outputs.image.tag }}"
 
 worker:
+  nodeSelector:
+    pool.nuon.co: ctl-api-worker
+  tolerations:
+    - key: pool.nuon.co
+      operator: Equal
+      value: ctl-api-worker
+      effect: NoSchedule
+  topologySpreadConstraints:
+    - maxSkew: 1
+      topologyKey: "topology.kubernetes.io/zone"
+      whenUnsatisfiable: DoNotSchedule
+    - maxSkew: 2
+      topologyKey: "kubernetes.io/hostname"
+      whenUnsatisfiable: ScheduleAnyway
   instances:
     - namespace: orgs
       minReplicas: 2
@@ -164,24 +178,48 @@ worker:
       minReplicas: 2
       maxReplicas: 5
       command: ["/bin/service", "worker", "--namespace=apps"]
+      resources:
+        requests:
+          cpu: 2000m
+          memory: 4Gi
+      extraEnv:
+        - name: TEMPORAL_MAX_CONCURRENT_WORKFLOW_TASK_EXECUTION_SIZE
+          value: "10000"
+        - name: TEMPORAL_MAX_CONCURRENT_ACTIVITY_TASK_POLLERS
+          value: "50"
+        - name: TEMPORAL_MAX_CONCURRENT_WORKFLOW_TASK_POLLERS
+          value: "50"
+        - name: DB_MAX_CONNECTIONS
+          value: "10"
+        - name: TEMPORAL_STICKY_WORKFLOW_CACHE_SIZE
+          value: "1000000"
     - namespace: components
       minReplicas: 2
       maxReplicas: 5
       command: ["/bin/service", "worker", "--namespace=components"]
+      resources:
+        requests:
+          cpu: 1000m
+          memory: 1Gi
     - namespace: installs
       minReplicas: 2
       maxReplicas: 10
       command: ["/bin/service", "worker", "--namespace=installs"]
       resources:
-        limits:
-          cpu: 1000m
-          memory: 2048Mi
         requests:
-          cpu: 500m
-          memory: 1024Mi
+          cpu: 2000m
+          memory: 4Gi
       extraEnv:
+        - name: TEMPORAL_MAX_CONCURRENT_WORKFLOW_TASK_EXECUTION_SIZE
+          value: "10000"
+        - name: TEMPORAL_MAX_CONCURRENT_ACTIVITY_TASK_POLLERS
+          value: "100"
+        - name: TEMPORAL_MAX_CONCURRENT_WORKFLOW_TASK_POLLERS
+          value: "100"
+        - name: DB_MAX_CONNECTIONS
+          value: "10"
         - name: TEMPORAL_STICKY_WORKFLOW_CACHE_SIZE
-          value: !!string 1000
+          value: "1000000"
     - namespace: releases
       minReplicas: 2
       maxReplicas: 5
@@ -190,32 +228,47 @@ worker:
       minReplicas: 2
       maxReplicas: 5
       command: ["/bin/service", "worker", "--namespace=general"]
+      extraEnv:
+        - name: TEMPORAL_MAX_CONCURRENT_ACTIVITY_TASK_POLLERS
+          value: "200"
+        - name: TEMPORAL_MAX_CONCURRENT_WORKFLOW_TASK_POLLERS
+          value: "50"
     - namespace: runners
       minReplicas: 2
       maxReplicas: 10
       command: ["/bin/service", "worker", "--namespace=runners"]
       resources:
-        limits:
-          cpu: 500m
-          memory: 1024Mi
         requests:
-          cpu: 500m
-          memory: 512Mi
+          cpu: 2000m
+          memory: 4Gi
       extraEnv:
+        - name: TEMPORAL_MAX_CONCURRENT_WORKFLOW_TASK_EXECUTION_SIZE
+          value: "10000"
+        - name: TEMPORAL_MAX_CONCURRENT_ACTIVITY_TASK_POLLERS
+          value: "200"
+        - name: TEMPORAL_MAX_CONCURRENT_WORKFLOW_TASK_POLLERS
+          value: "100"
+        - name: DB_MAX_CONNECTIONS
+          value: "15"
         - name: TEMPORAL_STICKY_WORKFLOW_CACHE_SIZE
-          value: !!string 1000
+          value: "100000"
   autoscaling:
     targetCPUUtilizationPercentage: 75
     targetMemoryUtilizationPercentage: 75
   resources:
-    limits:
+    requests:
       cpu: 500m
       memory: 512Mi
-    requests:
-      cpu: 250m
-      memory: 256Mi
+  minDomains: 2
 
 api:
+  nodeSelector:
+    pool.nuon.co: ctl-api
+  tolerations:
+    - key: pool.nuon.co
+      operator: Equal
+      value: ctl-api
+      effect: NoSchedule
   liveness_probe: /livez
   readiness_probe: /readyz
 

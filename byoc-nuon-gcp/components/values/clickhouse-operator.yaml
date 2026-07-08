@@ -28,6 +28,12 @@ config:
 
 imagePullSecrets: []
 
+# Both operator and metrics-exporter images run as "nobody" (65534).
+podSecurityContext:
+  runAsNonRoot: true
+  runAsUser: 65534
+  runAsGroup: 65534
+
 podLabels:
   "component.nuon.co/name": "clickhouse-operator"
   "component.nuon.co/domain": "storage"

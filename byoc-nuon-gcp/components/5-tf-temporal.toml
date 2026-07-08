@@ -1,7 +1,7 @@
 name              = "temporal"
 type              = "terraform_module"
 terraform_version = "1.11.3"
-dependencies      = ["cloudsql_temporal", "temporal_init_db"]
+dependencies      = ["cloudsql_temporal", "temporal_init_db", "app_nodepools"]
 
 [public_repo]
 repo      = "nuonco/byoc"

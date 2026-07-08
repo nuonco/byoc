@@ -1,0 +1,18 @@
+[[role]]
+name           = "observability-{{ .nuon.install.id }}"
+description    = "Break-glass read-only observability access for BYOC install {{ .nuon.install.id }}"
+display_name   = "BYOC Nuon: Observability Break Glass"
+cloud_platform = "gcp"
+
+[[role.policies]]
+name                = "monitoring-viewer"
+gcp_predefined_role = "roles/monitoring.viewer"
+
+[[role.policies]]
+name            = "logging-read"
+gcp_permissions = [
+  "logging.buckets.get",
+  "logging.buckets.list",
+  "logging.logEntries.list",
+  "logging.logs.list",
+]

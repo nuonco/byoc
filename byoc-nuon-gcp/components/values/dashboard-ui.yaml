@@ -36,6 +36,10 @@ env:
 envSecrets:
 
 ui:
+  securityContext:
+    runAsNonRoot: true
+    runAsUser: 65532
+    allowPrivilegeEscalation: false
   port: 4000
   liveness_probe: /livez
   readiness_probe: /readyz
@@ -65,3 +69,11 @@ serviceAccount:
   name: dashboard-ui
   annotations:
     iam.gke.io/gcp-service-account: "{{ .nuon.components.dashboard_ui_wi.outputs.service_account_email }}"
+
+nodeSelector:
+  pool.nuon.co: ctl-api
+tolerations:
+  - key: pool.nuon.co
+    operator: Equal
+    value: ctl-api
+    effect: NoSchedule
