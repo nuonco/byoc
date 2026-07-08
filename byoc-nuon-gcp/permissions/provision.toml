@@ -167,5 +167,6 @@ gcp_permissions = [
   "certificatemanager.dnsauthorizations.get",
   "certificatemanager.dnsauthorizations.list",
   "certificatemanager.dnsauthorizations.update",
+  "certificatemanager.dnsauthorizations.use",
   "certificatemanager.operations.get",
 ]
