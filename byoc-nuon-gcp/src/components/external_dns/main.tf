@@ -46,6 +46,7 @@ resource "helm_release" "external_dns" {
     extraArgs = [
       "--google-project=${var.project_id}",
       "--google-zone-visibility=public",
+      "--zone-id-filter=${var.public_zone_id}",
     ]
 
     serviceAccount = {
@@ -89,6 +90,7 @@ resource "helm_release" "external_dns_internal" {
     extraArgs = [
       "--google-project=${var.project_id}",
       "--google-zone-visibility=private",
+      "--zone-id-filter=${var.internal_zone_id}",
     ]
 
     serviceAccount = {
