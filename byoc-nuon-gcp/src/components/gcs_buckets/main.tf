@@ -23,6 +23,7 @@ resource "google_storage_bucket" "install_templates" {
   location = var.region
 
   uniform_bucket_level_access = true
+  public_access_prevention    = "enforced"
   force_destroy               = false
 
   versioning {
@@ -33,12 +34,6 @@ resource "google_storage_bucket" "install_templates" {
     "install-nuon-co-id"     = var.install_id
     "component-nuon-co-name" = "install-templates"
   }
-}
-
-resource "google_storage_bucket_iam_member" "install_templates_public_read" {
-  bucket = google_storage_bucket.install_templates.name
-  role   = "roles/storage.objectViewer"
-  member = "allUsers"
 }
 
 resource "google_storage_bucket" "blob" {

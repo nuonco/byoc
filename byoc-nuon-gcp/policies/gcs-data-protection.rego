@@ -23,7 +23,7 @@ public_members := {"allUsers", "allAuthenticatedUsers"}
 # Buckets that are intentionally public: the install-templates bucket serves
 # install templates that the customer's GCP project fetches over public HTTPS,
 # so its allUsers objectViewer grant is deliberate.
-intentionally_public_buckets := {"install_templates"}
+intentionally_public_buckets := set()
 
 # Buckets that hold immutable backup objects and do not require versioning.
 unversioned_ok_buckets := {"clickhouse"}
