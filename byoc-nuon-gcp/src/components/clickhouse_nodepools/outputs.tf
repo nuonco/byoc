@@ -1,5 +1,5 @@
 output "node_service_account_email" {
-  value = google_service_account.clickhouse_nodes.email
+  value = local.node_sa_email
 }
 
 output "installation_pool_name" {
