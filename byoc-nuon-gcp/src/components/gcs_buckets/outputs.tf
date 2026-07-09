@@ -12,11 +12,3 @@ output "blob_bucket" {
     base_url = "https://storage.googleapis.com/${google_storage_bucket.blob.name}/"
   }
 }
-
-output "install_template_bucket" {
-  value = {
-    name     = google_storage_bucket.install_templates.name
-    url      = google_storage_bucket.install_templates.url
-    base_url = "https://storage.googleapis.com/${google_storage_bucket.install_templates.name}/"
-  }
-}
