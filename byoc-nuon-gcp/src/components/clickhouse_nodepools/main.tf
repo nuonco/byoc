@@ -10,7 +10,16 @@ locals {
 # Dedicated least-privilege service account for ClickHouse nodes. Required by
 # policies/gke-node-pool-service-account.rego — omitting it defaults to the
 # Compute Engine SA (Editor role) and fails the policy.
+# Reused from the install stack when provided — avoids runtime SA creation,
+# which customer org IAM deny policies commonly forbid. The stack SA carries
+# the same node role set.
+locals {
+  create_node_sa = var.gke_node_pool_sa_email == ""
+  node_sa_email  = local.create_node_sa ? google_service_account.clickhouse_nodes[0].email : var.gke_node_pool_sa_email
+}
+
 resource "google_service_account" "clickhouse_nodes" {
+  count        = local.create_node_sa ? 1 : 0
   project      = var.project_id
   account_id   = "ch-nodes-${substr(var.install_id, 0, 12)}"
   display_name = "ClickHouse GKE nodes for ${var.install_id}"
@@ -18,17 +27,17 @@ resource "google_service_account" "clickhouse_nodes" {
 
 # Minimal roles a GKE node needs to log, export metrics, and pull images.
 resource "google_project_iam_member" "clickhouse_nodes_roles" {
-  for_each = toset([
+  for_each = local.create_node_sa ? toset([
     "roles/logging.logWriter",
     "roles/monitoring.metricWriter",
     "roles/monitoring.viewer",
     "roles/stackdriver.resourceMetadata.writer",
     "roles/artifactregistry.reader",
-  ])
+  ]) : toset([])
 
   project = var.project_id
   role    = each.value
-  member  = "serviceAccount:${google_service_account.clickhouse_nodes.email}"
+  member  = "serviceAccount:${google_service_account.clickhouse_nodes[0].email}"
 }
 
 # clickhouse-installation (server) pool: 2 replicas with hard anti-affinity, so
@@ -55,7 +64,7 @@ resource "google_container_node_pool" "clickhouse_installation" {
     machine_type    = var.installation_machine_type
     disk_size_gb    = var.installation_disk_size_gb
     disk_type       = "pd-balanced"
-    service_account = google_service_account.clickhouse_nodes.email
+    service_account = local.node_sa_email
     oauth_scopes    = ["https://www.googleapis.com/auth/cloud-platform"]
 
     labels = {
@@ -102,7 +111,7 @@ resource "google_container_node_pool" "clickhouse_keeper" {
     machine_type    = var.keeper_machine_type
     disk_size_gb    = var.keeper_disk_size_gb
     disk_type       = "pd-balanced"
-    service_account = google_service_account.clickhouse_nodes.email
+    service_account = local.node_sa_email
     oauth_scopes    = ["https://www.googleapis.com/auth/cloud-platform"]
 
     labels = {

@@ -56,3 +56,9 @@ variable "keeper_node_count" {
   description = "Per-zone node count for the clickhouse-keeper node pool."
   default     = 1
 }
+
+variable "gke_node_pool_sa_email" {
+  type        = string
+  default     = ""
+  description = "Node SA from the install stack. Empty creates a dedicated ch-nodes SA (legacy)."
+}

@@ -14,5 +14,6 @@ project_id       = "{{ .nuon.install_stack.outputs.project_id }}"
 region           = "{{ .nuon.install_stack.outputs.region }}"
 cluster_name     = "{{ .nuon.sandbox.outputs.cluster.name }}"
 cluster_location = "{{ .nuon.sandbox.outputs.cluster.location }}"
+gke_node_pool_sa_email = "{{ .nuon.install_stack.outputs.gke_node_pool_sa_email }}"
 
 keeper_node_count = "{{ .nuon.inputs.inputs.ch_keeper_node_count }}"
