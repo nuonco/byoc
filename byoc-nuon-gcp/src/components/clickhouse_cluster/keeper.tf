@@ -68,7 +68,7 @@ resource "kubectl_manifest" "clickhouse_keeper_installation" {
               # and naturally spreads the quorum across zones. label is applied automatically
               # by the CRD.
               # pin onto the dedicated clickhouse-keeper node pool (created by the
-              # clickhouse_nodepools component) via its pool.nuon.co taint/label, mirroring AWS.
+              # app_nodepools component) via its pool.nuon.co taint/label, mirroring AWS.
               "nodeSelector" = {
                 "pool.nuon.co" = "clickhouse-keeper"
               }
