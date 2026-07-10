@@ -82,12 +82,8 @@ gcp_permissions = [
 [[policies]]
 name            = "ctl-api-iam"
 gcp_permissions = [
-  "iam.serviceAccounts.actAs",
-  "iam.serviceAccounts.create",
-  "iam.serviceAccounts.delete",
   "iam.serviceAccounts.get",
   "iam.serviceAccounts.getIamPolicy",
   "iam.serviceAccounts.list",
   "iam.serviceAccounts.setIamPolicy",
-  "iam.serviceAccounts.update",
 ]

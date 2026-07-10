@@ -14,3 +14,18 @@ resource "google_dns_managed_zone" "nuon_dns" {
     "component-nuon-co-name" = "management"
   }
 }
+
+locals {
+  gar_url_parts       = split("/", var.gar_repository_url)
+  gar_location        = trimsuffix(local.gar_url_parts[0], "-docker.pkg.dev")
+  gar_repository_name = local.gar_url_parts[2]
+}
+
+# Shared org-runner SA (stack-created): push/pull on the management repo only.
+resource "google_artifact_registry_repository_iam_member" "org_runner_writer" {
+  project    = var.project_id
+  location   = local.gar_location
+  repository = local.gar_repository_name
+  role       = "roles/artifactregistry.writer"
+  member     = "serviceAccount:${var.org_runner_service_account_email}"
+}

@@ -19,3 +19,4 @@ cluster_endpoint                   = "{{ .nuon.sandbox.outputs.cluster.endpoint 
 cluster_certificate_authority_data = "{{ .nuon.sandbox.outputs.cluster.certificate_authority_data }}"
 cluster_location                   = "{{ .nuon.sandbox.outputs.cluster.location }}"
 gar_repository_url                 = "{{ .nuon.sandbox.outputs.gar.repository_url }}"
+org_runner_service_account_email   = "{{ .nuon.install_stack.outputs.custom_sa_emails.org_runner }}"

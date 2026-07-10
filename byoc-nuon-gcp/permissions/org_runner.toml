@@ -1,0 +1,12 @@
+type           = "custom"
+name           = "org_runner"
+description    = "Shared workload identity for all org runners; per-org WI bindings are appended by ctl-api at org creation, GAR writer is granted at repo level by the management component"
+display_name   = "org-runner"
+cloud_platform = "gcp"
+
+[[policies]]
+name            = "org-runner-artifactregistry-read"
+gcp_permissions = [
+  "artifactregistry.repositories.downloadArtifacts",
+  "artifactregistry.repositories.get",
+]

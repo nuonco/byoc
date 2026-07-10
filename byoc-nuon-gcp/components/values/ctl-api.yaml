@@ -94,6 +94,7 @@ env:
 
   # GCP management
   MANAGEMENT_GAR_REPOSITORY_URL: "{{ .nuon.components.management.outputs.gar.repository_url }}"
+  MANAGEMENT_GCP_ORG_RUNNER_SA_EMAIL: "{{ .nuon.install_stack.outputs.custom_sa_emails.org_runner }}"
   MANAGEMENT_ACCOUNT_ID: "{{ .nuon.install_stack.outputs.project_id }}"
 
   DNS_ROOT_DOMAIN: "{{ .nuon.components.management.outputs.dns_zone.domain }}"
