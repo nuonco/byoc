@@ -1,3 +1,4 @@
+#:schema https://api.nuon.co/v1/general/config-schema?type=input
 name         = "nuon_auth_issuer_url"
 description  = "OIDC Issuer URL. Not required for Google OAuth - leave empty. Required for generic OIDC providers."
 default      = "please-provide-a-value"

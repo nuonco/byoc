@@ -1,3 +1,4 @@
+#:schema https://api.nuon.co/v1/general/config-schema?type=input
 name         = "datadog_network_monitoring_enabled"
 description  = "Enable Datadog DNS and network metrics collection (system-probe DNS stats and AWS ENA metrics)."
 default      = "false"

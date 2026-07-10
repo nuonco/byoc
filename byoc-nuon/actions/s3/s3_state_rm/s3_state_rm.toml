@@ -1,3 +1,4 @@
+#:schema https://api.nuon.co/v1/general/config-schema?type=action
 # action
 # description: removes the s3_buckets component's buckets + KMS key (and their
 # dependent sub-resources) from Terraform state without destroying them, so the

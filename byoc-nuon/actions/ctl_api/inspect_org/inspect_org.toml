@@ -1,3 +1,4 @@
+#:schema https://api.nuon.co/v1/general/config-schema?type=action
 # action
 name    = "inspect_org"
 labels  = { service = "ctl-api", type = "debug" }

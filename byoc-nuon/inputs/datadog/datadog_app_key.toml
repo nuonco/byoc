@@ -1,3 +1,4 @@
+#:schema https://api.nuon.co/v1/general/config-schema?type=input
 name         = "datadog_app_key"
 description  = "Datadog App Key"
 default      = ""

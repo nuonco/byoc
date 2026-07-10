@@ -1,3 +1,4 @@
+#:schema https://api.nuon.co/v1/general/config-schema?type=permission
 type                 = "custom"
 name                 = "{{ .nuon.install.id }}-acm-operations"
 description          = "Full lifecycle management of the install's ACM certificate for BYOC Nuon"

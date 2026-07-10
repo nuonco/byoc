@@ -1,3 +1,4 @@
+#:schema https://api.nuon.co/v1/general/config-schema?type=runbook
 name        = "ctl_api_api_health_probe"
 description = "Diagnose why a ctl-api HTTP endpoint (public/admin/runner/auth) is unreachable. Runs the shared cluster ALB/IRSA/OIDC/cert backbone once, then probes each endpoint (reachability -> DNS -> ingress/ALB) to isolate the broken link. Read-only."
 readme      = "./runbooks/ctl_api_api_health_probe.md"

@@ -1,3 +1,4 @@
+#:schema https://api.nuon.co/v1/general/config-schema?type=action
 # action
 # description: takes a deliberate manual snapshot of the Temporal RDS instance
 # and waits for it to complete. First step of the Temporal RDS teardown.

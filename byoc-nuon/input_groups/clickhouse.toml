@@ -1,3 +1,4 @@
+#:schema https://api.nuon.co/v1/general/config-schema?type=input-group
 name         = "clickhouse"
 description  = "Configuration for the ClickHouse cluster for the Nuon control plane."
 display_name = "ClickHouse Cluster"

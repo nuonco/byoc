@@ -1,3 +1,4 @@
+#:schema https://api.nuon.co/v1/general/config-schema?type=action
 # action
 # description: pauses ctl-api worker HPAs (backs them up to a configmap, deletes them) and scales the worker deployments to zero.
 # Reverse with ctl_api_unpause_worker_hpas.

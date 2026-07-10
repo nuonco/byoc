@@ -1,3 +1,4 @@
+#:schema https://api.nuon.co/v1/general/config-schema?type=runbook
 name        = "inspect_apps"
 description = "Inspect apps — list all apps, and inspect a single app's details."
 readme      = "./runbooks/inspect_apps.md"

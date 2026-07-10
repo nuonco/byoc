@@ -1,3 +1,4 @@
+#:schema https://api.nuon.co/v1/general/config-schema?type=action
 # action
 # description: fetches RDS CPU, IOPS, burst balance, and storage metrics from CloudWatch.
 # Set DB_TARGET to "ctl-api" or "temporal" to switch databases.

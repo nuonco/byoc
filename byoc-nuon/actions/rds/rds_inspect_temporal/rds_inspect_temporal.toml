@@ -1,3 +1,4 @@
+#:schema https://api.nuon.co/v1/general/config-schema?type=action
 # action
 # description: inspects the Temporal RDS instance — prints instance config and
 # Performance Insights OS metrics (CPU / memory / IOPS) for the last hour in table format.

@@ -1,3 +1,4 @@
+#:schema https://api.nuon.co/v1/general/config-schema?type=action
 # action
 # description: lists Helm release storage objects (ConfigMaps/Secrets labeled
 # owner=helm) across the cluster so you can see whether a component has a

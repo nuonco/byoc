@@ -1,3 +1,4 @@
+#:schema https://api.nuon.co/v1/general/config-schema?type=input
 name         = "runner_image_url"
 description  = "The image url for the new runners"
 default      = "public.ecr.aws/p7e3r5y0/runner"

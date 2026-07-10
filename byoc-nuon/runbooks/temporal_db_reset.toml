@@ -1,3 +1,4 @@
+#:schema https://api.nuon.co/v1/general/config-schema?type=runbook
 name        = "temporal_db_reset"
 description = "Temporal DB reset SoP: quiesce Temporal server and ctl-api workers, drop and recreate the Temporal DB, restore namespaces, scale everything back up, and reprovision orgs."
 readme      = "./runbooks/temporal_db_reset.md"

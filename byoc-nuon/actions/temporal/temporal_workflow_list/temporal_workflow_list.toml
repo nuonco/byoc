@@ -1,3 +1,4 @@
+#:schema https://api.nuon.co/v1/general/config-schema?type=action
 # action
 # description: lists the most recent running workflows for each Temporal namespace.
 name    = "temporal_workflow_list"

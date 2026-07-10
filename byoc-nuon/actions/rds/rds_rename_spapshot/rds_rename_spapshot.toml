@@ -1,3 +1,4 @@
+#:schema https://api.nuon.co/v1/general/config-schema?type=action
 # action
 name    = "rds_rename_final_snapshot"
 labels  = { service = "rds", type = "sop" }

@@ -1,3 +1,4 @@
+#:schema https://api.nuon.co/v1/general/config-schema?type=input
 name         = "nuon_auth_allowed_domains"
 description  = "A comma delimited lists of domains from which user are allowed to register. Usually your org's email domain."
 default      = "please-provide-a-value"

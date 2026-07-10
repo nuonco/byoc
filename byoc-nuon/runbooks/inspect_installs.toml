@@ -1,3 +1,4 @@
+#:schema https://api.nuon.co/v1/general/config-schema?type=runbook
 name        = "inspect_installs"
 description = "Inspect installs — list all installs, and inspect a single install's details."
 readme      = "./runbooks/inspect_installs.md"

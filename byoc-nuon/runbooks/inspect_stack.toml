@@ -1,3 +1,4 @@
+#:schema https://api.nuon.co/v1/general/config-schema?type=runbook
 name        = "inspect_stack"
 description = "Inspect install stack — AWS account, region, VPC, and full install_stack outputs."
 readme      = "./runbooks/inspect_stack.md"

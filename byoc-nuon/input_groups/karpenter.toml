@@ -1,3 +1,4 @@
+#:schema https://api.nuon.co/v1/general/config-schema?type=input-group
 name         = "karpenter"
 description  = "Configurations for Karpenter"
 display_name = "Karpenter Configurations"

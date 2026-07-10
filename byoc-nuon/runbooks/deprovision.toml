@@ -1,3 +1,4 @@
+#:schema https://api.nuon.co/v1/general/config-schema?type=runbook
 name        = "deprovision"
 description = "Deprovision steps that must run explicitly, outside the Terraform teardown. For each RDS instance (ctl-api + Temporal), detaches it from Terraform state and then deletes it via the AWS API (taking a final snapshot); more deprovision steps will be added here over time."
 readme      = "./runbooks/deprovision.md"

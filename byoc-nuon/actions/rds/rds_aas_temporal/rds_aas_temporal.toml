@@ -1,3 +1,4 @@
+#:schema https://api.nuon.co/v1/general/config-schema?type=action
 # action
 # description: breaks down Temporal RDS Average Active Sessions (AAS) over the last
 # hour by wait event, by query, and by lock wait — using Performance Insights.

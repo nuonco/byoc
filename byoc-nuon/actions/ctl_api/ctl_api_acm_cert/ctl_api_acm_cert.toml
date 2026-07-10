@@ -1,3 +1,4 @@
+#:schema https://api.nuon.co/v1/general/config-schema?type=action
 # action
 # description: cluster check 4/4 — "is the shared wildcard TLS cert issued?"
 # Checks the wildcard public-domain ACM certificate status (https endpoints

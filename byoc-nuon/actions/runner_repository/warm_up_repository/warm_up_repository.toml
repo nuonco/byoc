@@ -1,3 +1,4 @@
+#:schema https://api.nuon.co/v1/general/config-schema?type=action
 # action
 # Warms up the install's public ECR runner repository by importing every
 # runner image version that is currently in use across the install's runners.

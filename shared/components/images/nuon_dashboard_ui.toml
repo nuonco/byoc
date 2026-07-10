@@ -1,3 +1,4 @@
+#:schema https://api.nuon.co/v1/general/config-schema?type=container-image
 name = "img_nuon_dashboard_ui"
 type = "container_image"
 

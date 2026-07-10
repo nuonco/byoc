@@ -1,3 +1,4 @@
+#:schema https://api.nuon.co/v1/general/config-schema?type=action
 # action
 # description: checks for running EventLoop workflows across Temporal namespaces.
 name    = "temporal_check_event_loops"

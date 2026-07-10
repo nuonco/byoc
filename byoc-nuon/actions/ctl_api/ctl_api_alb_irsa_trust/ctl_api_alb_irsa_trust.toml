@@ -1,3 +1,4 @@
+#:schema https://api.nuon.co/v1/general/config-schema?type=action
 # action
 # description: cluster check 3/4 — "can the controller actually assume its role?"
 # Compares the cluster OIDC issuer, registered IAM OIDC providers, and the

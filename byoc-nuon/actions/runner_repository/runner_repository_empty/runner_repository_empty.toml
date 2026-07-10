@@ -1,3 +1,4 @@
+#:schema https://api.nuon.co/v1/general/config-schema?type=action
 # action
 # description: empties the public ECR `runner` repository by deleting all of
 # its images, so the repository can be deleted. Provisioned by the

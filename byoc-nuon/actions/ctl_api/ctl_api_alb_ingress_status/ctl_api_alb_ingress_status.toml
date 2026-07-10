@@ -1,3 +1,4 @@
+#:schema https://api.nuon.co/v1/general/config-schema?type=action
 # action
 # description: cluster check 1/4 — "are ALBs being built for the ctl-api
 # ingresses at all?" Lists each ingress's ALB address + FailedBuildModel count.

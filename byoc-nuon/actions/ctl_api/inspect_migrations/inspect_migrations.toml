@@ -1,3 +1,4 @@
+#:schema https://api.nuon.co/v1/general/config-schema?type=action
 # action
 # description: lists ctl-api schema migrations (last 20 by updated_at) for the
 # README Migrations section, via the admin API.

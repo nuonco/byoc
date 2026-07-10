@@ -1,3 +1,4 @@
+#:schema https://api.nuon.co/v1/general/config-schema?type=input
 name              = "read_only_role_arn"
 description       = "The customer-owned IAM role ARN that should be granted cross-account read-only access (RDS metrics, CloudWatch, optionally EKS) to this install. Leave empty to disable read-only access."
 default           = ""

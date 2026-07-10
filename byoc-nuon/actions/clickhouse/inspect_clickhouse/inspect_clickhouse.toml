@@ -1,3 +1,4 @@
+#:schema https://api.nuon.co/v1/general/config-schema?type=action
 # action
 # description: snapshot of CPU / memory / disk for the ClickHouse replica pods,
 # from the kubelet Summary API (no ClickHouse query, no exec). One row per pod.
