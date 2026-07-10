@@ -108,7 +108,6 @@ gcp_permissions = [
 name            = "{{ .nuon.install.id }}-provision-iam"
 gcp_permissions = [
   "iam.serviceAccounts.actAs",
-  "iam.serviceAccounts.delete",
   "iam.serviceAccounts.get",
   "iam.serviceAccounts.getIamPolicy",
   "iam.serviceAccounts.list",
