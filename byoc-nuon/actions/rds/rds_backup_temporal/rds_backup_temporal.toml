@@ -4,7 +4,6 @@
 # and waits for it to complete. First step of the Temporal RDS teardown.
 name    = "rds_backup_temporal"
 labels  = { service = "rds", type = "sop" }
-label   = "aws"
 timeout = "60m"
 role    = "{{.nuon.install.id}}-rds-operations"
 

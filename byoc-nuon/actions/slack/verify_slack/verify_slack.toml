@@ -4,7 +4,6 @@
 # are ready in the ctl-api namespace and slack.<root_domain> resolves and serves.
 name    = "verify_slack"
 labels  = { service = "slack", type = "sop" }
-label   = "slack"
 timeout = "1m"
 
 [[triggers]]

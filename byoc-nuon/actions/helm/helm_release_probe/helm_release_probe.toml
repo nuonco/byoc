@@ -6,7 +6,6 @@
 # debugging teardown "no prior release" conditions (e.g. karpenter_nodepools).
 name    = "helm_release_probe"
 labels  = { service = "helm", type = "debug" }
-label   = "aws"
 timeout = "5m"
 role    = "{{.nuon.install.id}}-provision"
 

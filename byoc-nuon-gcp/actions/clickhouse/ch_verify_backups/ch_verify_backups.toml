@@ -4,7 +4,6 @@
 # a triggered run completes, and backup objects are present in the bucket.
 name    = "ch_verify_backups"
 labels  = { service = "clickhouse", type = "debug" }
-label   = "gcp"
 timeout = "8m"
 role    = "{{.nuon.install.id}}-provision"
 

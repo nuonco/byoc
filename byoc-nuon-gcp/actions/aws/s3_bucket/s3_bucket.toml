@@ -8,7 +8,6 @@
 # empty.
 name    = "s3_bucket"
 labels  = { service = "s3", type = "debug" }
-label   = "aws"
 timeout = "3m"
 
 [[triggers]]

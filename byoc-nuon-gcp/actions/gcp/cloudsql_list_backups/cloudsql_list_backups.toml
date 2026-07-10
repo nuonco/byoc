@@ -4,7 +4,6 @@
 # instances.
 name    = "cloudsql_list_backups"
 labels  = { service = "cloudsql", type = "debug" }
-label   = "gcp"
 timeout = "5m"
 
 [[triggers]]

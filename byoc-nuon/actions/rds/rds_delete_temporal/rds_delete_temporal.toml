@@ -5,7 +5,6 @@
 # RDS teardown — deliberately decoupled from the Terraform teardown job.
 name    = "rds_delete_temporal"
 labels  = { service = "rds", type = "sop" }
-label   = "aws"
 timeout = "30m"
 role    = "{{.nuon.install.id}}-rds-operations"
 

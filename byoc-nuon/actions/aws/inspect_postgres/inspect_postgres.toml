@@ -5,7 +5,6 @@
 # Insights, one row each, in table format.
 name    = "inspect_postgres"
 labels  = { service = "rds", type = "debug" }
-label   = "aws"
 timeout = "2m"
 role    = "{{.nuon.install.id}}-provision"
 

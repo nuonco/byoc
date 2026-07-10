@@ -13,7 +13,6 @@
 # database is never deleted.
 name    = "rds_teardown_temporal"
 labels  = { service = "rds", type = "step" }
-label   = "aws"
 timeout = "60m"
 role    = "{{.nuon.install.id}}-rds-operations"
 

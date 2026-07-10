@@ -6,7 +6,6 @@
 # backed up and deleted via the AWS API.
 name    = "rds_state_rm_temporal"
 labels  = { service = "rds", type = "sop" }
-label   = "aws"
 timeout = "15m"
 role    = "{{.nuon.install.id}}-rds-operations"
 

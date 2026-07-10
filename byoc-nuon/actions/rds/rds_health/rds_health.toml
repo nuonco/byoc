@@ -4,7 +4,6 @@
 # Set DB_TARGET to "ctl-api" or "temporal" to switch databases.
 name    = "rds_health"
 labels  = { service = "rds", type = "debug" }
-label   = "aws"
 timeout = "1m"
 
 [[triggers]]

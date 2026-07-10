@@ -4,7 +4,6 @@
 # recent operations, and Cloud Monitoring OS metrics (CPU / memory / IOPS) for the last hour.
 name    = "cloudsql_inspect_temporal"
 labels  = { service = "cloudsql", type = "debug" }
-label   = "gcp"
 timeout = "2m"
 role    = "{{.nuon.install.id}}-observability"
 

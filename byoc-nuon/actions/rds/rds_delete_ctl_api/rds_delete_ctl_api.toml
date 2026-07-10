@@ -5,7 +5,6 @@
 # ctl-api RDS teardown — deliberately decoupled from the Terraform teardown job.
 name    = "rds_delete_ctl_api"
 labels  = { service = "rds", type = "sop" }
-label   = "aws"
 timeout = "30m"
 role    = "{{.nuon.install.id}}-rds-operations"
 

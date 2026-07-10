@@ -3,7 +3,6 @@
 # description: pauses ctl-api worker HPAs (backs them up to a configmap, deletes them) and scales the worker deployments to zero.
 # Reverse with ctl_api_unpause_worker_hpas.
 name    = "ctl_api_pause_worker_hpas"
-label   = "kubectl"
 timeout = "2m"
 
 [[triggers]]

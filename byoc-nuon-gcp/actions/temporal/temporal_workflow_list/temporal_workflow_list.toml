@@ -3,7 +3,6 @@
 # description: lists the most recent running workflows for each Temporal namespace.
 name    = "temporal_workflow_list"
 labels  = { service = "temporal", type = "debug" }
-label   = "temporal"
 timeout = "5m"
 
 [[triggers]]

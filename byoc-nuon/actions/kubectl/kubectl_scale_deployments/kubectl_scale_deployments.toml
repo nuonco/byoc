@@ -6,7 +6,6 @@
 # Set FILTER to grep deployment names (optional).
 name    = "kubectl_scale_deployments"
 labels  = { service = "kubernetes", type = "tool" }
-label   = "kubectl"
 timeout = "2m"
 
 [[triggers]]

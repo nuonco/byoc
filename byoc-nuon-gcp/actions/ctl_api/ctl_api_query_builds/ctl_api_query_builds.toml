@@ -2,7 +2,6 @@
 # action
 name    = "ctl_api_query_builds"
 labels  = { service = "ctl-api", type = "report" }
-label   = "query"
 timeout = "5m"
 
 [[triggers]]

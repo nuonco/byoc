@@ -5,7 +5,6 @@
 # row each, in table format. DB load has no Cloud SQL equivalent.
 name    = "inspect_postgres"
 labels  = { service = "cloudsql", type = "debug" }
-label   = "gcp"
 timeout = "2m"
 role    = "{{.nuon.install.id}}-provision"
 

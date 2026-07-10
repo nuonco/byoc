@@ -3,7 +3,6 @@
 # description: temporal hard-reset step 3 — scales Temporal server deployments from 0 back to SCALE_TARGET replicas.
 name    = "temporal_hard_reset_scale_up_temporal"
 labels  = { service = "temporal", type = "step" }
-label   = "kubectl"
 timeout = "1m"
 
 [[triggers]]

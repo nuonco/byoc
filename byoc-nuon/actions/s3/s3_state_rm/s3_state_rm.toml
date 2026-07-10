@@ -7,7 +7,6 @@
 # deleted via the AWS API.
 name    = "s3_state_rm"
 labels  = { service = "s3", type = "sop" }
-label   = "aws"
 timeout = "15m"
 role    = "{{.nuon.install.id}}-s3-operations"
 

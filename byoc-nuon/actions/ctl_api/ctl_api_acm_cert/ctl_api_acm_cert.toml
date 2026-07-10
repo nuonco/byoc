@@ -5,7 +5,6 @@
 # can't terminate TLS until it is ISSUED). Read-only; needs admin AWS perms.
 name    = "ctl_api_acm_cert"
 labels  = { service = "ctl-api", type = "debug" }
-label   = "aws"
 timeout = "5m"
 # reads ACM; needs admin AWS perms
 role    = "{{.nuon.install.id}}-provision"

@@ -5,7 +5,6 @@
 # filters. Read-only; kubectl only, no cloud role.
 name    = "gateway_locate_faults"
 labels  = { service = "gateway", type = "debug" }
-label   = "gcp"
 timeout = "5m"
 
 [[triggers]]

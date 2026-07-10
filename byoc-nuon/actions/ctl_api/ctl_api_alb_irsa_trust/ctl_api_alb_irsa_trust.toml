@@ -5,7 +5,6 @@
 # alb-controller role's trust policy. Read-only; needs admin AWS perms.
 name    = "ctl_api_alb_irsa_trust"
 labels  = { service = "ctl-api", type = "debug" }
-label   = "aws"
 timeout = "5m"
 # reads IAM/EKS; needs admin AWS perms
 role    = "{{.nuon.install.id}}-provision"

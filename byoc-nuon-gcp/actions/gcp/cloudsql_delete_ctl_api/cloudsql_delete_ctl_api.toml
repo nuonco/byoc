@@ -6,7 +6,6 @@
 # job. GCP equivalent of the AWS rds_delete_ctl_api action.
 name    = "cloudsql_delete_ctl_api"
 labels  = { service = "cloudsql", type = "sop" }
-label   = "gcp"
 timeout = "30m"
 role    = "{{.nuon.install.id}}-cloudsql-operations"
 

@@ -5,7 +5,6 @@
 # (components/0-tf-runner-repository.toml).
 name    = "runner_repository_list_tags"
 labels  = { service = "runner-repository", type = "debug" }
-label   = "aws"
 timeout = "30s"
 
 [[triggers]]

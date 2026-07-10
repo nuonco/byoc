@@ -16,7 +16,6 @@
 # component teardown. GCP equivalent of the AWS rds_teardown_ctl_api hook.
 name    = "cloudsql_teardown_ctl_api"
 labels  = { service = "cloudsql", type = "step" }
-label   = "gcp"
 timeout = "60m"
 role    = "{{.nuon.install.id}}-cloudsql-operations"
 

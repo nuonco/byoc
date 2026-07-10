@@ -21,7 +21,6 @@
 # using the runner's own credentials — it never calls a cloud API.
 name    = "state_rm"
 labels  = { service = "terraform", type = "sop" }
-label   = "tf"
 timeout = "15m"
 
 [[triggers]]

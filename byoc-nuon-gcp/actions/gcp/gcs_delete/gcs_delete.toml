@@ -7,7 +7,6 @@
 # KMS step: buckets use Google-managed encryption).
 name    = "gcs_delete"
 labels  = { service = "gcs", type = "sop" }
-label   = "gcp"
 timeout = "30m"
 role    = "{{.nuon.install.id}}-gcs-operations"
 

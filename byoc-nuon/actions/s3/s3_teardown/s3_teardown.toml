@@ -17,7 +17,6 @@
 # buckets are never deleted (irreversible — S3 has no snapshot).
 name    = "s3_teardown"
 labels  = { service = "s3", type = "step" }
-label   = "aws"
 timeout = "45m"
 role    = "{{.nuon.install.id}}-s3-operations"
 

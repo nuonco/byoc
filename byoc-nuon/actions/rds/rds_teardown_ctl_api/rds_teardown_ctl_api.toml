@@ -14,7 +14,6 @@
 # requires a deliberate, customer-enabled role, not just a component teardown.
 name    = "rds_teardown_ctl_api"
 labels  = { service = "rds", type = "step" }
-label   = "aws"
 timeout = "60m"
 role    = "{{.nuon.install.id}}-rds-operations"
 

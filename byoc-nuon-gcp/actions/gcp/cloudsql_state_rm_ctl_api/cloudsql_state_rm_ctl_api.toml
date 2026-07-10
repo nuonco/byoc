@@ -11,7 +11,6 @@
 # need the -cloudsql-operations role. (Piloted on GCP, to be ported back to AWS.)
 name    = "cloudsql_state_rm_ctl_api"
 labels  = { service = "cloudsql", type = "sop" }
-label   = "gcp"
 timeout = "15m"
 
 [[triggers]]

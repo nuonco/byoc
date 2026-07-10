@@ -4,7 +4,6 @@
 # Set SCALE_TARGET to control replicas (0 to scale down, or a number to scale back up).
 name    = "workers-scale-down"
 labels  = { service = "ctl-api", type = "sop" }
-label   = "kubectl"
 timeout = "1m"
 
 [[triggers]]

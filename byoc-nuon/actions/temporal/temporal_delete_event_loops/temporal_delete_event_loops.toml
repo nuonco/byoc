@@ -3,7 +3,6 @@
 # description: checks for stale EventLoop workflows and deletes them if found.
 name    = "temporal_delete_event_loops"
 labels  = { service = "temporal", type = "tool" }
-label   = "temporal"
 timeout = "15m"
 
 [[triggers]]

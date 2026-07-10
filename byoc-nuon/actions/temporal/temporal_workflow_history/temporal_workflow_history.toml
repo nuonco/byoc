@@ -3,7 +3,6 @@
 # description: describes a Temporal workflow and shows its event history.
 name    = "temporal_workflow_history"
 labels  = { service = "temporal", type = "debug" }
-label   = "temporal"
 timeout = "10m"
 
 [[triggers]]
