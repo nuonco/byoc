@@ -1,0 +1,11 @@
+type           = "custom"
+name           = "clickhouse_backup"
+description    = "HMAC-key identity for ClickHouse GCS backups; bucket access is granted at bucket level by the clickhouse_cluster component"
+display_name   = "clickhouse-backup"
+cloud_platform = "gcp"
+
+[[policies]]
+name            = "clickhouse-backup-bucket-read"
+gcp_permissions = [
+  "storage.buckets.get",
+]

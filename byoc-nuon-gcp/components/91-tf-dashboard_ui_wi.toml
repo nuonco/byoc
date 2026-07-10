@@ -10,4 +10,5 @@ branch    = "main"
 
 [vars]
 install_id = "{{ .nuon.install.id }}"
-project_id = "{{ .nuon.install_stack.outputs.project_id }}"
+project_id            = "{{ .nuon.install_stack.outputs.project_id }}"
+service_account_email = "{{ .nuon.install_stack.outputs.custom_sa_emails.dashboard_ui }}"

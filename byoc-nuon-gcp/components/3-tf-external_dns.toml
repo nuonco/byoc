@@ -18,6 +18,7 @@ public_zone_name        = "{{ .nuon.sandbox.outputs.cluster.name }}-public"
 internal_zone_name      = "{{ .nuon.sandbox.outputs.cluster.name }}-internal"
 public_zone_id          = "{{ .nuon.sandbox.outputs.nuon_dns.public_domain.zone_id }}"
 internal_zone_id        = "{{ .nuon.sandbox.outputs.nuon_dns.internal_domain.zone_id }}"
+service_account_email   = "{{ .nuon.install_stack.outputs.custom_sa_emails.external_dns }}"
 
 cluster_endpoint                   = "{{ .nuon.install.sandbox.outputs.cluster.endpoint }}"
 cluster_certificate_authority_data = "{{ .nuon.install.sandbox.outputs.cluster.certificate_authority_data }}"

@@ -1,0 +1,89 @@
+type           = "custom"
+name           = "ctl_api"
+description    = "Workload identity for the BYOC ctl-api control plane"
+display_name   = "ctl-api"
+cloud_platform = "gcp"
+
+[[policies]]
+name                = "ctl-api-gke"
+gcp_predefined_role = "roles/container.admin"
+
+[[policies]]
+name            = "ctl-api-cloudsql"
+gcp_permissions = [
+  "cloudsql.instances.connect",
+  "cloudsql.instances.get",
+  "cloudsql.instances.login",
+]
+
+[[policies]]
+name            = "ctl-api-storage"
+gcp_permissions = [
+  "storage.buckets.create",
+  "storage.buckets.delete",
+  "storage.buckets.get",
+  "storage.buckets.getIamPolicy",
+  "storage.buckets.list",
+  "storage.buckets.setIamPolicy",
+  "storage.buckets.update",
+  "storage.objects.create",
+  "storage.objects.delete",
+  "storage.objects.get",
+  "storage.objects.list",
+  "storage.objects.update",
+]
+
+[[policies]]
+name            = "ctl-api-artifactregistry"
+gcp_permissions = [
+  "artifactregistry.packages.delete",
+  "artifactregistry.packages.get",
+  "artifactregistry.packages.list",
+  "artifactregistry.repositories.create",
+  "artifactregistry.repositories.delete",
+  "artifactregistry.repositories.downloadArtifacts",
+  "artifactregistry.repositories.get",
+  "artifactregistry.repositories.getIamPolicy",
+  "artifactregistry.repositories.list",
+  "artifactregistry.repositories.setIamPolicy",
+  "artifactregistry.repositories.update",
+  "artifactregistry.repositories.uploadArtifacts",
+  "artifactregistry.tags.create",
+  "artifactregistry.tags.delete",
+  "artifactregistry.tags.get",
+  "artifactregistry.tags.list",
+  "artifactregistry.tags.update",
+  "artifactregistry.versions.delete",
+  "artifactregistry.versions.get",
+  "artifactregistry.versions.list",
+]
+
+[[policies]]
+name            = "ctl-api-dns"
+gcp_permissions = [
+  "dns.changes.create",
+  "dns.changes.get",
+  "dns.changes.list",
+  "dns.managedZones.create",
+  "dns.managedZones.delete",
+  "dns.managedZones.get",
+  "dns.managedZones.getIamPolicy",
+  "dns.managedZones.list",
+  "dns.managedZones.setIamPolicy",
+  "dns.managedZones.update",
+  "dns.networks.bindPrivateDNSZone",
+  "dns.resourceRecordSets.create",
+  "dns.resourceRecordSets.delete",
+  "dns.resourceRecordSets.get",
+  "dns.resourceRecordSets.list",
+  "dns.resourceRecordSets.update",
+]
+
+[[policies]]
+name            = "ctl-api-iam"
+gcp_permissions = [
+  "iam.serviceAccounts.get",
+  "iam.serviceAccounts.getIamPolicy",
+  "iam.serviceAccounts.list",
+  "iam.serviceAccounts.setIamPolicy",
+]

@@ -47,7 +47,7 @@ env:
   INTERNAL_HTTP_PORT: !!string 8082
   RUNNER_HTTP_PORT: !!string 8083
   GRACEFUL_SHUTDOWN_TIMEOUT: 10s
-  RUNNER_CONTAINER_IMAGE_TAG: "0.19.1046"
+  RUNNER_CONTAINER_IMAGE_TAG: "0.19.1049"
   RUNNER_CONTAINER_IMAGE_URL: "public.ecr.aws/p7e3r5y0/runner"
 
   GITHUB_APP_ID: !!string {{ .nuon.inputs.inputs.github_app_id }}
@@ -94,6 +94,7 @@ env:
 
   # GCP management
   MANAGEMENT_GAR_REPOSITORY_URL: "{{ .nuon.components.management.outputs.gar.repository_url }}"
+  MANAGEMENT_GCP_ORG_RUNNER_SA_EMAIL: "{{ .nuon.install_stack.outputs.custom_sa_emails.org_runner }}"
   MANAGEMENT_ACCOUNT_ID: "{{ .nuon.install_stack.outputs.project_id }}"
 
   DNS_ROOT_DOMAIN: "{{ .nuon.components.management.outputs.dns_zone.domain }}"

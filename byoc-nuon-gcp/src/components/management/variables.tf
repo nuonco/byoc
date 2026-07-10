@@ -35,3 +35,8 @@ variable "cluster_location" {
 variable "gar_repository_url" {
   type = string
 }
+
+variable "org_runner_service_account_email" {
+  type        = string
+  description = "Stack-created shared org-runner SA (install stack custom_sa_emails output)."
+}

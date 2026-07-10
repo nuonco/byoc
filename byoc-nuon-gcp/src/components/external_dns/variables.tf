@@ -58,3 +58,8 @@ variable "internal_zone_id" {
   type    = string
   default = ""
 }
+
+variable "service_account_email" {
+  type        = string
+  description = "Stack-created service account (install stack custom_sa_emails output)."
+}
