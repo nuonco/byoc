@@ -16,3 +16,21 @@ gcp_permissions = [
   "logging.logEntries.list",
   "logging.logs.list",
 ]
+
+# One-time migration aid: delete the per-component service accounts left behind
+# when an install moves from runtime-created SAs to the stack-created SAs
+# (#891). Disabled by default; the customer enables it for the sweep, then
+# disables it again. Operation roles intentionally hold no serviceAccounts.delete.
+[[role]]
+name           = "sa-cleanup-{{ .nuon.install.id }}"
+description    = "Break-glass: delete orphaned per-component service accounts during the stack-created-SA migration"
+display_name   = "BYOC Nuon: Service Account Cleanup Break Glass"
+cloud_platform = "gcp"
+
+[[role.policies]]
+name            = "sa-cleanup"
+gcp_permissions = [
+  "iam.serviceAccounts.delete",
+  "iam.serviceAccounts.get",
+  "iam.serviceAccounts.list",
+]
