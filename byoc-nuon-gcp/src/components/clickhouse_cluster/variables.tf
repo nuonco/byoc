@@ -53,3 +53,8 @@ variable "keeper_image_repository" {
 variable "keeper_image_tag" {
   type = string
 }
+
+variable "backup_service_account_email" {
+  type        = string
+  description = "Stack-created backup SA (install stack custom_sa_emails output)."
+}

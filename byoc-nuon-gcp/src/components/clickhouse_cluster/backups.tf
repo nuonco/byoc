@@ -5,24 +5,20 @@
 // (IRSA + use_environment_credentials). Instead we authenticate to the bucket over the GCS
 // interoperability (S3-compatible XML) API using an HMAC key, passed inline to the BACKUP command.
 
-// dedicated service account whose HMAC key the backup jobs use to reach the bucket.
-resource "google_service_account" "clickhouse_backup" {
-  project      = var.project_id
-  account_id   = "ch-backup-${substr(var.install_id, 0, 12)}"
-  display_name = "clickhouse backups for ${var.install_id}"
-}
+// SA is created by the install stack (permissions/clickhouse_backup.toml);
+// only its HMAC key and bucket grant are managed here.
 
 // grant the backup SA read/write on the clickhouse backup bucket only.
 resource "google_storage_bucket_iam_member" "clickhouse_backup" {
   bucket = var.clickhouse_bucket_name
   role   = "roles/storage.objectAdmin"
-  member = "serviceAccount:${google_service_account.clickhouse_backup.email}"
+  member = "serviceAccount:${var.backup_service_account_email}"
 }
 
 // HMAC key used by ClickHouse's S3 client to talk to GCS.
 resource "google_storage_hmac_key" "clickhouse_backup" {
   project               = var.project_id
-  service_account_email = google_service_account.clickhouse_backup.email
+  service_account_email = var.backup_service_account_email
 }
 
 // sync the HMAC credentials into the clickhouse namespace as a k8s secret.

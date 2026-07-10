@@ -14,6 +14,7 @@ branch    = "main"
 install_id             = "{{ .nuon.install.id }}"
 project_id             = "{{ .nuon.install_stack.outputs.project_id }}"
 clickhouse_bucket_name = "{{ .nuon.components.gcs_buckets.outputs.clickhouse_bucket.name }}"
+backup_service_account_email = "{{ .nuon.install_stack.outputs.custom_sa_emails.clickhouse_backup }}"
 region     = "{{ .nuon.install_stack.outputs.region }}"
 zone       = "{{ .nuon.install.sandbox.outputs.nuon_dns.internal_domain.name }}"
 
