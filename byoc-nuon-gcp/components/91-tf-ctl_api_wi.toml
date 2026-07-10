@@ -7,7 +7,7 @@ dependencies      = ["cloudsql_nuon"]
 [public_repo]
 repo      = "nuonco/byoc"
 directory = "byoc-nuon-gcp/src/components/ctl_api_wi"
-branch    = "main"
+branch    = "lovable-runtime-sa"
 
 [vars]
 install_id                   = "{{ .nuon.install.id }}"
