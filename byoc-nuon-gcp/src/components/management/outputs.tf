@@ -7,20 +7,6 @@ output "dns_zone" {
   }
 }
 
-output "gar_access_service_account" {
-  value = {
-    email = google_service_account.gar_access.email
-    name  = google_service_account.gar_access.name
-  }
-}
-
-output "dns_access_service_account" {
-  value = {
-    email = google_service_account.dns_access.email
-    name  = google_service_account.dns_access.name
-  }
-}
-
 output "cluster" {
   value = {
     name                       = var.cluster_name

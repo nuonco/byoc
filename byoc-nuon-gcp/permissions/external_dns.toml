@@ -1,0 +1,16 @@
+type           = "custom"
+name           = "external_dns"
+description    = "Workload identity for external-dns; zone-scoped writes are granted per zone by the external_dns component"
+display_name   = "external-dns"
+cloud_platform = "gcp"
+
+[[policies]]
+name            = "external-dns-read"
+gcp_permissions = [
+  "dns.changes.get",
+  "dns.changes.list",
+  "dns.managedZones.get",
+  "dns.managedZones.list",
+  "dns.resourceRecordSets.get",
+  "dns.resourceRecordSets.list",
+]

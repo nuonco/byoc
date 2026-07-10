@@ -14,6 +14,7 @@ variable "cloudsql_instance_name" {
 # token-creator on the ctl-api SA so maintenance actions running on the runner
 # can impersonate ctl-api — e.g. mint an OIDC token with ctl-api's identity to
 # verify the AWS S3 install-templates federation (s3_bucket inspect action).
-variable "runner_service_account_email" {
-  type = string
+variable "service_account_email" {
+  type        = string
+  description = "Stack-created service account (install stack custom_sa_emails output)."
 }

@@ -1,29 +1,17 @@
-# Service account for external-dns to manage Cloud DNS records.
-resource "google_service_account" "external_dns" {
-  project      = var.project_id
-  account_id   = "ext-dns-${substr(var.install_id, 0, 18)}"
-  display_name = "external-dns for ${var.install_id}"
-}
-
-# Zone discovery needs a project-level list; writes are scoped to the two
-# install zones below instead of a project-wide dns.admin grant.
-resource "google_project_iam_member" "external_dns" {
-  project = var.project_id
-  role    = "roles/dns.reader"
-  member  = "serviceAccount:${google_service_account.external_dns.email}"
-}
-
+# SA is created by the install stack (permissions/external_dns.toml, which
+# carries the project-level reads); this component attaches the WI binding and
+# zone-scoped write grants.
 resource "google_dns_managed_zone_iam_member" "external_dns" {
   for_each = toset(compact([var.public_zone_name, var.internal_zone_name]))
 
   project      = var.project_id
   managed_zone = each.value
   role         = "roles/dns.admin"
-  member       = "serviceAccount:${google_service_account.external_dns.email}"
+  member       = "serviceAccount:${var.service_account_email}"
 }
 
 resource "google_service_account_iam_member" "external_dns_wi" {
-  service_account_id = google_service_account.external_dns.name
+  service_account_id = "projects/${var.project_id}/serviceAccounts/${var.service_account_email}"
   role               = "roles/iam.workloadIdentityUser"
   member             = "serviceAccount:${var.project_id}.svc.id.goog[external-dns/external-dns]"
 }
@@ -53,7 +41,7 @@ resource "helm_release" "external_dns" {
       create = true
       name   = "external-dns"
       annotations = {
-        "iam.gke.io/gcp-service-account" = google_service_account.external_dns.email
+        "iam.gke.io/gcp-service-account" = var.service_account_email
       }
     }
 
