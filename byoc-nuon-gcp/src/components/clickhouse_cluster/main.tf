@@ -94,7 +94,7 @@ resource "kubectl_manifest" "clickhouse_installation" {
               # never co-locate the two replicas on the same node, and best-effort
               # spread them across zones. the label is applied automatically by the CRD.
               # pin onto the dedicated clickhouse-installation node pool (created by the
-              # clickhouse_nodepools component) via its pool.nuon.co taint/label, mirroring AWS.
+              # app_nodepools component) via its pool.nuon.co taint/label, mirroring AWS.
               nodeSelector = {
                 "pool.nuon.co" = "clickhouse-installation"
               }
