@@ -32,7 +32,7 @@ inline_contents = "./tf/state_rm/state_rm.sh"
 
 [steps.env_vars]
 INSTALL_COMPONENT_ID = "{{ .nuon.components.gcs_buckets.install_component_id }}"
-STATE_ADDRESSES      = "google_storage_bucket.clickhouse,google_storage_bucket.install_templates,google_storage_bucket_iam_member.install_templates_public_read,google_storage_bucket.blob"
+STATE_ADDRESSES      = "google_storage_bucket.clickhouse,google_storage_bucket.blob"
 TF_VERSION           = "1.11.3"
 LABEL                = "gcs_buckets"
 
@@ -45,5 +45,4 @@ inline_contents = "./gcp/gcs_delete/gcs_delete.sh"
 # outputs — robust even if the outputs are unavailable at teardown time.
 BLOB_BUCKET       = "{{ .nuon.install.id }}-byoc-nuon-install-blob"
 CLICKHOUSE_BUCKET = "{{ .nuon.install.id }}-nuon-clickhouse"
-TEMPLATES_BUCKET  = "{{ .nuon.install.id }}-byoc-nuon-install-templates"
 PROJECT_ID        = "{{ .nuon.install_stack.outputs.project_id }}"
