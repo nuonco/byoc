@@ -22,5 +22,4 @@ inline_contents = "./gcp/gcs_delete/gcs_delete.sh"
 # component outputs — so these still resolve after the component is torn down.
 BLOB_BUCKET       = "{{ .nuon.install.id }}-byoc-nuon-install-blob"
 CLICKHOUSE_BUCKET = "{{ .nuon.install.id }}-nuon-clickhouse"
-TEMPLATES_BUCKET  = "{{ .nuon.install.id }}-byoc-nuon-install-templates"
 PROJECT_ID        = "{{ .nuon.install_stack.outputs.project_id }}"

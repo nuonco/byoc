@@ -19,13 +19,11 @@ set -u
 # Required env (set in the action from the gcs_buckets component outputs):
 #   BLOB_BUCKET        blob bucket name (blob_bucket.name output)
 #   CLICKHOUSE_BUCKET  clickhouse bucket name (clickhouse_bucket.name output)
-#   TEMPLATES_BUCKET   install-templates bucket name (install_template_bucket.name output)
 # Optional env:
 #   PROJECT_ID         the GCP project id (for explicit --project on bucket ops)
 
 : "${BLOB_BUCKET:?BLOB_BUCKET is required}"
 : "${CLICKHOUSE_BUCKET:?CLICKHOUSE_BUCKET is required}"
-: "${TEMPLATES_BUCKET:?TEMPLATES_BUCKET is required}"
 project_id="${PROJECT_ID:-}"
 
 # gcloud storage accepts a --project flag; only pass it when we have one.
@@ -67,7 +65,7 @@ empty_and_delete_bucket() {
   echo "  deleted ${b}"
 }
 
-for b in "$BLOB_BUCKET" "$CLICKHOUSE_BUCKET" "$TEMPLATES_BUCKET"; do
+for b in "$BLOB_BUCKET" "$CLICKHOUSE_BUCKET"; do
   echo ""
   echo "Bucket: ${b}"
   empty_and_delete_bucket "$b"
