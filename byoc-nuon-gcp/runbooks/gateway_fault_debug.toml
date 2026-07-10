@@ -1,3 +1,4 @@
+#:schema https://api.nuon.co/v1/general/config-schema?type=runbook
 name        = "gateway_fault_debug"
 description = "Diagnose a route returning Envoy 'fault filter abort' (or other gateway/route failures) for this install. Probes the public routes to confirm the symptom, locates any HTTP fault injection (Istio VirtualService / EnvoyFilter / HTTPRoute filters), and shows route + backend health. Read-only."
 readme      = "./runbooks/gateway_fault_debug.md"

@@ -1,3 +1,4 @@
+#:schema https://api.nuon.co/v1/general/config-schema?type=permission
 type           = "custom"
 name           = "{{ .nuon.install.id }}-cloudsql-operations"
 description    = "CloudSQL backup operations (create/delete on-demand backups) for BYOC Nuon"

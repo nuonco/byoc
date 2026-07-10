@@ -1,3 +1,4 @@
+#:schema https://api.nuon.co/v1/general/config-schema?type=action
 # action
 # description: inspects the temporal Cloud SQL instance — prints instance config,
 # recent operations, and Cloud Monitoring OS metrics (CPU / memory / IOPS) for the last hour.

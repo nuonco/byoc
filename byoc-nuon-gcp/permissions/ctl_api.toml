@@ -1,3 +1,4 @@
+#:schema https://api.nuon.co/v1/general/config-schema?type=permission
 type           = "custom"
 name           = "ctl_api"
 description    = "Workload identity for the BYOC ctl-api control plane"

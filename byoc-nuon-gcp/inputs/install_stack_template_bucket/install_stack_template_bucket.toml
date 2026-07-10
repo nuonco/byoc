@@ -1,3 +1,4 @@
+#:schema https://api.nuon.co/v1/general/config-schema?type=input
 name         = "install_stack_template_bucket"
 description  = "The S3 bucket used to store install stack templates for AWS and Azure installs. Required to create Cloudformation quickcreate links."
 default      = ""

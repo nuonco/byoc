@@ -1,3 +1,4 @@
+#:schema https://api.nuon.co/v1/general/config-schema?type=break-glass
 [[role]]
 name           = "observability-{{ .nuon.install.id }}"
 description    = "Break-glass read-only observability access for BYOC install {{ .nuon.install.id }}"

@@ -1,3 +1,4 @@
+#:schema https://api.nuon.co/v1/general/config-schema?type=permission
 type           = "custom"
 name           = "clickhouse_backup"
 description    = "HMAC-key identity for ClickHouse GCS backups; bucket access is granted at bucket level by the clickhouse_cluster component"

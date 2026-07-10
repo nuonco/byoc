@@ -1,3 +1,4 @@
+#:schema https://api.nuon.co/v1/general/config-schema?type=action
 # waits for the app (dashboard-ui) route to serve a healthy HTTP
 # response after deploy, so a fresh provision does not complete while the route
 # is still in its post-deploy window returning 5xx / "fault filter abort". Polls

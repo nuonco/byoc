@@ -1,3 +1,4 @@
+#:schema https://api.nuon.co/v1/general/config-schema?type=input
 name         = "temporal_db_instance_tier"
 description  = "Cloud SQL machine tier for the Temporal database (e.g. db-custom-2-8192)."
 display_name = "Temporal DB instance tier"

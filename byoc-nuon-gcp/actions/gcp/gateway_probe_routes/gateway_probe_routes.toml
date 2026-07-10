@@ -1,3 +1,4 @@
+#:schema https://api.nuon.co/v1/general/config-schema?type=action
 # action
 # description: probes each public ctl-api/dashboard route (app/api/auth/runner +
 # internal admin) and reports status, serving proxy, and whether the response is

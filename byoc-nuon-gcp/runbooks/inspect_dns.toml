@@ -1,3 +1,4 @@
+#:schema https://api.nuon.co/v1/general/config-schema?type=runbook
 name        = "inspect_dns"
 description = "Inspect DNS — public root-domain zone and the Nuon DNS delegation domain, with the nameserver (NS) records to configure at the registrar."
 readme      = "./runbooks/inspect_dns.md"

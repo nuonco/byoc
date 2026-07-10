@@ -1,3 +1,4 @@
+#:schema https://api.nuon.co/v1/general/config-schema?type=action
 # action
 # description: inspects the Cloud SQL (Postgres) instances — ctl-api and temporal
 # — printing 1-hour average CPU / memory / disk / IOPS from Cloud Monitoring, one

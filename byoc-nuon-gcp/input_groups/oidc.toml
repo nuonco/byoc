@@ -1,3 +1,4 @@
+#:schema https://api.nuon.co/v1/general/config-schema?type=input-group
 name         = "oidc"
 description  = "OIDC authentication configuration (Google OAuth, etc.)"
 display_name = "OIDC authentication"

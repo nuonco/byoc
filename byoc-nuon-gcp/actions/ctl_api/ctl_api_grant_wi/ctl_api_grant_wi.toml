@@ -1,3 +1,4 @@
+#:schema https://api.nuon.co/v1/general/config-schema?type=action
 # action
 # description: grants the ctl_api PostgreSQL role to the Workload Identity
 # service account. Must run after ctl_api_init_db (which creates the role)

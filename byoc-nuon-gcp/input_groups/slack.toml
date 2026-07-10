@@ -1,3 +1,4 @@
+#:schema https://api.nuon.co/v1/general/config-schema?type=input-group
 name         = "slack"
 description  = "Configure the Slack App for this BYOC Nuon install. Set after provisioning via the slack_setup runbook."
 display_name = "Slack configuration"

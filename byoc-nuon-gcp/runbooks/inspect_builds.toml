@@ -1,3 +1,4 @@
+#:schema https://api.nuon.co/v1/general/config-schema?type=runbook
 name        = "inspect_builds"
 description = "Inspect component builds — queries ctl-api for recent builds and renders each build's status history and resolved source."
 readme      = "./runbooks/inspect_builds.md"

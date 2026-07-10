@@ -1,3 +1,4 @@
+#:schema https://api.nuon.co/v1/general/config-schema?type=runbook
 name        = "verify_clickhouse"
 description = "Verify ClickHouse durability & resilience — volumes persist across recreation, pods are spread across nodes, and GCS backups run."
 readme      = "./runbooks/verify_clickhouse.md"

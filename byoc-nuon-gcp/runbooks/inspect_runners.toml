@@ -1,3 +1,4 @@
+#:schema https://api.nuon.co/v1/general/config-schema?type=runbook
 name        = "inspect_runners"
 description = "Inspect runners — all runners reported by inspect_runners, with owner-name lookups from installs/orgs/apps."
 readme      = "./runbooks/inspect_runners.md"

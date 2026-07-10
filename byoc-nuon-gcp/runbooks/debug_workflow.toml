@@ -1,3 +1,4 @@
+#:schema https://api.nuon.co/v1/general/config-schema?type=runbook
 name        = "debug_workflow"
 description = "Inspect a single install workflow by ID — queries ctl-api for its step groups, steps, and attached queue signals, and renders them as a table."
 readme      = "./runbooks/debug_workflow.md"

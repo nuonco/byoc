@@ -1,3 +1,4 @@
+#:schema https://api.nuon.co/v1/general/config-schema?type=input-group
 name         = "admin_dashboard"
 description  = "Configure the Nuon admin dashboard for this install."
 display_name = "Admin dashboard"

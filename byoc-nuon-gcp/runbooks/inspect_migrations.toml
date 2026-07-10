@@ -1,3 +1,4 @@
+#:schema https://api.nuon.co/v1/general/config-schema?type=runbook
 name        = "inspect_migrations"
 description = "Inspect ctl-api schema migrations — the last 10 by created_at, with status."
 readme      = "./runbooks/inspect_migrations.md"

@@ -1,3 +1,4 @@
+#:schema https://api.nuon.co/v1/general/config-schema?type=runbook
 name        = "inspect_cluster"
 description = "Inspect GKE cluster — sandbox status, cluster name/location, outputs, and access instructions."
 readme      = "./runbooks/inspect_cluster.md"

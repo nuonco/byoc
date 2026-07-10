@@ -1,3 +1,4 @@
+#:schema https://api.nuon.co/v1/general/config-schema?type=action
 # action
 # description: scales all ctl-api worker deployments to zero replicas.
 # Set SCALE_TARGET to control replicas (0 to scale down, or a number to scale back up).

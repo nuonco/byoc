@@ -1,3 +1,4 @@
+#:schema https://api.nuon.co/v1/general/config-schema?type=runbook
 name        = "inspect_orgs"
 description = "Inspect orgs — all orgs reported by inspect_orgs."
 readme      = "./runbooks/inspect_orgs.md"

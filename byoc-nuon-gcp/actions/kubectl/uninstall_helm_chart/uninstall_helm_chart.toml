@@ -1,3 +1,4 @@
+#:schema https://api.nuon.co/v1/general/config-schema?type=action
 # action
 name    = "uninstall_helm_chart"
 labels  = { service = "kubernetes", type = "sop" }

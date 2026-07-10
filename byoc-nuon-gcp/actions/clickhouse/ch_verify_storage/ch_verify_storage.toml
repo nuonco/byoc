@@ -1,3 +1,4 @@
+#:schema https://api.nuon.co/v1/general/config-schema?type=action
 # action
 # description: verifies ClickHouse persistent storage — PVCs bound, data dir on a real
 # disk, and (optionally) that data survives a StatefulSet restart.

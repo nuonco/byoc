@@ -1,3 +1,4 @@
+#:schema https://api.nuon.co/v1/general/config-schema?type=permission
 type           = "custom"
 name           = "external_dns"
 description    = "Workload identity for external-dns; zone-scoped writes are granted per zone by the external_dns component"

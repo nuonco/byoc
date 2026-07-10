@@ -1,3 +1,4 @@
+#:schema https://api.nuon.co/v1/general/config-schema?type=action
 # action
 # description: creates k8s secret nuon-db in the ctl-api namespace from
 # the cloudsql_nuon Terraform outputs so ctl-api pods can authenticate

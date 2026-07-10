@@ -1,3 +1,4 @@
+#:schema https://api.nuon.co/v1/general/config-schema?type=action
 # action
 # description: generic break-glass "terraform state rm" — detach one or more
 # resources (or whole modules) from a Terraform workspace's state WITHOUT

@@ -1,3 +1,4 @@
+#:schema https://api.nuon.co/v1/general/config-schema?type=runbook
 name        = "loops_setup"
 description = "Set up the Loops integration for this install: provision and populate the central secret, set the loops_secret_arn input, then sync the API key into the ctl-api namespace."
 readme      = "./runbooks/loops_setup.md"

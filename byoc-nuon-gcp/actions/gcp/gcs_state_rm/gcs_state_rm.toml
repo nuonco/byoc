@@ -1,3 +1,4 @@
+#:schema https://api.nuon.co/v1/general/config-schema?type=action
 # action
 # description: removes the gcs_buckets component's three buckets (and the
 # public-read IAM member) from Terraform state without destroying them, so the

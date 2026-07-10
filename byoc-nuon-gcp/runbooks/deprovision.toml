@@ -1,3 +1,4 @@
+#:schema https://api.nuon.co/v1/general/config-schema?type=runbook
 name        = "deprovision"
 description = "Break-glass deprovision steps that must run explicitly, outside the Terraform teardown. Phase 1: detach each stateful resource (Cloud SQL ctl-api + Temporal, GCS buckets) from Terraform state. Phase 2: deprovision the sandbox. Phase 3 (optional): delete the detached cloud resources via the gcloud API (Cloud SQL with a final backup; GCS irreversibly). Normally the detach+delete run automatically as pre-teardown-component hooks — use this runbook only to drive them by hand if a hook fails mid-teardown."
 readme      = "./runbooks/deprovision.md"

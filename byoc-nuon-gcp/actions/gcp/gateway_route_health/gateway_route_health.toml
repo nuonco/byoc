@@ -1,3 +1,4 @@
+#:schema https://api.nuon.co/v1/general/config-schema?type=action
 # action
 # description: shows the gateway, HTTPRoutes (hosts/parents/backends), and the
 # dashboard-ui + ctl-api backend pods. Use when a route times out / 5xxs rather

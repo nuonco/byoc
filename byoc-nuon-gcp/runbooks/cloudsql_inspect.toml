@@ -1,3 +1,4 @@
+#:schema https://api.nuon.co/v1/general/config-schema?type=runbook
 name        = "cloudsql_inspect"
 description = "Inspects the ctl-api (nuon) and Temporal Cloud SQL instances: instance configuration, recent operations, Cloud Monitoring OS metrics (CPU, memory, IOPS) for the last hour, and the Query Insights load breakdown, in table format."
 readme      = "./runbooks/cloudsql_inspect.md"

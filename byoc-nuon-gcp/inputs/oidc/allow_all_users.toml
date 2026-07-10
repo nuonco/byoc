@@ -1,3 +1,4 @@
+#:schema https://api.nuon.co/v1/general/config-schema?type=input
 name         = "nuon_auth_allow_all_users"
 description  = "If this is set to true, any user with an email in one of the allowed_domains will be able to register."
 default      = "please-provide-a-value"

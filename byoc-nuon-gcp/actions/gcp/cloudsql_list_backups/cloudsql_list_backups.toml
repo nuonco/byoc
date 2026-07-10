@@ -1,3 +1,4 @@
+#:schema https://api.nuon.co/v1/general/config-schema?type=action
 # action
 # description: lists the backups for the ctl-api (nuon) and temporal Cloud SQL
 # instances.

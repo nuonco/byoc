@@ -1,3 +1,4 @@
+#:schema https://api.nuon.co/v1/general/config-schema?type=input
 name         = "slack_enabled"
 description  = "Enable the Nuon Slack integration."
 default      = "false"
