@@ -2,6 +2,7 @@ apiVersion: storage.k8s.io/v1
 kind: StorageClass
 metadata:
   name: ebi
+allowVolumeExpansion: true
 parameters:
   fsType: ext4
   type: gp2

@@ -263,7 +263,7 @@ resource "kubectl_manifest" "clickhouse_installation" {
               ]
               "resources" = {
                 "requests" = {
-                  "storage" = "20Gi"
+                  "storage" = "100Gi"
                 }
               }
             }
