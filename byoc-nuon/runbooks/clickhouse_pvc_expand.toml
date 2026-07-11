@@ -1,5 +1,5 @@
 name        = "clickhouse_pvc_expand"
-description = "Grow the ClickHouse data PVCs online, then reconcile source. Step 1 enables StorageClass expansion and resizes each data PVC to TARGET_SIZE (preflight-gated on the CSI resizer; additive only; no restart). Steps 2-3 redeploy storage_classes + clickhouse_cluster so source matches — the clickhouse_cluster deploy makes the operator recreate the StatefulSet (orphan-style, PVCs retained), which may briefly restart the CH pods."
+description = "Expands the ClickHouse data PVC."
 readme      = "./runbooks/clickhouse_pvc_expand.md"
 labels      = { service = "clickhouse" }
 
