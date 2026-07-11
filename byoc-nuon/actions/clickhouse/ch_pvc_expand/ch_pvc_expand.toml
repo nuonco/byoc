@@ -1,0 +1,24 @@
+# action
+# description: MUTATING. Grows the ClickHouse data PVCs online. Runs a preflight
+# first (prints state; aborts if no CSI resizer, or if any CH StatefulSet has
+# whenDeleted=Delete which would drop the PVC on a later STS recreate), then
+# enables allowVolumeExpansion on the StorageClass (mutable false->true) and
+# patches each data PVC to TARGET_SIZE, waiting for the resize to complete. Never
+# shrinks (skips any PVC already >= TARGET_SIZE). Online grow — no pod restart, no
+# data rewrite.
+name    = "ch_pvc_expand"
+labels  = { service = "clickhouse" }
+timeout = "8m"
+
+[[triggers]]
+type = "manual"
+
+[[steps]]
+name            = "expand"
+inline_contents = "./clickhouse/ch_pvc_expand/expand.sh"
+
+[steps.env_vars]
+NAMESPACE       = "clickhouse"
+STORAGE_CLASS   = "ebi"
+DATA_PVC_PREFIX = "data-volume-template-"
+TARGET_SIZE     = "100Gi"

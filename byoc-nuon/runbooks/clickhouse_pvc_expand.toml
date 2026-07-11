@@ -1,0 +1,23 @@
+name        = "clickhouse_pvc_expand"
+description = "Grow the ClickHouse data PVCs online, then reconcile source. Step 1 enables StorageClass expansion and resizes each data PVC to TARGET_SIZE (preflight-gated on the CSI resizer; additive only; no restart). Steps 2-3 redeploy storage_classes + clickhouse_cluster so source matches — the clickhouse_cluster deploy makes the operator recreate the StatefulSet (orphan-style, PVCs retained), which may briefly restart the CH pods."
+readme      = "./runbooks/clickhouse_pvc_expand.md"
+labels      = { service = "clickhouse" }
+
+# 1. Grow the live PVCs FIRST. Fully resolves a low-disk incident on its own.
+[[steps]]
+name        = "Expand ClickHouse data PVCs"
+type        = "action"
+action_name = "ch_pvc_expand"
+
+# 2. Persist allowVolumeExpansion in source (ebi StorageClass).
+[[steps]]
+name           = "storage_classes: Deploy"
+type           = "component_deploy"
+component_name = "storage_classes"
+
+# 3. Persist the larger vct in source. Operator recreates the STS to apply it
+#    (PVCs already at target from step 1 -> re-adopted, no resize; may restart pods).
+[[steps]]
+name           = "clickhouse_cluster: Deploy"
+type           = "component_deploy"
+component_name = "clickhouse_cluster"
