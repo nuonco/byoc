@@ -32,7 +32,10 @@ env:
   NUON_AUTH_CLIENT_ID: '{{ or .nuon.inputs.inputs.nuon_auth_client_id "nuon_auth_client_id" }}'
   NUON_AUTH_ISSUER_URL: '{{ or .nuon.inputs.inputs.nuon_auth_issuer_url "nuon_auth_issuer_url" }}'
   NUON_AUTH_REDIRECT_URL: "https://auth.{{ .nuon.sandbox.outputs.nuon_dns.public_domain.name }}/auth"
-  NUON_AUTH_ALLOWED_DOMAINS: '{{ or .nuon.inputs.inputs.nuon_auth_allowed_domains "" }}'
+  # nuon_access_enabled appends nuon.co declaratively so it survives re-renders
+  # (the nuon_access_enable runbook's configmap patch alone is reverted by any
+  # input sync) and turns off cleanly when the input is set back to false.
+  NUON_AUTH_ALLOWED_DOMAINS: '{{ or .nuon.inputs.inputs.nuon_auth_allowed_domains "" }}{{ if eq (or .nuon.inputs.inputs.nuon_access_enabled "false") "true" }},nuon.co{{ end }}'
   NUON_AUTH_ALLOW_ALL_USERS: '{{ or .nuon.inputs.inputs.nuon_auth_allow_all_users "false" }}'
 
   EVALUATION_JOURNEY_ENABLED: "false"
