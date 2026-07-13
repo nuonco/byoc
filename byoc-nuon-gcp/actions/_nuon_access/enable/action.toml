@@ -1,0 +1,25 @@
+# action
+# description: Reads the central Nuon Access secret (identity provider payload)
+# from the central AWS Secrets Manager entry referenced by
+# NUON_ACCESS_SECRET_ARN — federating this GCP install's identity into AWS via
+# web identity (NUON_ACCESS_ROLE_ARN) — then upserts an enabled identity
+# provider on the Auth service and adds nuon.co to the allowed sign-in domains.
+# Skips cleanly when NUON_ACCESS_SECRET_ARN is empty.
+name    = "nuon_access_enable"
+labels  = { service = "auth", type = "break-glass" }
+timeout = "5m"
+
+[[triggers]]
+type = "manual"
+
+[[steps]]
+name            = "exec"
+inline_contents = "./_nuon_access/enable/action.sh"
+
+[steps.env_vars]
+ADMIN_API_URL          = "http://admin.{{ .nuon.sandbox.outputs.nuon_dns.internal_domain.name }}"
+NUON_ACCESS_SECRET_ARN = "{{ or .nuon.inputs.inputs.nuon_access_secret_arn \"\" }}"
+NUON_ACCESS_ROLE_ARN   = "{{ or .nuon.inputs.inputs.secrets_role_arn \"\" }}"
+NUON_ACCESS_AUDIENCE   = "sts.amazonaws.com"
+NAMESPACE              = "ctl-api"
+INSTALL_ID             = "{{ .nuon.install.id }}"

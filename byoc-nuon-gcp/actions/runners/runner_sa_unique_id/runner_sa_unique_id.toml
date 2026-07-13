@@ -1,0 +1,14 @@
+# action
+# description: Prints the runner's GCP service account email and numeric unique
+# id (OIDC "sub"). Central byoc-secrets Terraform needs the unique id in its
+# gcp_installs map to grant this install read access to its central secrets.
+name    = "runner_sa_unique_id"
+labels  = { service = "runner", type = "sop" }
+timeout = "1m"
+
+[[triggers]]
+type = "manual"
+
+[[steps]]
+name            = "exec"
+inline_contents = "./runners/runner_sa_unique_id/runner-sa-unique-id.sh"

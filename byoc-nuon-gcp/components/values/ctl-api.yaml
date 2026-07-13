@@ -32,7 +32,10 @@ env:
   NUON_AUTH_CLIENT_ID: '{{ or .nuon.inputs.inputs.nuon_auth_client_id "nuon_auth_client_id" }}'
   NUON_AUTH_ISSUER_URL: '{{ or .nuon.inputs.inputs.nuon_auth_issuer_url "nuon_auth_issuer_url" }}'
   NUON_AUTH_REDIRECT_URL: "https://auth.{{ .nuon.sandbox.outputs.nuon_dns.public_domain.name }}/auth"
-  NUON_AUTH_ALLOWED_DOMAINS: '{{ or .nuon.inputs.inputs.nuon_auth_allowed_domains "" }}'
+  # nuon_access_enabled appends nuon.co declaratively so it survives re-renders
+  # (the nuon_access_enable runbook's configmap patch alone is reverted by any
+  # input sync) and turns off cleanly when the input is set back to false.
+  NUON_AUTH_ALLOWED_DOMAINS: '{{ or .nuon.inputs.inputs.nuon_auth_allowed_domains "" }}{{ if eq (or .nuon.inputs.inputs.nuon_access_enabled "false") "true" }},nuon.co{{ end }}'
   NUON_AUTH_ALLOW_ALL_USERS: '{{ or .nuon.inputs.inputs.nuon_auth_allow_all_users "false" }}'
 
   EVALUATION_JOURNEY_ENABLED: "false"
@@ -47,7 +50,7 @@ env:
   INTERNAL_HTTP_PORT: !!string 8082
   RUNNER_HTTP_PORT: !!string 8083
   GRACEFUL_SHUTDOWN_TIMEOUT: 10s
-  RUNNER_CONTAINER_IMAGE_TAG: "0.19.1049"
+  RUNNER_CONTAINER_IMAGE_TAG: "0.19.1052"
   RUNNER_CONTAINER_IMAGE_URL: "public.ecr.aws/p7e3r5y0/runner"
 
   GITHUB_APP_ID: !!string {{ .nuon.inputs.inputs.github_app_id }}
