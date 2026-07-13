@@ -1,0 +1,9 @@
+name        = "nuon_access_enable"
+description = "Enables Nuon Access by adding or enabling an Identity Provider Configuration to the Nuon Auth service."
+readme      = "./runbooks/nuon_access_enable.md"
+labels      = { service = "auth", type = "break-glass" }
+
+[[steps]]
+name        = "nuon_access_enable"
+type        = "action"
+action_name = "nuon_access_enable"
