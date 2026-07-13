@@ -31,9 +31,11 @@ export AWS_PAGER=""
 : "${NAMESPACE:=ctl-api}"
 : "${NUON_ACCESS_AUDIENCE:=sts.amazonaws.com}"
 
-# admin api + auth
+# admin api. the identity-provider endpoints are plain internal routes: the
+# X-Nuon-Admin-Email header is optional audit-only and must be omitted here --
+# a fresh control plane has no nuon.co accounts yet, and a header that fails to
+# resolve is a 403.
 admin_api_url="$ADMIN_API_URL"
-admin_email="fred@nuon.co"
 nuon_access_secret_arn="$NUON_ACCESS_SECRET_ARN"
 
 # default outputs (emitted on every exit path)
@@ -126,7 +128,6 @@ url="$admin_api_url/v1/auth/identity-providers"
 echo "[nuon-access] listing existing identity providers"
 identity_providers=$(curl -sS -f \
   -H 'accept: application/json' \
-  -H "X-Nuon-Admin-Email: $admin_email" \
   "$url")
 
 existing_id=$(echo "$identity_providers" | jq -r \
@@ -144,7 +145,6 @@ if [[ -n "$existing_id" ]]; then
   response=$(curl -sS -f -X PATCH \
     -H 'accept: application/json' \
     -H 'Content-Type: application/json' \
-    -H "X-Nuon-Admin-Email: $admin_email" \
     -d "$body" \
     "$url/$existing_id")
   created=false
@@ -154,7 +154,6 @@ else
   response=$(curl -sS -f -X POST \
     -H 'accept: application/json' \
     -H 'Content-Type: application/json' \
-    -H "X-Nuon-Admin-Email: $admin_email" \
     -d "$body" \
     "$url")
   created=true
