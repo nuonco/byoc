@@ -1,3 +1,4 @@
+#:schema https://api.nuon.co/v1/general/config-schema?type=permission
 type           = "custom"
 name           = "{{ .nuon.install.id }}-runner-repo-operations"
 description    = "Runner Repository Operations - For managing images and tags."

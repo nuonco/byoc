@@ -1,3 +1,4 @@
+#:schema https://api.nuon.co/v1/general/config-schema?type=action
 # action
 # description: migrates queues for every default org via the admin API.
 name    = "orgs_migrate_queue"

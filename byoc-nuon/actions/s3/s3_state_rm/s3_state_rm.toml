@@ -1,3 +1,4 @@
+#:schema https://api.nuon.co/v1/general/config-schema?type=action
 # action
 # description: removes the s3_buckets component's buckets + KMS key (and their
 # dependent sub-resources) from Terraform state without destroying them, so the
@@ -6,7 +7,6 @@
 # deleted via the AWS API.
 name    = "s3_state_rm"
 labels  = { service = "s3", type = "sop" }
-label   = "aws"
 timeout = "15m"
 role    = "{{.nuon.install.id}}-s3-operations"
 

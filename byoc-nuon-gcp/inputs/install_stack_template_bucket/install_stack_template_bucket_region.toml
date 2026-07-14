@@ -1,3 +1,4 @@
+#:schema https://api.nuon.co/v1/general/config-schema?type=input
 name         = "install_stack_template_bucket_region"
 description  = "The region the install stack template bucket is in."
 default      = ""

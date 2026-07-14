@@ -1,3 +1,4 @@
+#:schema https://api.nuon.co/v1/general/config-schema?type=input
 name         = "nuon_auth_client_id"
 description  = "OIDC Client ID from your identity provider."
 default      = "please-provide-a-value"

@@ -1,3 +1,4 @@
+#:schema https://api.nuon.co/v1/general/config-schema?type=action
 # action
 # description: generic break-glass "terraform state rm" — detach one or more
 # resources (or whole modules) from a Terraform workspace's state WITHOUT
@@ -20,7 +21,6 @@
 # using the runner's own credentials — it never calls a cloud API.
 name    = "state_rm"
 labels  = { service = "terraform", type = "sop" }
-label   = "tf"
 timeout = "15m"
 
 [[triggers]]

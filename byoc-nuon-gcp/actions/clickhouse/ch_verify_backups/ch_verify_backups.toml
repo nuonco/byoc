@@ -1,9 +1,9 @@
+#:schema https://api.nuon.co/v1/general/config-schema?type=action
 # action
 # description: verifies the ClickHouse GCS backup pipeline — HMAC secret + cronjob exist,
 # a triggered run completes, and backup objects are present in the bucket.
 name    = "ch_verify_backups"
 labels  = { service = "clickhouse", type = "debug" }
-label   = "gcp"
 timeout = "8m"
 role    = "{{.nuon.install.id}}-provision"
 

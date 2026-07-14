@@ -1,3 +1,4 @@
+#:schema https://api.nuon.co/v1/general/config-schema?type=input-group
 name         = "datadog"
 display_name = "Datadog"
 description  = "Optional configuration for datadog"

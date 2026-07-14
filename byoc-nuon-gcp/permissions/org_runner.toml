@@ -1,3 +1,4 @@
+#:schema https://api.nuon.co/v1/general/config-schema?type=permission
 type           = "custom"
 name           = "org_runner"
 description    = "Shared workload identity for all org runners; per-org WI bindings are appended by ctl-api at org creation, GAR writer is granted at repo level by the management component"

@@ -1,3 +1,4 @@
+#:schema https://api.nuon.co/v1/general/config-schema?type=installer
 name                  = "installer"
 description           = "one click installer"
 documentation_url     = "docs-url"

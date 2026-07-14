@@ -1,3 +1,4 @@
+#:schema https://api.nuon.co/v1/general/config-schema?type=action
 # action
 # description: verifies ClickHouse pod anti-affinity — server and keeper replicas are
 # spread across distinct nodes (and reports distinct keeper zones).

@@ -1,7 +1,7 @@
+#:schema https://api.nuon.co/v1/general/config-schema?type=action
 # action
 name    = "cve_2026_46300_check"
 labels  = { type = "debug" }
-label   = "kubectl"
 timeout = "5m"
 
 [[triggers]]

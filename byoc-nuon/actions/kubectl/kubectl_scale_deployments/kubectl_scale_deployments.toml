@@ -1,3 +1,4 @@
+#:schema https://api.nuon.co/v1/general/config-schema?type=action
 # action
 # description: scales deployments in a namespace to a target replica count.
 # Set REPLICAS to control target replicas (default 1).
@@ -5,7 +6,6 @@
 # Set FILTER to grep deployment names (optional).
 name    = "kubectl_scale_deployments"
 labels  = { service = "kubernetes", type = "tool" }
-label   = "kubectl"
 timeout = "2m"
 
 [[triggers]]

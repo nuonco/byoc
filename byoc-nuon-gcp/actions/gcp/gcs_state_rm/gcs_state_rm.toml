@@ -1,3 +1,4 @@
+#:schema https://api.nuon.co/v1/general/config-schema?type=action
 # action
 # description: removes the gcs_buckets component's three buckets (and the
 # public-read IAM member) from Terraform state without destroying them, so the
@@ -10,7 +11,6 @@
 # need the -gcs-operations role. (Piloted on GCP, to be ported back to AWS.)
 name    = "gcs_state_rm"
 labels  = { service = "gcs", type = "sop" }
-label   = "gcp"
 timeout = "15m"
 
 [[triggers]]

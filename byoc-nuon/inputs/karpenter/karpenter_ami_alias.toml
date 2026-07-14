@@ -1,3 +1,4 @@
+#:schema https://api.nuon.co/v1/general/config-schema?type=input
 name         = "karpenter_ami_alias"
 description  = "The AWS AMI Alias for the Karpenter EC2 Nodeclasses. Set globally."
 default      = "al2023@v20260618"

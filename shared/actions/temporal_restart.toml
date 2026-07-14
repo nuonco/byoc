@@ -1,3 +1,4 @@
+#:schema https://api.nuon.co/v1/general/config-schema?type=action
 # action
 # description: restarts all deployments in the temporal namespace after Temporal deploys.
 name    = "temporal_restart"

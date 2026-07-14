@@ -1,4 +1,4 @@
-#:schema https://api.nuon.co/v1/general/config-schema?type=inputs
+#:schema https://api.nuon.co/v1/general/config-schema?type=input-group
 name         = "cloudsql_temporal"
 description  = "Configuration for the postgres database Nuon will create for the Temporal deployment."
 display_name = "Temporal database configuration"

@@ -1,3 +1,4 @@
+#:schema https://api.nuon.co/v1/general/config-schema?type=policy
 type       = "container_image"
 engine     = "opa"
 contents   = "./image-pinned-tags.rego"

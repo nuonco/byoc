@@ -1,3 +1,4 @@
+#:schema https://api.nuon.co/v1/general/config-schema?type=action
 # action
 # description: pre-teardown hook for the Temporal RDS component. Runs
 # automatically right before the component's Terraform destroy: detach the
@@ -12,7 +13,6 @@
 # database is never deleted.
 name    = "rds_teardown_temporal"
 labels  = { service = "rds", type = "step" }
-label   = "aws"
 timeout = "60m"
 role    = "{{.nuon.install.id}}-rds-operations"
 

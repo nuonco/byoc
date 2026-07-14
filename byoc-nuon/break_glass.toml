@@ -1,3 +1,4 @@
+#:schema https://api.nuon.co/v1/general/config-schema?type=break-glass
 [[role]]
 name                 = "byoc-nuon-break-glass-{{ .nuon.install.id }}"
 description          = "Break Glass Permissions for BYOC Install {{ .nuon.install.id }}"

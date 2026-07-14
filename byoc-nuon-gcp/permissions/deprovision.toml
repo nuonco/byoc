@@ -1,3 +1,4 @@
+#:schema https://api.nuon.co/v1/general/config-schema?type=permission
 type           = "deprovision"
 name           = "{{.nuon.install.id}}-deprovision"
 description    = "Deprovision Role for BYOC Nuon"

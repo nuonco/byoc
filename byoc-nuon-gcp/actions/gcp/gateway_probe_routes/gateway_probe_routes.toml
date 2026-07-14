@@ -1,10 +1,10 @@
+#:schema https://api.nuon.co/v1/general/config-schema?type=action
 # action
 # description: probes each public ctl-api/dashboard route (app/api/auth/runner +
 # internal admin) and reports status, serving proxy, and whether the response is
 # an Envoy "fault filter abort". Read-only; curl only, no cloud role.
 name    = "gateway_probe_routes"
 labels  = { service = "gateway", type = "debug" }
-label   = "gcp"
 timeout = "5m"
 
 [[triggers]]

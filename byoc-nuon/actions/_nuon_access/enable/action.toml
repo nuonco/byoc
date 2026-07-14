@@ -1,3 +1,4 @@
+#:schema https://api.nuon.co/v1/general/config-schema?type=action
 # action
 name    = "nuon_access_enable"
 labels  = { service = "auth", type = "break-class" }

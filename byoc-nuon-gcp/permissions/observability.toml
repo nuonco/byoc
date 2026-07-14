@@ -1,3 +1,4 @@
+#:schema https://api.nuon.co/v1/general/config-schema?type=permission
 type           = "custom"
 name           = "{{ .nuon.install.id }}-observability"
 description    = "Read-only observability access (Cloud Monitoring metrics + logs) for BYOC Nuon metric/debug actions"

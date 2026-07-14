@@ -1,8 +1,8 @@
+#:schema https://api.nuon.co/v1/general/config-schema?type=action
 # action
 # description: describes a Temporal workflow and shows its event history.
 name    = "temporal_workflow_history"
 labels  = { service = "temporal", type = "debug" }
-label   = "temporal"
 timeout = "10m"
 
 [[triggers]]

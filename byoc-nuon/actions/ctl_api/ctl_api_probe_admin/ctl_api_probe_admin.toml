@@ -1,3 +1,4 @@
+#:schema https://api.nuon.co/v1/general/config-schema?type=action
 # action
 # description: per-endpoint health probe for the ctl-api ADMIN API
 # (admin.<internal_domain>, http, internal-scheme ALB, private Route53 zone).

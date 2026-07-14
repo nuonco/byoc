@@ -1,3 +1,4 @@
+#:schema https://api.nuon.co/v1/general/config-schema?type=action
 # action
 name    = "aws_subnet_ips"
 labels  = { service = "aws", type = "debug" }

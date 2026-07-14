@@ -1,9 +1,9 @@
+#:schema https://api.nuon.co/v1/general/config-schema?type=action
 # action
 # description: breaks down Temporal RDS Average Active Sessions (AAS) over the last
 # hour by wait event, by query, and by lock wait — using Performance Insights.
 name    = "rds_aas_temporal"
 labels  = { service = "rds", type = "sop" }
-label   = "aws"
 timeout = "2m"
 role    = "{{.nuon.install.id}}-provision"
 

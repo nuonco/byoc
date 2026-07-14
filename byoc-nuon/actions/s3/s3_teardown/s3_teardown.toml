@@ -1,3 +1,4 @@
+#:schema https://api.nuon.co/v1/general/config-schema?type=action
 # action
 # description: pre-teardown hook for the s3_buckets component. Runs automatically
 # right before the component's Terraform destroy: detach the buckets + KMS key
@@ -16,7 +17,6 @@
 # buckets are never deleted (irreversible — S3 has no snapshot).
 name    = "s3_teardown"
 labels  = { service = "s3", type = "step" }
-label   = "aws"
 timeout = "45m"
 role    = "{{.nuon.install.id}}-s3-operations"
 

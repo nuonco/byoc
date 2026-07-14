@@ -1,3 +1,4 @@
+#:schema https://api.nuon.co/v1/general/config-schema?type=action
 # action
 # description: fetches ctl-api version and runs ALB healthchecks for the
 # public, admin (private), and runner ingresses.

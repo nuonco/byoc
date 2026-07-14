@@ -1,3 +1,4 @@
+#:schema https://api.nuon.co/v1/general/config-schema?type=input
 name         = "github_app_id"
 description  = "The github app id."
 default      = "please-provide-a-value"

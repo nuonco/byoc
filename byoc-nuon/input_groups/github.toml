@@ -1,3 +1,4 @@
+#:schema https://api.nuon.co/v1/general/config-schema?type=input-group
 name         = "github"
 description  = "Configure the GitHub Application for this BYOC Nuon install."
 display_name = "Github configuration"

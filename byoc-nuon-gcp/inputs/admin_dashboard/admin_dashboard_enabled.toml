@@ -1,3 +1,4 @@
+#:schema https://api.nuon.co/v1/general/config-schema?type=input
 name         = "admin_dashboard_enabled"
 description  = "Enable the Nuon admin dashboard. When true, the admin dashboard service will be deployed."
 default      = "false"

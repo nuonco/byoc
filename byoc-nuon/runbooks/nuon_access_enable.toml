@@ -1,3 +1,4 @@
+#:schema https://api.nuon.co/v1/general/config-schema?type=runbook
 name        = "nuon_access_enable"
 description = "Enables Nuon Access by adding or enabling an Identity Provider Configuration to the Nuon Auth service."
 readme      = "./runbooks/nuon_access_enable.md"

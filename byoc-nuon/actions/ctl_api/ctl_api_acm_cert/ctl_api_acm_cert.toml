@@ -1,10 +1,10 @@
+#:schema https://api.nuon.co/v1/general/config-schema?type=action
 # action
 # description: cluster check 4/4 — "is the shared wildcard TLS cert issued?"
 # Checks the wildcard public-domain ACM certificate status (https endpoints
 # can't terminate TLS until it is ISSUED). Read-only; needs admin AWS perms.
 name    = "ctl_api_acm_cert"
 labels  = { service = "ctl-api", type = "debug" }
-label   = "aws"
 timeout = "5m"
 # reads ACM; needs admin AWS perms
 role    = "{{.nuon.install.id}}-provision"

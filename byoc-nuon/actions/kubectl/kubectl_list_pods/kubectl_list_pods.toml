@@ -1,7 +1,7 @@
+#:schema https://api.nuon.co/v1/general/config-schema?type=action
 # action
 name    = "kubectl_get_pods"
 labels  = { service = "kubernetes", type = "debug" }
-label   = "kubectl"
 timeout = "30s"
 
 [[triggers]]

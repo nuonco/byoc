@@ -1,3 +1,4 @@
+#:schema https://api.nuon.co/v1/general/config-schema?type=action
 # action
 # description: pre-teardown hook for the ctl-api (nuon) Cloud SQL component. Runs
 # automatically right before the component's Terraform destroy: detach the
@@ -15,7 +16,6 @@
 # component teardown. GCP equivalent of the AWS rds_teardown_ctl_api hook.
 name    = "cloudsql_teardown_ctl_api"
 labels  = { service = "cloudsql", type = "step" }
-label   = "gcp"
 timeout = "60m"
 role    = "{{.nuon.install.id}}-cloudsql-operations"
 

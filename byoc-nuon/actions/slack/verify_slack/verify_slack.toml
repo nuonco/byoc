@@ -1,9 +1,9 @@
+#:schema https://api.nuon.co/v1/general/config-schema?type=action
 # action
 # description: Verifies the install's Slack service is healthy: api-slack pods
 # are ready in the ctl-api namespace and slack.<root_domain> resolves and serves.
 name    = "verify_slack"
 labels  = { service = "slack", type = "sop" }
-label   = "slack"
 timeout = "1m"
 
 [[triggers]]

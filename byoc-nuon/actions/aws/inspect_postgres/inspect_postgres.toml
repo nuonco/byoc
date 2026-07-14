@@ -1,10 +1,10 @@
+#:schema https://api.nuon.co/v1/general/config-schema?type=action
 # action
 # description: prints 1-hour average health metrics (CPU, memory, disk, IOPS, DB
 # load) for the Postgres RDS instances — ctl-api and temporal — from Performance
 # Insights, one row each, in table format.
 name    = "inspect_postgres"
 labels  = { service = "rds", type = "debug" }
-label   = "aws"
 timeout = "2m"
 role    = "{{.nuon.install.id}}-provision"
 

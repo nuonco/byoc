@@ -1,3 +1,4 @@
+#:schema https://api.nuon.co/v1/general/config-schema?type=action
 # action
 # description: pre-teardown hook for the gcs_buckets component. Runs
 # automatically right before the component's Terraform destroy: detach the three
@@ -18,7 +19,6 @@
 # Google-managed encryption).
 name    = "gcs_teardown"
 labels  = { service = "gcs", type = "step" }
-label   = "gcp"
 timeout = "45m"
 role    = "{{.nuon.install.id}}-gcs-operations"
 

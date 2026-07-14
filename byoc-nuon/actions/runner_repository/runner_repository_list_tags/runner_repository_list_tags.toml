@@ -1,10 +1,10 @@
+#:schema https://api.nuon.co/v1/general/config-schema?type=action
 # action
 # description: lists image tags in the public ECR `runner` repository
 # provisioned by the `runner_repository` component
 # (components/0-tf-runner-repository.toml).
 name    = "runner_repository_list_tags"
 labels  = { service = "runner-repository", type = "debug" }
-label   = "aws"
 timeout = "30s"
 
 [[triggers]]

@@ -1,3 +1,4 @@
+#:schema https://api.nuon.co/v1/general/config-schema?type=container_image
 name   = "img_clickhouse_keeper"
 type   = "container_image"
 

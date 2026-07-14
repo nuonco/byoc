@@ -1,3 +1,4 @@
+#:schema https://api.nuon.co/v1/general/config-schema?type=runbook
 name        = "inspect_api"
 description = "Inspect ctl-api — version, git ref, ALB healthchecks, and CLI setup links."
 readme      = "./runbooks/inspect_api.md"

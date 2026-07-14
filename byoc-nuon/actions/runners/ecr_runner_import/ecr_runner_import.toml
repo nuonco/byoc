@@ -1,3 +1,4 @@
+#:schema https://api.nuon.co/v1/general/config-schema?type=action
 # action
 # Imports runner image tags from an upstream ECR public registry into the
 # install's own public ECR runner repository (component: runner_repository),

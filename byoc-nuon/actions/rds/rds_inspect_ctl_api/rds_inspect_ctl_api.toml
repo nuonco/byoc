@@ -1,9 +1,9 @@
+#:schema https://api.nuon.co/v1/general/config-schema?type=action
 # action
 # description: inspects the ctl-api (nuon) RDS instance — prints instance config and
 # Performance Insights OS metrics (CPU / memory / IOPS) for the last hour in table format.
 name    = "rds_inspect_ctl_api"
 labels  = { service = "rds", type = "debug" }
-label   = "aws"
 timeout = "2m"
 role    = "{{.nuon.install.id}}-provision"
 

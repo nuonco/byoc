@@ -1,4 +1,4 @@
-#:schema http://localhost:8081/v1/general/config-schema?type=inputs
+#:schema https://api.nuon.co/v1/general/config-schema?type=input
 name         = "nuon_db_instance_type"
 description  = "What RDS DB instance type would you like to deploy for nuon?"
 default      = "db.r6gd.large"

@@ -1,3 +1,4 @@
+#:schema https://api.nuon.co/v1/general/config-schema?type=runbook
 name        = "inspect_databases"
 description = "Health metrics for the databases: 1-hour Performance Insights averages for the Postgres RDS instances (ctl-api, temporal), plus a kubelet snapshot of the ClickHouse pods."
 readme      = "./runbooks/inspect_databases.md"

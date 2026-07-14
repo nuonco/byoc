@@ -1,3 +1,4 @@
+#:schema https://api.nuon.co/v1/general/config-schema?type=runbook
 name        = "dns_setup"
 description = "Show the DNS delegation records (nameservers) to share with the customer so they can delegate their domain to this install."
 readme      = "./runbooks/dns_setup.md"

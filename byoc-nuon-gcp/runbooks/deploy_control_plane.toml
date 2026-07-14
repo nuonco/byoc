@@ -1,3 +1,4 @@
+#:schema https://api.nuon.co/v1/general/config-schema?type=runbook
 name        = "deploy_control_plane"
 description = "Sync and deploy ctl-api and dashboard-ui."
 readme      = "./runbooks/deploy_control_plane.md"

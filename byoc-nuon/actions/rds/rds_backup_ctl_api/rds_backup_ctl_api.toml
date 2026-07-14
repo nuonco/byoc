@@ -1,9 +1,9 @@
+#:schema https://api.nuon.co/v1/general/config-schema?type=action
 # action
 # description: takes a deliberate manual snapshot of the ctl-api (nuon) RDS
 # instance and waits for it to complete. First step of the ctl-api RDS teardown.
 name    = "rds_backup_ctl_api"
 labels  = { service = "rds", type = "sop" }
-label   = "aws"
 timeout = "60m"
 role    = "{{.nuon.install.id}}-rds-operations"
 

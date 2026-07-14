@@ -1,3 +1,4 @@
+#:schema https://api.nuon.co/v1/general/config-schema?type=action
 # action
 # description: restarts dashboard-ui deployments after the dashboard_ui component deploys.
 name    = "dashboard_ui_restart"

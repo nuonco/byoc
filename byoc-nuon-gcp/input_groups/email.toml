@@ -1,4 +1,4 @@
-#:schema https://api.nuon.co/v1/general/config-schema?type=inputs
+#:schema https://api.nuon.co/v1/general/config-schema?type=input-group
 name         = "email"
 description  = "Configure email settings. Set after provisioning via the loops_setup runbook, which populates the central Loops secret and syncs it into the install."
 display_name = "Email"

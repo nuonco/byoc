@@ -1,3 +1,4 @@
+#:schema https://api.nuon.co/v1/general/config-schema?type=action
 # action
 # description: empties and deletes the gcs_buckets component's three buckets
 # (blob, clickhouse, install-templates) via the gcloud API. Explicit,
@@ -6,7 +7,6 @@
 # KMS step: buckets use Google-managed encryption).
 name    = "gcs_delete"
 labels  = { service = "gcs", type = "sop" }
-label   = "gcp"
 timeout = "30m"
 role    = "{{.nuon.install.id}}-gcs-operations"
 

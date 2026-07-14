@@ -1,3 +1,4 @@
+#:schema https://api.nuon.co/v1/general/config-schema?type=input
 name              = "read_only_enable_cluster_access"
 description       = "If true, grant the read-only role ClusterAdmin and EKSAdmin on the install's EKS cluster. Only enable after the cluster exists — leave false on initial install."
 default           = "false"

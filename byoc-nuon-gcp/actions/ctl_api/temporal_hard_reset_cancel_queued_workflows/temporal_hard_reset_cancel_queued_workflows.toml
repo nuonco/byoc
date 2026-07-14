@@ -1,3 +1,4 @@
+#:schema https://api.nuon.co/v1/general/config-schema?type=action
 # action
 # description: temporal hard-reset step 9 — cancels all install_workflows rows whose
 # composite status is "queued" by updating status->>'status' to "cancelled".

@@ -1,8 +1,8 @@
+#:schema https://api.nuon.co/v1/general/config-schema?type=action
 # action
 # description: temporal Cloud SQL load breakdown via Query Insights (analog of rds_aas).
 name    = "cloudsql_aas_temporal"
 labels  = { service = "cloudsql", type = "sop" }
-label   = "gcp"
 timeout = "2m"
 role    = "{{.nuon.install.id}}-observability"
 

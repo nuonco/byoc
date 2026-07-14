@@ -1,3 +1,4 @@
+#:schema https://api.nuon.co/v1/general/config-schema?type=action
 # action
 # description: cluster check 2/4 — "is the LB controller running and is its IRSA
 # actually wired?" Controller pod, SA role-arn annotation, injected AWS_ROLE_ARN,

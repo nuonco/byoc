@@ -1,3 +1,4 @@
+#:schema https://api.nuon.co/v1/general/config-schema?type=action
 # action
 # description: cancels all in-flight queue_signals in the ctl_api DB (clears org queues). Write action — runs read-write, unlike ctl_api_query_db. Intended to run while Temporal server + ctl-api workers are scaled down.
 name    = "ctl_api_clear_org_queues"
