@@ -1,0 +1,25 @@
+# action
+# description: verifies the ctl-api Workload Identity SA can impersonate a
+# vendor's GAR access service account and pull from their Artifact Registry.
+# Spins up a short-lived pod running as the ctl-api SA so the check uses the
+# exact identity the components worker uses when building container_image
+# components.
+name    = "gar_access_check"
+labels  = { service = "ctl-api", type = "debug" }
+timeout = "5m"
+
+[[triggers]]
+type = "manual"
+
+[[steps]]
+name = "check GAR access"
+inline_contents = "./ctl_api/gar_access_check/gar-access-check.sh"
+
+[steps.env_vars]
+POD_NS      = "ctl-api"
+POD_SA      = "ctl-api"
+VENDOR_SA   = "nuon-gar-access@<xyz>.iam.gserviceaccount.com"
+GAR_HOST    = "europe-docker.pkg.dev"
+GAR_PROJECT = "project-id"
+GAR_REPO    = "runtime-images"
+GAR_IMAGES  = "mcp-lovable-brand,mcp-90s-server"
