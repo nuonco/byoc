@@ -1,3 +1,4 @@
+# helm
 name           = "temporal_init_db"
 type           = "helm_chart"
 chart_name     = "temporal-init-db"
