@@ -1,3 +1,4 @@
+# permission
 type                 = "custom"
 name                 = "{{ .nuon.install.id }}-rds-operations"
 description          = "RDS backup operations (create/delete DB snapshots) for BYOC Nuon"

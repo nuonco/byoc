@@ -1,3 +1,4 @@
+# permission
 type = "maintenance"
 name                 = "{{ .nuon.install.id }}-maintenance"
 description          = "Maintenance Role for BYOC Nuon"
