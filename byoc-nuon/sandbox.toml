@@ -21,5 +21,4 @@ min_size              = "2"
 max_size              = "4"
 
 [[var_file]]
-#:schema https://api.nuon.co/v1/general/config-schema?type=sandbox
 contents = "./sandbox.tfvars"

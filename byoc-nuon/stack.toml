@@ -1,3 +1,4 @@
+# stack
 type        = "aws-cloudformation"
 name        = "byoc-nuon-install-{{.nuon.install.id}}"
 description = "QuickLink to install runner for BYOC Nuon: Install {{.nuon.install.id}}"
