@@ -1,3 +1,4 @@
+# permission
 type                 = "custom"
 name                 = "{{ .nuon.install.id }}-s3-operations"
 description          = "S3 bucket teardown operations (empty/delete buckets, schedule KMS key deletion) for BYOC Nuon"

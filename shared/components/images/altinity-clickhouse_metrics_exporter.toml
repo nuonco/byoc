@@ -1,3 +1,4 @@
+# container-image
 name   = "img_clickhouse_metrics_exporter"
 type   = "container_image"
 
