@@ -1,3 +1,4 @@
+# container-image
 name   = "img_clickhouse_keeper"
 type   = "container_image"
 
