@@ -1,6 +1,6 @@
 name         = "karpenter_ami_alias"
 description  = "The AWS AMI Alias for the Karpenter EC2 Nodeclasses. Set globally."
-default      = "al2023@v20260618"
+default      = "al2023@v20260709"
 display_name = "Runner Image URL"
 group        = "karpenter"
 required     = true
