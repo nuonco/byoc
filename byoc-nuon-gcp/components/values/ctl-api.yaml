@@ -198,12 +198,27 @@ worker:
           value: "1000000"
     - namespace: components
       minReplicas: 2
-      maxReplicas: 5
+      maxReplicas: 7
       command: ["/bin/service", "worker", "--namespace=components"]
+      nodeSelector:
+        pool.nuon.co: ctl-api-workers-components
+      tolerations:
+        - key: pool.nuon.co
+          operator: Equal
+          value: ctl-api-workers-components
+          effect: NoSchedule
       resources:
+        limits:
+          cpu: 3000m
+          memory: 6Gi
+          ephemeral-storage: 30Gi
         requests:
-          cpu: 1000m
-          memory: 1Gi
+          cpu: 3000m
+          memory: 6Gi
+          ephemeral-storage: 30Gi
+      extraEnv:
+        - name: TEMPORAL_CP_BUILD_MAX_CONCURRENT_ACTIVITIES
+          value: "10"
     - namespace: installs
       minReplicas: 2
       maxReplicas: 10

@@ -37,6 +37,12 @@ variable "ctl_api_worker_machine_type" {
   default     = "e2-custom-4-8192"
 }
 
+variable "ctl_api_workers_components_machine_type" {
+  type        = string
+  description = "Machine type for the dedicated ctl-api components worker pool. ~AWS c5.2xlarge."
+  default     = "e2-custom-8-16384"
+}
+
 variable "temporal_max_nodes" {
   type    = number
   default = 10
@@ -50,6 +56,11 @@ variable "ctl_api_max_nodes" {
 variable "ctl_api_worker_max_nodes" {
   type    = number
   default = 40
+}
+
+variable "ctl_api_workers_components_max_nodes" {
+  type    = number
+  default = 10
 }
 
 variable "ch_installation_machine_type" {

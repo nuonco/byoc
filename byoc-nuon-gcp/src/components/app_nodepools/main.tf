@@ -31,6 +31,13 @@ locals {
       node_count   = null
       disk_size_gb = 100
     }
+    ctl-api-workers-components = {
+      machine_type = var.ctl_api_workers_components_machine_type
+      min_nodes    = 1
+      max_nodes    = var.ctl_api_workers_components_max_nodes
+      node_count   = null
+      disk_size_gb = 100
+    }
     clickhouse-installation = {
       machine_type = var.ch_installation_machine_type
       min_nodes    = 2
