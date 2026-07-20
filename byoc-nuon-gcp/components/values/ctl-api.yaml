@@ -86,7 +86,8 @@ env:
   TEMPORAL_HOST: temporal-frontend-headless.temporal.svc.cluster.local:7233
   TEMPORAL_MAX_CONCURRENT_ACTIVITIES: !!string 3500
   TEMPORAL_STICKY_WORKFLOW_CACHE_SIZE: !!string 10000
-  TEMPORAL_UI_URL: http://temporal-ui.temporal.svc.cluster.local:8080
+  # served via the dashboard-ui proxy; a cluster-internal URL breaks the browser link
+  TEMPORAL_UI_URL: https://app.{{ .nuon.sandbox.outputs.nuon_dns.public_domain.name }}/admin/temporal
   SANDBOX_MODE_SLEEP: 1s
 
   BLOB_STORAGE_BUCKET: "{{ .nuon.components.gcs_buckets.outputs.blob_bucket.name }}"
@@ -305,6 +306,8 @@ api:
     port: 8087
     domain: "admin.{{ .nuon.sandbox.outputs.nuon_dns.public_domain.name }}"
       # domain_certificate: ""
+    alb:
+      enabled: {{ or .nuon.inputs.inputs.admin_dashboard_alb_enabled "false" }}
     autoscaling:
       minReplicas: 2
       maxReplicas: 4
