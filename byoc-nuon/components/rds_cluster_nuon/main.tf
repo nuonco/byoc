@@ -8,6 +8,10 @@ module "db" {
   instance_class    = var.instance_class
   allocated_storage = var.allocated_storage
 
+  storage_type       = var.storage_type
+  iops               = var.iops != "" ? tonumber(var.iops) : null
+  storage_throughput = var.storage_throughput != "" ? tonumber(var.storage_throughput) : null
+
   port     = var.port
   db_name  = var.db_name
   username = var.db_user
@@ -70,6 +74,10 @@ module "db_replica" {
   family         = "postgres15"
   engine_version = "15"
   instance_class = local.replica_instance_class
+
+  storage_type       = var.storage_type
+  iops               = var.iops != "" ? tonumber(var.iops) : null
+  storage_throughput = var.storage_throughput != "" ? tonumber(var.storage_throughput) : null
 
   port = var.port
 

@@ -89,6 +89,24 @@ variable "allocated_storage" {
   default     = 100
 }
 
+variable "storage_type" {
+  type        = string
+  description = "EBS storage type (gp2, gp3, io1, io2)."
+  default     = "gp3"
+}
+
+variable "iops" {
+  type        = string
+  description = "Provisioned IOPS. Empty = provider default for the storage type."
+  default     = ""
+}
+
+variable "storage_throughput" {
+  type        = string
+  description = "Provisioned throughput in MB/s (gp3 only). Empty = default."
+  default     = ""
+}
+
 variable "multi_az" {
   type        = string
   description = "Enable multi-az."
