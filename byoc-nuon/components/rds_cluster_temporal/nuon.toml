@@ -18,6 +18,7 @@ instance_class  = "{{ .nuon.install.inputs.temporal_db_instance_type }}"
 subnet_group_id = "{{ .nuon.components.rds_subnet.outputs.id }}"
 
 allocated_storage = "500"
+storage_type      = "gp3"
 apply_immediately = "true"
 storage_encrypted = "true"
 
