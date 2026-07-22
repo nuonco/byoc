@@ -13,7 +13,8 @@ resource "kubectl_manifest" "clickhouse_keeper_installation" {
     "spec" = {
       "defaults" = {
         "templates" = {
-          "podTemplate" = "default"
+          "dataVolumeClaimTemplate" = "default"
+          "podTemplate"             = "default"
         }
       }
       "configuration" = {
