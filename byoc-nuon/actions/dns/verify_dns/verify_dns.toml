@@ -1,0 +1,18 @@
+# action
+# description: verify the public DNS delegation for an install's public domain is
+# live by comparing the domain's resolved NS records (via a public resolver) to
+# the nameservers Nuon provisioned. Read-only.
+name    = "verify_dns"
+labels  = { service = "dns", type = "debug" }
+timeout = "5m"
+
+[[triggers]]
+type = "manual"
+
+[[steps]]
+name            = "Verify public domain delegation"
+inline_contents = "./dns/verify_dns/verify-dns.sh"
+
+[steps.env_vars]
+DOMAIN      = "{{ .nuon.sandbox.outputs.nuon_dns.public_domain.name }}"
+EXPECTED_NS = "{{ range $ns := .nuon.sandbox.outputs.nuon_dns.public_domain.nameservers }}{{ $ns }} {{ end }}"
