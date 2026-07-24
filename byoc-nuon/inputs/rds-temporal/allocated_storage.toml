@@ -1,0 +1,7 @@
+name         = "temporal_db_allocated_storage"
+description  = "How much storage (in GiB) would you like to allocate for the temporal RDS instance?"
+default      = "500"
+display_name = "RDS Allocated Storage"
+group        = "rds-temporal"
+
+user_configurable = false

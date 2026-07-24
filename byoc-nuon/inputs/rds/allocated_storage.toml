@@ -1,0 +1,8 @@
+name         = "nuon_db_allocated_storage"
+description  = "How much storage (in GiB) would you like to allocate for the nuon RDS instance?"
+default      = "100"
+display_name = "RDS Allocated Storage"
+group        = "rds-nuon"
+internal     = true
+
+user_configurable = false
