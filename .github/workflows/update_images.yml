@@ -8,8 +8,24 @@ env:
   VERSION: ${{ github.event.client_payload.version }}
 jobs:
   update_images:
-    name: Update Images
+    name: Update Images (${{ matrix.platform }})
     runs-on: ubuntu-latest
+    strategy:
+      # Each platform gets its own PR; don't cancel one if the other fails.
+      fail-fast: false
+      matrix:
+        include:
+          - platform: aws
+            dir: byoc-nuon
+            runner_values: byoc-nuon/components/values/ctl-api.yaml
+            # byoc-nuon symlinks these into shared/, so update the shared copies.
+            ctl_api_image: shared/components/images/nuon_ctl_api.toml
+            dashboard_ui_image: shared/components/images/nuon_dashboard_ui.toml
+          - platform: gcp
+            dir: byoc-nuon-gcp
+            runner_values: byoc-nuon-gcp/components/values/ctl-api.yaml
+            ctl_api_image: byoc-nuon-gcp/components/images/nuon_ctl_api.toml
+            dashboard_ui_image: byoc-nuon-gcp/components/images/nuon_dashboard_ui.toml
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
@@ -22,18 +38,20 @@ jobs:
           git_commit_gpgsign: true
       - name: Save version
         run: |
-          echo "$VERSION" > version.txt
+          echo "$VERSION" > "${{ matrix.dir }}/version.txt"
       - name: Update Image Tags
         run: |
-          ./scripts/update_runner_image_tag.sh ./byoc-nuon/components/values/ctl-api.yaml  "$VERSION"
-          ./scripts/update_image_tag.sh ./shared/components/images/nuon_ctl_api.toml     "$VERSION"
-          ./scripts/update_image_tag.sh ./shared/components/images/nuon_dashboard_ui.toml "$VERSION"
+          ./scripts/update_runner_image_tag.sh "${{ matrix.runner_values }}"      "$VERSION"
+          ./scripts/update_image_tag.sh        "${{ matrix.ctl_api_image }}"      "$VERSION"
+          ./scripts/update_image_tag.sh        "${{ matrix.dashboard_ui_image }}" "$VERSION"
       - name: Commit changes
         run: |
-          git checkout -b "nuonbot/update-${VERSION}"
+          git checkout -b "nuonbot/update-${{ matrix.platform }}-${VERSION}"
           git add .
-          git commit -m "ci: update images for Nuon ${VERSION}"
-          git push -u origin "nuonbot/update-${VERSION}"
+          git commit -m "ci: update ${{ matrix.platform }} images for Nuon ${VERSION}"
+          git push -u origin "nuonbot/update-${{ matrix.platform }}-${VERSION}"
       - name: Open PR
         run: |
-          gh pr create --title "ci: update images for Nuon ${VERSION}" --body "ci: update images for Nuon ${VERSION}"
+          gh pr create \
+            --title "ci: update ${{ matrix.platform }} images for Nuon ${VERSION}" \
+            --body "ci: update ${{ matrix.platform }} images for Nuon ${VERSION}"
