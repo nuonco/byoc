@@ -9,6 +9,11 @@ resource "google_dns_managed_zone" "nuon_dns" {
   dns_name    = "${var.nuon_dns_domain}."
   description = "Nuon DNS zone for install ${var.install_id}"
 
+  # Records here are written by external-dns / cert-manager, not Terraform. Cloud
+  # DNS refuses to delete a non-empty zone, so without this a nuon_dns_domain
+  # change (dns_name is ForceNew) fails on the destroy half of the replace.
+  force_destroy = true
+
   labels = {
     "install-nuon-co-id"     = var.install_id
     "component-nuon-co-name" = "management"
