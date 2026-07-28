@@ -1,5 +1,5 @@
 name        = "inspect_migrations"
-description = "Inspect ctl-api schema migrations — the last 10 by created_at, with status."
+description = "Inspect ctl-api schema migrations by created_at, with status. Count is set by MIGRATIONS_LIMIT."
 readme      = "./runbooks/inspect_migrations.md"
 labels      = { service = "ctl-api", type = "debug" }
 

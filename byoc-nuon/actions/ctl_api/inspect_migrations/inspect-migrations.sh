@@ -4,13 +4,21 @@
 # Emits one JSON object per migration to $NUON_ACTIONS_OUTPUT_FILEPATH, keyed by
 # "<created_at>_<id>" so the README map-range renders them oldest -> newest.
 # Migrations run in sequence, so any error / in-progress migration is naturally
-# the most recent (last) row. Limited to the last 10 by created_at.
+# the most recent (last) row. Shows the last MIGRATIONS_LIMIT by created_at, 0 for all.
 
 set -e
 set -o pipefail
 set -u
 
 admin_api_addr="$ADMIN_API_URL"
+
+limit="${MIGRATIONS_LIMIT:-10}"
+case "$limit" in
+  ''|*[!0-9]*)
+    echo "[inspect_migrations] invalid MIGRATIONS_LIMIT '$limit', using 10" >&2
+    limit=10
+    ;;
+esac
 
 echo "[inspect_migrations] GET $admin_api_addr/v1/general/migrations"
 migrations=$(curl --max-time 30 -s "$admin_api_addr/v1/general/migrations")
@@ -21,12 +29,12 @@ if ! echo "$migrations" | jq -e 'type == "array"' >/dev/null 2>&1; then
 fi
 
 count=$(echo "$migrations" | jq 'length')
-echo "[inspect_migrations] $count migration(s) returned"
+echo "[inspect_migrations] $count migration(s) returned, showing last $limit"
 
-echo "$migrations" | jq -c '
+echo "$migrations" | jq -c --argjson limit "$limit" '
   [ .[] | { id, name, status: (.status // "unknown"), created_at, updated_at } ]
   | sort_by(.created_at)
-  | .[-10:][]
+  | .[-$limit:][]
   | { ("\(.created_at)_\(.id)"): . }
 ' >> "$NUON_ACTIONS_OUTPUT_FILEPATH"
 

@@ -1,7 +1,7 @@
 # action
 name    = "ctl_api_post_deploy_startup"
 labels  = { service = "ctl-api", type = "step" }
-timeout = "1m30s"
+timeout = "20m"
 
 [[triggers]]
 type           = "post-deploy-component"
@@ -20,3 +20,7 @@ SECRET_ARN = "{{ .nuon.components.rds_cluster_nuon.outputs.db_instance_master_us
 DB_ADDR    = "{{ .nuon.components.rds_cluster_nuon.outputs.address }}"
 DB_PORT    = "5432"
 REGION     = "{{ .nuon.install_stack.outputs.region }}"
+
+# off by default: scaling to 0 takes the whole control plane down for the migration.
+# flip to "true" for a deploy with a heavy index migration that live writes would block.
+SCALE_DOWN = "false"
