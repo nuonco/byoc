@@ -1,6 +1,6 @@
 # action
-# description: lists ctl-api schema migrations (last 20 by updated_at) for the
-# README Migrations section, via the admin API.
+# description: lists ctl-api schema migrations for the README Migrations section, via
+# the admin API. Count is MIGRATIONS_LIMIT, newest last.
 name    = "inspect_migrations"
 labels  = { service = "ctl-api", type = "report" }
 timeout = "5m"
@@ -22,3 +22,6 @@ inline_contents = "./ctl_api/inspect_migrations/inspect-migrations.sh"
 
 [steps.env_vars]
 ADMIN_API_URL = "http://admin.{{ .nuon.sandbox.outputs.nuon_dns.internal_domain.name }}"
+
+# how many migrations to report, newest last. 0 for all.
+MIGRATIONS_LIMIT = "10"
