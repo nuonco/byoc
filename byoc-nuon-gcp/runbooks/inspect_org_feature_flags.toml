@@ -1,0 +1,9 @@
+name        = "inspect_org_feature_flags"
+description = "Inspect every non-deleted organization's ctl-api feature flags."
+readme      = "./runbooks/inspect_org_feature_flags.md"
+labels      = { service = "ctl-api", type = "debug" }
+
+[[steps]]
+name        = "Inspect org feature flags"
+type        = "action"
+action_name = "inspect_org_feature_flags"

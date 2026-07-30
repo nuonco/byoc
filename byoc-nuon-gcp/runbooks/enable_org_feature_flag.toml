@@ -1,0 +1,27 @@
+name        = "enable_org_feature_flag"
+description = "Enable one ctl-api feature flag for every non-deleted organization."
+readme      = "./runbooks/enable_org_feature_flag.md"
+labels      = { service = "ctl-api", type = "sop" }
+
+[[input]]
+name         = "feature_flag"
+display_name = "Feature key"
+description  = "Exact feature key from the ctl-api feature catalog."
+required     = true
+type         = "string"
+
+[[input]]
+name         = "confirmation"
+display_name = "Confirmation"
+description  = "Type the feature key again. It must match exactly."
+required     = true
+type         = "string"
+
+[[steps]]
+name        = "Enable org feature flag"
+type        = "action"
+action_name = "enable_org_feature_flag"
+
+[steps.env_vars]
+FEATURE_FLAG = "{{ .runbook_inputs.feature_flag }}"
+CONFIRMATION = "{{ .runbook_inputs.confirmation }}"

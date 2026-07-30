@@ -1,0 +1,24 @@
+name    = "inspect_org_feature_flags"
+labels  = { service = "ctl-api", type = "report" }
+timeout = "5m"
+
+[[triggers]]
+type = "manual"
+
+[[steps]]
+name            = "summary"
+inline_contents = "./ctl_api/inspect_org_feature_flags/inspect-org-feature-flags.sh"
+
+[steps.env_vars]
+ADMIN_API_URL = "http://admin.{{ .nuon.sandbox.outputs.nuon_dns.internal_domain.name }}"
+ADMIN_EMAIL   = "feature-flags-runbook@nuon.co"
+OUTPUT_MODE   = "summary"
+
+[[steps]]
+name            = "orgs"
+inline_contents = "./ctl_api/inspect_org_feature_flags/inspect-org-feature-flags.sh"
+
+[steps.env_vars]
+ADMIN_API_URL = "http://admin.{{ .nuon.sandbox.outputs.nuon_dns.internal_domain.name }}"
+ADMIN_EMAIL   = "feature-flags-runbook@nuon.co"
+OUTPUT_MODE   = "orgs"
