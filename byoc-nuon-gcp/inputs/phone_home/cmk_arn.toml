@@ -1,0 +1,8 @@
+name         = "phone_home_cmk_arn"
+description  = "CMK ARN for Phone Home Secrets"
+default      = ""
+display_name = "Phone Home CMK ARK"
+required     = false
+group        = "phone_home"
+
+user_configurable = false

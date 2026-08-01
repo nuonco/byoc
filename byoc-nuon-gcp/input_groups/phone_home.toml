@@ -1,0 +1,3 @@
+name         = "phone_home"
+description  = "AWS Resources for AWS Lambda phone home auth."
+display_name = "Phone Home"

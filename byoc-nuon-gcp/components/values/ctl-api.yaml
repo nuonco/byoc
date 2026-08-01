@@ -101,6 +101,12 @@ env:
   MANAGEMENT_GCP_ORG_RUNNER_SA_EMAIL: "{{ .nuon.install_stack.outputs.custom_sa_emails.org_runner }}"
   MANAGEMENT_ACCOUNT_ID: "{{ .nuon.install_stack.outputs.project_id }}"
 
+  # for GCP: management region must be the region in which the phone home secret resources live
+  MANAGEMENT_REGION: "{{ .nuon.inputs.inputs.phone_home_region }}"
+
+  AWS_PHONE_HOME_CMK_ARN: "{{ .nuon.inputs.inputs.phone_home_cmk_arn }}"
+  AWS_PHONE_HOME_SECRETS_ROLE_ARN: "{{ .nuon.inputs.inputs.phone_home_secret_role_arn }}"
+
   DNS_ROOT_DOMAIN: "{{ .nuon.components.management.outputs.dns_zone.domain }}"
   DNS_ZONE_ID: "{{ .nuon.components.management.outputs.dns_zone.name }}"
 
