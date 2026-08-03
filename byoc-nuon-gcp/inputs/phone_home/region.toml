@@ -1,0 +1,8 @@
+name         = "phone_home_region"
+description  = "AWS Region for Phone Home Secrets"
+default      = ""
+display_name = "Phone Home AWS Resources Region"
+required     = false
+group        = "phone_home"
+
+user_configurable = false
