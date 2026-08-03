@@ -22,6 +22,10 @@ defaults:
 env:
   NUON_DEBUG: "${{ github.event.inputs.NUON_DEBUG }}"
 
+permissions:
+  id-token: write
+  contents: read
+
 jobs:
   sync:
     runs-on: ubuntu-latest
@@ -45,37 +49,29 @@ jobs:
             fi
           fi
 
-      - name: Install CLI
-        if: steps.check_label.outputs.skip != 'true'
-        id: cli
-        run: ./scripts/install-cli.sh
-
       - name: Sync to BYOC(org4f5hq4tyo44legra6r4nm18)
         if: steps.check_label.outputs.skip != 'true'
         id: sync_to_org4f5hq4tyo44legra6r4nm18
-        working-directory: byoc-nuon
-        run: nuon apps sync .
-        env:
-          NUON_ORG_ID: org4f5hq4tyo44legra6r4nm18
-          NUON_API_TOKEN: ${{ secrets.NUON_API_TOKEN_org4f5hq4tyo44legra6r4nm18 }}
+        uses: nuonco/actions-nuon@v0.4.0
+        with:
+          org_id: org4f5hq4tyo44legra6r4nm18
+          command: nuon apps sync ./byoc-nuon
 
       - name: Sync to retool(orggxqsc8f5zns1jra0oplc0ff)
         if: steps.check_label.outputs.skip != 'true'
         id: sync_to_orggxqsc8f5zns1jra0oplc0ff
-        working-directory: byoc-nuon
-        run: nuon apps sync .
-        env:
-          NUON_ORG_ID: orggxqsc8f5zns1jra0oplc0ff
-          NUON_API_TOKEN: ${{ secrets.NUON_API_TOKEN_orggxqsc8f5zns1jra0oplc0ff }}
+        uses: nuonco/actions-nuon@v0.4.0
+        with:
+          org_id: orggxqsc8f5zns1jra0oplc0ff
+          command: nuon apps sync ./byoc-nuon
 
       - name: Sync GCP to BYOC(org4f5hq4tyo44legra6r4nm18)
         if: steps.check_label.outputs.skip != 'true'
         id: sync_gcp_to_org4f5hq4tyo44legra6r4nm18
-        working-directory: byoc-nuon-gcp
-        run: nuon apps sync .
-        env:
-          NUON_ORG_ID: org4f5hq4tyo44legra6r4nm18
-          NUON_API_TOKEN: ${{ secrets.NUON_API_TOKEN_org4f5hq4tyo44legra6r4nm18 }}
+        uses: nuonco/actions-nuon@v0.4.0
+        with:
+          org_id: org4f5hq4tyo44legra6r4nm18
+          command: nuon apps sync ./byoc-nuon-gcp
 
       - name: Trigger BYOC install configs sync in nuonco/mono
         if: steps.check_label.outputs.skip != 'true' && success()
