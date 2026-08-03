@@ -1,0 +1,9 @@
+name         = "oidc_federation_enabled"
+description  = "Enable OIDC federation, letting CI/CD workloads exchange an OIDC token for a short-lived Nuon API token instead of a stored static token."
+default      = "false"
+display_name = "OIDC Federation Enabled"
+required     = false
+group        = "nuon"
+type         = "bool"
+
+user_configurable = false

@@ -126,6 +126,8 @@ env:
   QUEUE_CONTINUE_AS_NEW_HISTORY_MAX: "1500"
   QUEUE_SIGNAL_CLEANUP_ENABLED: "true"
 
+  OIDC_FEDERATION_ENABLED: '{{ or .nuon.inputs.inputs.oidc_federation_enabled "false" }}'
+
 envSecrets:
   - name: "GITHUB_APP_KEY"
     valueFrom:
