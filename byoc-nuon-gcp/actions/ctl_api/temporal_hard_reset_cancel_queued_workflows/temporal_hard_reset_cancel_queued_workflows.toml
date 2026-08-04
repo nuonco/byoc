@@ -3,7 +3,7 @@
 # composite status is "queued" by updating status->>'status' to "cancelled".
 name    = "temporal_hard_reset_cancel_queued_workflows"
 labels  = { service = "ctl-api", type = "step" }
-timeout = "5m"
+timeout = "10m" # covers a cold ctl-api-worker node-pool scale-up plus the 300s pod-ready wait
 
 [[triggers]]
 type = "manual"

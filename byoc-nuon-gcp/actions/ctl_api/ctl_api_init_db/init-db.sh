@@ -76,12 +76,53 @@ echo "[ctl_api init] kubectl auth whoami"
 echo "pwd: "`pwd`
 kubectl_retry auth whoami -o json | jq -c
 
-echo "[ctl_api init] scale up the deployment"
-kubectl_retry scale -n ctl-api --replicas=1 deployment/ctl-api-init
-kubectl_retry wait deployment -n ctl-api ctl-api-init --for condition=Available=True --timeout=300s
+# One-shot psql jump pod, stamped out of the suspended CronJob template that
+# the ctl-api-init chart deploys (it mounts the same /var/init-config
+# ConfigMap). Each run gets its own job so back-to-back actions can never
+# grab each other's pods (the old shared-deployment race).
+suffix="$(head -c 64 /dev/urandom | LC_ALL=C tr -dc 'a-z0-9' | head -c 5)"
+job_name="ctl-api-init-db-$(date -u +%Y%m%d-%H%M%S)-${suffix}"
 
-echo "[ctl_api init] get a pod from the deployment"
-pod=`kubectl_retry -n ctl-api get pods --selector app=ctl-api-init -o json | jq -r '.items[0].metadata.name'`
+cleanup() {
+  kubectl delete job -n ctl-api "$job_name" --ignore-not-found --wait=false >/dev/null 2>&1 || true
+}
+# the job template's sleep/activeDeadlineSeconds/ttlSecondsAfterFinished
+# backstops reap the job if the runner dies before this fires
+trap cleanup EXIT
+
+echo "[ctl_api init] creating job $job_name"
+# a retried create can land after a first attempt already reached the server,
+# so on failure re-check whether the job exists before giving up
+if ! kubectl_retry create job -n ctl-api "$job_name" --from=cronjob/ctl-api-psql; then
+  kubectl_retry get job -n ctl-api "$job_name" >/dev/null
+fi
+
+# no action-run/workflow id is exposed to action steps, so attribute the job
+# with what the runner env does provide
+kubectl_retry annotate job -n ctl-api "$job_name" --overwrite \
+  "nuon.co/action=ctl-api-init-db" \
+  "nuon.co/install-id=${NUON_INSTALL_ID:-unknown}" \
+  "nuon.co/runner-id=${RUNNER_ID:-unknown}"
+
+echo "[ctl_api init] waiting for the job pod"
+# the job controller creates the pod asynchronously: poll for the object
+# first, then wait for readiness (a cold node pool can take minutes)
+pod=""
+for _ in $(seq 1 30); do
+  pod=$(kubectl get pods -n ctl-api -l "job-name=${job_name}" \
+    -o jsonpath='{.items[0].metadata.name}' 2>/dev/null) && [ -n "$pod" ] && break
+  sleep 2
+done
+if [ -z "$pod" ]; then
+  echo "[ctl_api init] ERROR: job pod never appeared" >&2
+  kubectl describe job -n ctl-api "$job_name" >&2 || true
+  exit 1
+fi
+if ! kubectl_retry wait -n ctl-api "pod/${pod}" --for=condition=Ready --timeout=300s; then
+  kubectl describe pod -n ctl-api "$pod" >&2 || true
+  exit 1
+fi
+echo "[ctl_api init] using pod: $pod"
 
 echo "[ctl_api init] reading db access secrets from k8s"
 admin_username=$(kubectl_retry get -n ctl-api secret nuon-db -o jsonpath='{.data.username}' | base64 -d)
@@ -137,5 +178,4 @@ kubectl_retry \
   env "PGHOST=$db_addr" "PGPORT=$db_port" "PGUSER=$admin_username" "PGPASSWORD=$admin_password" \
   psql --no-psqlrc -d "ctl_api" -c "\du"
 
-echo "[ctl_api init] scale down the deployment"
-kubectl_retry scale -n ctl-api --current-replicas=1 --replicas=0 deployment/ctl-api-init
+echo "[ctl_api init] done (job cleaned up by the EXIT trap)"

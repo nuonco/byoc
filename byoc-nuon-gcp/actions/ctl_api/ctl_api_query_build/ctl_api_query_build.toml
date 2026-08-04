@@ -1,7 +1,7 @@
 # action
 name    = "ctl_api_query_build"
 labels  = { service = "ctl-api", type = "tool" }
-timeout = "5m"
+timeout = "10m" # covers a cold ctl-api-worker node-pool scale-up plus the 300s pod-ready wait
 
 [[triggers]]
 type = "manual"

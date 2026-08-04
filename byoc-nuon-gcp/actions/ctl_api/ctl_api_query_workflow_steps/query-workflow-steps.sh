@@ -36,14 +36,42 @@ fi
 echo "[query workflow steps] kubectl auth whoami"
 kubectl auth whoami -o json | jq -c
 
-echo "[query workflow steps] scale up ctl-api-init"
-kubectl scale -n ctl-api --replicas=1 deployment/ctl-api-init
-kubectl wait deployment -n ctl-api ctl-api-init --for condition=Available=True --timeout=300s
+# One-shot psql jump pod, stamped out of the suspended CronJob template that
+# the ctl-api-init chart deploys. Each run gets its own job so concurrent
+# actions can never grab each other's pods.
+suffix="$(head -c 64 /dev/urandom | LC_ALL=C tr -dc 'a-z0-9' | head -c 5)"
+job_name="ctl-api-query-wf-steps-$(date -u +%Y%m%d-%H%M%S)-${suffix}"
 
-pod=$(kubectl -n ctl-api get pods --selector app=ctl-api-init --field-selector=status.phase=Running -o json \
-  | jq -r '[.items[] | select(.metadata.deletionTimestamp == null)] | sort_by(.metadata.creationTimestamp) | last | .metadata.name')
-if [[ -z "$pod" || "$pod" == "null" ]]; then
-  echo "[query workflow steps] ERROR: no running ctl-api-init pod found" >&2
+cleanup() {
+  kubectl delete job -n ctl-api "$job_name" --ignore-not-found --wait=false >/dev/null 2>&1 || true
+}
+# the job template's sleep/activeDeadlineSeconds/ttlSecondsAfterFinished
+# backstops reap the job if the runner dies before this fires
+trap cleanup EXIT
+
+echo "[query workflow steps] creating job $job_name"
+kubectl create job -n ctl-api "$job_name" --from=cronjob/ctl-api-psql
+kubectl annotate job -n ctl-api "$job_name" --overwrite \
+  "nuon.co/action=ctl-api-query-wf-steps" \
+  "nuon.co/install-id=${NUON_INSTALL_ID:-unknown}" \
+  "nuon.co/runner-id=${RUNNER_ID:-unknown}"
+
+echo "[query workflow steps] waiting for the job pod"
+# the job controller creates the pod asynchronously: poll for the object
+# first, then wait for readiness (a cold node pool can take minutes)
+pod=""
+for _ in $(seq 1 30); do
+  pod=$(kubectl get pods -n ctl-api -l "job-name=${job_name}" \
+    -o jsonpath='{.items[0].metadata.name}' 2>/dev/null) && [ -n "$pod" ] && break
+  sleep 2
+done
+if [[ -z "$pod" ]]; then
+  echo "[query workflow steps] ERROR: job pod never appeared" >&2
+  kubectl describe job -n ctl-api "$job_name" >&2 || true
+  exit 1
+fi
+if ! kubectl wait -n ctl-api "pod/${pod}" --for=condition=Ready --timeout=300s; then
+  kubectl describe pod -n ctl-api "$pod" >&2 || true
   exit 1
 fi
 echo "[query workflow steps] using pod: $pod"
@@ -204,9 +232,6 @@ rows_json=$(kubectl --namespace=ctl-api exec -i "$pod" -- \
   env "PGHOST=$db_addr" "PGPORT=$db_port" "PGUSER=$db_user" "PGPASSWORD=$db_token" "PGSSLMODE=require" \
   psql --no-psqlrc -d "$db_name" -A -t -q -c "$sql" \
   | tr -d '\r' | { grep -E '^\[' || true; } | tail -n 1)
-
-echo "[query workflow steps] scale down ctl-api-init"
-kubectl scale -n ctl-api --current-replicas=1 --replicas=0 deployment/ctl-api-init
 
 if [[ -z "$rows_json" ]]; then
   rows_json='[]'
