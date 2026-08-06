@@ -55,7 +55,7 @@ jobs:
         uses: nuonco/actions-nuon@v0.4.1
         with:
           org_id: org4f5hq4tyo44legra6r4nm18
-          command: nuon apps sync ./byoc-nuon
+          command: apps sync ./byoc-nuon
 
       - name: Sync to retool(orggxqsc8f5zns1jra0oplc0ff)
         if: steps.check_label.outputs.skip != 'true'
@@ -63,7 +63,7 @@ jobs:
         uses: nuonco/actions-nuon@v0.4.1
         with:
           org_id: orggxqsc8f5zns1jra0oplc0ff
-          command: nuon apps sync ./byoc-nuon
+          command: apps sync ./byoc-nuon
 
       - name: Sync GCP to BYOC(org4f5hq4tyo44legra6r4nm18)
         if: steps.check_label.outputs.skip != 'true'
@@ -71,7 +71,7 @@ jobs:
         uses: nuonco/actions-nuon@v0.4.1
         with:
           org_id: org4f5hq4tyo44legra6r4nm18
-          command: nuon apps sync ./byoc-nuon-gcp
+          command: apps sync ./byoc-nuon-gcp
 
       - name: Trigger BYOC install configs sync in nuonco/mono
         if: steps.check_label.outputs.skip != 'true' && success()
