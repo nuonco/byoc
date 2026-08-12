@@ -52,7 +52,7 @@ jobs:
       - name: Sync to BYOC(org4f5hq4tyo44legra6r4nm18)
         if: steps.check_label.outputs.skip != 'true'
         id: sync_to_org4f5hq4tyo44legra6r4nm18
-        uses: nuonco/actions-nuon@v0.4.1
+        uses: nuonco/actions-nuon@v0.4.2
         with:
           org_id: org4f5hq4tyo44legra6r4nm18
           command: apps sync ./byoc-nuon
@@ -60,7 +60,7 @@ jobs:
       - name: Sync to retool(orggxqsc8f5zns1jra0oplc0ff)
         if: steps.check_label.outputs.skip != 'true'
         id: sync_to_orggxqsc8f5zns1jra0oplc0ff
-        uses: nuonco/actions-nuon@v0.4.1
+        uses: nuonco/actions-nuon@v0.4.2
         with:
           org_id: orggxqsc8f5zns1jra0oplc0ff
           command: apps sync ./byoc-nuon
@@ -68,7 +68,7 @@ jobs:
       - name: Sync GCP to BYOC(org4f5hq4tyo44legra6r4nm18)
         if: steps.check_label.outputs.skip != 'true'
         id: sync_gcp_to_org4f5hq4tyo44legra6r4nm18
-        uses: nuonco/actions-nuon@v0.4.1
+        uses: nuonco/actions-nuon@v0.4.2
         with:
           org_id: org4f5hq4tyo44legra6r4nm18
           command: apps sync ./byoc-nuon-gcp
