@@ -35,15 +35,6 @@ server:
     limit.blobSize.error:
       - value: 5242880
       
-    matching.numTaskqueueWritePartitions:
-      - value: 6
-        constraints:
-          namespace: "runners"
-    matching.numTaskqueueReadPartitions:
-      - value: 6
-        constraints:
-          namespace: "runners"
-   
     frontend.namespaceRPS:
       - value: 15000
         constraints: {}
@@ -75,6 +66,16 @@ server:
         constraints: {}
     history.maxNamespaceRPSPerInstance:
       - value: 20000
+        constraints: {}
+
+    history.timerProcessorMaxPollRPS:
+      - value: 500
+        constraints: {}
+    history.transferProcessorMaxPollRPS:
+      - value: 500
+        constraints: {}
+    history.visibilityProcessorMaxPollRPS:
+      - value: 500
         constraints: {}
   config:
     prometheus:
