@@ -31,7 +31,7 @@ api_url: https://api.{{ $public_domain }}
 Log in:
 
 ```yaml
-nuon -f ~/.nuon.byoc login
+nuon -C ~/.nuon.byoc login
 ```
 
 <nuon-action-card name="api_status"></nuon-action-card>
