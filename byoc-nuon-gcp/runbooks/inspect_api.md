@@ -41,5 +41,5 @@ api_url: https://api.{{ $public_domain }}
 Log in:
 
 ```yaml
-nuon -f ~/.nuon.byoc login
+nuon -C ~/.nuon.byoc login
 ```
