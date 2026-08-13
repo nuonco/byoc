@@ -1,0 +1,12 @@
+# container-image
+#
+# Emberstack Reflector, which mirrors the Strimzi mTLS cert secrets from the
+# kafka namespace into ctl-api's. Kubernetes secrets do not cross namespaces, and
+# the alternative — widening the operator's watchNamespaces — has a much larger
+# blast radius.
+name   = "img_emberstack_reflector"
+type   = "container_image"
+
+[public]
+image_url = "ghcr.io/emberstack/kubernetes-reflector"
+tag       = "7.1.210"

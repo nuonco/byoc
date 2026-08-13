@@ -1,0 +1,9 @@
+name         = "kafka_ui_readonly"
+description  = "Run the Kafka UI in read-only mode. Default is write mode, which is deliberate — producing records and resetting consumer group offsets is the point of having it during an incident. Note this flag only hides the buttons; narrowing access also needs the kafka-ui KafkaUser ACLs tightened."
+default      = "false"
+display_name = "Kafka UI Read-Only"
+required     = false
+group        = "kafka"
+type         = "bool"
+
+user_configurable = false

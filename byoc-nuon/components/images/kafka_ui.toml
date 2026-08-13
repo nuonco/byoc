@@ -1,0 +1,9 @@
+# container-image
+#
+# kafbat Kafka UI, reachable only through the dashboard-ui proxy at /admin/kafka.
+name   = "img_kafka_ui"
+type   = "container_image"
+
+[public]
+image_url = "ghcr.io/kafbat/kafka-ui"
+tag       = "v1.5.0"

@@ -1,0 +1,16 @@
+---
+# Mirrored into the install's own registry; mono's ECR mirror ref does not exist
+# in a customer account.
+image:
+  repository: "{{ .nuon.components.img_emberstack_reflector.outputs.image.repository }}"
+  tag: "{{ .nuon.components.img_emberstack_reflector.outputs.image.tag }}"
+
+# Small single-replica controller that only watches annotated objects. It holds no
+# state — a restart just re-reconciles.
+resources:
+  requests:
+    cpu: 50m
+    memory: 64Mi
+  limits:
+    cpu: 200m
+    memory: 128Mi
