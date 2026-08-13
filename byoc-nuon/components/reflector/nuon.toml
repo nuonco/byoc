@@ -1,0 +1,25 @@
+# helm
+#
+# Emberstack Reflector. Mirrors secrets and configmaps between namespaces based on
+# annotations on the source object.
+#
+# Needed because Strimzi writes its mTLS cert secrets into the kafka namespace
+# while ctl-api runs in its own, and Kubernetes secrets do not cross namespaces.
+# The annotations that drive it are set on the Kafka CR and KafkaUser templates in
+# the kafka_cluster component, not here.
+#
+# Cluster-wide by design, matching how mono installs it in infra/eks. Nothing else
+# depends on it today, so it is safe to install ahead of Kafka.
+name           = "reflector"
+type           = "helm_chart"
+chart_name     = "reflector"
+namespace      = "reflector"
+storage_driver = "configmap"
+
+[public_repo]
+repo      = "emberstack/helm-charts"
+directory = "charts/reflector"
+branch    = "reflector-7.1.210"
+
+[[values_file]]
+contents = "./values/reflector.yaml"

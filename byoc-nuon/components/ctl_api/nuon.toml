@@ -10,7 +10,9 @@ dependencies   = ["rds_cluster_nuon", "karpenter_nodepools", "clickhouse_cluster
 [public_repo]
 repo      = "nuonco/charts"
 directory = "charts/ctl-api"
-branch    = "ctl-api-v0.5.0"
+# TEMP: the Kafka cert mounts and consumer deployments land in chart 0.6.0.
+# Revert to a tagged release (ctl-api-v0.6.0) once nuonco/charts#<pr> merges.
+branch    = "ey/ctl-api-kafka"
 
 [[values_file]]
 contents = "./values/ctl-api.yaml"

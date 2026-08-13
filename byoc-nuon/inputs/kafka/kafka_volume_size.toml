@@ -1,0 +1,9 @@
+name         = "kafka_volume_size"
+description  = "Per-broker log directory size. Kafka is a retention-window buffer, not the store of record — ClickHouse is. EBS volumes can only grow, and the kafka-gp3 storage class allows expansion, so raising this resizes the PVCs in place."
+default      = "100Gi"
+display_name = "Kafka Broker Volume Size"
+required     = false
+group        = "kafka"
+type         = "string"
+
+user_configurable = false

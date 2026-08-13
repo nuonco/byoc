@@ -1,0 +1,14 @@
+# container-image
+#
+# Strimzi cluster operator, and the entity/user operator the Kafka CR runs.
+# Mirrored into the install's registry rather than pulled from quay.io, so a
+# cluster with restricted egress still works.
+#
+# Strimzi does NOT support skipping minor versions on upgrade — bump one minor at
+# a time, and keep this in lockstep with img_strimzi_kafka's tag prefix.
+name   = "img_strimzi_operator"
+type   = "container_image"
+
+[public]
+image_url = "quay.io/strimzi/operator"
+tag       = "1.1.0"

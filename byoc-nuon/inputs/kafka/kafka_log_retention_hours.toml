@@ -1,0 +1,9 @@
+name         = "kafka_log_retention_hours"
+description  = "How long records are retained on the brokers, in hours. Also drives the per-topic retention.ms the create-topics job applies. Sized against broker volume: with RF3 each broker holds roughly one full copy of the retention window."
+default      = "168"
+display_name = "Kafka Retention (hours)"
+required     = false
+group        = "kafka"
+type         = "string"
+
+user_configurable = false

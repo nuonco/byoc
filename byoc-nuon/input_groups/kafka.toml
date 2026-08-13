@@ -1,0 +1,3 @@
+name         = "kafka"
+description  = "Configure the Kafka cluster used for runner heartbeat and telemetry ingest."
+display_name = "Kafka configuration"

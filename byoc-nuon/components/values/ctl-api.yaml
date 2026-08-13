@@ -52,6 +52,31 @@ env:
   CLICKHOUSE_DB_NAME: "ctl_api"
   CLICKHOUSE_DB_USER: clickhouse
 
+  # Kafka is provisioned but not yet carrying traffic. While KAFKA_ENABLED is false
+  # the producer no-ops and every path it fronts — heartbeats, otel log records and
+  # otel trace spans — takes its legacy inline ClickHouse write. The consumers below
+  # no-op too: their pods run and report healthy, holding no partitions, until this
+  # flips.
+  #
+  # Flipping this to "true" is a deliberate, separate change. Before doing it, note
+  # that the heartbeat produce is fire-and-forget: a broker outage drops heartbeats
+  # rather than falling back, and a runner with no recent heartbeats is marked
+  # offline by the health cron and stops accepting jobs. Alert on
+  # kafka.producer.message_count{status:err,reason:broker_error} first.
+  #
+  # This is NOT what gates the cert mounts — those are unconditional in the chart and
+  # safe while the secrets do not exist yet, so a mirroring failure surfaces now
+  # rather than at cutover.
+  KAFKA_ENABLED: "false"
+  # Strimzi derives this from the Kafka CR name, so it is the same in every install —
+  # hardcoded rather than read from the kafka_cluster component's outputs.
+  KAFKA_BROKERS: nuon-kafka-bootstrap.kafka.svc.cluster.local:9093
+  # SSL, not SASL_SSL — mTLS is not a SASL mechanism.
+  KAFKA_SECURITY_PROTOCOL: SSL
+  KAFKA_TLS_CA_PATH: /etc/kafka/certs/ca/ca.crt
+  KAFKA_TLS_CERT_PATH: /etc/kafka/certs/user/user.crt
+  KAFKA_TLS_KEY_PATH: /etc/kafka/certs/user/user.key
+
   HTTP_PORT: !!string 8081
   INTERNAL_HTTP_PORT: !!string 8082
   RUNNER_HTTP_PORT: !!string 8083
@@ -156,6 +181,111 @@ envSecrets:
 image:
   repository: "{{ .nuon.components.img_nuon_ctl_api.outputs.image.repository }}"
   tag: "{{ .nuon.components.img_nuon_ctl_api.outputs.image.tag }}"
+
+# mTLS certs, mirrored into this namespace from the kafka namespace by Reflector and
+# mounted into every pod that produces or consumes. Both are mounted optional, so
+# they are inert until the kafka_cluster component has run and Reflector has copied
+# them across.
+kafka:
+  certs:
+    caSecret: nuon-cluster-ca-cert
+    userSecret: ctl-api
+
+# Kafka consumer deployments, named for what they consume rather than where they
+# write. Each gets its own consumer group (ctl-api-consumer-<name>), so a restart of
+# one does not rebalance the others.
+#
+# A deployment is not necessarily one consumer — `--name` takes a list. What drives
+# the split is whether they have anything in common operationally:
+#
+#   - heartbeats stays alone. It is a trickle that feeds runner liveness, while otel
+#     ingest is bursty and bulky; sharing a pod means a log-volume spike OOMs the pod
+#     heartbeats depend on, which surfaces as runners being marked offline.
+#   - otel-logs and otel-traces share the otel deployment. Same producers, same shape
+#     of payload, and no case where we would scale span ingest without log ingest.
+#   - dlq stays alone because it is near-idle and should not inherit anyone else's
+#     restarts.
+#
+# requests == limits for Guaranteed QoS, same reasoning as the brokers: a throttled
+# consumer just accrues lag, which is quieter and easier to miss than a crash.
+consumer:
+  nodeSelector:
+    pool.nuon.co: ctl-api-consumer
+  tolerations:
+    - key: "pool.nuon.co"
+      operator: "Equal"
+      value: ctl-api-consumer
+      effect: "NoSchedule"
+  # ScheduleAnyway, not DoNotSchedule: a consumer that cannot schedule accrues lag,
+  # which is worse than uneven placement.
+  topologySpreadConstraints:
+    - maxSkew: 2
+      topologyKey: "topology.kubernetes.io/zone"
+      whenUnsatisfiable: ScheduleAnyway
+    - maxSkew: 2
+      topologyKey: "kubernetes.io/hostname"
+      whenUnsatisfiable: ScheduleAnyway
+  autoscaling:
+    targetCPUUtilizationPercentage: 75
+  instances:
+    # Replicas are static: 8 topic partitions / 4 replicas is an even 2 each, so no
+    # pod holds double. The HPA is pinned min == max, so nothing autoscales yet.
+    - name: heartbeats
+      replicas: 4
+      command: ["/bin/service", "consumer", "--name=heartbeats"]
+      resources:
+        requests:
+          cpu: 200m
+          memory: 256Mi
+        limits:
+          cpu: 200m
+          memory: 256Mi
+
+    # Both OTel sinks, deliberately co-located. Consumer groups stay separate
+    # (ctl-api-consumer-otel-logs, ctl-api-consumer-otel-traces), so this is one pod
+    # running two independent clients, not one group straddling two topics —
+    # renaming the deployment does not reset either group's offsets.
+    #
+    # 1Gi because fetch memory is bounded per client by partitions-per-pod, and this
+    # pod runs two clients. The headroom over that is for decode: spans carry three
+    # attribute maps plus nested events and links. Those caps are the only bound on
+    # buffered memory, so if RSS climbs the lever is tightening them (or adding
+    # replicas, which shrinks partitions-per-pod), not raising this limit.
+    - name: otel
+      replicas: 4
+      command: ["/bin/service", "consumer", "--name=otel-logs,otel-traces"]
+      resources:
+        requests:
+          cpu: 1000m
+          memory: 1Gi
+        limits:
+          cpu: 1000m
+          memory: 1Gi
+      extraEnv:
+        # franz-go defaults to 50MiB per broker with unbounded fetch concurrency,
+        # which on 3 brokers buffers ~150MiB of lz4-compressed records before decode.
+        # Capped explicitly; fetch_min_bytes stays well under these, so steady-state
+        # batching and latency are unchanged and the caps only bite during a drain.
+        - name: KAFKA_CONSUMER_FETCH_MAX_BYTES
+          value: "8388608"
+        - name: KAFKA_CONSUMER_FETCH_MAX_PARTITION_BYTES
+          value: "2097152"
+        - name: KAFKA_CONSUMER_MAX_CONCURRENT_FETCHES
+          value: "2"
+
+    # Drains the shared dead-letter topic into the same ClickHouse table the other
+    # consumers write to directly if a produce fails. Should stay near-idle —
+    # replicas are for availability, not throughput.
+    - name: dlq
+      replicas: 2
+      command: ["/bin/service", "consumer", "--name=dlq"]
+      resources:
+        requests:
+          cpu: 100m
+          memory: 128Mi
+        limits:
+          cpu: 100m
+          memory: 128Mi
 
 worker:
   nodeSelector:

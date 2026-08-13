@@ -1,0 +1,11 @@
+# container-image
+#
+# Broker image, also used by kafka-exporter and the create-topics Job. The tag is
+# "<operator version>-kafka-<kafka version>", so it must move together with
+# img_strimzi_operator.
+name   = "img_strimzi_kafka"
+type   = "container_image"
+
+[public]
+image_url = "quay.io/strimzi/kafka"
+tag       = "1.1.0-kafka-4.3.0"

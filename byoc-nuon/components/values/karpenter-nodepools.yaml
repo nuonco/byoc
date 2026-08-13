@@ -66,6 +66,53 @@ nodepools:
       consolidationPolicy: "WhenEmpty"
       consolidateAfter: "15m"
 
+  # Kafka brokers. Non-burstable only: burst-credit exhaustion on one broker stalls
+  # every partition it leads, and with heartbeats on Kafka that ends with runners
+  # marked offline. Karpenter picks the cheapest of these that fits one broker, and
+  # the DoNotSchedule hostname spread on the Kafka node pool keeps it to one broker
+  # per node — so broker_resources effectively selects the instance size.
+  #
+  # expireAfter Never + a nodes:"0" budget: brokers are never rotated
+  # automatically. Replacing one is deliberate, with scheduled downtime, the same
+  # way clickhouse is handled.
+  - name: kafka
+    public: false
+    instance_types:
+      - m6a.large    # 2 cpu, 8 gb ram
+      - m6a.xlarge   # 4 cpu, 16 gb ram
+      - m6a.2xlarge  # 8 cpu, 32 gb ram
+    limits:  # 3 brokers need 6 cpu; the rest is headroom for rolling replacement
+      cpu: 12
+      memory: "48Gi"
+    expireAfter: "Never"
+    disruption:
+      budgets:
+        - nodes: "0"
+      consolidationPolicy: "WhenEmpty"
+      consolidateAfter: "15m"
+
+  # Kafka consumers. Isolated from the temporal workers so ingestion doesn't
+  # rebalance every time a worker node rotates. Disruption is deliberately
+  # conservative: every node replacement costs a consumer group rebalance, so only
+  # consolidate genuinely empty nodes, and only one at a time.
+  - name: ctl-api-consumer
+    public: false
+    instance_types:
+      - c5.large   # 2 cpu, 4 gb ram
+      - c5.xlarge  # 4 cpu, 8 gb ram
+    limits:
+      cpu: 16
+      memory: "64Gi"
+    expireAfter: "720h"
+    disruption:
+      budgets:
+        - nodes: "1"
+          reasons:
+            - "Empty"
+            - "Drifted"
+      consolidationPolicy: "WhenEmpty"
+      consolidateAfter: "15m"
+
   - name: ctl-api
     public: true
     instance_types:

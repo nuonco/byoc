@@ -1,0 +1,41 @@
+# terraform
+#
+# Strimzi operator + Kafka cluster + KafkaUsers + topics Job + kafbat UI.
+#
+# The operator's helm_release lives inside this component rather than in a separate
+# helm_chart component (the way crd_clickhouse_operator does) so the CRs are
+# guaranteed not to be applied before the CRDs exist — a depends_on is a stronger
+# ordering guarantee than a component dependency. byoc's temporal component runs its
+# helm_release the same way.
+name              = "kafka_cluster"
+type              = "terraform_module"
+terraform_version = "1.11.3"
+
+# storage_classes provides kafka-gp3; karpenter_nodepools provides the tainted kafka
+# nodepool the brokers pin to; reflector mirrors the cert secrets into ctl-api's
+# namespace. Deliberately NOT a dependency of ctl_api — Kafka can come up
+# independently, and ctl-api runs fine with KAFKA_ENABLED=false while it does.
+dependencies = ["storage_classes", "karpenter_nodepools", "reflector"]
+
+[public_repo]
+repo      = "nuonco/byoc"
+directory = "byoc-nuon/components/kafka_cluster"
+branch    = "main"
+
+[vars]
+install_id                         = "{{ .nuon.install.id }}"
+region                             = "{{ .nuon.install_stack.outputs.region }}"
+cluster_name                       = "{{ .nuon.install.sandbox.outputs.cluster.name }}"
+cluster_endpoint                   = "{{ .nuon.install.sandbox.outputs.cluster.endpoint }}"
+cluster_certificate_authority_data = "{{ .nuon.install.sandbox.outputs.cluster.certificate_authority_data }}"
+
+strimzi_operator_image_repository = "{{ .nuon.components.img_strimzi_operator.outputs.image.repository }}"
+strimzi_operator_image_tag        = "{{ .nuon.components.img_strimzi_operator.outputs.image.tag }}"
+strimzi_kafka_image_repository    = "{{ .nuon.components.img_strimzi_kafka.outputs.image.repository }}"
+strimzi_kafka_image_tag           = "{{ .nuon.components.img_strimzi_kafka.outputs.image.tag }}"
+kafka_ui_image_repository         = "{{ .nuon.components.img_kafka_ui.outputs.image.repository }}"
+kafka_ui_image_tag                = "{{ .nuon.components.img_kafka_ui.outputs.image.tag }}"
+
+volume_size         = '{{ or .nuon.inputs.inputs.kafka_volume_size "100Gi" }}'
+log_retention_hours = '{{ or .nuon.inputs.inputs.kafka_log_retention_hours "168" }}'
+kafka_ui_readonly   = '{{ or .nuon.inputs.inputs.kafka_ui_readonly "false" }}'
