@@ -10,7 +10,7 @@ module "iam_eks_role" {
     (var.cluster_name) = ["dashboard-ui:dashboard-ui", ]
   }
 
-  role_policy_arns = {
-    custom = aws_iam_policy.dashboard_ui.arn
-  }
+  # No policies attached: the dashboard-ui service makes no AWS API calls. The
+  # role exists only so the pod has an IRSA identity, and so the ARN can be
+  # surfaced to the helm chart's service account annotation.
 }
