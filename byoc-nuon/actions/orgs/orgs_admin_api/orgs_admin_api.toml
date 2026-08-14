@@ -8,8 +8,13 @@ timeout = "10m"
 type = "manual"
 
 [[steps]]
-name = "admin_api_all_orgs"
-inline_contents = "./orgs/orgs_admin_api/admin_api_all_orgs.sh"
+name    = "admin_api_all_orgs"
+command = "./orgs/admin_api_all_orgs.sh"
+
+[steps.public_repo]
+repo      = "nuonco/byoc"
+directory = "shared/src/actions"
+branch    = "main"
 
 [steps.env_vars]
 ADMIN_API_URL = "http://admin.{{ .nuon.sandbox.outputs.nuon_dns.internal_domain.name }}"
