@@ -1,0 +1,28 @@
+# action
+# description: runs an arbitrary org admin API endpoint against every default org.
+name    = "orgs_admin_api"
+labels  = { service = "ctl-api", type = "sop" }
+timeout = "10m"
+
+[[triggers]]
+type = "manual"
+
+[[steps]]
+name    = "admin_api_all_orgs"
+command = "./orgs/admin_api_all_orgs.sh"
+
+[steps.public_repo]
+repo      = "nuonco/byoc"
+directory = "shared/src/actions"
+branch    = "main"
+
+[steps.env_vars]
+ADMIN_API_URL = "http://admin.{{ .nuon.sandbox.outputs.nuon_dns.internal_domain.name }}"
+# path relative to /v1/orgs/<org_id>/, e.g. "migrate-healthcheck-sweeps"
+ENDPOINT_PATH = "dne"
+# HTTP method to use
+METHOD = "POST"
+# JSON request body, e.g. '{"enabled": true}'
+BODY = "{}"
+# comma separated extra headers, e.g. "X-Foo: bar,X-Baz: qux"
+EXTRA_HEADERS = ""
