@@ -78,9 +78,9 @@ jobs:
         run: |
           # every org:app pair we know how to sync
           TARGETS='[
-            {"name":"byoc-nuon to byoc",     "app":"byoc-nuon",     "org":"byoc",   "org_id":"org4f5hq4tyo44legra6r4nm18"},
-            {"name":"byoc-nuon to retool",   "app":"byoc-nuon",     "org":"retool", "org_id":"orggxqsc8f5zns1jra0oplc0ff"},
-            {"name":"byoc-nuon-gcp to byoc", "app":"byoc-nuon-gcp", "org":"byoc",   "org_id":"org4f5hq4tyo44legra6r4nm18"}
+            {"name":"byoc-nuon to BYOC",     "app":"byoc-nuon",     "org":"BYOC",   "org_id":"org4f5hq4tyo44legra6r4nm18"},
+            {"name":"byoc-nuon to Retool",   "app":"byoc-nuon",     "org":"Retool", "org_id":"orggxqsc8f5zns1jra0oplc0ff"},
+            {"name":"byoc-nuon-gcp to bYOC", "app":"byoc-nuon-gcp", "org":"byoc",   "org_id":"org4f5hq4tyo44legra6r4nm18"}
           ]'
           apps=()
 
