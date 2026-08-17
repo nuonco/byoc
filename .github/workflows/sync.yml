@@ -1,11 +1,24 @@
 name: Sync to Nuon
 
+# The org:app pairs we sync are declared as data in the TARGETS table in the
+# `plan` job below -- adding or removing a pair is a one line change there.
+#
+# orgs
+# - byoc: org4f5hq4tyo44legra6r4nm18
+# - retool: orggxqsc8f5zns1jra0oplc0ff
+#
+# apps
+# - byoc-aws: byoc-nuon
+# - byoc-gcp: byoc-nuon-gcp
+
 on:
   push:
     branches: main
     paths:
       - "byoc-nuon/**"
       - "byoc-nuon-gcp/**"
+      # both apps symlink into shared/, so changes there affect both
+      - "shared/**"
   workflow_dispatch:
     inputs:
       NUON_DEBUG:
@@ -27,13 +40,19 @@ permissions:
   contents: read
 
 jobs:
-  sync:
+  plan:
     runs-on: ubuntu-latest
-    name: Push to Nuon
+    name: Plan sync
+    outputs:
+      # JSON array of {name, app, org, org_id} objects to sync
+      targets: ${{ steps.targets.outputs.targets }}
+      any: ${{ steps.targets.outputs.any }}
     steps:
       - name: Checkout code
-        id: checkout
         uses: actions/checkout@v3
+        with:
+          # need history so we can diff the pushed range to find changed apps
+          fetch-depth: 0
 
       - name: Check for skip-sync label
         id: check_label
@@ -49,32 +68,93 @@ jobs:
             fi
           fi
 
-      - name: Sync to BYOC(org4f5hq4tyo44legra6r4nm18)
-        if: steps.check_label.outputs.skip != 'true'
-        id: sync_to_org4f5hq4tyo44legra6r4nm18
-        uses: nuonco/actions-nuon@v0.4.2
-        with:
-          org_id: org4f5hq4tyo44legra6r4nm18
-          command: apps sync ./byoc-nuon
+      # Only sync the apps whose code actually changed in this push. On
+      # workflow_dispatch (or if we can't resolve the base commit, e.g. a force
+      # push or a brand new branch) we fall back to syncing everything.
+      - name: Determine sync targets
+        id: targets
+        env:
+          SKIP: ${{ steps.check_label.outputs.skip }}
+        run: |
+          # every org:app pair we know how to sync
+          TARGETS='[
+            {"name":"byoc-nuon to BYOC",     "app":"byoc-nuon",     "org":"BYOC",   "org_id":"org4f5hq4tyo44legra6r4nm18"},
+            {"name":"byoc-nuon to Retool",   "app":"byoc-nuon",     "org":"Retool", "org_id":"orggxqsc8f5zns1jra0oplc0ff"},
+            {"name":"byoc-nuon-gcp to bYOC", "app":"byoc-nuon-gcp", "org":"byoc",   "org_id":"org4f5hq4tyo44legra6r4nm18"}
+          ]'
+          apps=()
 
-      - name: Sync to retool(orggxqsc8f5zns1jra0oplc0ff)
-        if: steps.check_label.outputs.skip != 'true'
-        id: sync_to_orggxqsc8f5zns1jra0oplc0ff
-        uses: nuonco/actions-nuon@v0.4.2
-        with:
-          org_id: orggxqsc8f5zns1jra0oplc0ff
-          command: apps sync ./byoc-nuon
+          if [ "$SKIP" = "true" ]; then
+            echo "skip-sync label set, syncing nothing"
+          elif [ "${{ github.event_name }}" != "push" ]; then
+            echo "event is ${{ github.event_name }}, syncing all apps"
+            apps=(byoc-nuon byoc-nuon-gcp)
+          else
+            before="${{ github.event.before }}"
+            if [ -z "$before" ] \
+              || [ "$before" = "0000000000000000000000000000000000000000" ] \
+              || ! git cat-file -e "${before}^{commit}" 2>/dev/null; then
+              echo "no usable base commit ($before), syncing all apps"
+              apps=(byoc-nuon byoc-nuon-gcp)
+            else
+              changed="$(git diff --name-only "$before" "${{ github.sha }}")"
+              echo "changed files:"
+              echo "$changed"
+              # both apps symlink into shared/ (components/images, actions,
+              # src/actions), so a change there is a change to both apps
+              if echo "$changed" | grep -q '^shared/'; then
+                apps=(byoc-nuon byoc-nuon-gcp)
+              else
+                if echo "$changed" | grep -q '^byoc-nuon/'; then apps+=(byoc-nuon); fi
+                if echo "$changed" | grep -q '^byoc-nuon-gcp/'; then apps+=(byoc-nuon-gcp); fi
+              fi
+            fi
+          fi
 
-      - name: Sync GCP to BYOC(org4f5hq4tyo44legra6r4nm18)
-        if: steps.check_label.outputs.skip != 'true'
-        id: sync_gcp_to_org4f5hq4tyo44legra6r4nm18
-        uses: nuonco/actions-nuon@v0.4.2
-        with:
-          org_id: org4f5hq4tyo44legra6r4nm18
-          command: apps sync ./byoc-nuon-gcp
+          # keep only the targets whose app changed
+          changed_apps="$(printf '%s\n' "${apps[@]+"${apps[@]}"}" | jq -Rrc --slurp 'split("\n") - [""]')"
+          selected="$(jq -c --argjson apps "$changed_apps" \
+            '[.[] | select(.app as $a | $apps | index($a))]' <<<"$TARGETS")"
 
+          echo "targets=$selected" >> "$GITHUB_OUTPUT"
+          if [ "$(jq 'length' <<<"$selected")" -gt 0 ]; then
+            echo "any=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "any=false" >> "$GITHUB_OUTPUT"
+          fi
+
+          {
+            echo "### Sync targets"
+            jq -r 'if length == 0 then "_nothing to sync_"
+                   else .[] | "- \(.name) (`\(.org_id)`)" end' <<<"$selected"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+  sync:
+    needs: plan
+    if: needs.plan.outputs.any == 'true'
+    runs-on: ubuntu-latest
+    name: Sync ${{ matrix.target.name }}
+    strategy:
+      # one org:app failing shouldn't cancel the others
+      fail-fast: false
+      matrix:
+        target: ${{ fromJSON(needs.plan.outputs.targets) }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Sync
+        uses: nuonco/actions-nuon@v0.4.3
+        with:
+          org_id: ${{ matrix.target.org_id }}
+          command: apps sync ./${{ matrix.target.app }}
+
+  dispatch:
+    needs: [plan, sync]
+    runs-on: ubuntu-latest
+    name: Trigger install configs sync
+    steps:
       - name: Trigger BYOC install configs sync in nuonco/mono
-        if: steps.check_label.outputs.skip != 'true' && success()
         uses: peter-evans/repository-dispatch@v3
         with:
           token: ${{ secrets.MONO_REPO_DISPATCH_TOKEN }}
