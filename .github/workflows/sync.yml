@@ -29,6 +29,10 @@ on:
         options:
           - true
           - false
+concurrency:
+  group: nuon-sync
+  cancel-in-progress: false
+
 defaults:
   run:
     shell: bash
