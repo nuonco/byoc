@@ -7,6 +7,9 @@
 name   = "img_emberstack_reflector"
 type   = "container_image"
 
+# 7.1.210 (what mono pins) is not on ghcr -- mono pulls it from our ECR mirror,
+# which a customer account cannot reach. Keep in step with the reflector chart
+# version, which tracks appVersion.
 [public]
 image_url = "ghcr.io/emberstack/kubernetes-reflector"
-tag       = "7.1.210"
+tag       = "10.0.51"
