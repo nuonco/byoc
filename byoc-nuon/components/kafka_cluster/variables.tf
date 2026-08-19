@@ -130,10 +130,18 @@ locals {
   # <registry>/<repository>/<name>:<tag> rather than taking a full ref, so the
   # mirrored repository has to be split. Everything else (brokers, exporter, user
   # operator) takes a full ref on the CR, so this is the only place that needs it.
+  #
+  # Nuon mirrors every image for an install into ONE repository and distinguishes
+  # them by tag (565044017775.dkr.ecr.../<install-id>:img-strimzi-operator-1.1.0),
+  # so the ref is only host + install-id. Everything after the host therefore goes
+  # in repository, and name stays empty: the chart's helper drops empty segments
+  # via compact, and there is no defaultImageName to fall back to, so this renders
+  # <host>/<install-id>:<tag>. Do not leave repository empty -- it would fall back
+  # to defaultImageRepository ("strimzi") and point at an image we never mirrored.
   operator_ref_parts  = split("/", var.strimzi_operator_image_repository)
   operator_registry   = local.operator_ref_parts[0]
-  operator_repository = join("/", slice(local.operator_ref_parts, 1, length(local.operator_ref_parts) - 1))
-  operator_name       = element(local.operator_ref_parts, length(local.operator_ref_parts) - 1)
+  operator_repository = join("/", slice(local.operator_ref_parts, 1, length(local.operator_ref_parts)))
+  operator_name       = ""
 }
 
 variable "install_id" {
