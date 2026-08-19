@@ -18,12 +18,15 @@ storage_driver = "configmap"
 
 # Pulled from the upstream helm repo rather than a git ref: emberstack/helm-charts
 # tags releases as v1.0.x at the repo level, so there is no reflector-<version> ref
-# to pin. Chart version tracks appVersion, so this matches the image tag on
-# img_emberstack_reflector -- keep the two in step.
+# to pin, and the original reflector-7.1.210 pin did not resolve.
+#
+# 7.1.210 matches what mono runs (infra/eks/reflector.tf). Chart version tracks
+# appVersion, so this is the same version as img_emberstack_reflector's image tag
+# -- keep the two in step.
 [helm_repo]
 repo_url = "https://emberstack.github.io/helm-charts"
 chart    = "reflector"
-version  = "10.0.51"
+version  = "7.1.210"
 
 [[values_file]]
 contents = "./values/reflector.yaml"

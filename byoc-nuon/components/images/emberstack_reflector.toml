@@ -7,9 +7,15 @@
 name   = "img_emberstack_reflector"
 type   = "container_image"
 
-# 7.1.210 (what mono pins) is not on ghcr -- mono pulls it from our ECR mirror,
-# which a customer account cannot reach. Keep in step with the reflector chart
-# version, which tracks appVersion.
+# Matches the version mono runs (infra/eks/reflector.tf), deliberately: the
+# reflection annotations are the same ones our infra already relies on.
+#
+# Pulled from docker.io, not ghcr, because ghcr does not carry this tag -- mono
+# gets it from our ECR mirror, which a customer account cannot reach. Docker Hub
+# is the chart's own default registry and has it. Rate limits are not a concern:
+# this is pulled once at build time and mirrored into the install's registry.
+#
+# Keep in step with the reflector chart version, which tracks appVersion.
 [public]
-image_url = "ghcr.io/emberstack/kubernetes-reflector"
-tag       = "10.0.51"
+image_url = "docker.io/emberstack/kubernetes-reflector"
+tag       = "7.1.210"
