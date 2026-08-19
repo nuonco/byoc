@@ -6,7 +6,8 @@ terraform_version = "1.11.3"
 [public_repo]
 repo      = "nuonco/byoc"
 directory = "byoc-nuon/components/ctl_api_role"
-branch    = "main"
+# TEMP: carries the scoped sts:AssumeRole fix. Revert to main once #1053 merges.
+branch    = "ey/fix-ctl-api-role-assume-role-scope"
 
 [vars]
 install_id              = "{{ .nuon.install.id }}"
