@@ -1,9 +1,6 @@
 data "aws_iam_policy_document" "db_access" {
   statement {
     effect = "Allow"
-    # sts:AssumeRole intentionally omitted: this policy attaches to the same role
-    # as aws_iam_policy.ctl_api, which already grants it scoped to the management
-    # roles. Granting it again here on "*" would undo that scoping.
     actions = [
       "s3:ListBucket",
       "s3:*Object",
