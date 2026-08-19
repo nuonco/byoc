@@ -20,7 +20,8 @@ dependencies = ["storage_classes", "karpenter_nodepools", "reflector"]
 [public_repo]
 repo      = "nuonco/byoc"
 directory = "byoc-nuon/components/kafka_cluster"
-branch    = "main"
+# TEMP: this component only exists on the branch. Revert to main once it merges.
+branch    = "ey/kafka-strimzi"
 
 [vars]
 install_id                         = "{{ .nuon.install.id }}"
