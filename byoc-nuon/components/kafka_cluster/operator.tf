@@ -43,14 +43,14 @@ resource "helm_release" "strimzi" {
     })
   ]
 
-  # A 2-segment ref would leave operator_repository empty and silently fall back
-  # to the chart's defaultImageRepository (strimzi), producing a quay.io-shaped
-  # path against the mirrored registry. Every real registry path (ECR, GAR) has at
-  # least three segments, so fail loudly instead.
+  # An empty operator_repository would silently fall back to the chart's
+  # defaultImageRepository (strimzi), producing a quay.io-shaped path against the
+  # mirrored registry. That happens if the ref is a bare host with no path, so
+  # require at least host + one segment and fail loudly otherwise.
   lifecycle {
     precondition {
-      condition     = length(local.operator_ref_parts) >= 3
-      error_message = "strimzi_operator_image_repository must be a registry-qualified path with at least 3 segments (host/path/name); got ${var.strimzi_operator_image_repository}."
+      condition     = local.operator_repository != ""
+      error_message = "strimzi_operator_image_repository must be a registry-qualified path with a host and at least one path segment; got ${var.strimzi_operator_image_repository}."
     }
   }
 
