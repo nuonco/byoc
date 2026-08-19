@@ -33,9 +33,7 @@ data "aws_iam_policy_document" "service" {
       "sts:AssumeRole"
     ]
     resources = [
-      format("arn:aws:iam::%s:role/%s-orgs-iam-access", data.aws_caller_identity.current.account_id, var.install_id),
-      format("arn:aws:iam::%s:role/%s-dns-access", data.aws_caller_identity.current.account_id, var.install_id),
-      format("arn:aws:iam::%s:role/%s-ecr-iam-access", data.aws_caller_identity.current.account_id, var.install_id),
+      format("arn:aws:iam::%s:role/*", data.aws_caller_identity.current.account_id),
     ]
   }
 }
