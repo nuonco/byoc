@@ -7,7 +7,8 @@ storage_driver = "configmap"
 [public_repo]
 repo      = "nuonco/byoc"
 directory = "byoc-nuon/components/storage_classes"
-branch    = "main"
+# TEMP: carries the kafka-gp3 storage class. Revert to main once it merges.
+branch    = "ey/kafka-strimzi"
 
 [[values_file]]
 contents = """
