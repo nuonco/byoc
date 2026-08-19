@@ -16,10 +16,14 @@ chart_name     = "reflector"
 namespace      = "reflector"
 storage_driver = "configmap"
 
-[public_repo]
-repo      = "emberstack/helm-charts"
-directory = "charts/reflector"
-branch    = "reflector-7.1.210"
+# Pulled from the upstream helm repo rather than a git ref: emberstack/helm-charts
+# tags releases as v1.0.x at the repo level, so there is no reflector-<version> ref
+# to pin. Chart version tracks appVersion, so this matches the image tag on
+# img_emberstack_reflector -- keep the two in step.
+[helm_repo]
+repo_url = "https://emberstack.github.io/helm-charts"
+chart    = "reflector"
+version  = "10.0.51"
 
 [[values_file]]
 contents = "./values/reflector.yaml"
