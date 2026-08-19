@@ -272,7 +272,9 @@ variable "ca_validity_days" {
 }
 
 variable "ca_renewal_days" {
-  type        = string
+  # number, not string: the Kafka/KafkaUser CRDs type renewalDays as integer and
+  # reject a quoted value outright.
+  type        = number
   description = "Certs renew this many days before expiry and the old cert stays valid for the whole window, so a client that fails to reload has runway before it breaks."
   default     = 90
 }
