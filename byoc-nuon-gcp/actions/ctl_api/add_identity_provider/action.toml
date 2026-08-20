@@ -1,9 +1,9 @@
 # action
 # description: Adds an identity provider, or updates the one with a matching
-# client_id. Several providers of the same type may coexist, so providers are
-# matched on client_id rather than provider_type. REDIRECT_URL defaults to this
-# install's own auth callback, so it follows a root_domain change instead of
-# going stale.
+# client_id. The provider config (including the client secret) is read from AWS
+# Secrets Manager at runtime -- action env vars are persisted on the run and shown
+# in the dashboard, so secrets must not be passed as inputs. redirect_url is
+# templated from this install's DNS so it follows a root_domain change.
 name    = "ctl_api_add_identity_provider"
 labels  = { service = "auth", type = "sop" }
 timeout = "5m"
@@ -19,18 +19,13 @@ inline_contents = "./ctl_api/add_identity_provider/action.sh"
 ADMIN_API_URL = "http://admin.{{ .nuon.sandbox.outputs.nuon_dns.internal_domain.name }}"
 REDIRECT_URL  = "https://auth.{{ .nuon.sandbox.outputs.nuon_dns.public_domain.name }}/auth"
 
-# oidc | google | github
-PROVIDER_TYPE = "oidc"
-# label on the sign-in button; leave empty for a type-derived default
-PROVIDER_NAME = ""
-CLIENT_ID     = ""
-CLIENT_SECRET = ""
-# required for oidc; the API runs discovery against it before accepting
-ISSUER_URL    = ""
-# optional: overrides the discovered authorization endpoint. Needed when the IdP
-# only skips its own account picker if the authorize URL names a connection, e.g.
-# https://<tenant>/authorize?connection=<name>
-AUTH_URL      = ""
-ENABLED       = "true"
+# GCP has no AWS identity, so the runner federates in via web identity to read the secret
+SECRETS_ROLE_ARN = "{{ or .nuon.inputs.inputs.secrets_role_arn \"\" }}"
+SECRETS_AUDIENCE = "sts.amazonaws.com"
+INSTALL_ID       = "{{ .nuon.install.id }}"
+
+# ARN of the secret holding the provider config
+PROVIDER_SECRET_ARN = ""
+ENABLED             = "true"
 # empty inherits nuon_auth_allow_all_users; "true"/"false" overrides it here only
-ALLOW_ALL_USERS = ""
+ALLOW_ALL_USERS     = ""

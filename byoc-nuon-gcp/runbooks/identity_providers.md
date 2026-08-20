@@ -40,12 +40,35 @@ updated by
 
 ## Adding a provider
 
-Run the **`ctl_api_add_identity_provider`** action. Set `CLIENT_ID`, `CLIENT_SECRET` and — for
-`oidc` — `ISSUER_URL`. `REDIRECT_URL` already defaults to this install's own callback.
+Run the **`ctl_api_add_identity_provider`** action with `PROVIDER_SECRET_ARN` pointing at a secret
+that holds the provider config:
 
-Give it a `PROVIDER_NAME`: it is the button label, and it is the only thing distinguishing two
-providers of the same type. Without one the button falls back to a generic name derived from the
-type.
+```json
+{
+  "provider_type": "oidc",
+  "name": "Microsoft",
+  "openid_config": {
+    "client_id": "...",
+    "client_secret": "...",
+    "issuer_url": "https://<tenant>/",
+    "auth_url": "https://<tenant>/authorize?connection=<name>"
+  }
+}
+```
+
+Credentials are read at runtime and never passed as action inputs: action env vars are persisted on
+the run and displayed in the dashboard, so a secret supplied that way would be stored and visible to
+anyone who can see this install's action history.
+
+`redirect_url` is not read from the secret — it is templated from this install's own DNS, so it
+follows a `root_domain` change instead of going stale.
+
+`auth_url` is optional and overrides the endpoint discovery supplies. Some IdPs show their own
+account picker unless the authorize URL names a connection; pinning it there sends the user straight
+through.
+
+Set `name` in the secret: it is the button label, and the only thing distinguishing two providers of
+the same type. Without one the button falls back to a generic name derived from the type.
 
 The action is idempotent, matching on `client_id`, so re-running it updates rather than duplicating.
 For `oidc` the API runs discovery against `ISSUER_URL` and rejects the request if it cannot reach
