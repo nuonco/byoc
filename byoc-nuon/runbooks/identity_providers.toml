@@ -1,0 +1,9 @@
+name        = "identity_providers"
+description = "Inspect and manage the identity providers this control plane accepts sign-ins from."
+readme      = "./runbooks/identity_providers.md"
+labels      = { service = "auth", type = "sop" }
+
+[[steps]]
+name        = "get_identity_providers"
+type        = "action"
+action_name = "ctl_api_get_identity_providers"

@@ -27,6 +27,10 @@ CLIENT_ID     = ""
 CLIENT_SECRET = ""
 # required for oidc; the API runs discovery against it before accepting
 ISSUER_URL    = ""
+# optional: overrides the discovered authorization endpoint. Needed when the IdP
+# only skips its own account picker if the authorize URL names a connection, e.g.
+# https://<tenant>/authorize?connection=<name>
+AUTH_URL      = ""
 ENABLED       = "true"
 # empty inherits nuon_auth_allow_all_users; "true"/"false" overrides it here only
 ALLOW_ALL_USERS = ""

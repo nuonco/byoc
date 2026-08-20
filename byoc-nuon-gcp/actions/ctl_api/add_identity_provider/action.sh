@@ -14,6 +14,13 @@
 #   PROVIDER_TYPE   oidc (default) | google | github
 #   PROVIDER_NAME   label on the sign-in button; defaults to a type-derived name
 #   ISSUER_URL      required for oidc; the API runs discovery against it
+#   AUTH_URL        overrides the authorization endpoint discovery would supply.
+#                   Use it to pin provider-specific query params -- e.g. Auth0
+#                   sends the user to its own login page unless the authorize URL
+#                   names a connection, so
+#                   https://<tenant>/authorize?connection=<name> makes the button
+#                   go straight to the upstream IdP. Token and userinfo endpoints
+#                   still come from discovery.
 #   REDIRECT_URL    defaults to this install's own auth callback
 #   ENABLED         true (default) | false
 #   ALLOW_ALL_USERS unset (default) inherits nuon_auth_allow_all_users; true|false
@@ -71,6 +78,9 @@ config=$(jq -cn \
 
 if [[ "$PROVIDER_TYPE" == "oidc" ]]; then
   config=$(echo "$config" | jq -c --arg issuer "$ISSUER_URL" '.issuer_url = $issuer')
+  if [[ -n "${AUTH_URL:-}" ]]; then
+    config=$(echo "$config" | jq -c --arg au "$AUTH_URL" '.auth_url = $au')
+  fi
 fi
 
 body=$(jq -cn \
