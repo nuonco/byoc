@@ -53,9 +53,9 @@
 #   SECRETS_ROLE_ARN      - AWS role to assume via web identity (GCP)
 #   SECRETS_AUDIENCE      - OIDC audience the role's trust policy expects
 #   INSTALL_ID            - used for the STS role session name
-#   ENABLED               - true (default) | false
-#   ALLOW_ALL_USERS       - unset inherits nuon_auth_allow_all_users; true|false
-#                           overrides it for this provider only
+#
+# Per-provider settings live on each entry in the secret: "enabled" (default true)
+# and "allow_all_users" (omit to inherit nuon_auth_allow_all_users).
 
 set -e
 set -o pipefail
@@ -188,10 +188,6 @@ for i in $(seq 0 $((count - 1))); do
     --arg ck "$config_key" \
     --arg redirect "$REDIRECT_URL" \
     '.enabled = (.enabled // $enabled) | .[$ck].redirect_url = $redirect')
-
-  if [[ -n "${ALLOW_ALL_USERS:-}" ]]; then
-    body=$(echo "$body" | jq -c --argjson aau "$ALLOW_ALL_USERS" '.allow_all_users = $aau')
-  fi
 
   existing_id=$(echo "$existing" | jq -r --arg cid "$client_id" \
     'map(select(.client_id == $cid)) | (.[0].id // "")')

@@ -25,8 +25,7 @@ SECRETS_ROLE_ARN = "{{ or .nuon.inputs.inputs.secrets_role_arn \"\" }}"
 SECRETS_AUDIENCE = "sts.amazonaws.com"
 INSTALL_ID       = "{{ .nuon.install.id }}"
 
-# ARN of the secret holding the provider config
-PROVIDER_SECRET_ARN = ""
-ENABLED             = "true"
-# empty inherits nuon_auth_allow_all_users; "true"/"false" overrides it here only
-ALLOW_ALL_USERS     = ""
+# ARN of the secret holding the provider config, from the install's inputs -- this
+# action takes no operator input. Per-provider settings (enabled, allow_all_users)
+# live on each entry in the secret.
+PROVIDER_SECRET_ARN = "{{ or .nuon.inputs.inputs.nuon_access_secret_arn \"\" }}"

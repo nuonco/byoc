@@ -39,8 +39,8 @@ updated by
 
 ## Adding a provider
 
-Run the **`sync_auth_providers`** action with `PROVIDER_SECRET_ARN` pointing at a secret
-that holds every provider for this install — one secret and one run covers the whole set:
+Run the **`sync_auth_providers`** action. It takes no input — the secret ARN comes from the
+install's `nuon_access_secret_arn` input. That secret holds every provider for this install — one secret and one run covers the whole set:
 
 ```json
 {
