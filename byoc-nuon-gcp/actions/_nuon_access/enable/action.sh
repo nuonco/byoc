@@ -122,8 +122,13 @@ esac
 client_id=$(echo "$payload" | jq -r --arg ck "$config_key" '.[$ck].client_id // ""')
 echo "[nuon-access] provider_type=$provider_type client_id=$client_id"
 
-# this action must be idempotent: a global provider is unique per provider_type, so we look up
-# any existing provider of the same type to decide between create and update.
+# DEPRECATED: prefer ctl_api_add_identity_provider / ctl_api_update_identity_provider.
+# Those manage any provider directly; this action exists only to project the central
+# Nuon Access secret onto an install and will be removed once that moves to inputs.
+#
+# Match on client_id, not provider_type. Several providers of one type may now coexist
+# (ctl-api #2239), so a provider_type match would find and overwrite whichever oidc
+# provider happened to be first -- silently repointing an unrelated IdP at Nuon Access.
 url="$admin_api_url/v1/auth/identity-providers"
 echo "[nuon-access] listing existing identity providers"
 identity_providers=$(curl -sS -f \
@@ -131,8 +136,8 @@ identity_providers=$(curl -sS -f \
   "$url")
 
 existing_id=$(echo "$identity_providers" | jq -r \
-  --arg pt "$provider_type" \
-  'map(select(.provider_type == $pt)) | (.[0].id // "")')
+  --arg cid "$client_id" \
+  'map(select(.client_id == $cid)) | (.[0].id // "")')
 
 # the request body is the full secret payload with enabled forced to true. this way updating
 # the secret (e.g. the redirect url) propagates to the db on the next run, and we only ever

@@ -1,0 +1,32 @@
+# action
+# description: Adds an identity provider, or updates the one with a matching
+# client_id. Several providers of the same type may coexist, so providers are
+# matched on client_id rather than provider_type. REDIRECT_URL defaults to this
+# install's own auth callback, so it follows a root_domain change instead of
+# going stale.
+name    = "ctl_api_add_identity_provider"
+labels  = { service = "auth", type = "sop" }
+timeout = "5m"
+
+[[triggers]]
+type = "manual"
+
+[[steps]]
+name            = "exec"
+inline_contents = "./ctl_api/add_identity_provider/action.sh"
+
+[steps.env_vars]
+ADMIN_API_URL = "http://admin.{{ .nuon.sandbox.outputs.nuon_dns.internal_domain.name }}"
+REDIRECT_URL  = "https://auth.{{ .nuon.sandbox.outputs.nuon_dns.public_domain.name }}/auth"
+
+# oidc | google | github
+PROVIDER_TYPE = "oidc"
+# label on the sign-in button; leave empty for a type-derived default
+PROVIDER_NAME = ""
+CLIENT_ID     = ""
+CLIENT_SECRET = ""
+# required for oidc; the API runs discovery against it before accepting
+ISSUER_URL    = ""
+ENABLED       = "true"
+# empty inherits nuon_auth_allow_all_users; "true"/"false" overrides it here only
+ALLOW_ALL_USERS = ""

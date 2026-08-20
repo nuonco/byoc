@@ -1,4 +1,7 @@
 # action
+# DEPRECATED: use ctl_api_add_identity_provider / ctl_api_update_identity_provider
+# to manage identity providers. This remains only to project the central Nuon Access
+# secret onto an install.
 name    = "nuon_access_enable"
 labels  = { service = "auth", type = "break-class" }
 timeout = "5m"
