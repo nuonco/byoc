@@ -13,34 +13,33 @@ Providers come from two places:
 Several providers may share a type, so a deployment can offer (for example) two OIDC
 providers pointing at different issuers.
 
-{{ $action := default dict (index (default dict .nuon.actions.workflows) "ctl_api_get_identity_providers") }}
+{{ $action := default dict (index (default dict .nuon.actions.workflows) "sync_auth_providers") }}
 {{ $outputs := default dict (dig "outputs" dict $action) }} {{ $actionID := dig "id" "" $action }}
 
 <div style="padding-top:1rem;"></div>
 
-<nuon-group gap="2" align="center" justify="start">{{ if dig "count" 0 $outputs }}<nuon-status status="active" variant="badge"></nuon-status>{{ else }}<nuon-status status="pending" variant="badge"></nuon-status>{{ end }}{{ with dig "updated_at" "" $outputs }}<span style="margin-left:auto;font-size:0.85em;">Last
+<nuon-group gap="2" align="center" justify="start">{{ if dig "applied" 0 $outputs }}<nuon-status status="active" variant="badge"></nuon-status>{{ else }}<nuon-status status="pending" variant="badge"></nuon-status>{{ end }}{{ with dig "updated_at" "" $outputs }}<span style="margin-left:auto;font-size:0.85em;">Last
 updated by
-<a href="/{{ $.nuon.org.id }}/installs/{{ $.nuon.install.id }}/actions/{{ $actionID }}">ctl_api_get_identity_providers</a>
+<a href="/{{ $.nuon.org.id }}/installs/{{ $.nuon.install.id }}/actions/{{ $actionID }}">sync_auth_providers</a>
 <nuon-time time="{{ . }}" format="relative"></nuon-time></span>{{ end }}</nuon-group>
 
 <div style="padding-bottom:1rem;"></div>
 
-{{ if dig "count" 0 $outputs }}
+{{ if dig "applied" 0 $outputs }}
 
-| Name | Type | Source | Enabled | ID |
-| ---- | ---- | ------ | ------- | -- |
-{{ range dig "providers" (list) $outputs }}| {{ or .name "—" }} | {{ .provider_type }} | {{ or .source "database" }} | {{ .enabled }} | `{{ .id }}` |
-{{ end }}
+| Field   | Value                              |
+| ------- | ---------------------------------- |
+| applied | {{ dig "applied" 0 $outputs }}     |
 
 {{ else }}
 
-<nuon-banner theme="warn">Run the step above to list the configured identity providers.</nuon-banner>
+<nuon-banner theme="warn">Run the step above to reconcile the identity providers from the secret.</nuon-banner>
 
 {{ end }}
 
 ## Adding a provider
 
-Run the **`ctl_api_add_identity_provider`** action with `PROVIDER_SECRET_ARN` pointing at a secret
+Run the **`sync_auth_providers`** action with `PROVIDER_SECRET_ARN` pointing at a secret
 that holds every provider for this install — one secret and one run covers the whole set:
 
 ```json
@@ -61,8 +60,8 @@ that holds every provider for this install — one secret and one run covers the
 ```
 
 A bare single-provider object is also accepted, which is the shape older secrets use. Providers
-already on the control plane but absent from the secret are left alone — disable those with
-`ctl_api_update_identity_provider`.
+already on the control plane but absent from the secret are left alone, and the sync lists them as
+unmanaged so the drift is visible.
 
 Credentials are read at runtime and never passed as action inputs: action env vars are persisted on
 the run and displayed in the dashboard, so a secret supplied that way would be stored and visible to
@@ -86,16 +85,18 @@ credentials are wrong.
 Whoever owns the IdP must allow `https://auth.<root-domain>/auth` as a redirect URI. Every provider
 shares that one callback.
 
-## Enabling, disabling and renaming
+## Inspecting, enabling and disabling
 
-Run the **`ctl_api_update_identity_provider`** action, identifying the provider by
-`IDENTITY_PROVIDER_ID` or `CLIENT_ID`, and set only what you want to change.
+Nuon staff can see every provider and toggle it from **Admin controls → Identity providers** in the
+dashboard, without an AWS round trip. Disabling removes the button from the sign-in page; existing
+sessions keep working until they expire and linked accounts are untouched, so re-enabling restores
+access without anyone re-linking.
 
-Disabling removes the button from the sign-in page. Existing sessions keep working until they
-expire, and linked accounts are left intact, so re-enabling restores access without anyone having
-to re-link.
+That toggle is a break-glass lever, not a config change: the secret is the source of truth, so the
+next sync restores whatever it declares. To disable something permanently, set `"enabled": false`
+on its entry in the secret and re-run the sync.
 
-The `env` provider has no database row and cannot be disabled this way — change the install's
+The `env` provider has no database row, so it cannot be toggled at all — change the install's
 `NUON_AUTH_*` inputs instead.
 
 ## Who is allowed to sign in

@@ -1,16 +1,17 @@
 #!/usr/bin/env bash
 #
-# Add an identity provider to this control plane, or update it in place if one
-# with the same client_id already exists.
+# Reconcile this control plane's identity providers against the secret, which is the
+# source of truth for them. Creates what is missing, updates what has changed.
 #
 # The provider config is read from AWS Secrets Manager at runtime and never passes
 # through an action input. Action env vars are persisted on the action run and
 # rendered in the dashboard, so a client secret supplied that way would be stored
 # and displayed to anyone who can see the install's action history.
 #
-# On AWS the install's maintenance role is granted on the secret directly, so the
-# ambient credentials are used. SECRETS_ROLE_ARN is only needed where the runner has
-# no AWS identity of its own (GCP), and is left unset here.
+# On GCP the runner has no AWS identity, so it federates: mint a Google-signed OIDC
+# token from the metadata server and exchange it for temporary AWS credentials via
+# sts:AssumeRoleWithWebIdentity (same flow as sync_slack_secrets). Set
+# SECRETS_ROLE_ARN to enable it; without it the ambient AWS credentials are used.
 #
 # The secret holds every provider for this install, so one secret and one run covers
 # the whole set rather than one ARN per credential:
@@ -224,6 +225,17 @@ done
 
 ok=true
 echo "[idp] applied $applied provider(s)"
+
+# anything enabled on the control plane that the secret does not describe will not be
+# touched by this action, so surface it rather than letting it drift unnoticed.
+secret_client_ids=$(echo "$providers_json" | jq -r '[.[] | (.openid_config.client_id // .google_config.client_id // .github_config.client_id)] | @json')
+unmanaged=$(curl -sS -f -H 'accept: application/json' "$url" \
+  | jq -r --argjson known "$secret_client_ids" \
+      '.[] | select((.source // "database") == "database") | select(.client_id as $c | ($known | index($c)) | not) | "  \(.name // "-") (\(.id))"')
+if [[ -n "$unmanaged" ]]; then
+  echo "[idp] warning: these providers are not described by the secret and were left as-is:"
+  echo "$unmanaged"
+fi
 
 echo "[idp] providers now configured:"
 curl -sS -f -H 'accept: application/json' "$url" \
