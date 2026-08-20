@@ -33,10 +33,12 @@ Policy coverage tracks these well: `rds-data-protection` / `s3-data-protection` 
     install.id-derived resource names.
 - **Still open — ctl-api endpoint diagnostic suite.** GCP has only `api_status`; no equivalent of
   `ctl_api_api_health_probe` + the 8 ALB/IRSA/ACM/per-endpoint probe actions.
-- **✅ Nuon Access login flow — NOW CLOSED.** GCP has the `_nuon_access/enable` action, `nuon_access_enable` runbook,
-  and `nuon_access_enabled` / `nuon_access_secret_arn` inputs. Unlike AWS (direct maintenance-role read), the action
-  federates into AWS via web identity using the shared `secrets_role_arn` input — the same flow as
-  `sync_slack_secrets`. A `runner_sa_unique_id` action emits the value byoc-secrets Terraform needs in `gcp_installs`.
+- **✅ Nuon Access login flow — NOW CLOSED.** Both apps configure it with the shared `ctl_api_add_identity_provider`
+  action and the `identity_providers` runbook, so there is no longer a GCP/AWS delta here. The former
+  `_nuon_access/enable` action (which read the provider config from central Secrets Manager, federating into AWS via
+  web identity on GCP) is gone: it matched providers on `provider_type`, which broke once a control plane could run
+  several providers of one type. `nuon_access_enabled` is still read by the ctl-api configmap to append `nuon.co` to
+  the allowed sign-in domains.
 - **Still open — node autoscaling tooling.** AWS has `karpenter-nodepools` + 4 karpenter actions + nodepool kubectl
   actions; GCP relies on native GKE autoscaling (defensible) but has no node-rotation/inspection actions.
 - **Still open — other AWS-only:** RDS Performance-Insights runbooks (`rds_inspect_ctl_api/temporal`), `acm_operations`

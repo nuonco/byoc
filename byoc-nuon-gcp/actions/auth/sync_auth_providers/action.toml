@@ -1,0 +1,31 @@
+# action
+# description: Reconciles this control plane's identity providers against the
+# secret, which is the source of truth for them. Creates what is missing and updates
+# what has changed, matching on client_id. The provider config (including the client secret) is read from AWS
+# Secrets Manager at runtime -- action env vars are persisted on the run and shown
+# in the dashboard, so secrets must not be passed as inputs. redirect_url is
+# templated from this install's DNS so it follows a root_domain change.
+name    = "sync_auth_providers"
+labels  = { service = "auth", type = "sop" }
+timeout = "5m"
+
+[[triggers]]
+type = "manual"
+
+[[steps]]
+name            = "exec"
+inline_contents = "./auth/sync_auth_providers/action.sh"
+
+[steps.env_vars]
+ADMIN_API_URL = "http://admin.{{ .nuon.sandbox.outputs.nuon_dns.internal_domain.name }}"
+REDIRECT_URL  = "https://auth.{{ .nuon.sandbox.outputs.nuon_dns.public_domain.name }}/auth"
+
+# GCP has no AWS identity, so the runner federates in via web identity to read the secret
+SECRETS_ROLE_ARN = "{{ or .nuon.inputs.inputs.secrets_role_arn \"\" }}"
+SECRETS_AUDIENCE = "sts.amazonaws.com"
+INSTALL_ID       = "{{ .nuon.install.id }}"
+
+# ARN of the secret holding the provider config, from the install's inputs -- this
+# action takes no operator input. Per-provider settings (enabled, allow_all_users)
+# live on each entry in the secret.
+PROVIDER_SECRET_ARN = "{{ or .nuon.inputs.inputs.nuon_access_secret_arn \"\" }}"

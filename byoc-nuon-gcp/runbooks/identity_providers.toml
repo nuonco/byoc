@@ -1,0 +1,9 @@
+name        = "identity_providers"
+description = "Reconcile this control plane's identity providers from the secret that defines them."
+readme      = "./runbooks/identity_providers.md"
+labels      = { service = "auth", type = "sop" }
+
+[[steps]]
+name        = "sync_auth_providers"
+type        = "action"
+action_name = "sync_auth_providers"
