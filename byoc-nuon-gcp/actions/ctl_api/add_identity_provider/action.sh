@@ -5,8 +5,8 @@
 #
 # Several providers of the same type may coexist (ctl-api #2239), so identity is
 # matched on client_id. Matching on provider_type instead would overwrite an
-# unrelated provider that happens to share the type — that is how the older
-# nuon_access_enable action behaved, and why it is deprecated.
+# unrelated provider that happens to share the type — that is how the removed
+# nuon_access_enable action behaved, and why it was replaced.
 #
 # Required:
 #   CLIENT_ID, CLIENT_SECRET
