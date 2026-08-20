@@ -41,20 +41,28 @@ updated by
 ## Adding a provider
 
 Run the **`ctl_api_add_identity_provider`** action with `PROVIDER_SECRET_ARN` pointing at a secret
-that holds the provider config:
+that holds every provider for this install — one secret and one run covers the whole set:
 
 ```json
 {
-  "provider_type": "oidc",
-  "name": "Microsoft",
-  "openid_config": {
-    "client_id": "...",
-    "client_secret": "...",
-    "issuer_url": "https://<tenant>/",
-    "auth_url": "https://<tenant>/authorize?connection=<name>"
-  }
+  "providers": [
+    {
+      "provider_type": "oidc",
+      "name": "Microsoft",
+      "openid_config": {
+        "client_id": "...",
+        "client_secret": "...",
+        "issuer_url": "https://<tenant>/",
+        "auth_url": "https://<tenant>/authorize?connection=<name>"
+      }
+    }
+  ]
 }
 ```
+
+A bare single-provider object is also accepted, which is the shape older secrets use. Providers
+already on the control plane but absent from the secret are left alone — disable those with
+`ctl_api_update_identity_provider`.
 
 Credentials are read at runtime and never passed as action inputs: action env vars are persisted on
 the run and displayed in the dashboard, so a secret supplied that way would be stored and visible to

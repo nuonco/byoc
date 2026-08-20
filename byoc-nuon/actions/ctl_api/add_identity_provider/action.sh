@@ -12,18 +12,25 @@
 # ambient credentials are used. SECRETS_ROLE_ARN is only needed where the runner has
 # no AWS identity of its own (GCP), and is left unset here.
 #
-# The secret holds the create-request body:
+# The secret holds every provider for this install, so one secret and one run covers
+# the whole set rather than one ARN per credential:
 #
-#   {
-#     "provider_type": "oidc",
-#     "name": "Microsoft",
-#     "openid_config": {
-#       "client_id": "...",
-#       "client_secret": "...",
-#       "issuer_url": "https://<tenant>/",
-#       "auth_url": "https://<tenant>/authorize?connection=<name>"
-#     }
-#   }
+#   { "providers": [
+#       { "provider_type": "oidc", "name": "Nuon Access",
+#         "openid_config": { "client_id": "...", "client_secret": "...",
+#                            "issuer_url": "https://<tenant>/",
+#                            "auth_url": "https://<tenant>/authorize?connection=google-oauth2" } },
+#       { "provider_type": "oidc", "name": "Microsoft",
+#         "openid_config": { "client_id": "...", "client_secret": "...",
+#                            "issuer_url": "https://<tenant>/",
+#                            "auth_url": "https://<tenant>/authorize?connection=entra-work-accounts" } }
+#   ] }
+#
+# A bare single-provider object is also accepted, which is the shape the older
+# nuon-access secrets already use.
+#
+# Providers present in the control plane but absent from the secret are left alone;
+# disable those with ctl_api_update_identity_provider.
 #
 # redirect_url is deliberately NOT read from the secret. It is templated from this
 # install's own DNS, so it follows a root_domain change instead of going stale --
@@ -65,16 +72,18 @@ admin_api_url="$ADMIN_API_URL"
 created=false
 id=""
 enabled=false
+applied=0
 ok=false
 
 write_outputs() {
   jq -cn \
     --argjson ok "$ok" \
+    --argjson applied "$applied" \
     --argjson created "$created" \
     --arg id "$id" \
     --argjson enabled "$enabled" \
     --arg updated_at "$(TZ=UTC date +%Y-%m-%dT%H:%M:%SZ)" \
-    '{ok: $ok, created: $created, id: $id, enabled: $enabled, updated_at: $updated_at}' \
+    '{ok: $ok, applied: $applied, created: $created, id: $id, enabled: $enabled, updated_at: $updated_at}' \
     >> "$NUON_ACTIONS_OUTPUT_FILEPATH"
 }
 trap write_outputs EXIT
@@ -119,90 +128,102 @@ if ! echo "$payload" | jq -e . >/dev/null 2>&1; then
   exit 1
 fi
 
-# determine the provider type and its config key: prefer an explicit provider_type,
-# otherwise infer from whichever *_config key is present.
-provider_type=$(echo "$payload" | jq -r '
-  .provider_type //
-  (if has("openid_config") then "oidc"
-   elif has("google_config") then "google"
-   elif has("github_config") then "github"
-   else "" end)')
-
-case "$provider_type" in
-  oidc)   config_key="openid_config" ;;
-  google) config_key="google_config" ;;
-  github) config_key="github_config" ;;
-  *)
-    echo >&2 "[idp] error: secret has no provider_type and no recognised *_config block."
-    echo >&2 "[idp] expected {\"provider_type\": \"oidc\", \"openid_config\": {...}} -- older"
-    echo >&2 "[idp] secrets predating this format need updating."
-    exit 1
-    ;;
-esac
-
-client_id=$(echo "$payload" | jq -r --arg ck "$config_key" '.[$ck].client_id // ""')
-client_secret_present=$(echo "$payload" | jq -r --arg ck "$config_key" '(.[$ck].client_secret // "") | length > 0')
-if [[ -z "$client_id" || "$client_secret_present" != "true" ]]; then
-  echo >&2 "[idp] error: secret is missing $config_key.client_id or $config_key.client_secret"
+# normalise to a list: a bare object is treated as a single-entry set
+providers_json=$(echo "$payload" | jq -c 'if has("providers") then .providers else [.] end')
+count=$(echo "$providers_json" | jq 'length')
+if [[ "$count" -eq 0 ]]; then
+  echo >&2 "[idp] error: secret contains no providers"
   exit 1
 fi
-if [[ "$provider_type" == "oidc" ]]; then
-  issuer=$(echo "$payload" | jq -r '.openid_config.issuer_url // ""')
-  if [[ -z "$issuer" ]]; then
-    echo >&2 "[idp] error: secret is missing openid_config.issuer_url (required for oidc)"
-    exit 1
-  fi
-fi
-
-echo "[idp] provider_type=$provider_type client_id=$client_id"
-
-# build the request from the secret: force enabled, and always take redirect_url from
-# this install's templated value rather than whatever the secret happens to hold.
-body=$(echo "$payload" | jq -c \
-  --argjson enabled "$ENABLED" \
-  --arg ck "$config_key" \
-  --arg redirect "$REDIRECT_URL" \
-  '.enabled = $enabled | .[$ck].redirect_url = $redirect')
-
-if [[ -n "${ALLOW_ALL_USERS:-}" ]]; then
-  body=$(echo "$body" | jq -c --argjson aau "$ALLOW_ALL_USERS" '.allow_all_users = $aau')
-fi
+echo "[idp] secret describes $count provider(s)"
 
 url="$admin_api_url/v1/auth/identity-providers"
 
 # no X-Nuon-Admin-Email: these are plain internal routes, and a header that does not
 # resolve against this install's accounts table is a 403.
-echo "[idp] looking for an existing provider with this client_id"
-providers=$(curl -sS -f -H 'accept: application/json' "$url")
-existing_id=$(echo "$providers" | jq -r --arg cid "$client_id" \
-  'map(select(.client_id == $cid)) | (.[0].id // "")')
+existing=$(curl -sS -f -H 'accept: application/json' "$url")
 
-if [[ -n "$existing_id" ]]; then
+applied=0
+for i in $(seq 0 $((count - 1))); do
+  entry=$(echo "$providers_json" | jq -c ".[$i]")
+
+  provider_type=$(echo "$entry" | jq -r '
+    .provider_type //
+    (if has("openid_config") then "oidc"
+     elif has("google_config") then "google"
+     elif has("github_config") then "github"
+     else "" end)')
+
+  case "$provider_type" in
+    oidc)   config_key="openid_config" ;;
+    google) config_key="google_config" ;;
+    github) config_key="github_config" ;;
+    *)
+      echo >&2 "[idp] error: provider $i has no provider_type and no recognised *_config block."
+      echo >&2 "[idp] expected {\"provider_type\": \"oidc\", \"openid_config\": {...}} -- older"
+      echo >&2 "[idp] secrets predating this format need updating."
+      exit 1
+      ;;
+  esac
+
+  client_id=$(echo "$entry" | jq -r --arg ck "$config_key" '.[$ck].client_id // ""')
+  has_secret=$(echo "$entry" | jq -r --arg ck "$config_key" '(.[$ck].client_secret // "") | length > 0')
+  if [[ -z "$client_id" || "$has_secret" != "true" ]]; then
+    echo >&2 "[idp] error: provider $i is missing $config_key.client_id or $config_key.client_secret"
+    exit 1
+  fi
+  if [[ "$provider_type" == "oidc" ]]; then
+    issuer=$(echo "$entry" | jq -r '.openid_config.issuer_url // ""')
+    if [[ -z "$issuer" ]]; then
+      echo >&2 "[idp] error: provider $i is missing openid_config.issuer_url (required for oidc)"
+      exit 1
+    fi
+  fi
+
+  # force enabled unless the entry says otherwise, and always take redirect_url from
+  # this install's templated value rather than whatever the secret happens to hold.
+  body=$(echo "$entry" | jq -c \
+    --argjson enabled "$ENABLED" \
+    --arg ck "$config_key" \
+    --arg redirect "$REDIRECT_URL" \
+    '.enabled = (.enabled // $enabled) | .[$ck].redirect_url = $redirect')
+
+  if [[ -n "${ALLOW_ALL_USERS:-}" ]]; then
+    body=$(echo "$body" | jq -c --argjson aau "$ALLOW_ALL_USERS" '.allow_all_users = $aau')
+  fi
+
+  existing_id=$(echo "$existing" | jq -r --arg cid "$client_id" \
+    'map(select(.client_id == $cid)) | (.[0].id // "")')
+
   if [[ "$existing_id" == default-* ]]; then
-    echo >&2 "[idp] error: client_id matches the env-configured provider ($existing_id)."
+    echo >&2 "[idp] error: client_id $client_id matches the env-configured provider ($existing_id)."
     echo >&2 "[idp] change it through the install's NUON_AUTH_* inputs instead."
     exit 1
   fi
 
-  echo "[idp] provider exists (id=$existing_id), updating"
-  response=$(curl -sS -f -X PATCH \
-    -H 'accept: application/json' -H 'Content-Type: application/json' \
-    -d "$body" "$url/$existing_id")
-  created=false
-else
-  echo "[idp] creating $provider_type provider"
-  # for oidc the API runs discovery against issuer_url and returns 400 when it cannot
-  # reach it; check egress from the cluster to the issuer if that happens.
-  response=$(curl -sS -f -X POST \
-    -H 'accept: application/json' -H 'Content-Type: application/json' \
-    -d "$body" "$url")
-  created=true
-fi
+  name=$(echo "$entry" | jq -r '.name // "-"')
+  if [[ -n "$existing_id" ]]; then
+    echo "[idp] [$((i + 1))/$count] $provider_type \"$name\" exists (id=$existing_id), updating"
+    response=$(curl -sS -f -X PATCH \
+      -H 'accept: application/json' -H 'Content-Type: application/json' \
+      -d "$body" "$url/$existing_id")
+  else
+    echo "[idp] [$((i + 1))/$count] creating $provider_type \"$name\""
+    # for oidc the API runs discovery against issuer_url and returns 400 when it cannot
+    # reach it; check egress from the cluster to the issuer if that happens.
+    response=$(curl -sS -f -X POST \
+      -H 'accept: application/json' -H 'Content-Type: application/json' \
+      -d "$body" "$url")
+    created=true
+  fi
 
-id=$(echo "$response" | jq -r '.id // ""')
-enabled=$(echo "$response" | jq -r '.enabled // false')
+  id=$(echo "$response" | jq -r '.id // ""')
+  enabled=$(echo "$response" | jq -r '.enabled // false')
+  applied=$((applied + 1))
+done
+
 ok=true
-echo "[idp] provider: created=$created id=$id enabled=$enabled"
+echo "[idp] applied $applied provider(s)"
 
 echo "[idp] providers now configured:"
 curl -sS -f -H 'accept: application/json' "$url" \
