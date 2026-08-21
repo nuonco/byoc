@@ -32,7 +32,9 @@ data "aws_iam_policy_document" "service" {
     actions = [
       "sts:AssumeRole"
     ]
-    resources = ["*", ]
+    resources = [
+      format("arn:aws:iam::%s:role/*", data.aws_caller_identity.current.account_id),
+    ]
   }
 }
 
