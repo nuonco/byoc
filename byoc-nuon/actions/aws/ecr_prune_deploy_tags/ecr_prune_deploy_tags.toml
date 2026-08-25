@@ -1,0 +1,22 @@
+# action
+# description: deletes legacy per-deploy tags from an install-registry ECR repo
+# to free up its per-manifest tag budget. Dry run by default.
+name    = "ecr_prune_deploy_tags"
+labels  = { service = "ecr", type = "sop" }
+label   = "aws"
+timeout = "15m"
+
+[[triggers]]
+type = "manual"
+
+[[steps]]
+name            = "prune"
+inline_contents = "./aws/ecr_prune_deploy_tags/prune.sh"
+
+[steps.env_vars]
+REPOSITORY_NAME = "{{ .nuon.sandbox.outputs.ecr.repository_name }}"
+AWS_REGION      = "{{ .nuon.sandbox.outputs.account.region }}"
+TAG_PREFIX      = "dpl"
+# no per-tag timestamp in ECR, so kept tags are the lexicographically last, not newest
+KEEP            = "10"
+DRY_RUN         = "true"
