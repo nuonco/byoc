@@ -52,6 +52,8 @@ declare -a default_namespaces=(
   "releases"
   "app-branches"
   "onboardings"
+  "install-crons"
+  "runner-healthcheck-crons"
 )
 
 # Namespaces that need a longer retention period.
