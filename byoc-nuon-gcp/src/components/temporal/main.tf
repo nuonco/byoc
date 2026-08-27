@@ -61,10 +61,56 @@ resource "helm_release" "temporal" {
           }
 
           frontend = {
+            resources = {
+              requests = {
+                cpu    = "250m"
+                memory = "250Mi"
+              }
+              limits = {
+                memory = "250Mi"
+              }
+            }
             service = {
               annotations = {
                 "external-dns.alpha.kubernetes.io/internal-hostname" = local.temporal.frontend_url
                 "external-dns.alpha.kubernetes.io/ttl"               = "60"
+              }
+            }
+          }
+
+          worker = {
+            resources = {
+              requests = {
+                cpu    = "250m"
+                memory = "256Mi"
+              }
+              limits = {
+                memory = "512Mi"
+              }
+            }
+          }
+
+          matching = {
+            resources = {
+              requests = {
+                cpu    = "500m"
+                memory = "512Mi"
+              }
+              limits = {
+                memory = "512Mi"
+              }
+            }
+          }
+
+          history = {
+            replicaCount = 6
+            resources = {
+              requests = {
+                cpu    = "1000m"
+                memory = "2Gi"
+              }
+              limits = {
+                memory = "2Gi"
               }
             }
           }
@@ -74,6 +120,16 @@ resource "helm_release" "temporal" {
           image = {
             repository = var.temporal_admin_tools_image_repository
             tag        = var.temporal_admin_tools_image_tag
+          }
+          resources = {
+            requests = {
+              cpu    = "100m"
+              memory = "128Mi"
+            }
+            limits = {
+              cpu    = "250m"
+              memory = "256Mi"
+            }
           }
         }
 
@@ -87,6 +143,16 @@ resource "helm_release" "temporal" {
           image = {
             repository = var.temporal_web_image_repository
             tag        = var.temporal_web_image_tag
+          }
+          resources = {
+            requests = {
+              cpu    = "100m"
+              memory = "128Mi"
+            }
+            limits = {
+              cpu    = "250m"
+              memory = "256Mi"
+            }
           }
           additionalEnv = [
             {
