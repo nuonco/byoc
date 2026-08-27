@@ -1,0 +1,31 @@
+[
+  {
+    "metric": "gorm_operation",
+    "match_type": "prefix",
+    "drop": true
+  },
+  {
+    "metric": "db_span_calls_total",
+    "match_type": "exact",
+    "drop_labels": ["collector_instance_id", "db_sql_table"],
+    "aggregations": ["sum:counter"]
+  },
+  {
+    "metric": "db_span_duration_milliseconds_bucket",
+    "match_type": "exact",
+    "drop_labels": ["collector_instance_id", "db_sql_table"],
+    "aggregations": ["sum:counter"]
+  },
+  {
+    "metric": "db_span_duration_milliseconds_count",
+    "match_type": "exact",
+    "drop_labels": ["collector_instance_id"],
+    "aggregations": ["sum:counter"]
+  },
+  {
+    "metric": "db_span_duration_milliseconds_sum",
+    "match_type": "exact",
+    "drop_labels": ["collector_instance_id"],
+    "aggregations": ["sum:counter"]
+  }
+]

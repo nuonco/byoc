@@ -1,0 +1,7 @@
+# container-image
+name = "img_otel_collector_contrib"
+type = "container_image"
+
+[public]
+image_url = "ghcr.io/open-telemetry/opentelemetry-collector-releases/opentelemetry-collector-contrib"
+tag       = "0.158.0"

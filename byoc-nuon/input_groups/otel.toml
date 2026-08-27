@@ -1,0 +1,3 @@
+name         = "otel"
+display_name = "OpenTelemetry"
+description  = "Configure optional OpenTelemetry export."

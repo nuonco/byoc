@@ -1,0 +1,294 @@
+fullnameOverride: otel-gateway
+
+mode: deployment
+replicaCount: 2
+
+image:
+  repository: "{{ .nuon.components.img_otel_collector_contrib.outputs.image.repository }}"
+  tag: "{{ .nuon.components.img_otel_collector_contrib.outputs.image.tag }}"
+
+command:
+  name: otelcol-contrib
+
+{{ if eq .nuon.inputs.inputs.grafana_cloud_enabled "true" }}
+extraEnvs:
+  - name: GRAFANA_CLOUD_API_TOKEN
+    valueFrom:
+      secretKeyRef:
+        name: grafana-cloud-otlp
+        key: api-token
+{{ end }}
+
+presets:
+  kubernetesEvents:
+    enabled: true
+  clusterMetrics:
+    enabled: true
+
+clusterRole:
+  rules:
+    - apiGroups: [""]
+      resources: [persistentvolumeclaims]
+      verbs: [get, list, watch]
+
+ports:
+  otlp:
+    enabled: true
+    containerPort: 4317
+    servicePort: 4317
+    protocol: TCP
+    appProtocol: grpc
+  otlp-http:
+    enabled: true
+    containerPort: 4318
+    servicePort: 4318
+    protocol: TCP
+  statsd:
+    enabled: true
+    containerPort: 8125
+    servicePort: 8125
+    protocol: UDP
+  jaeger-compact:
+    enabled: false
+  jaeger-thrift:
+    enabled: false
+  jaeger-grpc:
+    enabled: false
+  zipkin:
+    enabled: false
+
+config:
+  connectors:
+    spanmetrics/db:
+      namespace: db_span
+      histogram:
+        unit: ms
+        explicit:
+          buckets: [2ms, 5ms, 10ms, 25ms, 50ms, 100ms, 250ms, 500ms, 1s, 2s, 5s, 10s]
+      dimensions:
+        - name: db.system
+        - name: db.operation
+        - name: db.sql.table
+      resource_metrics_key_attributes:
+        - service.name
+        - byoc.deploy
+        - deployment.environment.name
+  exporters:
+{{ if eq .nuon.inputs.inputs.grafana_cloud_enabled "true" }}
+    debug: null
+    otlphttp/grafana_cloud:
+      endpoint: "{{ .nuon.inputs.inputs.grafana_cloud_otlp_endpoint }}"
+      auth:
+        authenticator: basicauth/grafana_cloud
+      compression: gzip
+      sending_queue:
+        enabled: true
+        num_consumers: 1
+      retry_on_failure:
+        enabled: true
+    otlphttp/grafana_cloud_db_spanmetrics:
+      endpoint: "{{ .nuon.inputs.inputs.grafana_cloud_otlp_endpoint }}"
+      auth:
+        authenticator: basicauth/grafana_cloud
+      compression: gzip
+      sending_queue:
+        enabled: true
+        num_consumers: 1
+      retry_on_failure:
+        enabled: true
+{{ else }}
+    debug:
+      verbosity: basic
+      sampling_initial: 2
+      sampling_thereafter: 500
+{{ end }}
+{{ if eq .nuon.inputs.inputs.grafana_cloud_enabled "true" }}
+  extensions:
+    basicauth/grafana_cloud:
+      client_auth:
+        username: "{{ .nuon.inputs.inputs.grafana_cloud_instance_id }}"
+        password: ${env:GRAFANA_CLOUD_API_TOKEN}
+{{ end }}
+  processors:
+    batch:
+      timeout: 10s
+      send_batch_size: 8192
+      send_batch_max_size: 16384
+    batch/db_spanmetrics:
+      timeout: 10s
+      send_batch_size: 8192
+      send_batch_max_size: 16384
+    filter/db_spans:
+      error_mode: ignore
+      trace_conditions:
+        - 'span.attributes["db.system"] == nil'
+    resource/nuon:
+      attributes:
+        - key: deployment.environment.name
+          action: upsert
+          value: byoc
+        - key: byoc.deploy
+          action: upsert
+          value: "{{ .nuon.install.name }}"
+        - key: nuon.install.id
+          action: upsert
+          value: "{{ .nuon.install.id }}"
+        - key: nuon.install.name
+          action: upsert
+          value: "{{ .nuon.install.name }}"
+    filter/budget:
+      error_mode: ignore
+      logs:
+        log_record:
+          - 'resource.attributes["k8s.namespace.name"] == "kube-system"'
+          - 'resource.attributes["k8s.namespace.name"] == "kube-public"'
+          - 'resource.attributes["k8s.namespace.name"] == "kube-node-lease"'
+          - 'resource.attributes["k8s.namespace.name"] == "otel"'
+          - 'severity_number < SEVERITY_NUMBER_WARN and not IsMatch(body, "(?i)(warn|error|fatal|panic|exception|failed|failure)")'
+      metrics:
+        metric:
+          - 'not IsMatch(name, "^(k8s\\.(node|pod|container|deployment|statefulset|daemonset|hpa|volume|persistentvolumeclaim)\\.|system\\.(cpu|memory|filesystem|network)\\.|api\\.request\\.latency$|db_span\\.|gorm_operation\\.|event_loop\\.(restart|signal)|log_tail\\.(outcome|empty_probe_ms)|ui\\.request\\.(latency|size)$|(service_(errors|requests)|persistence_(error_with_type|errors_resource_exhausted)|shard_(closed_count|ownership_lost)|failed_workflow_tasks|poll_success(_sync)?)_total$|queue\\.(signal\\.(processed|latency\\.avg))|queues\\.signal_emitter\\.(start|stop)|workflow_step(_group)?\\.latency\\.avg|temporal_(workflow_(task_(schedule_to_start_latency|replay_latency)|latency\\.(count|95percentile))|activity_(latency\\.(count|95percentile)|schedule_to_start_latency|succeed_endtoend_latency|execution_latency|request_validation)|request_latency\\.(count|95percentile)worker_task_slots_(used|available))$|runner\\..*|oom_kill\\.oom_process\\.count|temporal\\.server\\..*|karpenter\\..*|ClickHouse(ProfileEvents_(Query|SelectQuery|InsertQuery|FailedQuery|FailedSelectQuery|FailedInsertQuery|InitialQuery|QueriesWithSubqueries|SelectQueriesWithSubqueries|InsertQueriesWithSubqueries|AsyncInsert(Query|Rows|Bytes)|Merge|Merged(Rows|Bytes)|Network(Send|Receive)(Bytes|Packets)|Disk(Read|Write)(Bytes|Microseconds|Ops)|FileOpen|ContextLock|MarkCache(Hits|Misses)|DistributedSend(Bytes|Files))|Metrics_(TCPConnection|HTTPConnection|InterserverConnection|Merge|Parts(Active|Total)|ReadonlyReplica|ZooKeeperSession|BackgroundPoolTask|ReplicatedTable.*|DistributedFilesToInsert)|AsyncMetrics_(MemoryResident|MemoryTracking|CGroupMemory(Used|Total)|Disk(Used|Available|Total)_.*|FilesystemMainPath.*|LoadAverage.*|Uptime|NumberOfTables|NumberOfDatabases|MaxPartCountForPartition|UncompressedCacheBytes|MarkCacheBytes))")'
+        datapoint:
+          - 'metric.name == "k8s.container.status.reason" and attributes["k8s.container.status.reason"] != "OOMKilled"'
+    transform/drop_high_cardinality:
+      error_mode: ignore
+      log_statements:
+        - context: resource
+          statements:
+            - delete_key(attributes, "k8s.pod.uid")
+            - delete_key(attributes, "k8s.replicaset.uid")
+            - delete_key(attributes, "k8s.daemonset.uid")
+            - delete_key(attributes, "k8s.job.uid")
+            - delete_key(attributes, "k8s.statefulset.uid")
+            - delete_key(attributes, "service.instance.id")
+        - context: log
+          statements:
+            - set(attributes["byoc_deploy"], resource.attributes["byoc.deploy"])
+      metric_statements:
+        - context: resource
+          statements:
+            - delete_key(attributes, "k8s.pod.uid")
+            - delete_key(attributes, "k8s.replicaset.uid")
+            - delete_key(attributes, "k8s.daemonset.uid")
+            - delete_key(attributes, "k8s.job.uid")
+            - delete_key(attributes, "k8s.statefulset.uid")
+            - delete_key(attributes, "service.instance.id")
+            - delete_key(attributes, "container_id")
+            - delete_key(attributes, "container.id")
+        - context: datapoint
+          statements:
+            - set(attributes["byoc_deploy"], resource.attributes["byoc.deploy"])
+            - set(attributes["k8s_persistentvolumeclaim_name"], resource.attributes["k8s.persistentvolumeclaim.name"]) where resource.attributes["k8s.persistentvolumeclaim.name"] != nil
+            - delete_key(attributes, "container_id")
+  receivers:
+    k8s_cluster:
+      collection_interval: 60s
+      metrics:
+        k8s.container.status.reason:
+          enabled: true
+        k8s.persistentvolumeclaim.storage.capacity:
+          enabled: true
+      resource_attributes:
+        k8s.container.status.last_terminated_reason:
+          enabled: true
+    prometheus:
+      config:
+        scrape_configs:
+          - job_name: opentelemetry-collector
+            scrape_interval: 60s
+            static_configs:
+              - targets:
+                  - ${env:MY_POD_IP}:8888
+          - job_name: temporal
+            scrape_interval: 60s
+            metrics_path: /metrics
+            metric_relabel_configs:
+              - action: drop
+                source_labels: [__name__]
+                regex: 'temporal_(request_failure|request_resource_exhausted|long_request_resource_exhausted|workflow_continue_as_new|workflow_failed)'
+            static_configs:
+              - targets:
+                  - temporal-frontend-headless.temporal.svc.cluster.local:9090
+                  - temporal-worker-headless.temporal.svc.cluster.local:9090
+                  - temporal-matching-headless.temporal.svc.cluster.local:9090
+                  - temporal-history-headless.temporal.svc.cluster.local:9090
+          - job_name: clickhouse
+            scrape_interval: 60s
+            metrics_path: /metrics
+            static_configs:
+              - targets:
+                  - chi-clickhouse-installation-simple-0-0-0.chi-clickhouse-installation-simple-0-0.clickhouse.svc.cluster.local:9363
+                labels:
+                  clickhouse_replica: "0-0"
+              - targets:
+                  - chi-clickhouse-installation-simple-0-1-0.chi-clickhouse-installation-simple-0-1.clickhouse.svc.cluster.local:9363
+                labels:
+                  clickhouse_replica: "0-1"
+    statsd:
+      endpoint: 0.0.0.0:8125
+      aggregation_interval: 60s
+      enable_simple_tags: true
+      is_monotonic_counter: true
+      timer_histogram_mapping:
+        - statsd_type: timing
+          observer_type: summary
+          summary:
+            percentiles: [50, 95, 99]
+        - statsd_type: distribution
+          observer_type: summary
+          summary:
+            percentiles: [50, 95, 99]
+    jaeger: null
+    zipkin: null
+  service:
+{{ if eq .nuon.inputs.inputs.grafana_cloud_enabled "true" }}
+    extensions: [health_check, k8s_leader_elector/k8s_cluster, basicauth/grafana_cloud]
+{{ end }}
+    pipelines:
+      logs:
+{{ if eq .nuon.inputs.inputs.grafana_cloud_enabled "true" }}
+        exporters: [otlphttp/grafana_cloud]
+{{ else }}
+        exporters: [debug]
+{{ end }}
+        processors: [memory_limiter, resource/nuon, filter/budget, transform/drop_high_cardinality, batch]
+      metrics:
+{{ if eq .nuon.inputs.inputs.grafana_cloud_enabled "true" }}
+        exporters: [otlphttp/grafana_cloud]
+{{ else }}
+        exporters: [debug]
+{{ end }}
+        receivers: [otlp, prometheus, k8s_cluster, statsd]
+        processors: [memory_limiter, resource/nuon, filter/budget, transform/drop_high_cardinality, batch]
+      metrics/db-spanmetrics:
+{{ if eq .nuon.inputs.inputs.grafana_cloud_enabled "true" }}
+        exporters: [otlphttp/grafana_cloud_db_spanmetrics]
+{{ else }}
+        exporters: [debug]
+{{ end }}
+        receivers: [spanmetrics/db]
+        processors: [memory_limiter, resource/nuon, filter/budget, transform/drop_high_cardinality, batch/db_spanmetrics]
+      traces:
+{{ if eq .nuon.inputs.inputs.grafana_cloud_enabled "true" }}
+        exporters: [otlphttp/grafana_cloud]
+{{ else }}
+        exporters: [debug]
+{{ end }}
+        receivers: [otlp]
+        processors: [memory_limiter, resource/nuon, batch]
+      traces/db-metrics:
+        receivers: [otlp]
+        processors: [memory_limiter, resource/nuon, filter/db_spans]
+        exporters: [spanmetrics/db]
+
+resources:
+  requests:
+    cpu: 200m
+    memory: 256Mi
+  limits:
+    cpu: "1"
+    memory: 1Gi
+
+podDisruptionBudget:
+  enabled: true
+  minAvailable: 1

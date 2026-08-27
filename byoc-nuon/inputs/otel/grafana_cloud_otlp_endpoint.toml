@@ -1,0 +1,6 @@
+name         = "grafana_cloud_otlp_endpoint"
+display_name = "Grafana Cloud OTLP endpoint"
+description  = "Grafana Cloud OTLP HTTP endpoint, including the /otlp path."
+default      = ""
+required     = false
+group        = "otel"

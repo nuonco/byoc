@@ -1,0 +1,6 @@
+name         = "grafana_cloud_instance_id"
+display_name = "Grafana Cloud instance ID"
+description  = "Grafana Cloud OTLP instance ID used for basic authentication."
+default      = ""
+required     = false
+group        = "otel"

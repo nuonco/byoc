@@ -1,0 +1,2 @@
+env:
+  OTEL_LOCAL_TRACE_OTLP: "otel-gateway.otel.svc.cluster.local:4318"

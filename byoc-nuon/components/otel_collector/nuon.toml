@@ -1,0 +1,17 @@
+name           = "otel_collector"
+type           = "helm_chart"
+chart_name     = "otel-collector"
+namespace      = "otel"
+storage_driver = "configmap"
+
+dependencies    = ["otel_gateway"]
+toggleable      = true
+default_enabled = false
+
+[helm_repo]
+repo_url = "https://open-telemetry.github.io/opentelemetry-helm-charts"
+chart    = "opentelemetry-collector"
+version  = "0.171.0"
+
+[[values_file]]
+contents = "./values/otel-collector.yaml"

@@ -1,0 +1,183 @@
+fullnameOverride: otel-collector
+
+mode: daemonset
+
+image:
+  repository: "{{ .nuon.components.img_otel_collector_contrib.outputs.image.repository }}"
+  tag: "{{ .nuon.components.img_otel_collector_contrib.outputs.image.tag }}"
+
+command:
+  name: otelcol-contrib
+
+tolerations:
+  - operator: Exists
+
+presets:
+  logsCollection:
+    enabled: true
+    includeCollectorLogs: false
+  hostMetrics:
+    enabled: true
+  kubernetesAttributes:
+    enabled: true
+  kubeletMetrics:
+    enabled: true
+
+ports:
+  otlp:
+    enabled: true
+    containerPort: 4317
+    hostPort: 4317
+    servicePort: 4317
+    protocol: TCP
+    appProtocol: grpc
+  otlp-http:
+    enabled: true
+    containerPort: 4318
+    hostPort: 4318
+    servicePort: 4318
+    protocol: TCP
+  statsd:
+    enabled: true
+    containerPort: 8125
+    servicePort: 8125
+    hostPort: 8125
+    protocol: UDP
+  jaeger-compact:
+    enabled: false
+  jaeger-thrift:
+    enabled: false
+  jaeger-grpc:
+    enabled: false
+  zipkin:
+    enabled: false
+
+config:
+  exporters:
+    debug: null
+    otlp/gateway:
+      endpoint: otel-gateway.otel.svc.cluster.local:4317
+      tls:
+        insecure: true
+      sending_queue:
+        enabled: true
+      retry_on_failure:
+        enabled: true
+  processors:
+    batch:
+      timeout: 10s
+      send_batch_size: 8192
+      send_batch_max_size: 16384
+    resource/nuon:
+      attributes:
+        - key: deployment.environment.name
+          action: upsert
+          value: byoc
+        - key: byoc.deploy
+          action: upsert
+          value: "{{ .nuon.install.name }}"
+        - key: nuon.install.id
+          action: upsert
+          value: "{{ .nuon.install.id }}"
+        - key: nuon.install.name
+          action: upsert
+          value: "{{ .nuon.install.name }}"
+    filter/budget:
+      error_mode: ignore
+      logs:
+        log_record:
+          - 'resource.attributes["k8s.namespace.name"] == "kube-system"'
+          - 'resource.attributes["k8s.namespace.name"] == "kube-public"'
+          - 'resource.attributes["k8s.namespace.name"] == "kube-node-lease"'
+          - 'resource.attributes["k8s.namespace.name"] == "otel"'
+          - 'severity_number < SEVERITY_NUMBER_WARN and not IsMatch(body, "(?i)(warn|error|fatal|panic|exception|failed|failure)")'
+      metrics:
+        metric:
+          - 'not IsMatch(name, "^(k8s\\.(node|pod|container|deployment|statefulset|daemonset|hpa|volume|persistentvolumeclaim)\\.|system\\.(cpu|memory|filesystem|network)\\.)")'
+    transform/drop_high_cardinality:
+      error_mode: ignore
+      log_statements:
+        - context: resource
+          statements:
+            - delete_key(attributes, "k8s.pod.uid")
+            - delete_key(attributes, "k8s.replicaset.uid")
+            - delete_key(attributes, "k8s.daemonset.uid")
+            - delete_key(attributes, "k8s.job.uid")
+            - delete_key(attributes, "k8s.statefulset.uid")
+            - delete_key(attributes, "service.instance.id")
+            - delete_key(attributes, "container_id")
+        - context: log
+          statements:
+            - set(attributes["byoc_deploy"], resource.attributes["byoc.deploy"])
+      metric_statements:
+        - context: resource
+          statements:
+            - delete_key(attributes, "k8s.pod.uid")
+            - delete_key(attributes, "k8s.replicaset.uid")
+            - delete_key(attributes, "k8s.daemonset.uid")
+            - delete_key(attributes, "k8s.job.uid")
+            - delete_key(attributes, "k8s.statefulset.uid")
+            - delete_key(attributes, "service.instance.id")
+        - context: datapoint
+          statements:
+            - set(attributes["byoc_deploy"], resource.attributes["byoc.deploy"])
+            - set(attributes["k8s_persistentvolumeclaim_name"], resource.attributes["k8s.persistentvolumeclaim.name"]) where resource.attributes["k8s.persistentvolumeclaim.name"] != nil
+            - delete_key(attributes, "container_id")
+  receivers:
+    file_log:
+      exclude:
+        - /var/log/pods/otel_otel-collector*_*/opentelemetry-collector/*.log
+        - /var/log/pods/otel_otel-gateway*_*/opentelemetry-collector/*.log
+    hostmetrics:
+      collection_interval: 60s
+    kubeletstats:
+      collection_interval: 60s
+      metric_groups: [node, pod, container, volume]
+    statsd:
+      endpoint: 0.0.0.0:8125
+      aggregation_interval: 60s
+      enable_simple_tags: true
+      is_monotonic_counter: true
+      timer_histogram_mapping:
+        - statsd_type: timing
+          observer_type: summary
+          summary:
+            percentiles: [50, 95, 99]
+        - statsd_type: distribution
+          observer_type: summary
+          summary:
+            percentiles: [50, 95, 99]
+    prometheus:
+      config:
+        scrape_configs:
+          - job_name: opentelemetry-collector
+            scrape_interval: 60s
+            static_configs:
+              - targets:
+                  - ${env:MY_POD_IP}:8888
+    jaeger: null
+    zipkin: null
+  service:
+    pipelines:
+      logs:
+        processors: [k8s_attributes, memory_limiter, resource/nuon, filter/budget, transform/drop_high_cardinality, batch]
+        exporters: [otlp/gateway]
+      metrics:
+        processors: [k8s_attributes, memory_limiter, resource/nuon, filter/budget, transform/drop_high_cardinality, batch]
+        exporters: [otlp/gateway]
+      metrics/statsd:
+        receivers: [statsd]
+        processors: [memory_limiter, resource/nuon, transform/drop_high_cardinality, batch]
+        exporters: [otlp/gateway]
+      traces:
+        receivers: [otlp]
+        processors: [k8s_attributes, memory_limiter, resource/nuon, batch]
+        exporters: [otlp/gateway]
+
+resources:
+  requests:
+    cpu: 100m
+    memory: 128Mi
+  limits:
+    cpu: 500m
+    memory: 512Mi

@@ -1,0 +1,7 @@
+name         = "grafana_cloud_enabled"
+display_name = "Grafana Cloud export enabled"
+description  = "Export filtered OpenTelemetry logs and metrics to Grafana Cloud."
+default      = "false"
+required     = false
+group        = "otel"
+type         = "bool"
