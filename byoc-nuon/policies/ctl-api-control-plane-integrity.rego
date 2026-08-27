@@ -4,9 +4,10 @@
 # invariants of its rendered manifests so a values change cannot silently weaken
 # the control plane running in the customer's account.
 #
-# Checks (all deny):
+# Checks:
 #   - database connection stays hardened: IAM auth + TLS verify-full
-#   - the control plane is never opened to all users
+#   - enabling authentication for all users emits a warning
+#   - public email domains cannot be combined with all-user authentication
 #   - the admin API stays on the internal domain
 #   - the Nuon support role ARN is not swapped to another account
 #   - the ctl-api ServiceAccount keeps its IRSA role annotation
@@ -27,6 +28,32 @@ import future.keywords.in
 nuon_support_role_arn := "arn:aws:iam::814326426574:role/nuon-internal-support-prod"
 
 support_role_keys := {"ORG_RUNNER_SUPPORT_ROLE_ARN", "RUNNER_DEFAULT_SUPPORT_IAM_ROLE_ARN"}
+
+public_signup_email_domains := {
+	"aol.com",
+	"fastmail.com",
+	"gmail.com",
+	"gmx.com",
+	"gmx.net",
+	"googlemail.com",
+	"hey.com",
+	"hotmail.com",
+	"icloud.com",
+	"live.com",
+	"mail.com",
+	"mail.ru",
+	"me.com",
+	"msn.com",
+	"outlook.com",
+	"pm.me",
+	"proton.me",
+	"protonmail.com",
+	"tuta.com",
+	"tutanota.com",
+	"yahoo.com",
+	"yandex.com",
+	"zoho.com",
+}
 
 # The ctl-api env ConfigMap (only defined when reviewing that object).
 ctl_api_config := input.review.object.data if {
@@ -56,12 +83,23 @@ deny contains msg if {
 }
 
 # ──────────────────────────────────────────────────────────────────────────────
-# The control plane must never be opened to all users.
+# Warn when authentication is enabled for all users.
 # ──────────────────────────────────────────────────────────────────────────────
+warn contains msg if {
+	cfg := ctl_api_config
+	cfg.NUON_AUTH_ALLOW_ALL_USERS == "true"
+	msg := "ctl-api has NUON_AUTH_ALLOW_ALL_USERS=\"true\". Verify NUON_AUTH_ALLOWED_DOMAINS is restricted to the intended company domains."
+}
+
+# Public email services allow anyone to register an account, so combining one
+# with all-user authentication would expose the control plane publicly.
 deny contains msg if {
 	cfg := ctl_api_config
 	cfg.NUON_AUTH_ALLOW_ALL_USERS == "true"
-	msg := "ctl-api has NUON_AUTH_ALLOW_ALL_USERS=\"true\", which opens the control plane to anyone. This is not allowed."
+	some domain in split(cfg.NUON_AUTH_ALLOWED_DOMAINS, ",")
+	normalized_domain := lower(trim_space(domain))
+	normalized_domain in public_signup_email_domains
+	msg := sprintf("ctl-api cannot use public email domain %q in NUON_AUTH_ALLOWED_DOMAINS when NUON_AUTH_ALLOW_ALL_USERS=\"true\".", [normalized_domain])
 }
 
 # ──────────────────────────────────────────────────────────────────────────────
