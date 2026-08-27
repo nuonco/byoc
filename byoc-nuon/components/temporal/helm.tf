@@ -68,46 +68,46 @@ resource "helm_release" "temporal" {
           }
 
           frontend = {
-          resources = {
-            requests = {
-              cpu    = "250m"
-              memory = "256Mi"
-            }
-            limits = {
-              cpu    = "500m"
-              memory = "512Mi"
-            }
-          }
-          service = {
-            annotations = {
-              "external-dns.alpha.kubernetes.io/internal-hostname" = local.temporal.frontend_url
-              "external-dns.alpha.kubernetes.io/ttl"               = "60"
-            }
-          }
-          topologySpreadConstraints = [
-            {
-              maxSkew           = 1
-              topologyKey       = "topology.kubernetes.io/zone"
-              whenUnsatisfiable = "ScheduleAnyway"
-              labelSelector = {
-                matchLabels = {
-                  "app.kubernetes.io/name"      = "temporal"
-                  "app.kubernetes.io/component" = "frontend"
-                },
+            resources = {
+              requests = {
+                cpu    = "250m"
+                memory = "256Mi"
               }
-            },
-            {
-              maxSkew           = 2
-              topologyKey       = "kubernetes.io/hostname"
-              whenUnsatisfiable = "DoNotSchedule"
-              labelSelector = {
-                matchLabels = {
-                  "app.kubernetes.io/name"      = "temporal"
-                  "app.kubernetes.io/component" = "frontend"
-                },
+              limits = {
+                cpu    = "500m"
+                memory = "512Mi"
               }
             }
-          ]
+            service = {
+              annotations = {
+                "external-dns.alpha.kubernetes.io/internal-hostname" = local.temporal.frontend_url
+                "external-dns.alpha.kubernetes.io/ttl"               = "60"
+              }
+            }
+            topologySpreadConstraints = [
+              {
+                maxSkew           = 1
+                topologyKey       = "topology.kubernetes.io/zone"
+                whenUnsatisfiable = "ScheduleAnyway"
+                labelSelector = {
+                  matchLabels = {
+                    "app.kubernetes.io/name"      = "temporal"
+                    "app.kubernetes.io/component" = "frontend"
+                  },
+                }
+              },
+              {
+                maxSkew           = 2
+                topologyKey       = "kubernetes.io/hostname"
+                whenUnsatisfiable = "DoNotSchedule"
+                labelSelector = {
+                  matchLabels = {
+                    "app.kubernetes.io/name"      = "temporal"
+                    "app.kubernetes.io/component" = "frontend"
+                  },
+                }
+              }
+            ]
             nodeSelector = {
               "pool.nuon.co" = "temporal"
             }
