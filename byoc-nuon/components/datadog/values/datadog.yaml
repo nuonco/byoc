@@ -4,6 +4,7 @@ datadog:
   site: us5.datadoghq.com
   remoteConfiguration:
     enabled: true
+  containerExcludeMetrics: "image:.*/amazon/aws-network-policy-agent image:.*/eks/eks-pod-identity-agent image:public.ecr.aws/eks-distro/kubernetes-csi/(node-driver-registrar|livenessprobe)"
   confd:
     "temporal.yaml": |-
       init_config:
