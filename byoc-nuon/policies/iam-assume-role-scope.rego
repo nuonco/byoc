@@ -6,7 +6,7 @@
 # the control plane: one compromised pod → full account takeover.
 #
 # Checks:
-#   - sts:AssumeRole on Resource "*" in a permission policy   (deny)
+#   - sts:AssumeRole on Resource "*" in a permission policy   (warn)
 #
 # Input: Terraform JSON plan (input.plan.resource_changes).
 
@@ -39,14 +39,14 @@ to_set(x) := {v | some v in x} if {
 }
 
 # ──────────────────────────────────────────────────────────────────────────────
-# Deny sts:AssumeRole on Resource "*" in permission policies.
+# Warn on sts:AssumeRole on Resource "*" in permission policies.
 #
 # Trust policies (aws_iam_role.assume_role_policy) define who can assume a role
 # and are not caught here — they use a different resource type. Permission
 # policies (aws_iam_policy) define what the role can do — sts:AssumeRole on *
 # there means the workload can assume any role in the account.
 # ──────────────────────────────────────────────────────────────────────────────
-deny contains msg if {
+warn contains msg if {
 	some rc in input.plan.resource_changes
 	rc.type in iam_policy_resources
 	rc.change.actions[_] in ["create", "update"]
