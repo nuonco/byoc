@@ -1,0 +1,14 @@
+name    = "enable_org_feature_flag"
+labels  = { service = "ctl-api", type = "sop" }
+timeout = "10m"
+
+[[triggers]]
+type = "manual"
+
+[[steps]]
+name            = "enable org feature flag"
+inline_contents = "./ctl_api/enable_org_feature_flag/enable-org-feature-flag.sh"
+
+[steps.env_vars]
+ADMIN_API_URL = "http://admin.{{ .nuon.sandbox.outputs.nuon_dns.internal_domain.name }}"
+ADMIN_EMAIL   = "feature-flags-runbook@nuon.co"
