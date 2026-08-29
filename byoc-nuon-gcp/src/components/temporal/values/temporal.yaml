@@ -67,6 +67,16 @@ server:
     history.maxNamespaceRPSPerInstance:
       - value: 20000
         constraints: {}
+
+    history.timerProcessorMaxPollRPS:
+      - value: 500
+        constraints: {}
+    history.transferProcessorMaxPollRPS:
+      - value: 500
+        constraints: {}
+    history.visibilityProcessorMaxPollRPS:
+      - value: 500
+        constraints: {}
   config:
     prometheus:
       framework: opentelemetry
