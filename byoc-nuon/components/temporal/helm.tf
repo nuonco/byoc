@@ -98,6 +98,7 @@ resource "helm_release" "temporal" {
               },
               {
                 maxSkew           = 2
+                minDomains        = 2
                 topologyKey       = "kubernetes.io/hostname"
                 whenUnsatisfiable = "DoNotSchedule"
                 labelSelector = {
@@ -146,6 +147,7 @@ resource "helm_release" "temporal" {
               },
               {
                 maxSkew           = 2
+                minDomains        = 2
                 topologyKey       = "kubernetes.io/hostname"
                 whenUnsatisfiable = "DoNotSchedule"
                 labelSelector = {
@@ -194,6 +196,7 @@ resource "helm_release" "temporal" {
               },
               {
                 maxSkew           = 2
+                minDomains        = 2
                 topologyKey       = "kubernetes.io/hostname"
                 whenUnsatisfiable = "DoNotSchedule"
                 labelSelector = {
@@ -242,6 +245,7 @@ resource "helm_release" "temporal" {
               },
               {
                 maxSkew           = 2
+                minDomains        = 2
                 topologyKey       = "kubernetes.io/hostname"
                 whenUnsatisfiable = "DoNotSchedule"
                 labelSelector = {
@@ -295,6 +299,7 @@ resource "helm_release" "temporal" {
             },
             {
               maxSkew           = 2
+              minDomains        = 2
               topologyKey       = "kubernetes.io/hostname"
               whenUnsatisfiable = "DoNotSchedule"
               labelSelector = {
@@ -353,6 +358,7 @@ resource "helm_release" "temporal" {
             },
             {
               maxSkew           = 2
+              minDomains        = 2
               topologyKey       = "kubernetes.io/hostname"
               whenUnsatisfiable = "DoNotSchedule"
               labelSelector = {
