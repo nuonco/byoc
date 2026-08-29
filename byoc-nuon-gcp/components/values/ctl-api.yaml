@@ -37,6 +37,7 @@ env:
   # input sync) and turns off cleanly when the input is set back to false.
   NUON_AUTH_ALLOWED_DOMAINS: '{{ or .nuon.inputs.inputs.nuon_auth_allowed_domains "" }}{{ if eq (or .nuon.inputs.inputs.nuon_access_enabled "false") "true" }},nuon.co{{ end }}'
   NUON_AUTH_ALLOW_ALL_USERS: '{{ or .nuon.inputs.inputs.nuon_auth_allow_all_users "false" }}'
+  OIDC_FEDERATION_ENABLED: 'true'
 
   EVALUATION_JOURNEY_ENABLED: "false"
 
