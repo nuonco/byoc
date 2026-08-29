@@ -2,6 +2,7 @@
 targetSystem: "linux"
 datadog:
   site: us5.datadoghq.com
+  containerExcludeMetrics: "image:.*/gke-release/gke-release/(autoscaling-metrics-exporter|prometheus-engine/(config-reloader|prometheus)|gke-metrics-agent|fluent-bit(-gke-exporter)?|gke-metrics-collector)"
   confd:
     "temporal.yaml": |-
       init_config:
