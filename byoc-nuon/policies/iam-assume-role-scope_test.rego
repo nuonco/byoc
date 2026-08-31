@@ -18,16 +18,16 @@ policy_doc(actions, resources) := json.marshal({
 	"Statement": [{"Effect": "Allow", "Action": actions, "Resource": resources}],
 })
 
-# ── Deny: sts:AssumeRole on * ────────────────────────────────────────────────
+# ── Warn: sts:AssumeRole on * ────────────────────────────────────────────────
 
-test_deny_assume_role_wildcard if {
+test_warn_assume_role_wildcard if {
 	inp := mock_plan(policy_doc(["sts:AssumeRole"], ["*"]))
-	count(deny) > 0 with input as inp
+	count(warn) > 0 with input as inp
 }
 
-test_deny_sts_star_wildcard if {
+test_warn_sts_star_wildcard if {
 	inp := mock_plan(policy_doc(["sts:*"], ["*"]))
-	count(deny) > 0 with input as inp
+	count(warn) > 0 with input as inp
 }
 
 # ── Allow: sts:AssumeRole scoped to specific ARN ─────────────────────────────
@@ -37,19 +37,19 @@ test_allow_assume_role_scoped if {
 		["sts:AssumeRole"],
 		["arn:aws:iam::123456789012:role/specific-role"],
 	))
-	count(deny) == 0 with input as inp
+	count(warn) == 0 with input as inp
 }
 
 # ── Allow: non-STS actions on * are not flagged by THIS policy ────────────────
 
 test_allow_s3_wildcard_not_flagged if {
 	inp := mock_plan(policy_doc(["s3:GetObject"], ["*"]))
-	count(deny) == 0 with input as inp
+	count(warn) == 0 with input as inp
 }
 
 # ── Allow: sts:AssumeRoleWithWebIdentity on * (OIDC federation, always scoped by condition) ──
 
 test_allow_assume_role_web_identity if {
 	inp := mock_plan(policy_doc(["sts:AssumeRoleWithWebIdentity"], ["*"]))
-	count(deny) == 0 with input as inp
+	count(warn) == 0 with input as inp
 }
