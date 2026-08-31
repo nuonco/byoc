@@ -158,7 +158,19 @@ resource "kubectl_manifest" "clickhouse_installation" {
         "podTemplates" = [{
           "name" = "clickhouse:${var.cluster_image_tag}"
           "imagePullPolicy" : "IfNotPresent"
-          "metadata" = {}
+          "metadata" = {
+            "annotations" = {
+              "ad.datadoghq.com/clickhouse.logs" = jsonencode([{
+                source  = "clickhouse"
+                service = "clickhouse"
+                log_processing_rules = [{
+                  type    = "multi_line"
+                  name    = "clickhouse_stack_trace"
+                  pattern = "^\\d{4}\\.\\d{2}\\.\\d{2}\\s"
+                }]
+              }])
+            }
+          }
           "spec" = {
             "nodeSelector" = {
               "pool.nuon.co" = "clickhouse-installation"

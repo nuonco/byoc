@@ -90,6 +90,19 @@ resource "kubectl_manifest" "clickhouse_installation" {
         podTemplates = [
           {
             name = "default"
+            metadata = {
+              annotations = {
+                "ad.datadoghq.com/clickhouse.logs" = jsonencode([{
+                  source  = "clickhouse"
+                  service = "clickhouse"
+                  log_processing_rules = [{
+                    type    = "multi_line"
+                    name    = "clickhouse_stack_trace"
+                    pattern = "^\\d{4}\\.\\d{2}\\.\\d{2}\\s"
+                  }]
+                }])
+              }
+            }
             spec = {
               # never co-locate the two replicas on the same node, and best-effort
               # spread them across zones. the label is applied automatically by the CRD.
