@@ -1,0 +1,6 @@
+name         = "runner_image_url"
+description  = "The image url for the new runners. Defaults to Nuon's upstream registry; point it at the runner_repository component's repository_uri to serve runner images from this install instead."
+default      = "public.ecr.aws/p7e3r5y0/runner"
+display_name = "Runner Image URL"
+group        = "nuon"
+required     = true

@@ -1,14 +1,15 @@
 # action
-# Warms up the install's public ECR runner repository by importing every
+# Warms up the install's Artifact Registry runner repository by importing every
 # runner image version that is currently in use across the install's runners.
 #
-# Queries ClickHouse (ctl_api.latest_runner_heart_beats_view_v1) for the distinct set
-# of `version` values reported by runner heartbeats, then imports each of those
-# tags from the upstream Nuon public ECR registry into the install's own public
-# ECR runner repository (component: runner_repository) -- the same oras copy
-# performed by ecr_runner_import, just fanned out over every active version.
+# Queries ClickHouse for the distinct set of `version` values reported by runner
+# heartbeats, then imports each of those tags from the upstream Nuon registry into
+# the install's own runner repository (component: runner_repository) -- the same
+# oras copy performed by gar_runner_import, just fanned out over every active
+# version.
 name    = "runner_repository_warm_up"
 labels  = { service = "runner-repository", type = "sop" }
+label   = "gcp"
 timeout = "15m"
 
 [[triggers]]
