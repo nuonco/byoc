@@ -6,7 +6,7 @@
 # image version currently in use across the install's runners.
 #
 # Discovers the set of versions by querying ClickHouse
-# (ctl_api.latest_runner_heart_beats) for the distinct `version` values reported
+# (ctl_api.latest_runner_heart_beats_view_v1) for the distinct `version` values reported
 # by runner heartbeats, then imports each tag from the upstream Nuon public ECR
 # registry (SOURCE_IMAGE_URL) into the install's public ECR runner repository
 # (RUNNER_REPOSITORY_URI). This is ecr_runner_import fanned out over every
@@ -34,14 +34,14 @@ CH_POD="chi-clickhouse-installation-simple-0-0-0"
 # query, and empty/blank versions are filtered out in the import loop below.
 # A stray ';' makes the client see two statements ("Multi-statements are not
 # allowed"), so keep this to a single SELECT.
-CH_QUERY="SELECT DISTINCT version FROM ctl_api.latest_runner_heart_beats"
+CH_QUERY="SELECT DISTINCT version FROM ctl_api.latest_runner_heart_beats_view_v1"
 
 echo "warm-up-repository: querying ClickHouse for distinct runner versions"
 versions=$(kubectl exec -n clickhouse "$CH_POD" -- \
   clickhouse client -d ctl_api -q "$CH_QUERY")
 
 if [ -z "$versions" ]; then
-  echo "warm-up-repository: no versions found in ctl_api.latest_runner_heart_beats; nothing to do" >&2
+  echo "warm-up-repository: no versions found in ctl_api.latest_runner_heart_beats_view_v1; nothing to do" >&2
   exit 0
 fi
 

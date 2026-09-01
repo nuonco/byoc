@@ -2,7 +2,7 @@
 # Warms up the install's public ECR runner repository by importing every
 # runner image version that is currently in use across the install's runners.
 #
-# Queries ClickHouse (ctl_api.latest_runner_heartbeats) for the distinct set
+# Queries ClickHouse (ctl_api.latest_runner_heart_beats_view_v1) for the distinct set
 # of `version` values reported by runner heartbeats, then imports each of those
 # tags from the upstream Nuon public ECR registry into the install's own public
 # ECR runner repository (component: runner_repository) -- the same oras copy
