@@ -70,3 +70,11 @@ inline_contents = "./ctl_api/ctl_api_post_deploy/healthcheck.sh"
 [steps.env_vars]
 INGRESS_NAME      = "ctl-api-admin"
 INGRESS_NAMESPACE = "ctl-api"
+
+[[steps]]
+name            = "mcp-alb-healthcheck"
+inline_contents = "./ctl_api/ctl_api_post_deploy/healthcheck.sh"
+
+[steps.env_vars]
+INGRESS_NAME      = "ctl-api-mcp"
+INGRESS_NAMESPACE = "ctl-api"

@@ -43,6 +43,14 @@ ROUTE_NAME      = "ctl-api-admin"
 ROUTE_NAMESPACE = "ctl-api"
 
 [[steps]]
+name            = "mcp-route-healthcheck"
+inline_contents = "./ctl_api/ctl_api_post_deploy/healthcheck.sh"
+
+[steps.env_vars]
+ROUTE_NAME      = "ctl-api-mcp"
+ROUTE_NAMESPACE = "ctl-api"
+
+[[steps]]
 name            = "runners-update-version"
 inline_contents = "./ctl_api/ctl_api_post_deploy/update-version.sh"
 
