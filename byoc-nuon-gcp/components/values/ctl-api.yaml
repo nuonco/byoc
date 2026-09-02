@@ -185,15 +185,15 @@ worker:
   instances:
     - namespace: orgs
       minReplicas: 2
-      maxReplicas: 10
+      maxReplicas: 2
       command: ["/bin/service", "worker", "--namespace=orgs"]
     - namespace: actions
       minReplicas: 2
-      maxReplicas: 10
+      maxReplicas: 2
       command: ["/bin/service", "worker", "--namespace=actions"]
     - namespace: apps
       minReplicas: 2
-      maxReplicas: 5
+      maxReplicas: 2
       command: ["/bin/service", "worker", "--namespace=apps"]
       resources:
         requests:
@@ -212,15 +212,15 @@ worker:
           value: "1000000"
     - namespace: components
       minReplicas: 2
-      maxReplicas: 5
+      maxReplicas: 2
       command: ["/bin/service", "worker", "--namespace=components"]
       resources:
         requests:
           cpu: 1000m
           memory: 1Gi
     - namespace: installs
-      minReplicas: 2
-      maxReplicas: 10
+      minReplicas: 4
+      maxReplicas: 4
       command: ["/bin/service", "worker", "--namespace=installs"]
       resources:
         requests:
@@ -258,11 +258,11 @@ worker:
           value: "20000"
     - namespace: releases
       minReplicas: 2
-      maxReplicas: 5
+      maxReplicas: 2
       command: ["/bin/service", "worker", "--namespace=releases"]
     - namespace: general
       minReplicas: 2
-      maxReplicas: 5
+      maxReplicas: 2
       command: ["/bin/service", "worker", "--namespace=general"]
       extraEnv:
         - name: TEMPORAL_MAX_CONCURRENT_ACTIVITY_TASK_POLLERS
@@ -270,8 +270,8 @@ worker:
         - name: TEMPORAL_MAX_CONCURRENT_WORKFLOW_TASK_POLLERS
           value: "50"
     - namespace: runners
-      minReplicas: 2
-      maxReplicas: 10
+      minReplicas: 5
+      maxReplicas: 5
       command: ["/bin/service", "worker", "--namespace=runners"]
       resources:
         requests:
