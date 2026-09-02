@@ -3,7 +3,7 @@ Diagnose why a ctl-api HTTP endpoint is unreachable for install `{{ .nuon.instal
 Use this when an endpoint won't answer — e.g. the `ctl_api_post_deploy` **runners-update-version** step failing with
 "admin API never became reachable", or a 5xx / DNS failure on `api`, `runner`, or `auth`. Every step is **read-only**.
 
-> [!NOTE] This runbook covers **HTTP / ingress-backed** ctl-api endpoints only (public, admin, runner, auth). Non-HTTP
+> [!NOTE] This runbook covers **HTTP / ingress-backed** ctl-api endpoints only (public, admin, runner, auth, mcp). Non-HTTP
 > or non-ingress services (Temporal gRPC, ClickHouse, anything on a Service/NLB rather than an ALB ingress) don't fit
 > this funnel and need a different approach.
 
@@ -11,7 +11,7 @@ Use this when an endpoint won't answer — e.g. the `ctl_api_post_deploy` **runn
 
 The funnel has two layers. **Steps 1–4 are the cluster-wide backbone** — there is one AWS Load Balancer Controller per
 cluster, so if it can't build ALBs (or the shared TLS cert isn't issued), *every* endpoint fails at once. They run
-first, ordered symptom → root cause. **Steps 5–8 probe each endpoint individually** (reachability → DNS → ingress/ALB).
+first, ordered symptom → root cause. **Steps 5–9 probe each endpoint individually** (reachability → DNS → ingress/ALB).
 All steps run even if an earlier one finds the fault, so one pass gives the full picture.
 
 ### 1. Are ALBs being built at all? — `ctl_api_alb_ingress_status`
@@ -37,7 +37,7 @@ Runs under the `{{ .nuon.install.id }}-provision` role (ACM read). The https end
 wildcard ACM cert; until it is `ISSUED` their ALBs can't terminate TLS. (The admin endpoint is plain http and doesn't
 depend on it.)
 
-### 5–8. Per-endpoint probes — `ctl_api_probe_{public,admin,runner,auth}`
+### 5–9. Per-endpoint probes — `ctl_api_probe_{public,admin,runner,auth,mcp}`
 
 Each checks one endpoint: a `curl` to its health path (treating 2xx–4xx as reachable — 401/403 just means up-but-unauthed),
 DNS resolution in the expected zone, and the ingress's ALB address / annotations / events.
@@ -48,6 +48,7 @@ DNS resolution in the expected zone, and the ingress's ALB address / annotations
 | admin | `admin.<internal_domain>` | internal (private zone, VPC-only) | http |
 | runner | `runner.<public_domain>` | public (internet-facing) | https |
 | auth | `auth.<public_domain>` | public (internet-facing) | https |
+| mcp | `mcp.<public_domain>` | public (internet-facing) | https |
 
 ## Reading the output
 

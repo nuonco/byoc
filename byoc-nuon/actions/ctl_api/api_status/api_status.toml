@@ -1,6 +1,6 @@
 # action
 # description: fetches ctl-api version and runs ALB healthchecks for the
-# public, admin (private), and runner ingresses.
+# public, admin (private), runner, and mcp ingresses.
 name    = "api_status"
 labels  = { service = "ctl-api", type = "debug" }
 timeout = "2m"
@@ -41,6 +41,14 @@ inline_contents = "./ctl_api/api_status/healthcheck.sh"
 
 [steps.env_vars]
 INGRESS_NAME      = "ctl-api-runner"
+INGRESS_NAMESPACE = "ctl-api"
+
+[[steps]]
+name            = "alb-healthcheck-ctl-api-mcp"
+inline_contents = "./ctl_api/api_status/healthcheck.sh"
+
+[steps.env_vars]
+INGRESS_NAME      = "ctl-api-mcp"
 INGRESS_NAMESPACE = "ctl-api"
 
 [[steps]]

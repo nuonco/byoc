@@ -32,6 +32,7 @@ Per-pool `disruption` config is also respected; pools without it get a default d
 | ctl-api-admin   | `pool.nuon.co: public` | `pool.nuon.co=public:NoSchedule` | zone maxSkew=1 ScheduleAnyway; hostname maxSkew=2 DoNotSchedule minDomains=2 | minAvailable 1   |
 | ctl-api-auth    | `pool.nuon.co: public` | `pool.nuon.co=public:NoSchedule` | zone maxSkew=1 ScheduleAnyway; hostname maxSkew=2 DoNotSchedule minDomains=2 | minAvailable 1   |
 | ctl-api-runner  | `pool.nuon.co: public` | `pool.nuon.co=public:NoSchedule` | zone maxSkew=1 ScheduleAnyway; hostname maxSkew=1 DoNotSchedule minDomains=2 | minAvailable 50% |
+| ctl-api-mcp     | `pool.nuon.co: public` | `pool.nuon.co=public:NoSchedule` | zone maxSkew=1 ScheduleAnyway; hostname maxSkew=2 DoNotSchedule minDomains=2 | minAvailable 1   |
 | ctl-api-startup | `pool.nuon.co: public` | `pool.nuon.co=public:NoSchedule` | zone maxSkew=1 ScheduleAnyway; hostname maxSkew=2 DoNotSchedule minDomains=2 | —                |
 | dashboard-ui    | `pool.nuon.co: public` | `pool.nuon.co=public:NoSchedule` | hostname maxSkew=1 DoNotSchedule minDomains=2; zone maxSkew=2 ScheduleAnyway | minAvailable 1   |
 
