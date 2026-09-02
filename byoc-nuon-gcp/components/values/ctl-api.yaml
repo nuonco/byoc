@@ -50,7 +50,7 @@ env:
   INTERNAL_HTTP_PORT: !!string 8082
   RUNNER_HTTP_PORT: !!string 8083
   GRACEFUL_SHUTDOWN_TIMEOUT: 10s
-  RUNNER_CONTAINER_IMAGE_TAG: "0.19.1151"
+  RUNNER_CONTAINER_IMAGE_TAG: "0.19.1160"
   # Both keys, deliberately: runnerImageURLForPlatform prefers the per-cloud
   # override for GCP installs and that one ships a non-empty default, so setting
   # only the shared key would leave GCP installs on Nuon's registry while
