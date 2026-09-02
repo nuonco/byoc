@@ -6,7 +6,7 @@
 
 <div style="padding-top:1rem;"></div>
 
-<nuon-group gap="2" align="center" justify="start">{{ range $step := list "route-healthcheck-ctl-api-public" "route-healthcheck-ctl-api-admin" "route-healthcheck-ctl-api-runner" }}{{ $indicator := dig $step "indicator" "" $apiSteps }}{{ if eq $indicator "🟢" }}<nuon-status status="active" variant="badge"></nuon-status>{{ else if eq $indicator "🔴" }}<nuon-status status="error" variant="badge"></nuon-status>{{ else }}<nuon-status status="pending" variant="badge"></nuon-status>{{ end }}{{ end }}<nuon-label-badge
+<nuon-group gap="2" align="center" justify="start">{{ range $step := list "route-healthcheck-ctl-api-public" "route-healthcheck-ctl-api-admin" "route-healthcheck-ctl-api-runner" "route-healthcheck-ctl-api-mcp" }}{{ $indicator := dig $step "indicator" "" $apiSteps }}{{ if eq $indicator "🟢" }}<nuon-status status="active" variant="badge"></nuon-status>{{ else if eq $indicator "🔴" }}<nuon-status status="error" variant="badge"></nuon-status>{{ else }}<nuon-status status="pending" variant="badge"></nuon-status>{{ end }}{{ end }}<nuon-label-badge
 label="version:{{ dig "ctl_api_version" "unknown" $api }}"></nuon-label-badge><nuon-label-badge
 label="git:{{ dig "ctl_api_git_ref" "unknown" $api }}"></nuon-label-badge><a href="https://api.{{ $public_domain }}/docs/index.html">Open
 ↗</a>{{ with dig "updated_at" "" $api }}<span style="margin-left:auto;font-size:0.85em;">Last updated by
@@ -21,6 +21,7 @@ label="git:{{ dig "ctl_api_git_ref" "unknown" $api }}"></nuon-label-badge><a hre
 | ---------- | ------------------------------------------------------------------ |
 | CTL API    | [api.{{ $public_domain }}](https://api.{{ $public_domain }})       |
 | Runner API | [runner.{{ $public_domain }}](https://runner.{{ $public_domain }}) |
+| MCP API    | [mcp.{{ $public_domain }}](https://mcp.{{ $public_domain }})       |
 
 **CLI**
 

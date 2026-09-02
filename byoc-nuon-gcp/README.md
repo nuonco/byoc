@@ -308,7 +308,7 @@ the Setup tab. </nuon-banner>
 
 <nuon-card>
 
-<nuon-group gap="2" align="center" justify="start">{{ range $step := list "route-healthcheck-ctl-api-public" "route-healthcheck-ctl-api-admin" "route-healthcheck-ctl-api-runner" }}{{ $indicator := dig $step "indicator" "" $apiSteps }}{{ if eq $indicator "🟢" }}<nuon-status status="active" variant="badge"></nuon-status>{{ else if eq $indicator "🔴" }}<nuon-status status="error" variant="badge"></nuon-status>{{ else }}<nuon-status status="pending" variant="badge"></nuon-status>{{ end }}{{ end }}<nuon-label-badge
+<nuon-group gap="2" align="center" justify="start">{{ range $step := list "route-healthcheck-ctl-api-public" "route-healthcheck-ctl-api-admin" "route-healthcheck-ctl-api-runner" "route-healthcheck-ctl-api-mcp" }}{{ $indicator := dig $step "indicator" "" $apiSteps }}{{ if eq $indicator "🟢" }}<nuon-status status="active" variant="badge"></nuon-status>{{ else if eq $indicator "🔴" }}<nuon-status status="error" variant="badge"></nuon-status>{{ else }}<nuon-status status="pending" variant="badge"></nuon-status>{{ end }}{{ end }}<nuon-label-badge
 label="version:{{ dig "ctl_api_version" "unknown" $api }}"></nuon-label-badge><nuon-label-badge
 label="git:{{ dig "ctl_api_git_ref" "unknown" $api }}"></nuon-label-badge><a href="https://api.{{ $public_domain }}/docs/index.html">Open
 ↗</a></nuon-group>
