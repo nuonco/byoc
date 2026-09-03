@@ -5,7 +5,7 @@ namespace: "dashboard-ui"
 
 image:
   repository: "{{ .nuon.components.img_nuon_dashboard_ui.outputs.image.repository }}"
-  tag: "{{ .nuon.components.img_nuon_dashboard_ui.outputs.image.tag }}"
+  tag: '{{ or .nuon.inputs.inputs.dashboard_ui_version .nuon.components.img_nuon_dashboard_ui.outputs.image.tag }}'
 
 env:
   ENV: prod

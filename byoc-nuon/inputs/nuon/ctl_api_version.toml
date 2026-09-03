@@ -1,0 +1,9 @@
+name         = "ctl_api_version"
+description  = "Pin the ctl-api image version deployed to this install, e.g. 0.19.1162. Updating this input redeploys the ctl_api chart on its own. Must be a version already synced into the install's registry. Leave empty to track the version pinned in the byoc app config."
+default      = ""
+display_name = "CTL API Version"
+required     = false
+group        = "nuon"
+type         = "string"
+
+user_configurable = false
