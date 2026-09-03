@@ -156,7 +156,8 @@ envSecrets:
 
 image:
   repository: "{{ .nuon.components.img_nuon_ctl_api.outputs.image.repository }}"
-  tag: "{{ .nuon.components.img_nuon_ctl_api.outputs.image.tag }}"
+  # One shared ECR repo per install, so synced tags carry a per-component prefix.
+  tag: '{{ with .nuon.inputs.inputs.ctl_api_version }}img-nuon-ctl-api-{{ . }}{{ else }}{{ .nuon.components.img_nuon_ctl_api.outputs.image.tag }}{{ end }}'
 
 worker:
   nodeSelector:

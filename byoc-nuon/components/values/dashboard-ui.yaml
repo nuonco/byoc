@@ -5,7 +5,8 @@ namespace: "dashboard-ui"
 
 image:
   repository: "{{ .nuon.components.img_nuon_dashboard_ui.outputs.image.repository }}"
-  tag: "{{ .nuon.components.img_nuon_dashboard_ui.outputs.image.tag }}"
+  # One shared ECR repo per install, so synced tags carry a per-component prefix.
+  tag: '{{ with .nuon.inputs.inputs.dashboard_ui_version }}img-nuon-dashboard-ui-{{ . }}{{ else }}{{ .nuon.components.img_nuon_dashboard_ui.outputs.image.tag }}{{ end }}'
 
 env:
   ENV: byoc
