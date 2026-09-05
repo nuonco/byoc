@@ -1,14 +1,18 @@
 # Block Destructive Changes Policy (terraform_module)
 #
 # Prevents Terraform plans from deleting or replacing the stateful resources
-# that hold the control plane and customer-install data. Deleting any of these
-# is effectively unrecoverable in production.
+# that hold the control plane and customer-install data. Destroy and replace
+# are both denied: a replace is a destroy plus create, and the data on the
+# original object is still lost.
 #
 # Checks:
-#   - deny deletion of critical stateful resources   (deny)
-#   - warn on replacement (delete + create)           (warn)
+#   - deny deletion of critical stateful resources    (deny)
+#   - deny replacement of critical stateful resources (deny)
 #
 # Input: Terraform JSON plan (input.plan.resource_changes).
+#
+# Intentional teardown must detach these addresses from state first
+# (rds_state_rm_*, s3_state_rm) so Terraform never plans a destroy.
 
 package nuon
 
@@ -26,42 +30,16 @@ critical_resources := {
 }
 
 # ──────────────────────────────────────────────────────────────────────────────
-# Block outright deletion of any critical resource.
+# Block destroy and replace of any critical resource.
+# Terraform encodes replace as [delete, create] or [create, delete]; both
+# include "delete" and must be denied the same as a pure destroy.
 # ──────────────────────────────────────────────────────────────────────────────
 deny contains msg if {
 	some rc in input.plan.resource_changes
 	rc.type in critical_resources
 	rc.change.actions[_] == "delete"
-	# A pure replace is [delete, create]; a pure delete is just [delete].
-	not is_replace(rc.change.actions)
 	msg := sprintf(
-		"Deletion of critical resource '%s' (type: %s) is not allowed. Remove the destroy from this plan or use a deliberate break-glass procedure.",
+		"Destroy or replace of critical resource '%s' (type: %s) is not allowed. Remove it from this plan, or detach it from state first (see the deprovision runbook).",
 		[rc.address, rc.type],
 	)
-}
-
-# ──────────────────────────────────────────────────────────────────────────────
-# Replacing a critical resource also destroys its data; warn loudly so an
-# operator must consciously approve it.
-# ──────────────────────────────────────────────────────────────────────────────
-warn contains msg if {
-	some rc in input.plan.resource_changes
-	rc.type in critical_resources
-	is_replace(rc.change.actions)
-	msg := sprintf(
-		"Critical resource '%s' (type: %s) will be REPLACED (destroyed and recreated). Confirm the data is backed up before applying.",
-		[rc.address, rc.type],
-	)
-}
-
-is_replace(actions) if {
-	count(actions) == 2
-	actions[0] == "delete"
-	actions[1] == "create"
-}
-
-is_replace(actions) if {
-	count(actions) == 2
-	actions[0] == "create"
-	actions[1] == "delete"
 }
